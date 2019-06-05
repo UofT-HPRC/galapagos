@@ -1,0 +1,59 @@
+{
+   ExpandedHierarchyInLayout: "/applicationRegion",
+   guistr: "# # String gsaved with Nlview 6.8.5  2018-01-30 bk=1.4354 VDI=40 GEI=35 GUI=JA:1.6 TLS
+#  -string -flagsOSRD
+preplace port ARESETN -pg 1 -y 120 -defaultsOSRD
+preplace port S_AXI_CONTROL -pg 1 -y 60 -defaultsOSRD
+preplace port S_AXIS -pg 1 -y 190 -defaultsOSRD
+preplace port CLK -pg 1 -y 100 -defaultsOSRD
+preplace port M_AXIS -pg 1 -y 110 -defaultsOSRD
+preplace port S_AXI_MEM_0 -pg 1 -y 220 -defaultsOSRD
+preplace port S_AXI_MEM_1 -pg 1 -y 240 -defaultsOSRD
+preplace inst applicationRegion|xlconstant_0 -pg 1 -lvl 2 -y -410 -defaultsOSRD
+preplace inst applicationRegion|smartconnect_0 -pg 1 -lvl 4 -y 190 -defaultsOSRD
+preplace inst applicationRegion|xlconstant_1 -pg 1 -lvl 2 -y 10 -defaultsOSRD
+preplace inst applicationRegion|input_switch -pg 1 -lvl 2 -y -130 -defaultsOSRD
+preplace inst applicationRegion|blk_mem_switch_rom -pg 1 -lvl 2 -y 390 -defaultsOSRD
+preplace inst applicationRegion -pg 1 -lvl 1 -y -310 -defaultsOSRD
+preplace inst applicationRegion|axi_datamover_0 -pg 1 -lvl 3 -y 220 -defaultsOSRD
+preplace inst applicationRegion|dariusController_raw_0 -pg 1 -lvl 3 -y -90 -defaultsOSRD
+preplace inst applicationRegion|custom_switch_inst -pg 1 -lvl 1 -y 290 -defaultsOSRD
+preplace inst applicationRegion|axi_vip_ctrl -pg 1 -lvl 2 -y -290 -defaultsOSRD
+preplace inst network -pg 1 -lvl 2 -y 130 -defaultsOSRD
+preplace netloc applicationRegion|custom_switch_inst_stream_out_switch_V 1 1 1 560
+preplace netloc applicationRegion|dariusController_raw_0_axis_cmd_mm2s_V_data_V 1 2 2 1050 -250 1870
+preplace netloc applicationRegion|custom_switch_inst_network_table_V_PORTA 1 1 1 550J
+preplace netloc S_AXI_CONTROL_1 1 0 1 -140J
+preplace netloc CLK_1 1 0 2 -130 500 2430J
+preplace netloc network_M_AXIS 1 2 1 NJ
+preplace netloc applicationRegion_stream_out_network_V 1 1 1 2400
+preplace netloc applicationRegion|smartconnect_0_M01_AXI 1 4 1 N
+preplace netloc network_mac_big 1 0 3 -100 510 NJ 510 2790
+preplace netloc ARESETN_1 1 0 2 -120 490 2440J
+preplace netloc applicationRegion|dariusController_raw_0_axis_s2mm 1 2 2 1070 -240 1880
+preplace netloc applicationRegion|axi_datamover_0_M_AXIS_MM2S 1 2 2 1060 -260 1900
+preplace netloc applicationRegion|xlconstant_0_dout 1 2 1 1010
+preplace netloc applicationRegion|axi_datamover_0_M_AXI_S2MM 1 3 1 N
+preplace netloc applicationRegion|Conn1 1 0 2 NJ -220 540
+preplace netloc applicationRegion|network_addr_V_1 1 0 1 N
+preplace netloc applicationRegion|dariusController_raw_0_axis_cmd_s2mm_V_data_V 1 2 2 1040 -270 1890
+preplace netloc applicationRegion|Conn2 1 4 1 N
+preplace netloc applicationRegion|xlconstant_1_dout 1 2 1 990
+preplace netloc S_AXIS_1 1 0 2 -140J 470 2390J
+preplace netloc applicationRegion|axi_datamover_0_M_AXI_MM2S 1 3 1 N
+preplace netloc applicationRegion|Conn4 1 0 2 NJ -80 540
+preplace netloc applicationRegion|CLK_1 1 0 4 80 60 570 70 1020 60 1910J
+preplace netloc applicationRegion|Conn5 1 1 4 540 330 1000J 410 NJ 410 NJ
+preplace netloc applicationRegion|ARESETN_1 1 0 4 70 80 550 80 1030 380 1910J
+preplace netloc network_to_app_V 1 0 3 -110 480 NJ 480 2800
+preplace netloc applicationRegion_S_AXI_MEM_0 1 1 2 2420J 220 NJ
+preplace netloc applicationRegion|input_switch_M00_AXIS 1 2 1 1000
+preplace netloc applicationRegion_S_AXI_MEM_1 1 1 2 2410J 240 NJ
+levelinfo -pg 1 -160 240 2650 2830 -top -500 -bot 970
+levelinfo -hier applicationRegion * 310 820 1660 2080 *
+",
+}
+{
+   da_axi4_cnt: "1",
+   da_axi4_s2mm_cnt: "1",
+}

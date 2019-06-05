@@ -1,0 +1,25 @@
+#-----------------------------------------------------------
+# Vivado v2018.2 (64-bit)
+# SW Build 2258646 on Thu Jun 14 20:02:38 MDT 2018
+# IP Build 2256618 on Thu Jun 14 22:10:49 MDT 2018
+# Start of session at: Sun Apr 21 17:27:12 2019
+# Process ID: 2243
+# Current directory: /home/tarafdar/workDir/test/galapagos/projects/hls4ml
+# Command line: vivado
+# Log file: /home/tarafdar/workDir/test/galapagos/projects/hls4ml/vivado.log
+# Journal file: /home/tarafdar/workDir/test/galapagos/projects/hls4ml/vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project /home/tarafdar/workDir/test/galapagos/projects/hls4ml/1/1.xpr
+Scanning sources...
+Finished scanning sources
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1700] Loaded user IP repository '/home/tarafdar/workDir/test/galapagos/shells/shell_ips'.
+INFO: [IP_Flow 19-1700] Loaded user IP repository '/home/tarafdar/workDir/test/galapagos/userIP'.
+INFO: [IP_Flow 19-1700] Loaded user IP repository '/home/tarafdar/workDir/test/galapagos/hlsBuild'.
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository '/opt/Xilinx/Vivado/2018.2/data/ip'.
+WARNING: [BD 41-1661] One or more IPs have been locked in the design 'pr.bd'. Please run report_ip_status for more details and recommendations on how to fix this issue.
+List of locked IPs:
+pr_myproject_galapagos_inst_1_1
+
+WARNING: [IP_Flow 19-3664] IP 'bd_01e2_xpcs_0' generated file not found '/home/tarafdar/workDir/test/galapagos/.Xil/Vivado-25966-batcomputer.arkham/coregen/bd_01e2_xpcs_0_1/elaborate/configure_gt.tcl'. Please regenerate to continue.

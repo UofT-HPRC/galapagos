@@ -1,0 +1,96 @@
+/*
+
+Xilinx Vivado v2018.2 (64-bit) [Major: 2018, Minor: 2]
+SW Build: 2258646 on Thu Jun 14 20:02:38 MDT 2018
+IP Build: 2256618 on Thu Jun 14 22:10:49 MDT 2018
+
+Process ID: 2243
+License: Customer
+
+Current time: 	Sun Apr 21 17:27:25 EDT 2019
+Time zone: 	Eastern Standard Time (America/Toronto)
+
+OS: Ubuntu
+OS Version: 4.15.0-47-generic
+OS Architecture: amd64
+Available processors (cores): 8
+
+Display: :0
+Screen size: 1920x1080
+Screen resolution (DPI): 96
+Available screens: 1
+Available disk space: 50 GB
+Default font: family=Dialog,name=Dialog,style=plain,size=12
+
+Java version: 	1.8.0_112 64-bit
+Java home: 	/opt/Xilinx/Vivado/2018.2/tps/lnx64/jre
+Java executable location: 	/opt/Xilinx/Vivado/2018.2/tps/lnx64/jre/bin/java
+Java initial memory (-Xms): 	128 MB
+Java maximum memory (-Xmx):	 2 GB
+
+
+User name: 	tarafdar
+User home directory: /home/tarafdar
+User working directory: /home/tarafdar/workDir/test/galapagos/projects/hls4ml
+User country: 	CA
+User language: 	en
+User locale: 	en_CA
+
+RDI_BASEROOT: /opt/Xilinx/Vivado
+HDI_APPROOT: /opt/Xilinx/Vivado/2018.2
+RDI_DATADIR: /opt/Xilinx/Vivado/2018.2/data
+RDI_BINDIR: /opt/Xilinx/Vivado/2018.2/bin
+
+Vivado preferences file location: /home/tarafdar/.Xilinx/Vivado/2018.2/vivado.xml
+Vivado preferences directory: /home/tarafdar/.Xilinx/Vivado/2018.2/
+Vivado layouts directory: /home/tarafdar/.Xilinx/Vivado/2018.2/layouts
+PlanAhead jar file location: 	/opt/Xilinx/Vivado/2018.2/lib/classes/planAhead.jar
+Vivado log file location: 	/home/tarafdar/workDir/test/galapagos/projects/hls4ml/vivado.log
+Vivado journal file location: 	/home/tarafdar/workDir/test/galapagos/projects/hls4ml/vivado.jou
+Engine tmp dir: 	./.Xil/Vivado-2243-batcomputer.arkham
+
+Xilinx Environment Variables
+----------------------------
+GALAPAGOS_VIVADO_PATH: /opt/Xilinx/Vivado/2018.2
+GALAPAGOS_VIVADO_VERSION: 2018.2
+SHELLS_VIVADO_PATH: /opt/Xilinx/Vivado/2018.2
+SHELLS_VIVADO_VERSION: 2018.2
+VIVADO_VERSION: 2018.2
+XILINX: /opt/Xilinx/Vivado/2018.2/ids_lite/ISE
+XILINXD_LICENSE_FILE: 27012@mlm.ece.utoronto.ca
+XILINX_DSP: /opt/Xilinx/Vivado/2018.2/ids_lite/ISE
+XILINX_PLANAHEAD: /opt/Xilinx/Vivado/2018.2
+XILINX_SDK: /opt/Xilinx/SDK/2018.2
+XILINX_VIVADO: /opt/Xilinx/Vivado/2018.2
+XILINX_VIVADO_HLS: /opt/Xilinx/Vivado/2018.2
+
+
+GUI allocated memory:	165 MB
+GUI max memory:		3,052 MB
+Engine allocated memory: 875 MB
+
+Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
+
+*/
+
+// TclEventType: START_GUI
+// Tcl Message: start_gui 
+// [GUI Memory]: 47 MB (+46840kb) [00:00:06]
+// [Engine Memory]: 875 MB (+765565kb) [00:00:06]
+// HMemoryUtils.trashcanNow. Engine heap size: 880 MB. GUI used memory: 32 MB. Current time: 4/21/19 5:27:27 PM EDT
+// [GUI Memory]: 51 MB (+1160kb) [00:00:11]
+selectList(PAResourceQtoS.SyntheticaGettingStartedView_RECENT_PROJECTS, "/home/tarafdar/workDir/test/galapagos/projects/hls4ml/1/1.xpr", 0); // q (O, ck)
+// bx (ck):  Open Project : addNotify
+// Opening Vivado Project: /home/tarafdar/workDir/test/galapagos/projects/hls4ml/1/1.xpr. Version: Vivado v2018.2 
+// TclEventType: DEBUG_PROBE_SET_CHANGE
+// Tcl Message: open_project /home/tarafdar/workDir/test/galapagos/projects/hls4ml/1/1.xpr 
+// TclEventType: MSGMGR_MOVEMSG
+// TclEventType: FILE_SET_NEW
+// TclEventType: RUN_CURRENT
+// TclEventType: MSGMGR_REFRESH_MSG
+// [Engine Memory]: 1,365 MB (+468288kb) [00:00:17]
+// TclEventType: IP_LOCK_CHANGE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: IP_LOCK_CHANGE
+// TclEventType: FILE_SET_CHANGE
+// [GUI Memory]: 80 MB (+28704kb) [00:00:47]

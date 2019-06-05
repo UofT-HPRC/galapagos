@@ -1,0 +1,83 @@
+{
+   ExpandedHierarchyInLayout: "",
+   guistr: "# # String gsaved with Nlview 6.8.5  2018-01-30 bk=1.4354 VDI=40 GEI=35 GUI=JA:1.6 TLS
+#  -string -flagsOSRD
+preplace port refclk_n -pg 1 -y 860 -defaultsOSRD
+preplace port refclk_p -pg 1 -y 880 -defaultsOSRD
+preplace port pcie_7x_mgt_rtl -pg 1 -y 340 -defaultsOSRD
+preplace port txn -pg 1 -y 890 -defaultsOSRD
+preplace port ARESETN -pg 1 -y 160 -defaultsOSRD
+preplace port perst_n -pg 1 -y 580 -defaultsOSRD
+preplace port txp -pg 1 -y 1090 -defaultsOSRD
+preplace port S_AXIS -pg 1 -y 740 -defaultsOSRD
+preplace port CLK_DATA -pg 1 -y 910 -defaultsOSRD
+preplace port c1_ddr4 -pg 1 -y 140 -defaultsOSRD
+preplace port c0_ddr4 -pg 1 -y 120 -defaultsOSRD
+preplace port c1_sys_clk -pg 1 -y 120 -defaultsOSRD
+preplace port rxn -pg 1 -y 990 -defaultsOSRD
+preplace port diff_clock_rtl -pg 1 -y 330 -defaultsOSRD
+preplace port M_AXIS -pg 1 -y 930 -defaultsOSRD
+preplace port S_AXI_MEM_0 -pg 1 -y 60 -defaultsOSRD
+preplace port rxp -pg 1 -y 1010 -defaultsOSRD
+preplace port refclk200 -pg 1 -y 430 -defaultsOSRD
+preplace port c0_sys_clk -pg 1 -y 80 -defaultsOSRD
+preplace port S_AXI_MEM_1 -pg 1 -y 100 -defaultsOSRD
+preplace port M_AXI_CONTROL -pg 1 -y 530 -defaultsOSRD
+preplace portBus sfp_tx_disable -pg 1 -y 1150 -defaultsOSRD
+preplace inst vio_0 -pg 1 -lvl 6 -y 1030 -defaultsOSRD
+preplace inst mem_interface -pg 1 -lvl 4 -y 140 -defaultsOSRD
+preplace inst gnd -pg 1 -lvl 6 -y 1150 -defaultsOSRD
+preplace inst util_vector_logic_0 -pg 1 -lvl 1 -y 650 -defaultsOSRD
+preplace inst axi_gpio_0 -pg 1 -lvl 5 -y 1010 -defaultsOSRD
+preplace inst PCIe -pg 1 -lvl 3 -y 340 -defaultsOSRD
+preplace inst util_vector_logic_1 -pg 1 -lvl 3 -y 940 -defaultsOSRD
+preplace inst mb_system -pg 1 -lvl 3 -y 500 -defaultsOSRD
+preplace inst blk_mem_gen_0 -pg 1 -lvl 6 -y 610 -defaultsOSRD
+preplace inst util_vector_logic_2 -pg 1 -lvl 2 -y 630 -defaultsOSRD
+preplace inst util_vector_logic_3 -pg 1 -lvl 3 -y 180 -defaultsOSRD
+preplace inst system_ila_0 -pg 1 -lvl 5 -y 790 -defaultsOSRD
+preplace inst axi_interconnect_0 -pg 1 -lvl 4 -y 530 -defaultsOSRD
+preplace inst clk_wiz_0 -pg 1 -lvl 2 -y 430 -defaultsOSRD
+preplace inst axi_bram_ctrl_0 -pg 1 -lvl 5 -y 610 -defaultsOSRD
+preplace inst network -pg 1 -lvl 4 -y 910 -defaultsOSRD
+preplace netloc c1_sys_clk_1 1 0 4 NJ 120 NJ 120 NJ 120 NJ
+preplace netloc sys_rst_1 1 3 1 1040
+preplace netloc c0_sys_clk_1 1 0 4 NJ 80 NJ 80 NJ 80 NJ
+preplace netloc mem_interface_c0_ddr4 1 4 3 NJ 120 NJ 120 NJ
+preplace netloc network_M_AXIS 1 4 3 1400 930 NJ 930 NJ
+preplace netloc PCIe_pcie_mgt 1 3 4 NJ 340 NJ 340 NJ 340 NJ
+preplace netloc rxp_1 1 0 4 NJ 1010 NJ 1010 NJ 1010 1040J
+preplace netloc network_txn 1 4 3 1430J 910 1730J 900 2010J
+preplace netloc gnd_dout 1 6 1 NJ
+preplace netloc mem_interface_c1_ddr4 1 4 3 NJ 140 NJ 140 NJ
+preplace netloc axi_bram_ctrl_0_BRAM_PORTA 1 5 1 NJ
+preplace netloc rxn_1 1 0 4 NJ 990 NJ 990 640J 1000 980J
+preplace netloc microblaze_0_Clk 1 2 2 640 430 970
+preplace netloc axi_interconnect_0_M02_AXI 1 4 3 1430 530 NJ 530 NJ
+preplace netloc util_vector_logic_0_Res 1 1 1 330
+preplace netloc network_txp 1 4 3 1370J 1090 NJ 1090 NJ
+preplace netloc refclk200_1 1 0 2 NJ 430 NJ
+preplace netloc diff_clock_rtl_1 1 0 3 NJ 330 NJ 330 NJ
+preplace netloc vio_0_probe_out0 1 5 2 1750J 970 2010
+preplace netloc refclk_n_1 1 0 4 NJ 860 NJ 860 NJ 860 960J
+preplace netloc network_network_reset_done 1 0 5 20 720 NJ 720 NJ 720 NJ 720 1370
+preplace netloc S00_AXI_1 1 3 1 980
+preplace netloc perst_n_1 1 0 3 20 580 320J 700 650
+preplace netloc axi_interconnect_0_M00_AXI 1 4 1 1420
+preplace netloc S_AXIS_1 1 0 5 NJ 740 NJ 740 NJ 740 980 740 1410
+preplace netloc S01_AXI_1 1 3 1 1000
+preplace netloc PCIe_axi_aclk 1 3 1 1040
+preplace netloc axi_interconnect_0_M01_AXI 1 4 1 1390
+preplace netloc PCIe_M_AXI 1 3 1 980
+preplace netloc util_vector_logic_2_Res 1 2 3 630 240 1030 730 1380
+preplace netloc util_vector_logic_1_Res 1 3 1 NJ
+preplace netloc network_clk_156 1 3 4 1050 770 1420 920 1740 910 NJ
+preplace netloc mem_interface_ARESETN 1 4 3 NJ 160 NJ 160 NJ
+preplace netloc PCIe_axi_aresetn 1 1 3 330 560 NJ 560 990
+preplace netloc S_AXI_MEM_1_1 1 0 5 NJ 100 NJ 100 NJ 100 1010 750 NJ
+preplace netloc S_AXI_MEM_1 1 0 5 NJ 60 NJ 60 NJ 60 1020 760 1400J
+preplace netloc refclk_p_1 1 0 4 NJ 880 NJ 880 NJ 880 950J
+levelinfo -pg 1 0 170 480 800 1210 1580 1880 2030 -top 0 -bot 1210
+",
+}
+
