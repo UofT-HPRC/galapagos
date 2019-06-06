@@ -6,6 +6,11 @@ import os
 from tclMe import tclMeFile
 import string
 
+"""
+Most of these functions are called (directly or indirectly) by makeTclFiles.
+Each one takes care of one self-contained part of the TCL file generation. 
+"""
+
 #interfaces constant
 #creates the standard interfaces, same for all fpgas
 
@@ -81,24 +86,50 @@ def userApplicationRegionControlInst(tcl_user_app):
                     )
 
 def getInterfaces(fpga, intf, flag = None, scope = None):
+    """
+    Helper function to get a list of interfaces of a particular type from all
+    the kernels in this particular node.
+    
+    Args:
+        fpga: node object for this particular FPGA
+        intf (string): the type of itnerface to look for. For example, "s_axi"
+        flag: If specified, can ask the getInterfaces function to only match
+              certain interfaces. Right now, the only thing you can do with it
+              is set it to "scope" or leave it blank for no special behaviour
+        scope: If flag is set to "scope", this variable is the scope to look for
+               Can be "local" or "global", or left blank for no special behaviour
+    
+    Returns:
+        An array of Python dicts, where each one is a subtree from the original
+        mapping file. Specifically, if you asked for intf="s_axi", then this 
+        would return all the <s_axi> subtrees (as Python dicts)
+    """
     interfaces = []
     
+    # For each <kernel>...
     for kern in fpga['kernel']:
+        
         #if global we can look for master or slave
+        # ^(Not sure what that comment means)
         if intf=='s_axis' and flag=='scope' and scope =='global':
             print('kernel is ' + str(kern.data)) 
-
+        
+        # If this kernel has at least one <intf> tag, where intf is the string
+        # passed into this function...
         if kern[intf] != None:
             for kern_intf in kern[intf]:
-
+                
+                # If we don't need a specific scope, match everything
                 if (scope == None):
                     kern_intf['kernel_inst'] = kern
                     interfaces.append(copy.deepcopy(kern_intf))
-
+                
+                # Otherwise, only match the right scope
                 elif(flag == 'scope' and kern_intf['scope'] == scope):
                     kern_intf['kernel_inst'] = kern
                     interfaces.append(copy.deepcopy(kern_intf))
                 
+                # (Not really sure what this is for, so I'm ignoring it)
                 elif(flag == 'debug' and 'debug' in kern_intf):
                     kern_intf['kernel_inst'] = kern
                     interfaces.append(copy.deepcopy(kern_intf))
@@ -119,10 +150,21 @@ def strCompare(s1, s2):
     return s1 == s2
 
 def getSlaveInterfaces(fpga, intf, master):
-
+    """
+    Similar to getInterfaces, but instead looks to see if the numbers match up?
+    Honestly I'm not really sure what's going on yet...
+    
+    Args:
+        fpga: The node object for this FPGA
+        intf (string): The type of interface to look for
+        master: The information associated with a particular master interface. 
+                This will be a Python dict built by parsing the XML/JSON file,
+                but it is augmented with some extra stuff by the cluster __init__
+                function. Specifically, it will be a pointer from the kernels[]
+                member var in the cluster object, I think
+    """
 
     interfaces = []
-
     
     slave_array = getInterfaces(fpga, intf, 'scope', 'local')
     for slave in slave_array:
@@ -320,10 +362,7 @@ def userApplicationRegionMemInstGlobal(tcl_user_app, shared):
                           )
 
 def userApplicationRegionKernelsInst(tcl_user_app):
-
-
-
-
+    
     #instantiate kernels
     for kern_idx, kern in enumerate(tcl_user_app.fpga['kernel']):
         instName = kern['name'] + "_inst_" + str(kern['num'])
@@ -936,9 +975,7 @@ def userApplicationRegionKernelConnectSwitches(tcl_user_app, sim):
                 )
 
 def add_debug_interfaces(outDir, fpga):
-
-
-
+    
     m_axi_interfaces = getInterfaces(tcl_debug_app.fpga, 'm_axi', 'debug')
     s_axi_interfaces = getInterfaces(tcl_debug_app.fpga, 's_axi', 'debug')
     s_axis_interfaces = getInterfaces(tcl_debug_app.fpga, 's_axis', 'debug')
@@ -1213,7 +1250,13 @@ def userApplicationRegionAssignAddresses(tcl_user_app, shared):
                 tcl_user_app.set_address_properties(slave_inst, slave_port, slave_base, local_m_axi['kernel_inst']['inst'] + '/' + master_port, **prop)
 
 def userApplicationLocalConnections(tcl_user_app):
-
+    """
+    Takes care of generating the TCL commands for wiring up the <scope>local</scope>
+    connections between kernels, as defined in the logical file.
+    
+    Args:
+        tcl_user_app: I have no idea what this is
+    """
     #connect local axis and wires
 
     m_axis_array = getInterfaces(tcl_user_app.fpga, 'm_axis', 'scope', 'local')
@@ -1594,6 +1637,16 @@ def bridgeConnections(outDir, fpga, sim):
 
 
 def makeTCLFiles(fpga, projectName, output_path, sim):
+    """
+    Top-level function call for TCL file generation functions.
+    
+    Args:
+        fpga: a node object which has already been determined to be hw type
+        projectName (string): The project name
+        output_path (string): The folder path where the output TCL files will go
+        sim: I think you set this to nonzero if you want your design to be
+             intrumented for simulation or something
+    """
 
     outDir = output_path + '/' + projectName + '/' + str(fpga['num'])
     
