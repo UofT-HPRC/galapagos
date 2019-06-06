@@ -9,8 +9,6 @@ import string
 #interfaces constant
 #creates the standard interfaces, same for all fpgas
 
-
-
 def userApplicationRegionControlInst(tcl_user_app):
     #initialize axi_control_interface interconnect slave side (1 slave)
 
@@ -82,9 +80,6 @@ def userApplicationRegionControlInst(tcl_user_app):
                     }
                     )
 
-        
-
-
 def getInterfaces(fpga, intf, flag = None, scope = None):
     interfaces = []
     
@@ -135,10 +130,6 @@ def getSlaveInterfaces(fpga, intf, master):
         if ( (int(slave['master']['num'])  == int(master['kernel_inst']['num'])) and strCompare(slave['master']['port'], master['name'])):
             interfaces.append(copy.deepcopy(slave))
     return interfaces
-
-
-
-
 
 def userApplicationRegionMemInstLocal(tcl_user_app):
 
@@ -202,10 +193,6 @@ def userApplicationRegionMemInstLocal(tcl_user_app):
                         'port_name': s_axi['name']
                         }
                         )
-
-
-
-
 
 def userApplicationRegionMemInstGlobal(tcl_user_app, shared):
 
@@ -332,11 +319,6 @@ def userApplicationRegionMemInstGlobal(tcl_user_app, shared):
                           }
                           )
 
-
-
-
-
-
 def userApplicationRegionKernelsInst(tcl_user_app):
 
 
@@ -404,10 +386,6 @@ def userApplicationRegionKernelsInst(tcl_user_app):
                         'port_name':const['name']
                         }
                         )
-
-
-
-
 
 def userApplicationRegionSwitchesInst(tcl_user_app, sim):
 
@@ -759,13 +737,6 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                 }
                 )
 
-
-
-
-
-
-
-
 def userApplicationRegionKernelConnectSwitches(tcl_user_app, sim):
 
     #iterate through all kernels on FPGA connecting them to the input and output switches and their control and memory interfaces
@@ -964,7 +935,6 @@ def userApplicationRegionKernelConnectSwitches(tcl_user_app, sim):
                 }
                 )
 
-
 def add_debug_interfaces(outDir, fpga):
 
 
@@ -1105,8 +1075,6 @@ def add_debug_interfaces(outDir, fpga):
                     }
                     )
 
-
-
 def getKernel(fpga, num):
     
     for kern in fpga['kernel']:
@@ -1114,7 +1082,6 @@ def getKernel(fpga, num):
             return kern
 
     return None
-
 
 def getSlaveAddressInfo(s_axi):
     slave_inst = s_axi['kernel_inst']['inst']
@@ -1245,7 +1212,6 @@ def userApplicationRegionAssignAddresses(tcl_user_app, shared):
                 prop = {'range': properties['range']}
                 tcl_user_app.set_address_properties(slave_inst, slave_port, slave_base, local_m_axi['kernel_inst']['inst'] + '/' + master_port, **prop)
 
-
 def userApplicationLocalConnections(tcl_user_app):
 
     #connect local axis and wires
@@ -1333,11 +1299,6 @@ def userApplicationLocalConnections(tcl_user_app):
                         'port_name': wire_slave['name']
                         }
                         )
-        
-
-
-
-
 
 def userApplicationRegion(outDir, fpga, sim):
 
@@ -1355,8 +1316,6 @@ def userApplicationRegion(outDir, fpga, sim):
     userApplicationRegionKernelConnectSwitches(tcl_user_app, sim)
     userApplicationRegionAssignAddresses(tcl_user_app, tcl_user_app.fpga['comm'] !='tcp' and tcl_user_app.fpga.address_space == 64)
     userApplicationLocalConnections(tcl_user_app)
-
-
     #return num_debug_interfaces
 
 def netBridgeConstants(tcl_net):
@@ -1400,8 +1359,6 @@ def netBridgeConstants(tcl_net):
         tcl_net.addSource(galapagos_path + '/middleware/tclScripts/pr_eth_bridge.tcl')
     elif tcl_net.fpga['comm'] == 'raw':
         tcl_net.addSource(galapagos_path + '/middleware/tclScripts/pr_raw_bridge.tcl')
-
-
 
 def netBridge(outDir, fpga):
     tcl_net = tclMeFile( outDir + '/' + str(fpga['num']) + '_net', fpga)
@@ -1634,7 +1591,6 @@ def bridgeConnections(outDir, fpga, sim):
                 'port_name':tcl_bridge_connections.fpga['app_bridge']['from_net']
                 }
                 )
-
 
 
 def makeTCLFiles(fpga, projectName, output_path, sim):
