@@ -6,16 +6,38 @@ if ENABLE_DEBUG:
     fullPath = os.environ.get("GALAPAGOS_PATH") + targetFile
 
 class tclMeFile():
+    """
+    Basically a file handle with a bunch of helper functions to make writing TCL
+    files easier.
+    """
     fileHandle = None
 
     def __init__(self, fileName, fpga):
+        """
+        Initialize this object with a file handle and a pointer to a node object
+        for the particular FPGA we're dealing with
+        
+        Args:
+            fileName (string): The file name
+            fpga: The node object for the FPGA of interest
+        """
         self.fileHandle = open(fileName + '.tcl', 'w')
         self.fpga = fpga
 
     def tprint_raw(self, cmd, end='\n'):
+        """
+        Print string directly to output TCL file
+        
+        Args:
+            cmd (string): The command
+            end (string): Optional line end string
+        """
         self.fileHandle.write(cmd + end)
 
     def tprint(self, cmd, end='\n'):
+        """
+        Wrapper around tprint_raw which allows for debugging
+        """
         if ENABLE_DEBUG:
             stackIndex = 0
             for index, stackFrame in enumerate(stack()):
@@ -28,9 +50,21 @@ class tclMeFile():
         self.tprint_raw(cmd, end)
 
     def createHierarchy(self, hierarchy):
+        """
+        Does what it says on the tin.
+        
+        Args:
+            hierarchy (string): name of heirarchy
+        """
         self.tprint('create_bd_cell -type hier ' + hierarchy)
 
     def addSource(self, source):
+        """
+        Adds a command to include another existing TCL file in this one
+        
+        Args:
+            source (string): Full pathname of another TCL file
+        """
         self.tprint('source ' + source)
 
     def setProperties(self, inst_name, properties):

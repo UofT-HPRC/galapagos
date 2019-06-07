@@ -15,6 +15,15 @@ Each one takes care of one self-contained part of the TCL file generation.
 #creates the standard interfaces, same for all fpgas
 
 def userApplicationRegionControlInst(tcl_user_app):
+    """
+    Connects the AXI control interface from the shell (through an AXI interconnect)
+    to the various kernels in this FPGA (provided they declared control interfaces
+    in the logical file).
+    
+    Args:
+        tcl_user_app: a tclMe object (which contains references to the FPGA's
+                      node object and a handle to the output file)
+    """
     #initialize axi_control_interface interconnect slave side (1 slave)
 
     num_ctrl_interfaces = len(getInterfaces(tcl_user_app.fpga, 's_axi', 'scope', 'global'))
@@ -161,12 +170,17 @@ def getSlaveInterfaces(fpga, intf, master):
                 This will be a Python dict built by parsing the XML/JSON file,
                 but it is augmented with some extra stuff by the cluster __init__
                 function. Specifically, it will be a pointer from the kernels[]
-                member var in the cluster object, I think
+                member var in the cluster object (and even more specifically, the
+                fpga parameter to this function is actually a pointer to a member
+                of the nodes[] array of the cluster object, which itself contains
+                pointers to members of the kernels[] array).
     """
 
     interfaces = []
     
+    # First get all the interfaces that could connect to this master
     slave_array = getInterfaces(fpga, intf, 'scope', 'local')
+    
     for slave in slave_array:
         print ("slave num " + slave['master']['num']) 
         if ( (int(slave['master']['num'])  == int(master['kernel_inst']['num'])) and strCompare(slave['master']['port'], master['name'])):
@@ -174,7 +188,15 @@ def getSlaveInterfaces(fpga, intf, master):
     return interfaces
 
 def userApplicationRegionMemInstLocal(tcl_user_app):
-
+    """
+    I'm really not sure what this is for. In my opinion, the "local connection"
+    mechanism (i.e. for interconnecting repeated kernels with separate AXI buses)
+    really needs an overhaul
+    
+    Args:
+        tcl_user_app: a tclMe object (which contains references to the FPGA's
+                      node object and a handle to the output file)
+    """
     m_axi_array = getInterfaces(tcl_user_app.fpga, 'm_axi', 'scope', 'local')
     for m_axi in m_axi_array:
         s_axi_array = getSlaveInterfaces(tcl_user_app.fpga, 's_axi', m_axi)
@@ -237,7 +259,16 @@ def userApplicationRegionMemInstLocal(tcl_user_app):
                         )
 
 def userApplicationRegionMemInstGlobal(tcl_user_app, shared):
-
+    """
+    Connects the kernels' AXI master port to the shell's off-chip memory
+    controller. Also instantiates an AXI interconnect if there is more than
+    one person trying to use the off-chip memory.
+    
+    Args:
+        tcl_user_app: a tclMe object (which contains references to the FPGA's
+                      node object and a handle to the output file)
+        shared: I'm not sure what this does, exactly.
+    """
     num_mem_interfaces = len(getInterfaces(tcl_user_app.fpga, 'm_axi', 'scope',  'global'))
 
     inc_clks = ['ACLK', 'M00_ACLK']
@@ -362,6 +393,14 @@ def userApplicationRegionMemInstGlobal(tcl_user_app, shared):
                           )
 
 def userApplicationRegionKernelsInst(tcl_user_app):
+    """
+    Loops through the list of kernels on one particular FPGA and generates the
+    appropriate TCL commands to instantiate them in a block diagram.
+    
+    Args:
+        tcl_user_app: a tclMe object (which contains references to the FPGA's
+                      node object and a handle to the output file)
+    """
     
     #instantiate kernels
     for kern_idx, kern in enumerate(tcl_user_app.fpga['kernel']):
@@ -427,14 +466,29 @@ def userApplicationRegionKernelsInst(tcl_user_app):
                         )
 
 def userApplicationRegionSwitchesInst(tcl_user_app, sim):
-
+    """
+    I think this is for making the Galapagos router (i.e. the one that sits in
+    the application region and takes care of routing packets to the network 
+    switch or to another kernel in the same FPGA). This only instantiates IPs
+    and does not make any connections (except to network table and IP/MAC consts)
+    
+    Args:
+        tcl_user_app: a tclMe object (which contains references to the FPGA's
+                      node object and a handle to the output file)
+        sim: I still don't really know what this does, exactly
+    """
+    
+    # I think this is the BRAM which stores the routing table
     tcl_user_app.instBlock(
             {
             'name':'blk_mem_gen',
             'inst':'applicationRegion/blk_mem_switch_rom',
             }
             )
-
+    
+    # The next 250 lines of code are a big if-elif-else statement which generate
+    # the correct Galapagos router depending on whether the communication type is
+    # "tcp", "eth", or "raw"
     if tcl_user_app.fpga['comm'] == 'tcp':
         tcl_user_app.instBlock(
             {'vendor':'xilinx.com',
@@ -445,7 +499,8 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
             'resetns':['aresetn']
             }
             )
-
+            
+        # Properties for routing table BRAM
         properties = ['CONFIG.Memory_Type {Single_Port_ROM}',
                     'CONFIG.Enable_32bit_Address {true}',
                     'CONFIG.Use_Byte_Write_Enable {false}',
@@ -461,7 +516,9 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                     ]
 
         tcl_user_app.setProperties('applicationRegion/blk_mem_switch_rom', properties)
-
+        
+        # I think this connects the board's local IP to the router (but I don't
+        # know why this is needed)
         tcl_user_app.makeConnection(
             'net',
             {
@@ -475,7 +532,8 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
             'port_name':'network_addr_V'
             }
             )
-
+        
+        # Connect routing table BRAM to Galapagos router
         tcl_user_app.makeConnection(
                     'intf',
                     {
@@ -490,6 +548,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                     }
                     )
 
+    # Refer to comments in the case for TCP (above) 
     elif tcl_user_app.fpga['comm'] == 'eth':
         tcl_user_app.instBlock(
                 {'vendor':'xilinx.com',
@@ -677,13 +736,13 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
         print("Unknown communication type: " + tcl_user_app.fpga['comm'])
         exit(1)
 
-    # if 0 axis switch
+    # Ask how many (global) s_axis connections are in the user app region.
     num_slave_s_axis_global = len(getInterfaces(tcl_user_app.fpga, 's_axis', 'scope' , 'global'))
 
 
     if num_slave_s_axis_global == 0:
         ##TO DO: CHANGE TO VIP FOR 0 SLAVES
-        print("WTF")
+        print("TO DO: CHANGE TO VIP FOR 0 SLAVES in userApplicationRegionSwitchesInst")
         quit(0)
     
     else:
@@ -745,7 +804,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
             tcl_user_app.setProperties('applicationRegion/input_switch', properties)
     
 
-
+    # Ask how many (global) m_axis connections are in the user app reagion.
     num_slave_m_axis_global = len(getInterfaces(tcl_user_app.fpga, 'm_axis', 'scope', 'global'))
     if num_slave_m_axis_global == 0:
         # TODO: CHANGE TO VIP FOR 0 SLAVES
@@ -777,6 +836,15 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                 )
 
 def userApplicationRegionKernelConnectSwitches(tcl_user_app, sim):
+    """
+    Now that the kernels, Galapgos router, and memory controllers are instantiated,
+    it's time to connect them all together.
+    
+    Args:
+        tcl_user_app: a tclMe object (which contains references to the FPGA's
+                      node object and a handle to the output file)
+        sim: I still don't really know what this does, exactly
+    """
 
     #iterate through all kernels on FPGA connecting them to the input and output switches and their control and memory interfaces
     ctrl_interface_index = 0
@@ -1255,7 +1323,12 @@ def userApplicationLocalConnections(tcl_user_app):
     connections between kernels, as defined in the logical file.
     
     Args:
-        tcl_user_app: I have no idea what this is
+        tcl_user_app: Basically a handle to a file on disk, but in a fancy tclMe
+                      object with a bunch of helper functions to make writing to
+                      it a little easier.
+    
+    Raises:
+        ValueError: If the local connection specification doesn't make sense
     """
     #connect local axis and wires
 
@@ -1344,7 +1417,18 @@ def userApplicationLocalConnections(tcl_user_app):
                         )
 
 def userApplicationRegion(outDir, fpga, sim):
-
+    """
+    Takes care of calling a bunch of functions for assembling the user application
+    region part of the block diagram. To be specific, this function takes care
+    of generating a single TCL file whose only purpose is to draw up the user's
+    IPs and connections into a sub-heirarchy named "applicationRegion". The shell
+    is then done in another TCL file by another function
+    
+    Args:
+        outDir (string): The output location for this TCL file
+        fpga: the node object for this FPGA
+        sim: some boolean for turning on sims or something
+    """
     tcl_user_app = tclMeFile( outDir + '/' + str(fpga['num']) + '_app', fpga)
     #tcl_user_app = open( outDir + '/' + str(fpga['num']) + '_app.tcl', 'w')
     tcl_user_app.createHierarchy('applicationRegion')
@@ -1362,11 +1446,20 @@ def userApplicationRegion(outDir, fpga, sim):
     #return num_debug_interfaces
 
 def netBridgeConstants(tcl_net):
+    """
+    Generate ip_constant_blocks related to the network bridge. For example, this
+    would make a block for the MAC address and the IP address
+    
+    Args:
+        tcl_net: A tclMe object for the TCL file for generating the network stuff
+    """
 
     # these constants are unneeded in raw mode
     if tcl_net.fpga['comm'] != "raw":
         ip_addr = tcl_net.fpga['ip'].split(".")
         #tcl_net.write('create_bd_cell -type ip -vlnv user.org:user:ip_constant_block:1.0 network/ip_constant_block_inst\n')
+        
+        # Not sure where this vendor and lib came from
         tcl_net.instBlock(
                 {
                 'vendor':'user.org',
@@ -1375,7 +1468,9 @@ def netBridgeConstants(tcl_net):
                 'inst':'network/ip_constant_block_inst'
                 }
                 )
-
+        
+        # I guess this is a custom module that Naif made? The regular IP for
+        # constants doesn't have these properties
         properties = ['CONFIG.C_IP_B0 {'+ ip_addr[3] + '}',
                     'CONFIG.C_IP_B1 {'+ ip_addr[2] + '}',
                     'CONFIG.C_IP_B2 {'+ ip_addr[1] + '}',
@@ -1390,11 +1485,15 @@ def netBridgeConstants(tcl_net):
                 'CONFIG.C_SUBNET_B1 {255}',
                 'CONFIG.C_SUBNET_B2 {255}',
                 'CONFIG.C_SUBNET_B3 {255}']
-
+        
+        # MAC address
         properties = properties + ['CONFIG.C_MAC {0x' + tcl_net.fpga['mac'].replace(":","") + '}']
 
         tcl_net.setProperties('network/ip_constant_block_inst', properties)
 
+    # Instantiate the proper netBridge depending on the comm type
+    # By the way, these scripts also take care of hooking up the constants
+    # This should really be in the netBridge function instead of in this one...
     galapagos_path = str(os.environ.get('GALAPAGOS_PATH'))
     if tcl_net.fpga['comm'] == 'tcp':
         tcl_net.addSource(galapagos_path + '/middleware/tclScripts/pr_tcp_bridge.tcl')
@@ -1404,6 +1503,14 @@ def netBridgeConstants(tcl_net):
         tcl_net.addSource(galapagos_path + '/middleware/tclScripts/pr_raw_bridge.tcl')
 
 def netBridge(outDir, fpga):
+    """
+    Handles makign a TCL file for generating this FPGA's network bridge. 
+    All IPs are made in a hierarchy called "network"
+    
+    Args:
+        outDir (string): The output location for this TCL file
+        fpga: the node object for this FPGA
+    """
     tcl_net = tclMeFile( outDir + '/' + str(fpga['num']) + '_net', fpga)
 
     tcl_net.createHierarchy('network')
