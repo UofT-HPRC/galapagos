@@ -110,8 +110,9 @@ def getInterfaces(fpga, intf, flag = None, scope = None):
     
     Returns:
         An array of Python dicts, where each one is a subtree from the original
-        mapping file. Specifically, if you asked for intf="s_axi", then this 
-        would return all the <s_axi> subtrees (as Python dicts)
+        mapping file. Note that this also adds a 'kernel_inst' member to the 
+        interface dict which contains a pointer to its parent kernel dict (this
+        is used in userApplicationRegionKernelConnectSwitches, among others)
     """
     interfaces = []
     
@@ -804,7 +805,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
             tcl_user_app.setProperties('applicationRegion/input_switch', properties)
     
 
-    # Ask how many (global) m_axis connections are in the user app reagion.
+    # Ask how many (global) m_axis connections are in the user app region.
     num_slave_m_axis_global = len(getInterfaces(tcl_user_app.fpga, 'm_axis', 'scope', 'global'))
     if num_slave_m_axis_global == 0:
         # TODO: CHANGE TO VIP FOR 0 SLAVES
@@ -837,7 +838,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
 
 def userApplicationRegionKernelConnectSwitches(tcl_user_app, sim):
     """
-    Now that the kernels, Galapgos router, and memory controllers are instantiated,
+    Now that the kernels, Galapagos router, and memory controllers are instantiated,
     it's time to connect them all together.
     
     Args:
@@ -850,9 +851,15 @@ def userApplicationRegionKernelConnectSwitches(tcl_user_app, sim):
     ctrl_interface_index = 0
     mem_interface_index = 0
 
+    # Get list of all (global) s_axis. That is, all the kernel input streams
+    # By the way, the getInterfaces function has the side effect of adding refs
+    # to the interface's dict represntation which links to its parent kernel
+    # dict (under the 'kernel_inst' key).
     s_axis_array = getInterfaces(tcl_user_app.fpga, 's_axis', 'scope', 'global')
 
-
+    
+    # Now connect the Galapagos router through the input switch into all of 
+    # the s_axis interfaces 
     if len(s_axis_array) > 1:
         if(sim == 1):
             tcl_user_app.makeConnection(
@@ -868,9 +875,13 @@ def userApplicationRegionKernelConnectSwitches(tcl_user_app, sim):
                     }
                     )
 
+        # For each s_axis connection
         for idx, s_axis in enumerate(s_axis_array):
             instName = s_axis['kernel_inst']['inst']
             idx_str = "%02d"%idx
+            # Connect it to the correct port on the AXI switch (NOT directly into
+            # the Galapagos router; there is an AXI stream switch IP between
+            # the router and the kernel(s) )
             tcl_user_app.makeConnection(
                     'intf',
                     {
@@ -886,6 +897,7 @@ def userApplicationRegionKernelConnectSwitches(tcl_user_app, sim):
                     )
         # custom_switch_inst only exists without raw
         if tcl_user_app.fpga['comm'] != 'raw':
+            # Connect the AXI input switch to the Galapagos router
             tcl_user_app.makeConnection(
                     'intf',
                     {
@@ -955,9 +967,11 @@ def userApplicationRegionKernelConnectSwitches(tcl_user_app, sim):
                 )
     
 
-
     m_axis_array = getInterfaces(tcl_user_app.fpga, 'm_axis', 'scope', 'global')
 
+    # Now connect all m_axis interfaces through the output switch into the 
+    # Galapagos router
+    
     #no output switch, direct connect if only one
     if len(m_axis_array) == 1:
         if tcl_user_app.fpga['comm'] != 'raw':
@@ -1008,6 +1022,8 @@ def userApplicationRegionKernelConnectSwitches(tcl_user_app, sim):
             )
 
 
+    # Now handle the control interfaces
+
     s_axi_array = getInterfaces(tcl_user_app.fpga, 's_axi', 'scope', 'global')
     for idx, s_axi in enumerate(s_axi_array):
         instName = s_axi['kernel_inst']['inst']
@@ -1023,6 +1039,8 @@ def userApplicationRegionKernelConnectSwitches(tcl_user_app, sim):
                 'port_name':s_axi['name']
                 }
                 )
+
+    # And finally the off-chip memory interface
 
     m_axi_array = getInterfaces(tcl_user_app.fpga, 'm_axi', 'scope', 'global')
     for idx, m_axi in enumerate(m_axi_array):
@@ -1211,9 +1229,15 @@ def getSlaveAddressInfo(s_axi):
     return slave_inst, slave_port, slave_base, properties
 
 def userApplicationRegionAssignAddresses(tcl_user_app, shared):
-
-    #connect mem interconnect and assign addresses, all kernels need to be 32 bit addressable
-    #connect ctrl interconnect and assign addresses
+    """
+    connect mem interconnect and assign addresses, all kernels need to be 32 bit addressable
+    connect ctrl interconnect and assign addresses
+    
+    Args:
+        tcl_user_app: a tclMe object (which contains references to the FPGA's
+                      node object and a handle to the output file)
+        shared: Not really sure what this is for
+    """
 
 
     #global m_axi
@@ -1321,6 +1345,8 @@ def userApplicationLocalConnections(tcl_user_app):
     """
     Takes care of generating the TCL commands for wiring up the <scope>local</scope>
     connections between kernels, as defined in the logical file.
+    
+    THIS NEEDS AN OVERHAUL!
     
     Args:
         tcl_user_app: Basically a handle to a file on disk, but in a fancy tclMe
@@ -1517,6 +1543,17 @@ def netBridge(outDir, fpga):
     netBridgeConstants(tcl_net)
 
 def bridgeConnections(outDir, fpga, sim):
+    """
+    At this point, the IP blocks for the network bridge and user app region are
+    in place, and the user app region is completely connected. This takes care
+    of stringing up all the stuff for the network bridge (and I think it also
+    takes care of the user appBridge option?)
+    
+    Args:
+        outDir (string): The output location for this TCL file
+        fpga: the node object for this FPGA
+        sim: some boolean for turning on sims or something
+    """
     tcl_bridge_connections = tclMeFile( outDir + '/' + str(fpga['num']) + '_bridge_connections', fpga)
 
     #no bridge directly connect
