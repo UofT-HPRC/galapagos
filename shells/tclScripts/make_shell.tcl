@@ -110,7 +110,7 @@ if {[string equal [get_filesets -quiet sources_1] ""]} {
 set obj [get_filesets sources_1]
 # set_property ip_repo_paths {hlsIP_adm-8k5 shells/shell_ips userIP} [current_project]
 set_property ip_repo_paths [list \
-  hlsBuild \
+  $top_path/hlsBuild \
   $top_shells/shell_ips \
   userIP] [current_project]
 

@@ -10,7 +10,7 @@ set script_folder [_tcl::get_script_folder]
 
 set_param synth.vivado.filterDuplicatedIPFiles 0
 
-set supported_versions {2017.4, 2018.1, 2018.2}
+set supported_versions {2017.4 2018.1 2018.2}
 
 namespace eval 2017.4 {
   set ip_list "\ 

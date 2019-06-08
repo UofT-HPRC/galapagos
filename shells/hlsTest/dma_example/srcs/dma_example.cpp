@@ -13,16 +13,17 @@ struct ap_axis{
 
 
 void dma_example(
-             float  * mem ,            // global memory pointer
+             ap_uint<64>  * mem ,            // global memory pointer
              hls::stream<ap_axis> *stream_in,                
              hls::stream<ap_axis> *stream_out
         )            
 {
+#pragma HLS INTERFACE s_axilite port=return
 
     
 #pragma HLS INTERFACE axis port=stream_in
 #pragma HLS INTERFACE axis port=stream_out
-#pragma HLS INTERFACE m_axi port=mem depth=8
+#pragma HLS INTERFACE m_axi port=mem depth=1024
 
     ap_axis stream_packet;
 
@@ -40,6 +41,7 @@ void dma_example(
         while(!stream_packet.last){
             stream_packet = stream_in->read();
             mem[mem_addr + offset] = stream_packet.data;
+	    offset++;
         }
     }
 }

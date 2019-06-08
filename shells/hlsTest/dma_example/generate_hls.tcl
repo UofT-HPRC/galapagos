@@ -1,16 +1,19 @@
 #Author: Naif Tarafdar
 
-cd hlsBuild 
+set gal_path ${::env(GALAPAGOS_PATH)}
+cd $gal_path/hlsBuild 
+set top_part ${::env(GALAPAGOS_PART)}
 
-if { [info exists ::env(GALAPAGOS_PATH)] } {
-  set top_part ${::env(GALAPAGOS_PART)}
-} else {
-  set top_part ${::env(SHELLS_PART)}
-}
+#if { [info exists ::env(GALAPAGOS_PATH)] } {
+#  set top_part ${::env(GALAPAGOS_PART)}
+#} else {
+#  set top_part ${::env(SHELLS_PART)}
+#}
 
-open_project hlsTest 
-set_top hlsTest
-add_files ../hlsTest/hlsTest.cpp 
+open_project dma_example 
+set_top dma_example 
+add_files $gal_path/shells/hlsTest/dma_example/srcs/dma_example.cpp 
+
 open_solution "solution1"
 set_part $top_part
 create_clock -period 5 -name default

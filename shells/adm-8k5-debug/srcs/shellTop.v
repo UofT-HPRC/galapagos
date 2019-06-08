@@ -30,8 +30,7 @@ module shellTop
     c0_ddr4_ck_t,
     c0_ddr4_cke,
     c0_ddr4_cs_n,
-  //  c0_ddr4_dm_dbi_n,
-    c0_ddr4_dm_n,
+    c0_ddr4_dm_dbi_n,
     c0_ddr4_dq,
     c0_ddr4_dqs_c,
     c0_ddr4_dqs_t,
@@ -47,8 +46,7 @@ module shellTop
     c1_ddr4_ck_t,
     c1_ddr4_cke,
     c1_ddr4_cs_n,
-   // c1_ddr4_dm_dbi_n,
-    c1_ddr4_dm_n,
+    c1_ddr4_dm_dbi_n,
     c1_ddr4_dq,
     c1_ddr4_dqs_c,
     c1_ddr4_dqs_t,
@@ -82,8 +80,7 @@ module shellTop
   output [0:0]c0_ddr4_ck_t;
   output [0:0]c0_ddr4_cke;
   output [0:0]c0_ddr4_cs_n;
- // inout [7:0]c0_ddr4_dm_dbi_n;
-  inout [7:0]c0_ddr4_dm_n;
+  inout [7:0]c0_ddr4_dm_dbi_n;
   inout [63:0]c0_ddr4_dq;
   inout [7:0]c0_ddr4_dqs_c;
   inout [7:0]c0_ddr4_dqs_t;
@@ -100,8 +97,7 @@ module shellTop
   output [0:0]c1_ddr4_ck_t;
   output [0:0]c1_ddr4_cke;
   output [0:0]c1_ddr4_cs_n;
- // inout [7:0]c1_ddr4_dm_dbi_n;
-  inout [7:0]c1_ddr4_dm_n;
+  inout [7:0]c1_ddr4_dm_dbi_n;
   inout [63:0]c1_ddr4_dq;
   inout [7:0]c1_ddr4_dqs_c;
   inout [7:0]c1_ddr4_dqs_t;
@@ -359,9 +355,8 @@ module shellTop
         .c0_ddr4_ck_t(c0_ddr4_ck_t),
         .c0_ddr4_cke(c0_ddr4_cke),
         .c0_ddr4_cs_n(c0_ddr4_cs_n),
-        //.c0_ddr4_dg(c0_ddr4_dq),
-        //.c0_ddr4_dm_dbi_n(c0_ddr4_dm_dbi_n),
-        .c0_ddr4_dm_n(c0_ddr4_dm_n),
+        .c0_ddr4_dq(c0_ddr4_dq),
+        .c0_ddr4_dm_n(c0_ddr4_dm_dbi_n),
         .c0_ddr4_dqs_c(c0_ddr4_dqs_c),
         .c0_ddr4_dqs_t(c0_ddr4_dqs_t),
         .c0_ddr4_odt(c0_ddr4_odt),
@@ -377,8 +372,7 @@ module shellTop
         .c1_ddr4_cke(c1_ddr4_cke),
         .c1_ddr4_cs_n(c1_ddr4_cs_n),
         .c1_ddr4_dq(c1_ddr4_dq),
-        //.c1_ddr4_dm_dbi_n(c1_ddr4_dm_dbi_n),
-        .c1_ddr4_dm_n(c1_ddr4_dm_n),
+        .c1_ddr4_dm_n(c1_ddr4_dm_dbi_n),
         .c1_ddr4_dqs_c(c1_ddr4_dqs_c),
         .c1_ddr4_dqs_t(c1_ddr4_dqs_t),
         .c1_ddr4_odt(c1_ddr4_odt),
@@ -415,7 +409,7 @@ module shellTop
         .S_AXIS_tready(M_AXIS_tready),
         .S_AXIS_tvalid(M_AXIS_tvalid),
         .S_AXI_CONTROL_araddr(M_AXI_CONTROL_araddr),
-        .S_AXI_CONTROL_arprot(M_AXI_CONTROL_arprot),
+        //.S_AXI_CONTROL_arprot(M_AXI_CONTROL_arprot),
         //.S_AXI_CONTROL_arqos(M_AXI_CONTROL_arqos),
         .S_AXI_CONTROL_arready(M_AXI_CONTROL_arready),
         .S_AXI_CONTROL_arvalid(M_AXI_CONTROL_arvalid),
