@@ -1,5 +1,0 @@
-vhdl xil_defaultlib  \
-"../../../bd/pr/ip/pr_axi_datamover_0_1/sim/pr_axi_datamover_0_1.vhd" \
-"../../../bd/pr/ip/pr_smartconnect_0_0/bd_0/ip/ip_1/sim/bd_7d4e_psr_aclk_0.vhd" \
-
-nosort
