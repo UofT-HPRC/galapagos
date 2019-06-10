@@ -9,8 +9,22 @@ import os
 import socket, struct
 
 class cluster(abstractDict):
+    """ This class is the top-level interface to the myriad other objects used 
+    by Galapagos. Note that the globalFPGAParser provides a rudimentary command 
+    line tool to interact with these cluster objects. """
 
     def getDict(self, file_name):
+        """
+        Checks whether a file's extension is ".xml" or ".json", and parses the
+        file (depending on the extension) as XML or JSON.
+        
+        Args:
+            file_name (string): File name
+        
+        Returns:
+            Python dict filled with info from file. Hierarchy is faithfully 
+            reproduced.
+        """
         filename, extension = os.path.splitext(file_name)
         if extension == ".xml":
             try:
@@ -29,6 +43,14 @@ class cluster(abstractDict):
             return None
 
     def __init__(self, name, kernel_file, map_file):
+        """
+        Initializes the cluster object using logical file and mapping file
+        
+        Args:
+            name (string?): Cluster's name. Set this to project name?
+            kernel_file (string): Filename of XML logical file
+            map_file (string): Filename of XML mapping file
+        """
         self.name = name
         self.kernel_file = kernel_file
 
@@ -41,18 +63,22 @@ class cluster(abstractDict):
         self.packet_user = 0 
 
         top_dict = self.getDict(kernel_file)['cluster']
+        # The user may optionally specify a packet description in <packet> tags
+        # Note: it would be nice if Python had some notion of strong typing,
+        # since it would make it easier to deal with the user giving the wrong
+        # format for the arguments in the XML/JSON file
         if 'packet' in top_dict:
             packet = top_dict['packet']
             if 'data' in packet:
-                self.packet_data = top_dict['packet']['data']
+                self.packet_data = packet['data']
             if 'keep' in packet:
-                self.packet_keep = top_dict['packet']['keep']
+                self.packet_keep = packet['keep']
             if 'last' in packet:
-                self.packet_last = top_dict['packet']['last']
+                self.packet_last = packet['last']
             if 'id' in packet:
-                self.packet_id = top_dict['packet']['id']
+                self.packet_id = packet['id']
             if 'user' in packet:
-                self.packet_user = top_dict['packet']['user']
+                self.packet_user = packet['user']
             
             galapagos_path = str(os.environ.get('GALAPAGOS_PATH'))
 
@@ -78,12 +104,26 @@ class cluster(abstractDict):
         self.kernels = []
         for kern_dict in logical_dict:
             kern_dict['name'] = kern_dict['#text']
+            # Number of repetitions of this kernel
             if 'rep' in kern_dict:
+                # Automatically gives sequential numbers
                 base_num = int(kern_dict['num'])
                 for i in range(0, int(kern_dict['rep'])):
                     kern_dict_local = copy.deepcopy(kern_dict)
+                    # Set number for this kernel instance
                     kern_dict_local['num'] = base_num + i
+                    
+                    # This code is setting some mysterious values inside the 
+                    # dictionary, which probably get used by another function?
+                    # Otherwise, I have no idea what this is doing...
+                    
+                    # (This is a guess) Naif mentioned that you can hook up local
+                    # AXI full/lite connections between your kernels (unrelated to
+                    # Galapagos's router, network bridge, etc.). This must be the
+                    # code that handles it
+                    # What the heck is with all these conversions to and from strings?
                     if 's_axi' in kern_dict_local:
+                        # If more than one <s_axi> tag is present...
                         if type(kern_dict_local['s_axi']) == type([]):
                             for s_axi_idx, s_axi in enumerate(kern_dict_local['s_axi']):
                                 if s_axi['scope'] == 'local':
@@ -96,6 +136,10 @@ class cluster(abstractDict):
 
 
                     print('kern_dict_local ' + str(kern_dict_local))
+                    # (This is a guess) Naif mentioned that you can hook up local
+                    # AXI stream connections between your kernels (unrelated to
+                    # Galapagos's router, network bridge, etc.). This must be the
+                    # code that handles it
                     if 's_axis' in kern_dict_local:
                         print('S_AXIS in kern dict')
                         if type(kern_dict_local['s_axis']) == type([]):
@@ -105,7 +149,8 @@ class cluster(abstractDict):
                         else:
                             if kern_dict_local['s_axis']['scope'] == 'local':
                                 kern_dict_local['s_axis']['master']['num'] = str( i + int(kern_dict_local['s_axis']['master']['num']))
-
+                    
+                    # I have no idea what this is for
                     if 'wire_slave' in kern_dict_local:
                         if type(kern_dict_local['wire_slave']) == type([]):
                             for slave_idx, slave in enumerate(kern_dict_local['wire_slave']):
@@ -116,6 +161,9 @@ class cluster(abstractDict):
                     
                     
                     print("kern dicT " + str(kern_dict_local))
+                    # This basically copies the dictionary parsed from the <kernel> tags into another dictionary,
+                    # but it does also check the fields to make sure they're all valid and that no mandatory info
+                    # is missing
                     self.kernels.append(kernel(**kern_dict_local))
                     print("kernelONE object " + str(self.kernels[len(self.kernels) - 1].data))
 
@@ -125,20 +173,42 @@ class cluster(abstractDict):
                 kern_dict_local['num'] = int(kern_dict_local['num'])
                 self.kernels.append(kernel(**kern_dict_local))
 
+        # Dumps kernel info to the screen (printf debugging)
         for kern in self.kernels:
             print("kernel object " + str(kern.data))
 
+        # Now deal with nodes (i.e. a CPU or an FPGA)
         self.nodes = []
         for node_idx, node_dict in enumerate(map_dict):
+            # This basically copies the dictionary parsed from the <node> tags into another dictionary,
+            # but it does also check the fields to make sure they're all valid and that no mandatory info
+            # is missing
             node_inst = node(**node_dict)
+            
+            # I'm fairly sure these next few lines of code are just converting
+            # data formats
             node_inst['kernel'] = []
+            
+            # 
             for kmap_node in node_dict['kernel']:
                 for kern_idx, kern in enumerate(self.kernels):
+                    # Perform linear search through self.kernels (the array of
+                    # kernel objects we just built) to find the one matching
+                    # this number
                     if int(kern['num']) == int(kmap_node):
+                        # Instead of having numbers in node_inst['kernel'], have
+                        # pointers to our properly parsed kernel objects
                         node_inst['kernel'].append(kern)
+                        # At the same time, append mac and ip information to each
+                        # kernel object? Not sure why we have to do this. By the
+                        # way, mac and ip are optional fields in node, so I don't
+                        # know what this does if the user doesn't specify them.
                         self.kernels[kern_idx]['mac'] = node_inst['mac']
                         self.kernels[kern_idx]['ip'] = node_inst['ip']
+            # Why even bother making <num> a required field in <node> if we're
+            # just gonna overwrite it anyway?
             node_inst['num'] = node_idx
+            # Maintain array of pointer to node objects
             self.nodes.append(node_inst)
 
     def writeClusterTCL(self, output_path, sim):
@@ -196,6 +266,27 @@ class cluster(abstractDict):
                 break
 
     def makeProjectClusterScript(self, output_path):
+    """
+    As per the name, makes a project cluster script. You may be wondering what a
+    project cluster script is. Me too.
+    
+    It looks like this automatically generates bash scripts which take care of
+    making a cluster of _vivado_ projects, one for each hardware node (i.e. 
+    <nodes> in the mapping file with <type>hw</type>. 
+    
+    Galapagos's project management is (in my opinion) too gardenwalled. There is
+    one common projects directory (which is under projects/ in the Galapagos 
+    install location by default) and it makes a subdirectory named after each
+    project. I really dislike this kind of file management, and it will only 
+    cause headaches with permissions. Also, I hate playing the guessing game of
+    "will it automatically make a directory for me or not?" And one more thing:
+    this means that your project name has to be a valid folder name. 
+    
+    Args:
+        output_path (string): Location of Galapagos's projects folder.
+    """
+        # If this project directory already exists, just delete it! Oops! I forgot
+        # I already had a super important project with the same name!
         if os.path.exists(output_path + '/' + self.name):
             shutil.rmtree(output_path + '/' + self.name)
         os.makedirs(output_path + '/' + self.name)
