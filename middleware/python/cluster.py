@@ -7,6 +7,7 @@ from kernel import kernel
 from node import node
 import os
 import socket, struct
+import glob
 
 class cluster(abstractDict):
     """ This class is the top-level interface to the myriad other objects used 
@@ -287,9 +288,10 @@ class cluster(abstractDict):
     """
         # If this project directory already exists, just delete it! Oops! I forgot
         # I already had a super important project with the same name!
+        # ^ this has been amended below by just removing the tcl files
         if os.path.exists(output_path + '/' + self.name):
             shutil.rmtree(output_path + '/' + self.name)
-        os.makedirs(output_path + '/' + self.name)
+        os.makedirs(output_path + '/' + self.name, exist_ok=True)
 
         globalConfigFile = open(output_path + "/" + self.name + '/createCluster.sh', 'w')
         globalSimFile = open(output_path + "/" + self.name + '/simCluster.sh', 'w')
@@ -299,7 +301,13 @@ class cluster(abstractDict):
             #only need vivado project for hw nodes
             if node_obj['type'] == 'hw':
                 dirName = output_path + '/' + self.name + '/' + str(node_idx)
-                os.makedirs(dirName)
+                
+                if os.path.exists(dirName):
+                    fileList = glob.glob(dirName + "/*.tcl")
+                    for f in fileList:
+                        os.remove(f)
+                os.makedirs(dirName, exist_ok=True)
+                
                 #currently only making flattened bitstreams
                 globalConfigFile.write("galapagos-update-board " + node_obj['board'] + "\n")
                 globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + self.name +  " --start_synth 1" + "\n")

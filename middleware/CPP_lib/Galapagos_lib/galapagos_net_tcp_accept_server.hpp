@@ -21,7 +21,7 @@ namespace galapagos{
     namespace net{
         namespace tcp{
 
-            template<typename T>
+            template<class T>
             class accept_server{
                 public:
                     accept_server(boost::asio::io_context * io_context, 
@@ -36,12 +36,60 @@ namespace galapagos{
                     boost::asio::io_context * _io_context;
                     int num_id;
             };
-
         }//tcp namespace
     }//net namespace
 }//galapagos namespace
 
+using namespace galapagos::net::tcp;
 
+template<class T>
+accept_server<T>::accept_server(boost::asio::io_context *io_context, 
+                                                short port,  
+                                                session_container<T> * _sessions
+                                                )
+    : acceptor_(*io_context, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
+{
+
+    _io_context = io_context;
+    sessions = _sessions;
+    
+    
+    std::thread t_accept(&accept_server<T>::accept,this);
+    t_accept.detach();
+}
+
+template<class T>
+void accept_server<T>::accept(){
+
+    do_accept();
+
+}
+
+template<class T>
+void accept_server<T>::do_accept()
+{
+
+    for(;;)
+    {
+            sessions->add_session(acceptor_.accept(), _io_context);
+
+    }
+
+//TODO: add async mode
+
+#ifdef ASYNC 
+    acceptor_.async_accept(
+        [this](boost::system::error_code ec, boost::asio::ip::tcp::socket socket)
+        {
+        if (!ec)
+        {
+            galapagos::net::tcp::session * sess = sessions->add_session(std::move(socket), _io_context);
+        }
+
+        do_accept();
+        });
+#endif
+}
 
 
 

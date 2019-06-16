@@ -1,0 +1,14 @@
+.Xil
+vivado*.jou
+vivado*.log
+vivado*.str
+usage_statistics*
+projects/
+.vscode
+hlsBuild/
+userIP/
+hs_err*.log
+*.swp
+*.exe
+*.o
+*.out

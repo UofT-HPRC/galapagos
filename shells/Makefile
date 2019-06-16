@@ -21,7 +21,7 @@ dma_example:
 
 hlsExample:
 	mkdir -p hlsBuild
-	vivado_hls ./hlsTest/generate_hls.tcl 
+	# vivado_hls ./hlsTest/generate_hls.tcl 
 	./hlsTest/generate.sh dma_example
 
 example: hlsExample

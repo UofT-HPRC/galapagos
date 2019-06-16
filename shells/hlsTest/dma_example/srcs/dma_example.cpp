@@ -41,7 +41,7 @@ void dma_example(
         while(!stream_packet.last){
             stream_packet = stream_in->read();
             mem[mem_addr + offset] = stream_packet.data;
-	    offset++;
+	        offset++;
         }
     }
 }

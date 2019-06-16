@@ -62,3 +62,9 @@ class abstractDict():
             return self.data[key]
         else:
             raise ValueError('Key \"' + key + '\"  not found')
+    
+    def __contains__(self, key):
+        return self.data[key]
+
+    def __str__(self):
+        print(self.data)

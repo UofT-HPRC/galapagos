@@ -53,8 +53,8 @@ find_family () {
 }
 
 if [[ "$#" != 1 && "$#" != 5 && "$#" != 7 && "$#" != 8 ]]; then
-  echo "5,7 or 8 arguments expected, got $#"
-  echo "Usage: init.sh /abs/path/to/galapagos/repository /abs/path/to/vivado /abs/path/to/vivado_hls vivado_version vivado_hls_version [part name] [board] [board name]"
+  echo "1,5,7 or 8 arguments expected, got $#"
+  echo "Usage: source init.sh /abs/path/to/galapagos/repository /abs/path/to/vivado /abs/path/to/vivado_hls vivado_version vivado_hls_version [part name] [board] [board name]"
   echo "Usage: source init.sh OPERATION"
   return 1
 fi
@@ -81,10 +81,10 @@ configFile=~/.galapagos
 
 if [[ "$#" == 1 ]]; then
   if [[ $operation == "switch" ]]; then
-    unset "${!GALAPAGOS@}"
-    sed -i '/# added by galapagos/s/^/#/' ~/.bashrc
+    unset "${!SHELLS@}"
+    sed -i '/# added by shells/s/^/#/' ~/.bashrc
 
-    sed -i '/# added by shells/s/^#//' ~/.bashrc
+    sed -i '/# added by galapagos/s/^#//' ~/.bashrc
     source $configFile
     return 0
   else
