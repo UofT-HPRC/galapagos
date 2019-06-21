@@ -28,7 +28,6 @@
 namespace galapagos{
     template <class T> 
     class stream{
-         
         private:
             
             std::mutex  mutex;
@@ -60,65 +59,6 @@ namespace galapagos{
 typedef galapagos::stream <ap_uint <PACKET_DATA_LENGTH> > galapagos_stream;
 typedef galapagos::stream <float> galapagos_stream_float;
 typedef galapagos::stream <double> galapagos_stream_double;
-#else            
-
-
-typedef hls::stream <galapagos_stream_packet> galapagos_stream;
-typedef hls::stream<galapagos_packet <float> > galapagos_stream_float;
-typedef hls::stream<galapagos_packet <double> > galapagos_stream_double;
-//template <class T>
-//struct galapagos_stream_float{
-//    hls::stream<galapagos_packet <T> > _stream;
-//    galapagos_packet <T> read(){
-//        return _stream.read();
-//    }
-//    void write(galapagos_packet <T> gp){
-//        _stream.write(gp);
-//    }
-//    size_t size(){
-//        return _stream.size();
-//    }
-//
-//};
-
-//struct galapagos_stream:: public hls::stream<galapagos_packet <T> >  {
-//};
-
-//template <class T> 
-//typedef hls::stream <galapagos_packet <T> >  galapagos_stream;
-
-// template <class T> 
-// galapagos::stream<T>::stream(hls::stream <galapagos::stream_packet <T> > * __stream){
-//     stream = __stream;
-// }
-
-// template <class T> 
-// galapagos::stream_packet<T> galapagos::stream<T>::read(){
-//     return _stream->read();
-// }
-
-// template <class T> 
-// void galapagos::stream<T>::write(galapagos::stream_packet<T> gps){
-   
-//     _stream->write(gps);
-
-// }
-
-// template <class T> 
-// size_t galapagos::stream<T>::size(){
-//     size_t ret; 
-//     ret = _stream->size();
-//     return ret;
-// }
-
-// template <class T> 
-// size_t galapagos::stream<T>::empty(){
-//     bool ret; 
-//     ret = _stream->empty();
-//     return ret;
-// }
-
-#endif // CPU
 
 template <class T> 
     galapagos::stream<T>::stream(){
@@ -271,5 +211,74 @@ template <class T>
         }
         cv.notify_one();
     }
+#else            
+
+typedef hls::stream <galapagos::stream_packet <ap_uint<64> > > galapagos_stream;
+typedef hls::stream<galapagos::stream_packet <float> > galapagos_stream_float;
+typedef hls::stream<galapagos::stream_packet <double> > galapagos_stream_double;
+
+namespace galapagos{
+    // template <class T>
+    // class stream: public hls::stream<galapagos::stream_packet <T> >{
+    //     public:
+    //         stream() : hls::stream<galapagos::stream_packet <T> >(){};
+    // };
+    template <class T>
+    using stream = hls::stream<galapagos::stream_packet<T> >;
+
+}
+//template <class T>
+//struct galapagos_stream_float{
+//    hls::stream<galapagos_packet <T> > _stream;
+//    galapagos_packet <T> read(){
+//        return _stream.read();
+//    }
+//    void write(galapagos_packet <T> gp){
+//        _stream.write(gp);
+//    }
+//    size_t size(){
+//        return _stream.size();
+//    }
+//
+//};
+
+//struct galapagos_stream:: public hls::stream<galapagos_packet <T> >  {
+//};
+
+//template <class T> 
+//typedef hls::stream <galapagos_packet <T> >  galapagos_stream;
+
+// template <class T> 
+// galapagos::stream<T>::stream(hls::stream <galapagos::stream_packet <T> > * __stream){
+//     stream = __stream;
+// }
+
+// template <class T> 
+// galapagos::stream_packet<T> galapagos::stream<T>::read(){
+//     return _stream->read();
+// }
+
+// template <class T> 
+// void galapagos::stream<T>::write(galapagos::stream_packet<T> gps){
+   
+//     _stream->write(gps);
+
+// }
+
+// template <class T> 
+// size_t galapagos::stream<T>::size(){
+//     size_t ret; 
+//     ret = _stream->size();
+//     return ret;
+// }
+
+// template <class T> 
+// size_t galapagos::stream<T>::empty(){
+//     bool ret; 
+//     ret = _stream->empty();
+//     return ret;
+// }
+
+#endif // CPU
 
 #endif
