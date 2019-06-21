@@ -161,9 +161,9 @@ def strCompare(s1, s2):
 
 def getSlaveInterfaces(fpga, intf, master):
     """
-    Similar to getInterfaces, but instead looks to see if the numbers match up?
-    Honestly I'm not really sure what's going on yet...
-    
+    Gets all the particular type (s_axi, s_axis, or wire_slave)  of slave interfaces for a given FPGA  
+
+
     Args:
         fpga: The node object for this FPGA
         intf (string): The type of interface to look for
@@ -190,9 +190,9 @@ def getSlaveInterfaces(fpga, intf, master):
 
 def userApplicationRegionMemInstLocal(tcl_user_app):
     """
-    I'm really not sure what this is for. In my opinion, the "local connection"
-    mechanism (i.e. for interconnecting repeated kernels with separate AXI buses)
-    really needs an overhaul
+    For locally connected memory mapped slaves. This instantiates a local axi interconnecte 
+    between the master and the slaves, all within the given FPGA.
+
     
     Args:
         tcl_user_app: a tclMe object (which contains references to the FPGA's
@@ -210,18 +210,6 @@ def userApplicationRegionMemInstLocal(tcl_user_app):
             inc_resetns.append('M' + inc_index_str + '_ARESETN')
 
 
-        print ('kernel_inst is ' + m_axi['kernel_inst']['inst'])
-        #if m_axi['kernel_inst']['inst'] == 'applicationRegion/dariusController_inst_4':
-        print ('s_axi_array ' + str(s_axi_array))
-        #tcl_user_app.instBlock(
-        #        {
-        #        'name':'smartconnect',
-        #        'inst': m_axi['kernel_inst']['inst'] + '_' + m_axi['name'] + '_inc_inst',
-        #        'clks':['aclk'],
-        #        'resetns':['aresetn'],
-        #        'properties':['CONFIG.NUM_SI {1}', 'CONFIG.NUM_MI {' + str(len(s_axi_array)) + '}']
-        #        }
-        #        )
         tcl_user_app.instBlock(
                 {
                 'name':'axi_interconnect',
