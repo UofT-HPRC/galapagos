@@ -409,7 +409,7 @@ module shellTop
         .S_AXIS_tready(M_AXIS_tready),
         .S_AXIS_tvalid(M_AXIS_tvalid),
         .S_AXI_CONTROL_araddr(M_AXI_CONTROL_araddr),
-        //.S_AXI_CONTROL_arprot(M_AXI_CONTROL_arprot),
+        .S_AXI_CONTROL_arprot(M_AXI_CONTROL_arprot),
         //.S_AXI_CONTROL_arqos(M_AXI_CONTROL_arqos),
         .S_AXI_CONTROL_arready(M_AXI_CONTROL_arready),
         .S_AXI_CONTROL_arvalid(M_AXI_CONTROL_arvalid),
