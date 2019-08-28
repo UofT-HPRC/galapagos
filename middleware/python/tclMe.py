@@ -21,7 +21,7 @@ class tclMeFile():
             fileName (string): The file name
             fpga: The node object for the FPGA of interest
         """
-        self.fileHandle = open(fileName + '.tcl', 'w')
+        self.fileHandle = open(fileName + '.tcl', 'a+')
         self.fpga = fpga
 
     def tprint_raw(self, cmd, end='\n'):
@@ -142,3 +142,6 @@ class tclMeFile():
         elif sink['type'] == 'pin':
             self.tprint_raw('get_bd_pins ', end = '')
             self.tprint_raw(sink['name'] + '/' + sink['port_name'] + ']')
+            
+    def close(self):
+        self.fileHandle.close()

@@ -25,7 +25,7 @@ class node(abstractDict):
 
         self.address_space = address_space
         mandatory_array = ('num', 'type', 'comm')
-        optional_array = ('board', 'mac', 'ip', 'app_bridge', 'debug', 'kernel')
+        optional_array = ('board', 'mac', 'ip', 'app_bridge', 'debug', 'kernel', 'custom')
 
         super().__init__(mandatory_array, optional_array, **kwargs)
 

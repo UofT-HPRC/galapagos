@@ -49,8 +49,16 @@ void kern1(galapagos::stream <ap_uint <PACKET_DATA_LENGTH> > *in, galapagos::str
         std::cout << "DATA IS " << gps.data << std::endl << std::flush;
 
     }
+    
+    
+    std::cout << "SENDING DONE" << std::endl;
+    galapagos::stream_packet <ap_uint <PACKET_DATA_LENGTH> > gps;
+    gps.data = 0;
+    gps.dest = 0;
+    gps.last = 1;
+    out->write(gps);
 
-
+    std::cout << "FINISH KERN1" << std::endl;
 
 }
 
@@ -75,5 +83,9 @@ void kern2(galapagos::stream <ap_uint <PACKET_DATA_LENGTH> > *in, galapagos::str
         std::cout << "LAST " << gps.last << std::endl;
         out->write(gps);
     }
+    
+    std::cout << "WAITING FOR DONE" << std::endl;
+    galapagos::stream_packet <ap_uint <PACKET_DATA_LENGTH> > gps = in->read();
+    std::cout << "FINISH KERN2" << std::endl;
 
 }

@@ -7,6 +7,7 @@ from kernel import kernel
 from node import node
 import os
 import socket, struct
+import glob
 
 class cluster(abstractDict):
     """ This class is the top-level interface to the myriad other objects used 
@@ -266,30 +267,32 @@ class cluster(abstractDict):
                 break
 
     def makeProjectClusterScript(self, output_path):
-    """
-    As per the name, makes a project cluster script. You may be wondering what a
-    project cluster script is. Me too.
+        """
+        As per the name, makes a project cluster script. You may be wondering what a
+        project cluster script is. Me too.
+        
+        It looks like this automatically generates bash scripts which take care of
+        making a cluster of _vivado_ projects, one for each hardware node (i.e. 
+        <nodes> in the mapping file with <type>hw</type>. 
+        
+        Galapagos's project management is (in my opinion) too gardenwalled. There is
+        one common projects directory (which is under projects/ in the Galapagos 
+        install location by default) and it makes a subdirectory named after each
+        project. I really dislike this kind of file management, and it will only 
+        cause headaches with permissions. Also, I hate playing the guessing game of
+        "will it automatically make a directory for me or not?" And one more thing:
+        this means that your project name has to be a valid folder name. 
+        
+        Args:
+            output_path (string): Location of Galapagos's projects folder.
+        """
     
-    It looks like this automatically generates bash scripts which take care of
-    making a cluster of _vivado_ projects, one for each hardware node (i.e. 
-    <nodes> in the mapping file with <type>hw</type>. 
-    
-    Galapagos's project management is (in my opinion) too gardenwalled. There is
-    one common projects directory (which is under projects/ in the Galapagos 
-    install location by default) and it makes a subdirectory named after each
-    project. I really dislike this kind of file management, and it will only 
-    cause headaches with permissions. Also, I hate playing the guessing game of
-    "will it automatically make a directory for me or not?" And one more thing:
-    this means that your project name has to be a valid folder name. 
-    
-    Args:
-        output_path (string): Location of Galapagos's projects folder.
-    """
         # If this project directory already exists, just delete it! Oops! I forgot
         # I already had a super important project with the same name!
+        # ^ this has been amended below by just removing the tcl files
         if os.path.exists(output_path + '/' + self.name):
             shutil.rmtree(output_path + '/' + self.name)
-        os.makedirs(output_path + '/' + self.name)
+        os.makedirs(output_path + '/' + self.name, exist_ok=True)
 
         globalConfigFile = open(output_path + "/" + self.name + '/createCluster.sh', 'w')
         globalSimFile = open(output_path + "/" + self.name + '/simCluster.sh', 'w')
@@ -299,7 +302,13 @@ class cluster(abstractDict):
             #only need vivado project for hw nodes
             if node_obj['type'] == 'hw':
                 dirName = output_path + '/' + self.name + '/' + str(node_idx)
-                os.makedirs(dirName)
+                
+                if os.path.exists(dirName):
+                    fileList = glob.glob(dirName + "/*.tcl")
+                    for f in fileList:
+                        os.remove(f)
+                os.makedirs(dirName, exist_ok=True)
+                
                 #currently only making flattened bitstreams
                 globalConfigFile.write("galapagos-update-board " + node_obj['board'] + "\n")
                 globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + self.name +  " --start_synth 1" + "\n")

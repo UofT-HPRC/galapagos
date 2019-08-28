@@ -8,6 +8,8 @@
 #define __GALAPAGOS_NET_TCP_HPP__
 
 
+#include <boost/thread/locks.hpp>
+#include <boost/thread/shared_mutex.hpp>
 #include <cstdlib>
 #include <iostream>
 #include <thread>
@@ -47,7 +49,7 @@ struct Handler {
 namespace galapagos{
     namespace net{
         namespace tcp{
-            template<typename T>
+            template<class T>
             class tcp: public streaming_core<T>{
                 public:
                     tcp(short id,
@@ -58,10 +60,20 @@ namespace galapagos{
                         galapagos::stream <T>* out, 
                         std::mutex * _done_mutex, 
                         bool * _done,
-                        bool enabled);
+                        bool enabled,
+                        std::mutex * _mutex_packets_in_flight,
+                        int * _packets_in_flight
+                        );
+                    ~tcp(){}
+                    
+                    bool barrier();
                     void stop();
                     void start();
                     void test();
+                    void drain();
+                    unsigned int num_packets_router();
+                    unsigned int num_packets_in_flight();
+
                 private:
                     //boost::asio::io_context io_context;
                     ioc io_context;
@@ -75,16 +87,154 @@ namespace galapagos{
                     void test_func();
                     void run_context();
                     std::mutex * mutex;
+                    std::mutex  *mutex_packets_in_flight;
+                    int *packets_in_flight;
                     bool * done;
                     std::unique_ptr<router_net_out <T> > router_out;
     
             };
+
+            
         }//tcp namespace
     }//net namespace
 }//galapagos namespace
 
+template<class T>
+            galapagos::net::tcp::tcp<T>::tcp(short _id,
+                        short port, 
+                        std::vector <std::string>  &kernel_info_table, 
+                        std::string  & my_address, 
+                        galapagos::stream <T> * _from_node, 
+                        galapagos::stream <T> * _from_sessions, 
+                        std::mutex * _done_mutex, 
+                        bool * _done,
+                        bool enabled,
+                        std::mutex * _mutex_packets_in_flight,
+                        int * _packets_in_flight
+
+                        ):
+                galapagos::streaming_core<T>(_id,  _from_node, _from_sessions)
+
+            {
+                
+                mutex_packets_in_flight = _mutex_packets_in_flight;
+                packets_in_flight = _packets_in_flight;
+
+                mutex = _done_mutex;
+                done = _done;
+                from_sessions = _from_sessions;
+                router_out = std::make_unique<galapagos::router_net_out<T> >(kernel_info_table, from_sessions, done, mutex, my_address, mutex_packets_in_flight, packets_in_flight);
+
+                sc_ptr = std::make_unique<galapagos::net::tcp::session_container <T> >(kernel_info_table, my_address, _done, _done_mutex, router_out.get(), mutex_packets_in_flight, packets_in_flight);
+                ss_ptr = std::make_unique<galapagos::net::tcp::server_send <T> >(port, &io_context, sc_ptr.get(), _done, _done_mutex, _from_node, mutex_packets_in_flight, packets_in_flight); 
+                if(enabled){
+                    as_ptr = std::make_unique<galapagos::net::tcp::accept_server <T> >(&io_context, kernel_info_table[_id], port, sc_ptr.get());
+                }
+                io_context.run();
+
+            }
+
+
+            template<class T>
+            void galapagos::net::tcp::tcp<T>::start(){
+
+                ;
+            }
+
+            template<class T>
+            void galapagos::net::tcp::tcp<T>::run_context(){
+
+                io_context.run();
+            }
+
+
+            template<class T>
+            void galapagos::net::tcp::tcp<T>::test(){
+
+                
+                std::thread test(&galapagos::net::tcp::tcp<T>::test_func, this); 
+                test.join();
+
+
+            }
+
+            template<class T>
+            void galapagos::net::tcp::tcp<T>::test_func(){
+
+                std::vector<T> vect;
+
+                int dest, src;
+                
+                if((from_sessions->size() == 0)){
+                    vect = from_sessions->read(&dest, &src);
+                    std::cout << "size of test is " << vect.size() << std::endl;
+                    std::string test = (char *)vect.data();
+                    std::cout << "test is " << test << std::endl;
+                }
 
 
 
+            }
+            
+            template<class T>
+            void galapagos::net::tcp::tcp<T>::drain(){
+               ss_ptr->drain(); 
 
+
+            }
+
+
+            template<class T>
+            bool galapagos::net::tcp::tcp<T>::barrier(){
+                //sc_ptr->barrier();
+                bool cont = true;
+                
+                cont = sc_ptr->barrier();
+                return cont;
+                //galapagos::streaming_core<T>::barrier();
+                //galapagos::net::tcp::tcp<T>::stop();
+
+
+            }
+
+
+
+            template<class T>
+            void galapagos::net::tcp::tcp<T>::stop(){
+
+
+                {
+                    boost::asio::high_resolution_timer tim(io_context, 2s);
+                    tim.async_wait(Handler{});
+
+                    std::this_thread::sleep_for(500ms);
+
+                    io_context.stop();
+                }
+                t_context->join(); 
+
+            }
+
+
+            template<class T>
+            unsigned int galapagos::net::tcp::tcp<T>::num_packets_router(){
+            
+                return router_out->num_packets();
+
+
+            }
+            
+
+            template<class T>
+            unsigned int galapagos::net::tcp::tcp<T>::num_packets_in_flight(){
+                unsigned int retVal;
+                {
+                    std::lock_guard <std::mutex> guard(*mutex_packets_in_flight);
+                    retVal = *packets_in_flight;
+                }
+
+                return retVal;
+
+
+            }
 #endif
