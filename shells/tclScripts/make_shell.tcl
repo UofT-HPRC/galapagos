@@ -214,6 +214,7 @@ if {! [catch {glob shells/$top_board/constraints/*.xdc} yikes] } {
     set_property "scoped_to_ref" "" $file_obj
     set_property "used_in" "synthesis implementation" $file_obj
   }
+  #add_files -norecurse -fileset $obj $constFiles
 }
 
 # Set 'constrs_1' fileset properties

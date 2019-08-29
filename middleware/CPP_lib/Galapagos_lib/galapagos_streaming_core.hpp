@@ -25,7 +25,7 @@
 #include "galapagos_packet.h"
 
 namespace galapagos {
-template <typename T> 
+template <class T> 
     class streaming_core{
 
         public:
@@ -41,6 +41,67 @@ template <typename T>
             bool done();
             
     };
+
+    
 }
+
+template <class T> 
+    galapagos::streaming_core<T>::streaming_core(
+            short _id,
+            galapagos::stream<T>  * _in,
+            galapagos::stream<T>  * _out
+            )
+    {
+
+        id = _id;
+        in = _in;
+        if(in != nullptr)
+            in->id = id;
+        out = _out;
+    }
+
+    template <class T> 
+    galapagos::streaming_core<T>::streaming_core(
+            short _id
+            )
+    {
+        
+        id = _id;
+        in = nullptr;
+        out = nullptr;
+    }
+
+    template <class T> 
+    galapagos::streaming_core<T>::~streaming_core(){
+
+        ;
+
+    }
+
+    template <class T> 
+    void galapagos::streaming_core<T>::start(){
+
+        ;
+
+    }
+
+    template <class T> 
+    void galapagos::streaming_core<T>::barrier(){
+
+        if(in!=nullptr)
+            while(in->size()>0);
+        if(out!=nullptr)
+            while(out->size()>0);
+
+    }
+
+    template <class T> 
+    bool galapagos::streaming_core<T>::done(){
+        bool _done = true;
+        for(int i=0; i<t_vect.size(); i++)
+            _done = _done | !t_vect[i].get()->joinable();
+
+        return _done;
+    }
 
 #endif

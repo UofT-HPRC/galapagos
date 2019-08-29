@@ -26,9 +26,8 @@ int main(){
     galapagos::node <ap_uint <PACKET_DATA_LENGTH> > node(kern_info, ten_one);
     node.add_kernel(dest, kern1);
     node.start();
-    while(1);
- //   node_1.start();
- //    node_0.end();
+//    while(1);
+    node.end();
  //   node_1.end();
 
 }
