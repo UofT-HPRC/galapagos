@@ -2,6 +2,14 @@
 
 Welcome to the Galapagos Hardware Stack. 
 
+
+## Initial Setup
+
+First you need to initialize all environment variables. This is done with a build script.
+`source build.sh`
+
+
+
 The layers of the stack that we introduce are as follows:
 
 - Programming Layer
