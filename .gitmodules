@@ -4,3 +4,9 @@
 [submodule "HUMboldt"]
 	path = HUMboldt
 	url = https://github.com/UofT-HPRC/HUMboldt.git
+[submodule "util/spdlog"]
+	path = util/spdlog
+	url = https://github.com/gabime/spdlog.git
+[submodule "util/Catch2"]
+	path = util/Catch2
+	url = https://github.com/catchorg/Catch2.git
