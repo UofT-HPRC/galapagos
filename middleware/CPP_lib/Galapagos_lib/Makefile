@@ -3,48 +3,22 @@
 # CREATE DATE     : April 20, 2019
 #===============================
 
+include $(GALAPAGOS_PATH)/include.mk
 
-CXXFLAGS = -DCPU -g -std=c++17 -pthread -I$(XILINX_VIVADO)/include -I$(GALAPAGOS_PATH)/middleware/include
+BOOST_LDFLAGS=-lboost_thread -lboost_system -lpthread
 
-LDFLAGS = -lpthread
-
-BOOST_LDFLAGS=-lboost_thread -lboost_system $(LDFLAGS) 
-
-net_driver = tcp
-
-UNIT_TEST=-I$(GALAPAGOS_PATH)/Catch2/single_include/catch2 
-
-all:  galapagos_node.o galapagos_router.o galapagos_router_node.o galapagos_router_net.o galapagos_net_tcp.o galapagos_net_tcp_session.o galapagos_net_tcp_server_send.o galapagos_net_tcp_accept_server.o galapagos_kernel.o kernel.o galapagos_streaming_core.o galapagos_stream.o 
-
-$^:
-	$(CXX) $(CXXFLAGS) -c $^ -o $@ $(BOOST_LDFLAGS)
+DEBUG_FLAGS = -g 
+PRODUCTION_FLAGS = -O3 -DLOGGING_OFF
 
 
-unit_test.exe: galapagos_node.o galapagos_router.o galapagos_router_node.o galapagos_router_net.o galapagos_net_tcp.o galapagos_net_tcp_session.o galapagos_net_tcp_server_send.o galapagos_net_tcp_accept_server.o galapagos_kernel.o kernel.o galapagos_streaming_core.o galapagos_stream.o test.cpp 
-	$(CXX) $(CXXFLAGS) $(UNIT_TEST) $^ -o $@ $(BOOST_LDFLAGS)  
 
+CXXFLAGS = -DCPU  -std=c++17 -pthread -isystem $(GALAPAGOS_HLS_PATH)/include -I$(GALAPAGOS_PATH)/middleware/include -I$(GALAPAGOS_PATH)/middleware/CPP_lib/Galapagos_lib $(INCLUDE_UTIL) ${DEBUG_FLAGS} 
 
-node_send.exe: galapagos_node.o galapagos_router.o galapagos_router_node.o galapagos_router_net.o galapagos_net_tcp.o galapagos_net_tcp_session.o galapagos_net_tcp_server_send.o galapagos_net_tcp_accept_server.o galapagos_kernel.o kernel.o galapagos_streaming_core.o galapagos_stream.o node_send.cpp 
-	$(CXX) $(CXXFLAGS) $(UNIT_TEST) $^ -o $@ $(BOOST_LDFLAGS)  
+test_stream.exe: test_stream.cpp galapagos_stream.hpp
+	$(CXX) $(CXXFLAGS) -o test_stream.exe  test_stream.cpp $(BOOST_LDFLAGS)
 
-
-node_recv.exe: galapagos_node.o galapagos_router.o galapagos_router_node.o galapagos_router_net.o galapagos_net_tcp.o galapagos_net_tcp_session.o galapagos_net_tcp_server_send.o galapagos_net_tcp_accept_server.o galapagos_kernel.o kernel.o galapagos_streaming_core.o galapagos_stream.o node_recv.cpp 
-	$(CXX) $(CXXFLAGS) $(UNIT_TEST) $^ -o $@ $(BOOST_LDFLAGS)  
-
-one_node.exe: galapagos_node.o galapagos_router.o galapagos_router_node.o galapagos_router_net.o galapagos_net_tcp.o galapagos_net_tcp_session.o galapagos_net_tcp_server_send.o galapagos_net_tcp_accept_server.o galapagos_kernel.o kernel.o galapagos_streaming_core.o galapagos_stream.o one_node.cpp 
-	$(CXX) $(CXXFLAGS) $(UNIT_TEST) $^ -o $@ $(BOOST_LDFLAGS)  
-
-server_ex.exe: blocking_tcp_echo_server.cpp
-	$(CXX) $(CXXFLAGS) $^ -o $@ $(BOOST_LDFLAGS)  
-
-async_server_ex.exe: async_tcp_echo_server.cpp galapagos_stream.o 
-	$(CXX) $(CXXFLAGS) $^ -o $@ $(BOOST_LDFLAGS)  
-
-client.exe: blocking_tcp_echo_client.cpp 
-	$(CXX) $(CXXFLAGS) $^ -o $@ $(BOOST_LDFLAGS)  
-
-galapagos_net_tcp.exe: galapagos_node.o galapagos_router.o galapagos_router_node.o galapagos_router_net.o galapagos_net_tcp.o galapagos_net_tcp_session.o galapagos_net_tcp_server_send.o galapagos_net_tcp_accept_server.o galapagos_kernel.o kernel.o galapagos_streaming_core.o galapagos_stream.o server_test.cpp 
-	$(CXX) $(CXXFLAGS) $(UNIT_TEST) $^ -o $@ $(BOOST_LDFLAGS)  
+test.exe: test.cpp *.hpp
+	$(CXX) $(CXXFLAGS) -o test.exe  test.cpp $(BOOST_LDFLAGS)
 
 
 clean:

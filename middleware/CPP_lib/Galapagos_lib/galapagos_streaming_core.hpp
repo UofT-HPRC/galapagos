@@ -36,9 +36,9 @@ template <class T>
             streaming_core(short _id);
             streaming_core(short _id, stream <T> * _in, stream <T> *_out);
             ~streaming_core();        
-            virtual void start();
-            void barrier();
-            bool done();
+            //virtual void start();
+            //void barrier();
+            //bool done();
             
     };
 
@@ -73,35 +73,14 @@ template <class T>
 
     template <class T> 
     galapagos::streaming_core<T>::~streaming_core(){
-
         ;
-
     }
 
-    template <class T> 
-    void galapagos::streaming_core<T>::start(){
+    //template <class T> 
+    //void galapagos::streaming_core<T>::start(){
 
-        ;
+    //    ;
 
-    }
-
-    template <class T> 
-    void galapagos::streaming_core<T>::barrier(){
-
-        if(in!=nullptr)
-            while(in->size()>0);
-        if(out!=nullptr)
-            while(out->size()>0);
-
-    }
-
-    template <class T> 
-    bool galapagos::streaming_core<T>::done(){
-        bool _done = true;
-        for(int i=0; i<t_vect.size(); i++)
-            _done = _done | !t_vect[i].get()->joinable();
-
-        return _done;
-    }
+    //}
 
 #endif

@@ -22,10 +22,11 @@ template <class T>
             bool * done;
             std::mutex  * mutex;
             bool is_done();
+            std::shared_ptr<spdlog::logger> logger;
         public:
-            router(){;}
-            router(bool * _done, std::mutex * _mutex);
-            router(bool * _done, std::mutex * _mutex, int num_ports);
+            router(std::shared_ptr<spdlog::logger> _logger){logger=_logger;}
+            router(bool * _done, std::mutex * _mutex, std::shared_ptr<spdlog::logger> _logger);
+            router(bool * _done, std::mutex * _mutex, int num_ports, std::shared_ptr<spdlog::logger> _logger);
             ~router(){;}
             void add_port(int index);            
             void init_ports(int num_ports);
@@ -49,12 +50,13 @@ template <class T>
 }
 
 template <class T> 
-    galapagos::router<T>::router(bool * _done, std::mutex * _mutex){
+    galapagos::router<T>::router(bool * _done, std::mutex * _mutex, std::shared_ptr<spdlog::logger> _logger){
 
 
         done = _done;
         mutex = _mutex;
-        
+        logger = _logger;
+        logger->info("Router Constructor");
 
     }
 
@@ -69,13 +71,15 @@ template <class T>
             m_axis.push_back(nullptr);
         }
 
+        logger->info("Initializing Router with {0:d} ports", num_ports);
     }
 
     template <class T> 
-    galapagos::router<T>::router(bool * _done, std::mutex * _mutex, int num_ports){
+    galapagos::router<T>::router(bool * _done, std::mutex * _mutex, int num_ports, std::shared_ptr<spdlog::logger> _logger){
 
         done = _done;
         mutex = _mutex;
+        logger = _logger;
 
         std::stringstream ss;
         for(int i=0; i<num_ports; i++){
@@ -83,13 +87,14 @@ template <class T>
             m_axis.push_back(nullptr);
         }
 
+
     }
 
     template <class T> 
     void galapagos::router<T>::add_port(int index){
         
-        s_axis[index] = std::make_unique <stream<T> > ();
-        m_axis[index] = std::make_unique <stream<T> > ();
+        s_axis[index] = std::make_unique <stream<T> > (logger);
+        m_axis[index] = std::make_unique <stream<T> > (logger);
 
 
 
@@ -98,8 +103,11 @@ template <class T>
 
     template <class T> 
     void galapagos::router<T>::add_stream(galapagos::streaming_core <T> * _gsc, int index){
-        s_axis[index] = std::make_unique <galapagos::stream <T> > ();
-        m_axis[index] = std::make_unique <galapagos::stream <T> > ();
+        std::string str_id = std::to_string(index);
+        std::string s_axis_name = "kernel_" + str_id + "_s_axis";
+        std::string m_axis_name = "kernel_" + str_id + "_m_axis";
+        s_axis[index] = std::make_unique <galapagos::stream <T> > (s_axis_name, logger);
+        m_axis[index] = std::make_unique <galapagos::stream <T> > (m_axis_name, logger);
 
         _gsc->in= s_axis[index].get(); 
         _gsc->out= m_axis[index].get(); 
