@@ -12,296 +12,322 @@
 #include "hls_stream.h"
 #include "ap_utils.h"
 
-// #define CPU
-
-#ifdef CPU
 #include <memory>
 #include <mutex>
 #include <condition_variable>
-#endif
+
+#include <list>
+#include <iterator>
 
 #include "galapagos_packet.h"
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/basic_file_sink.h"
 
+#define MAX_BUFFER 180 //flits approximately of MTU size 
 
-
-//#ifdef CPU
 namespace galapagos{
+    /* Struct of buffer used to store entire packets
+    *
+    */
+    typedef struct{
+        char data[MAX_BUFFER*8];
+        short dest;
+        short id;
+        size_t size;
+    }buffer;
+
+
+
+
+/*
+ *Stream used within Galapagos
+ *
+ *@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+ *
+ *
+ *
+ */
     template <class T> 
     class stream{
         private:
             
             std::mutex  mutex;
-            //std::unique_ptr < std::queue <galapagos::stream_packet <T> > > _stream;
-            std::queue <galapagos::stream_packet <T> >  _stream;
             std::condition_variable cv;
+            std::shared_ptr<spdlog::logger> logger;
+            std::string name;
+            std::list <galapagos::buffer> packets;
+        
+            // Keeps track of in progress operations
+            // In progress means that we are reading/writing a single flit from the middle
+            // of a packet
+            size_t write_in_prog_addr;
+            size_t read_in_prog_addr;
+
+            //Pointer to list node that are operation is in progress of
+            std::list<galapagos::buffer>::iterator curr_read_it;
+            galapagos::buffer curr_write;
+
+            short write_id;
+            short write_dest;
+            short read_id;
+            short read_dest;
         public:
-            stream();
-            //stream(std::string _name);
-            //std::vector<ap_uint<64> > read(size_t *size, short * dest);
-            void write(char * buffer, int size, short  dest, short src);
-            bool try_read(galapagos::stream_packet<T> &gp);
-            bool try_peak(galapagos::stream_packet<T> &gp);
+            stream(std::string _name, std::shared_ptr<spdlog::logger> _logger);
             void write(galapagos::stream_packet <T> gps);
-            //std::vector<ap_uint<PACKET_DATA_LENGTH> > read(int * dest);
-            std::vector< T > read(int * dest, int * src);
             galapagos::stream_packet<T> read();
             bool empty();
             size_t size();
-            short id;
-            void lock();
-            void unlock();
-    //        std::string name;
+            void batch_write(char * data, int size, short dest, short id);
+            char * batch_read(size_t * size, short * dest, short * id);
     };
+
 }
 
-//template <class T> 
-//using galapagos_stream = galapagos::stream <T>;
-//
 typedef galapagos::stream <ap_uint <PACKET_DATA_LENGTH> > galapagos_stream;
-typedef galapagos::stream <float> galapagos_stream_float;
-typedef galapagos::stream <double> galapagos_stream_double;
+
+/*
+ *Constructor for galapagos::stream
+ *
+ *@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+ *@param[in] name of stream, used for logging purposes
+ *@param[in] shared_ptr of logger used globally to log
+ *
+ */
 
 template <class T> 
-    galapagos::stream<T>::stream(){
-        ;
-        //_stream = std::make_unique<std::queue <galapagos::stream_packet <T> > >();
-    }
+galapagos::stream<T>::stream(
+                    std::string _name,        
+                    std::shared_ptr<spdlog::logger> _logger
+        ){
+    name = _name;
+    logger = _logger;
+    logger->info("Making stream {0}", name);
+    read_in_prog_addr = 0;
+    write_in_prog_addr = 0;
+    curr_read_it = packets.end();
+}
 
 
-    template <class T> 
-    galapagos::stream_packet <T> galapagos::stream<T>::read(){
-        
-        galapagos::stream_packet <T> gps;
+/*
+ * Read single flit for galapagos::stream
+ *
+ *@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+ *@returns single flit of galapagos packet
+ *
+ */
 
+template <class T> 
+galapagos::stream_packet <T> galapagos::stream<T>::read(){
+   
+
+    //if not in progress get a new available buffer from beginning of list
+    {
         std::unique_lock<std::mutex> lock(mutex);
-        while (_stream.empty()) {
-            cv.wait(lock);
-                                    //  This 'while' loop is equal to
-        }
-        gps = std::move(_stream.front());
-        _stream.pop();
+        if(!read_in_prog_addr)
+        {
+            while (packets.empty()) {
+                cv.wait(lock);
+            }
+            logger->debug("New Stream Read:{0}", name); 
+            curr_read_it = packets.begin();
 
-        return gps;
+        }
+        else{
+            logger->debug("In Prog Stream Read:{0}", name); 
+        }
+    }
+    //once buffer available return flit of buffer and update address
+    //
+    //
+
+    assert(curr_read_it != packets.end());
+
+    galapagos::stream_packet <T> gps;
+    memcpy((char *)&gps.data, (char *)curr_read_it->data + read_in_prog_addr, sizeof(T));
+    
+    {
+        //since using read_in_prog_addr in size calc we need this to be atomic
+        std::unique_lock<std::mutex> lock(mutex);
+        read_in_prog_addr += sizeof(T);
     }
 
+    gps.dest = curr_read_it->dest;
+    gps.id = curr_read_it->id; 
+    assert(read_in_prog_addr < curr_read_it->size);
 
-    template <class T> 
-    void galapagos::stream<T>::write(galapagos::stream_packet <T> gps){
+    if(read_in_prog_addr == (curr_read_it->size - 1)){
+        std::unique_lock<std::mutex> lock(mutex);
+        gps.last = 1;
+        read_in_prog_addr = 0;
+        packets.erase(curr_read_it);
+        curr_read_it = packets.end();
+    }
+    else{
+        gps.last = 0;
+
+    }
+
+    logger->debug("Stream {0} read data:{1:x}, dest{2:x}, last{3:d}", name, gps.data, gps.dest, gps.last); 
+
+    return gps;
+}
+
+/*
+ * Write single flit for galapagos::stream
+ *
+ *@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+ *@param[in] gps single flit of galapagos packet to write
+ *
+ */
+template <class T> 
+void galapagos::stream<T>::write(galapagos::stream_packet <T> gps){
+    
+    //if not in progress get a new available buffer from end of list
+    if(!write_in_prog_addr)
+    {
+        logger->debug("New Stream Write:{0}", name); 
+        std::lock_guard<std::mutex> guard(mutex);
+        curr_write.dest = gps.dest;
+        curr_write.id = gps.id;
+    }
+    else{
+        logger->debug("In Prog Stream Write:{0}", name); 
+    }
         
+    
+    //once buffer available write flit to buffer and update address
+    memcpy((char *)curr_write.data + write_in_prog_addr, (char *)&gps.data, sizeof(T));
+    write_in_prog_addr += sizeof(T);
+    logger->debug("Stream {0} write data:{1:x}, dest{2:x}", name, gps.data, gps.dest); 
+   
+    //last flit, moving to list
+    if (gps.last){
+        curr_write.size = write_in_prog_addr +1;
         {
             std::lock_guard<std::mutex> guard(mutex);
-            _stream.push(std::move(gps));
-        }
-        if (gps.last){
+            write_in_prog_addr = 0;
+            packets.push_back(std::move(curr_write)); 
             cv.notify_one();
         }
-
+        //once buffer pushed and available for consumption
+        logger->debug("Stream {0} write last flit, adding to list", name); 
     }
 
+}
 
-    template <class T> 
-    bool galapagos::stream<T>::try_read(galapagos::stream_packet<T> & gp){
 
-        std::lock_guard<std::mutex> guard(mutex);
-        if(_stream.empty())
-            return false;
-
-        gp = std::move(_stream.front());
-        _stream.pop();
-        return true;
+/*
+ *Get size of an available buffer to read 
+ *
+ *@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+ *@returns size of buffer in head of list
+ *
+ */
+template <class T> 
+size_t galapagos::stream<T>::size(){
+    size_t ret; 
+    std::lock_guard<std::mutex> guard(mutex);
+    //list empty return 0
+    if(!packets.size())
+        ret = 0;
+    else{
+        ret = (packets.begin()->size - read_in_prog_addr)/8;
     }
-
-    template <class T>
-    bool galapagos::stream<T>::try_peak(galapagos::stream_packet<T>& gp){
-
-        std::lock_guard<std::mutex> guard(mutex);
-        if(_stream.empty())
-            return false;
-
-        gp = std::move(_stream.front());
-        return true;
-    }
-
-    template <class T>
-    void galapagos::stream<T>::lock(){
-        mutex.lock();
-    }
-
-    template <class T>
-    void galapagos::stream<T>::unlock(){
-        mutex.unlock();
-    }
-
-    template <class T> 
-    size_t galapagos::stream<T>::size(){
-        size_t ret; 
-        std::lock_guard<std::mutex> guard(mutex);
-        ret = _stream.size();
-        return ret;
-    }
+    return ret;
+}
 
 
-    template <class T> 
-    bool galapagos::stream<T>::empty(){
-        bool ret; 
-        std::lock_guard<std::mutex> guard(mutex);
-        ret = _stream.empty();
-        return ret;
-    }
 
+/*
+ * Executes a batch write, this function is not portable between CPU and FPGA
+ * Please be careful to rewrite CPU functions to use an individual flit write when porting
+ * to HLS
+ *
+ *
+ *@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+ *@param[in] data buffer to be written
+ *@param[in] size size of buffer
+ *
+ */
+template <class T> 
+void galapagos::stream<T>::batch_write(char * data, int size, short dest, short id){
 
-    template <class T> 
-    std::vector< T > galapagos::stream<T>::read(int * dest, int *src){
+    //size must be divisible by 8
+    assert(size % 8 == 0);
 
+    //data must fit in MTU
+    assert(size <= (MAX_BUFFER*8));
+    
+        
+    curr_write.dest = dest;
+    curr_write.id = id;
+    memcpy((char *)curr_write.data, (char *)data, size);
+    
+    std::lock_guard<std::mutex> guard(mutex);
+    packets.push_back(std::move(curr_write)); 
+    cv.notify_one();
+        
+    logger->debug("Stream {0} batch_write (CPU only) of {1:d} bytes", name, size); 
+}
 
-        std::vector< T > vect;
-        ap_uint <1> last = 0;
-        galapagos::stream_packet <T> gps;
+/*
+ * Executes a batch read, this function is not portable between CPU and FPGA
+ * Please be careful to rewrite CPU functions to use an individual flit write when porting
+ * to HLS
+ *
+ *
+ *@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+ *@param[out] _size size of buffer
+ *@param[out] _dest dest of buffer
+ *@param[out] _id id of buffer
+ *@returns buffer pointing to batch of data 
+ *
+ */
+template <class T> 
+char * galapagos::stream<T>::batch_read(size_t * _size, short * _dest, short * _id){
 
-
-        while(!last){
+    char * ret;
+    {
         std::unique_lock<std::mutex> lock(mutex);
-        while (_stream.empty()) {
-            cv.wait(lock);
-        }
-        gps = std::move(_stream.front());
-        _stream.pop();
-        last = gps.last;
-        vect.push_back(gps.data);
-        }
-
-
-        *dest = gps.dest;
-        *src = gps.id;
-        return vect;
-    }
-
-
-    template <class T> 
-    void galapagos::stream<T>::write(char * buffer, int size, short dest, short src){
-
-        
-        T * data = (T *)buffer;
+        if(!read_in_prog_addr)
         {
-        std::lock_guard<std::mutex> guard(mutex);
-    #ifdef DEBUG
-        std::cout << "NUM GALAPAGOS PACKETS IN RECV " << size/8 << std::endl;
-    #endif
-    #ifdef TEST
-            assert(size == 80);
-    #endif
-        
-        for(int i=0; i<(size/8); i++){
-            galapagos::stream_packet <T> gps;
-            gps.data = data[i];
-            gps.dest = dest;
-            gps.id = src;
-            if(i!=((size/8)-1))
-                gps.last = 0;
-            else{
-                gps.last = 1;
-    #ifdef TEST
-            assert(i == 9);
-    #endif
-
-
-    #ifdef DEBUG
-                std::cout<< " writing last" << std::endl;
-    #endif
+            while (packets.empty()) {
+                cv.wait(lock);
             }
+            logger->debug("New Stream Read:{0}", name); 
+            curr_read_it = packets.begin();
 
-        _stream.push(std::move(gps));
         }
-        }
-        cv.notify_one();
     }
-//#else            
-//
-//typedef struct {
-//    ap_uint <PACKET_DATA_LENGTH> data;
-//    ap_uint <PACKET_DEST_LENGTH> dest;
-//#ifdef PACKET_LAST  
-//    ap_uint <1> last;
-//#endif   
-//#ifdef PACKET_ID_LENGTH  
-//    ap_uint <PACKET_ID_LENGTH> id;
-//#endif   
-//#ifdef PACKET_USER_LENGTH  
-//    ap_uint <PACKET_USER_LENGTH> user;
-//#endif   
-//#ifdef PACKET_KEEP_LENGTH  
-//    ap_uint <PACKET_KEEP_LENGTH> keep;
-//#endif   
-//}galapagos_stream_packet;
-//
-//typedef hls::stream<galapagos_stream_packet> galapagos_stream;
-//
-////typedef hls::stream <galapagos::stream_packet <ap_uint<64> > > galapagos_stream;
-////typedef hls::stream<galapagos::stream_packet <float> > galapagos_stream_float;
-////typedef hls::stream<galapagos::stream_packet <double> > galapagos_stream_double;
-////
-////namespace galapagos{
-////    // template <class T>
-////    // class stream: public hls::stream<galapagos::stream_packet <T> >{
-////    //     public:
-////    //         stream() : hls::stream<galapagos::stream_packet <T> >(){};
-////    // };
-////    template <class T>
-////    using stream = hls::stream<galapagos::stream_packet<T> >;
-////
-////}
-////template <class T>
-////struct galapagos_stream_float{
-////    hls::stream<galapagos_packet <T> > _stream;
-////    galapagos_packet <T> read(){
-////        return _stream.read();
-////    }
-////    void write(galapagos_packet <T> gp){
-////        _stream.write(gp);
-////    }
-////    size_t size(){
-////        return _stream.size();
-////    }
-////
-////};
-//
-////struct galapagos_stream:: public hls::stream<galapagos_packet <T> >  {
-////};
-//
-////template <class T> 
-////typedef hls::stream <galapagos_packet <T> >  galapagos_stream;
-//
-//// template <class T> 
-//// galapagos::stream<T>::stream(hls::stream <galapagos::stream_packet <T> > * __stream){
-////     stream = __stream;
-//// }
-//
-//// template <class T> 
-//// galapagos::stream_packet<T> galapagos::stream<T>::read(){
-////     return _stream->read();
-//// }
-//
-//// template <class T> 
-//// void galapagos::stream<T>::write(galapagos::stream_packet<T> gps){
-//   
-////     _stream->write(gps);
-//
-//// }
-//
-//// template <class T> 
-//// size_t galapagos::stream<T>::size(){
-////     size_t ret; 
-////     ret = _stream->size();
-////     return ret;
-//// }
-//
-//// template <class T> 
-//// size_t galapagos::stream<T>::empty(){
-////     bool ret; 
-////     ret = _stream->empty();
-////     return ret;
-//// }
-//
-//#endif // CPU
+
+    size_t buff_size = curr_read_it->size;
+    *_dest = curr_read_it->dest;
+    *_id = curr_read_it->id;
+    *_size = buff_size;
+
+    ret = (char *)malloc(buff_size);
+    memcpy((char *)ret, (char *)curr_read_it->data + read_in_prog_addr, buff_size);
+    {
+        std::unique_lock<std::mutex> lock(mutex);
+        read_in_prog_addr = 0;
+        packets.erase(curr_read_it);
+        curr_read_it = packets.end();
+    }
+    return ret;
+}
+
+/*
+ *Get if buffer is empty
+ *
+ *@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+ *@returns bool representing if buffer is empty
+ *
+ *
+ */
+template <class T> 
+bool galapagos::stream<T>::empty(){
+    bool ret = (size()==0);
+    return ret;
+}
 
 #endif

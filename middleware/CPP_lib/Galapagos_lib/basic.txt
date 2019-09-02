@@ -1,0 +1,14 @@
+[2019-08-31 21:19:20.065] [basic_logger] [info] starting
+[2019-08-31 21:19:20.067] [basic_logger] [info] Created Kernel 0
+[2019-08-31 21:19:20.067] [basic_logger] [info] Started Kernel 0
+[2019-08-31 21:19:20.067] [basic_logger] [debug] Stream kern_out write deadbeef00000000
+[2019-08-31 21:19:20.067] [basic_logger] [debug] Stream kern_out write deadbeef00000001
+[2019-08-31 21:19:20.067] [basic_logger] [debug] Stream kern_out write deadbeef00000002
+[2019-08-31 21:19:20.067] [basic_logger] [debug] Stream kern_out write deadbeef00000003
+[2019-08-31 21:19:20.067] [basic_logger] [debug] Stream kern_out write deadbeef00000004
+[2019-08-31 21:19:20.067] [basic_logger] [debug] Stream kern_out write deadbeef00000005
+[2019-08-31 21:19:20.067] [basic_logger] [debug] Stream kern_out write deadbeef00000006
+[2019-08-31 21:19:20.067] [basic_logger] [debug] Stream kern_out write deadbeef00000007
+[2019-08-31 21:19:20.067] [basic_logger] [debug] Stream kern_out write deadbeef00000008
+[2019-08-31 21:19:20.067] [basic_logger] [debug] Stream kern_out write deadbeef00000009
+[2019-08-31 21:19:25.713] [basic_logger] [info] starting

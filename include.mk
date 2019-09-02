@@ -36,6 +36,9 @@ ifndef GALAPAGOS_PART_FAMILY
 $(error GALAPAGOS_PART_FAMILY is not set)
 endif
 
+
+INCLUDE_UTIL=-I $(GALAPAGOS_PATH)/util/Catch2/single_include/catch2 -I$(GALAPAGOS_PATH)/util/spdlog/include
+
 # GALAPAGOS_BOARD is not asserted because it's optional to have a board file
 
 # Asserts that the specified variable exists. It can be used as a prerequisite 

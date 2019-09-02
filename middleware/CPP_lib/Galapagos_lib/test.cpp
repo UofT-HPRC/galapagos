@@ -1,4 +1,4 @@
-#define CATCH_CONFIG_MAIN
+#define CATCH_CONFIG_RUNNER
 #include "catch.hpp"
 
 #include <string>
@@ -6,265 +6,144 @@
 #include <thread>
 #include <chrono>
 
-#include "kernel.hpp"
 #include "galapagos_kernel.hpp"
-#include "galapagos_router.hpp"
 #include "galapagos_router_node.hpp"
-#include "galapagos_node.hpp"
 
 
-TEST_CASE( "HELLO_WORLD" ) {
-    galapagos::kernel gk(0);
-    gk.start(helloWorld);
-    gk.barrier(); 
+std::shared_ptr<spdlog::logger> my_logger;
+
+void kern_generate(short id, galapagos_stream * in, galapagos_stream *out)
+{
+
+
+    galapagos_stream_packet gp;
+    gp.id = id;
+    gp.dest = id+1;
+    gp.last = 0;
+    for(int i=0; i<10; i++){
+        ap_uint <32> lower = i;
+        ap_uint <32> higher = 0xdeadbeef;
+        gp.data = (higher(31, 0), lower(31,0));
+        if(i==9)
+            gp.last = 1;
+        out->write(gp);
+    }
+
+
+
 
 }
 
+void kern_reverseEndian(short id, galapagos_stream * in, galapagos_stream *out)
+{
 
-//KERNEL: SEND, USING RAW POINTER FOR HLS STREAM AND GALAPAGOS STREAM
-TEST_CASE( "KERNEL:1" ) {
-    int source = 0;
-    int dest = 1;
+    galapagos_stream_packet gp_in, gp_out;
+    gp_out.dest = id+1;
+    gp_out.id = id;
+    for(int i=0; i<10; i++){
+        gp_in = in->read();
+        gp_out.data  = (gp_in.data.range(7,0), gp_in.data(15, 8), gp_in.data(23, 16), gp_in.data(31, 24), gp_in.data(39, 32), gp_in.data(47, 40), gp_in.data(55, 48), gp_in.data(63, 56));
+        gp_out.last = gp_in.last;
+        out->write(gp_out);
+    }
+}
+
+
+void kern_output(short id, galapagos_stream * in, galapagos_stream *out){
     
-    galapagos::stream in;
-    galapagos::stream out;
-    galapagos::kernel gk(source, &in, &out);
-    gk.start(kern0);
+    galapagos_stream_packet gp;
+    
+    for(int i=0; i<10; i++){
+        gp = in->read();
+        std::cout << "READ BACK " << std::hex << gp.data << std::endl;
+    }
+
+}
+
+TEST_CASE( "KERNEL:1" ) {
+
+    int source = 0;
+    std::string str_in = "kern_in";
+    std::string str_out = "kern_out";
+    galapagos::stream<ap_uint <64> > in(str_in, spdlog::get("basic_logger"));
+    galapagos::stream<ap_uint <64> > out(str_out, spdlog::get("basic_logger"));
+    galapagos::kernel <ap_uint<64> > gk(source, spdlog::get("basic_logger"));
+    
+    gk.set_func(kern_generate);
+    gk.in = &in;
+    gk.out = &out;
+    
+    gk.start();
     gk.barrier(); 
 
     REQUIRE(out.size() == 10);
-    int total = out.size();
-    for(int i=0; i<total; i++){
-        galapagos::stream_packet gps = out.read();
-        REQUIRE(gps.dest == dest);
-    }
-    
-    
 }
 
 
-TEST_CASE( "ROUTER:1" ) {
+TEST_CASE( "ROUTER_NODE:1" ) {
 
-    int source = 0;
-    
-    std::string my_address = "localhost";
-    std::vector <std::string> kern_info;
-    kern_info.push_back(my_address);
-    kern_info.push_back(my_address);
-    
-    std::mutex mutex;
-    bool done = false;
-    galapagos::router_node router(kern_info, my_address, &done, &mutex, 0);
-    galapagos::kernel gk(source);
-    router.add_kernel(&gk, source);
-    router.start();
-
-    galapagos::stream_packet gps;
-    gps.dest = 0;
-    gps.data = 42;
-    gps.last = 1;
-
-
-
-    router.write(gps);
-    galapagos::stream_packet gps2 = router.read(0);
-    std::this_thread::sleep_for(std::chrono::nanoseconds(1000));
-
-    {
-        std::lock_guard <std::mutex> lock(mutex);
-        done = true;
-    }
-
-    router.end();
-
-    REQUIRE(gps.dest == gps2.dest);
-    REQUIRE(gps.data == gps2.data);
-    REQUIRE(gps.last == gps2.last);
-
-}
-
-TEST_CASE( "ROUTER:2" ) {
-
-    int source = 0;
-    std::string my_address = "localhost";
-    std::vector <std::string> kern_info;
-    kern_info.push_back(my_address);
-    kern_info.push_back(my_address);
-    
-    std::mutex mutex;
-    bool done = false;
-    galapagos::router_node router(kern_info, my_address, &done, &mutex, 0);
-    galapagos::kernel gk(source);
-    router.add_kernel(&gk, source);
-    router.start();
-    
-    std::vector <galapagos::stream_packet> gps_in, gps_out;
-
-    for(int i=0; i<1000; i++){
-        galapagos::stream_packet gps;
-        gps.dest = source;
-        gps.data = i;
-        if(i%20 == 0)
-            gps.last = 1;
-        else
-            gps.last = 0;
-
-
-        gps_in.push_back(gps);
-        router.write(gps);
-    }
-
-
-
-//    REQUIRE(router.m_size(source) + router.s_size(source) == 1000);
-
-    for(int i=0; i<1000; i++){
-        galapagos::stream_packet gps = router.read(0);
-        REQUIRE(gps.dest == gps_in[i].dest);
-        REQUIRE(gps.data == gps_in[i].data);
-        REQUIRE(gps.last == gps_in[i].last);
-
-
-    }
-    
-    REQUIRE(router.s_size(source) == 0);
-    
-    std::this_thread::sleep_for(std::chrono::nanoseconds(1000));
-    {
-        std::lock_guard <std::mutex> lock(mutex);
-        done = true;
-    }
-    router.end();
-
-}
-
-
-TEST_CASE( "ROUTER:3" ) {
-
-    int source = 0;
-    int dest = 1;
-    std::string my_address = "localhost";
-    std::vector <std::string> kern_info;
-    kern_info.push_back(my_address);
-    kern_info.push_back(my_address);
-
-    std::mutex mutex;
-    bool done = false;
-    galapagos::router_node router(kern_info, my_address, &done, &mutex, 0);
-    galapagos::kernel gk_source(source);
-    galapagos::kernel gk_dest(dest);
-
-    router.add_kernel(&gk_source, source);
-    router.add_kernel(&gk_dest, dest);
-    router.start();
-    
-    gk_source.start(kern0);
-    gk_dest.start(kern1);
-    
-    gk_source.barrier(); 
-    gk_dest.barrier(); 
-    {
-        std::lock_guard <std::mutex> lock(mutex);
-        done = true;
-    }
-    router.end();
-}
-
-TEST_CASE( "ROUTER:4" ) {
-
-    int source = 0;
-    int dest = 1;
-    std::string my_address = "localhost";
-    std::vector <std::string> kern_info;
-    kern_info.push_back(my_address);
-    kern_info.push_back(my_address);
-
-    std::mutex mutex;
-    bool done = false;
-    galapagos::router_node router(kern_info, my_address, &done, &mutex, 0);
-    galapagos::kernel gk_source(source);
-    galapagos::kernel gk_dest(dest);
-    gk_source.set_func(kern0);
-    gk_dest.set_func(kern1);
-
-    router.add_kernel(&gk_source, source);
-    router.add_kernel(&gk_dest, dest);
-    router.start();
-    
-    gk_source.start();
-    gk_dest.start();
-    
-    gk_source.barrier(); 
-    gk_dest.barrier(); 
-    {
-        std::lock_guard <std::mutex> lock(mutex);
-        done = true;
-    }
-    router.end();
-}
-
-TEST_CASE( "NODE:1" ) {
-    
-    int source = 0;
-    int dest = 1;
-    std::string my_address = "localhost";
-    std::vector <std::string> kern_info;
-    kern_info.push_back(my_address);
-    kern_info.push_back(my_address);
-
-    galapagos::node node(kern_info, my_address);
-    node.add_kernel(source, kern0);
-    node.add_kernel(dest, kern1);
-    node.start();
-    node.end();
-
-}
-
-TEST_CASE("SESSION:1"){
-
-
-    galapagos::stream in;
-    galapagos::stream out;
-
-
-    std::vector <std::string> kern_info;
 
     std::string my_address = "10.0.0.1";
-    std::string remote_address = "10.0.0.2";
-
-    kern_info.push_back(my_address);
-    kern_info.push_back(remote_address);
-
-    std::mutex mutex;
     bool done = false;
-    galapagos::net::tcp::session_container sc(&in, &out, kern_info, my_address, &done, &mutex);
-    {
-        std::lock_guard <std::mutex> lock(mutex);
-        done = true;
-    }
+    std::mutex mutex;
+    
+    int packets_in_flight = 0;
+    std::mutex mutex_packets_in_flight;
+    
+    std::vector<std::string> kern_info_table;
+    kern_info_table.push_back(my_address);
+    kern_info_table.push_back(my_address);
+    kern_info_table.push_back(my_address);
+            
+    galapagos::router_node <ap_uint<64> > router(kern_info_table, 
+                                                 my_address, 
+                                                 &done, 
+                                                 &mutex, 
+                                                 0, 
+                                                 &mutex_packets_in_flight,
+                                                 &packets_in_flight,
+                                                 spdlog::get("basic_logger")
+                                                );
 
+
+    galapagos::kernel <ap_uint<64> > gk_generate(0, spdlog::get("basic_logger"));
+    gk_generate.set_func(kern_generate);
+    router.add_kernel(&gk_generate, 0);
+    
+    galapagos::kernel <ap_uint<64> > gk_reverseEndian(1, spdlog::get("basic_logger"));
+    gk_reverseEndian.set_func(kern_reverseEndian);
+    router.add_kernel(&gk_reverseEndian, 1);
+    
+    galapagos::kernel <ap_uint<64> > gk_output(2, spdlog::get("basic_logger"));
+    gk_output.set_func(kern_output);
+    router.add_kernel(&gk_output, 2);
+
+
+    gk_generate.start();
+    gk_reverseEndian.start();
+    gk_output.start();
+    router.start();
+
+    gk_generate.barrier();
+    gk_reverseEndian.barrier();
+    gk_output.barrier();
+    
+    int numPacketsLeft;
+    do{
+        std::lock_guard < std::mutex> guard(mutex_packets_in_flight);
+        numPacketsLeft = router.num_packets();
+
+    }while(numPacketsLeft!=0);
 }
 
 
+int main(int argc, char * argv[]){
+    
+    my_logger = spdlog::basic_logger_mt("basic_logger", "unit_test.txt"); 
+    spdlog::set_level(spdlog::level::debug); // Set global log level to debug
+    spdlog::flush_every(std::chrono::seconds(2));
+    my_logger->info("Starting Unit Tests");
+    int result = Catch::Session().run(argc, argv);
 
-//TEST_CASE( "NET:1" ) {
-//    
-//    int source = 0;
-//    int dest = 1;
-//    std::string node_0_address = "localhost";
-//    std::string node_1_address = "192.168.1.106";
-//    std::vector <std::string> kern_info;
-//    kern_info.push_back(node_0_address);
-//    kern_info.push_back(node_1_address);
-//
-//    galapagos::node node_0(kern_info, node_0_address);
-////    galapagos::node node_1(kern_info, node_1_address);
-//    node_0.add_kernel(source, kern0);
-////    node_1.add_kernel(dest, kern1);
-//    node_0.start();
-//    while(1);
-// //   node_1.start();
-// //    node_0.end();
-// //   node_1.end();
-//
-//}
+
+}
