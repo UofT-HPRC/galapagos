@@ -1,9 +1,6 @@
 [submodule "sonar"]
 	path = sonar
 	url = https://github.com/UofT-HPRC/sonar.git
-[submodule "HUMboldt"]
-	path = HUMboldt
-	url = https://github.com/UofT-HPRC/HUMboldt.git
 [submodule "util/spdlog"]
 	path = util/spdlog
 	url = https://github.com/gabime/spdlog.git
