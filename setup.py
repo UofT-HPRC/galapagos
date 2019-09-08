@@ -110,10 +110,10 @@ else:
     vivado_ver = args.viv_ver
 
 if(args.viv_ver == ''):
-    questions.append(viv_ver_q)
+    questions.append(hls_ver_q)
     hls_ver = ''
 else:
-    hls_ver = args.viv_ver
+    hls_ver = args.hls_ver
 
 answers = prompt(questions, style=style)
 
@@ -135,11 +135,11 @@ if answers['hls_ver'] == '':
 
 
 print('ENVIRONMENT VARIABLES SET:')
-env_var = {'GALAPAGOS_PATH': galapagos_dir,
-           'GALAPAGOS_VIVADO_PATH' : vivado_dir,
-           'GALAPAGOS_HLS_PATH' : hls_dir,
-           'GALAPAGOS_VIVADO_VERSION' : vivado_ver,
-           'GALAPAGOS_HLS_VERSION' : hls_ver
+env_var = {'GALAPAGOS_PATH': answers['galapagos_dir'],
+           'GALAPAGOS_VIVADO_PATH' : answers['vivado_dir'],
+           'GALAPAGOS_HLS_PATH' : answers['hls_dir'],
+           'GALAPAGOS_VIVADO_VERSION' : answers['vivado_ver'],
+           'GALAPAGOS_HLS_VERSION' : answers['hls_ver']
         }
 
 pprint(env_var)
