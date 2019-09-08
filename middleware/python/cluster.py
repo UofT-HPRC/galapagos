@@ -43,7 +43,7 @@ class cluster(abstractDict):
             print("Unhandled exetension for " + file_name)
             return None
 
-    def __init__(self, name, kernel_file, map_file):
+    def __init__(self, name, kernel_file, map_file, mode='file'):
         """
         Initializes the cluster object using logical file and mapping file
         
@@ -63,7 +63,12 @@ class cluster(abstractDict):
         self.packet_id = 0 
         self.packet_user = 0 
 
-        top_dict = self.getDict(kernel_file)['cluster']
+        if(mode=='file'):
+            top_dict = self.getDict(kernel_file)['cluster']
+        else:
+            top_dict = kernel_file['cluster']
+
+
         # The user may optionally specify a packet description in <packet> tags
         # Note: it would be nice if Python had some notion of strong typing,
         # since it would make it easier to deal with the user giving the wrong
@@ -98,8 +103,13 @@ class cluster(abstractDict):
             if self.packet_dest:
                 f.write("# define PACKET_DEST_LENGTH " + str(self.packet_dest) + '\n')
             f.write("#endif\n")
-        logical_dict = self.getDict(kernel_file)['cluster']['kernel']
-        map_dict = self.getDict(map_file)['cluster']['node']
+
+        if(mode=='file'):
+            logical_dict = self.getDict(kernel_file)['cluster']['kernel']
+            map_dict = self.getDict(map_file)['cluster']['node']
+        else:
+            logical_dict = kernel_file['cluster']['kernel']
+            map_dict = map_file['cluster']['node']
 
 
         self.kernels = []
@@ -132,17 +142,17 @@ class cluster(abstractDict):
                         else:
                             if kern_dict_local['s_axi']['scope'] == 'local':
                                 kern_dict_local['s_axi']['master']['num'] = str( i + int(kern_dict_local['s_axi']['master']['num']))
-                                print("i is " +  str( i ))
-                                print("updating master port to " +  str( int(kern_dict_local['s_axi']['master']['num'])))
+                                #print("i is " +  str( i ))
+                                #print("updating master port to " +  str( int(kern_dict_local['s_axi']['master']['num'])))
 
 
-                    print('kern_dict_local ' + str(kern_dict_local))
+                    #print('kern_dict_local ' + str(kern_dict_local))
                     # (This is a guess) Naif mentioned that you can hook up local
                     # AXI stream connections between your kernels (unrelated to
                     # Galapagos's router, network bridge, etc.). This must be the
                     # code that handles it
                     if 's_axis' in kern_dict_local:
-                        print('S_AXIS in kern dict')
+                        #print('S_AXIS in kern dict')
                         if type(kern_dict_local['s_axis']) == type([]):
                             for s_axis_idx, s_axis in enumerate(kern_dict_local['s_axis']):
                                 if s_axis['scope'] == 'local':
@@ -161,12 +171,12 @@ class cluster(abstractDict):
                     
                     
                     
-                    print("kern dicT " + str(kern_dict_local))
+                    #print("kern dicT " + str(kern_dict_local))
                     # This basically copies the dictionary parsed from the <kernel> tags into another dictionary,
                     # but it does also check the fields to make sure they're all valid and that no mandatory info
                     # is missing
                     self.kernels.append(kernel(**kern_dict_local))
-                    print("kernelONE object " + str(self.kernels[len(self.kernels) - 1].data))
+                    #print("kernelONE object " + str(self.kernels[len(self.kernels) - 1].data))
 
 
             else:
@@ -174,9 +184,9 @@ class cluster(abstractDict):
                 kern_dict_local['num'] = int(kern_dict_local['num'])
                 self.kernels.append(kernel(**kern_dict_local))
 
-        # Dumps kernel info to the screen (printf debugging)
-        for kern in self.kernels:
-            print("kernel object " + str(kern.data))
+        ## Dumps kernel info to the screen (printf debugging)
+        #for kern in self.kernels:
+        #    print("kernel object " + str(kern.data))
 
         # Now deal with nodes (i.e. a CPU or an FPGA)
         self.nodes = []

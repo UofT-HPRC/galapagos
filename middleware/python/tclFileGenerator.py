@@ -121,8 +121,8 @@ def getInterfaces(fpga, intf, flag = None, scope = None):
         
         #if global we can look for master or slave
         # ^(Not sure what that comment means)
-        if intf=='s_axis' and flag=='scope' and scope =='global':
-            print('kernel is ' + str(kern.data)) 
+        #if intf=='s_axis' and flag=='scope' and scope =='global':
+        #    print('kernel is ' + str(kern.data)) 
         
         # If this kernel has at least one <intf> tag, where intf is the string
         # passed into this function...
@@ -145,8 +145,8 @@ def getInterfaces(fpga, intf, flag = None, scope = None):
                     interfaces.append(copy.deepcopy(kern_intf))
 
     
-    if intf=='s_axis' and flag=='scope' and scope =='global':
-        print("interfaces returned are " + str(interfaces))
+    #if intf=='s_axis' and flag=='scope' and scope =='global':
+    #    print("interfaces returned are " + str(interfaces))
 
     return interfaces
 
@@ -183,7 +183,7 @@ def getSlaveInterfaces(fpga, intf, master):
     slave_array = getInterfaces(fpga, intf, 'scope', 'local')
     
     for slave in slave_array:
-        print ("slave num " + slave['master']['num']) 
+        #print ("slave num " + slave['master']['num']) 
         if ( (int(slave['master']['num'])  == int(master['kernel_inst']['num'])) and strCompare(slave['master']['port'], master['name'])):
             interfaces.append(copy.deepcopy(slave))
     return interfaces
@@ -819,7 +819,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
             if kern['s_axis'] != None:
                 for s_axis in kern['s_axis']:
                     if s_axis['scope'] == 'global':
-                        print("adding kernel to switch " + kern['inst'])
+                        #print("adding kernel to switch " + kern['inst'])
                         kernel_index_str = "0x{:08x}".format(int(kern['num']))
                         switch_port_index_str = "%02d"%switch_port_index
                         properties.append('CONFIG.M' + switch_port_index_str + '_AXIS_BASETDEST {' + kernel_index_str + '}')
