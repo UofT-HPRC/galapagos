@@ -117,21 +117,21 @@ else:
 
 answers = prompt(questions, style=style)
 
-if galapagos_dir == '':
-    galapagos_dir=os.getcwd()
+if answers['galapagos_dir'] == '':
+    answers['galapagos_dir']=os.getcwd()
 
-if vivado_dir == '':
-    vivado_dir = '/opt/Xilinx/Vivado'
+if answers['vivado_dir'] == '':
+    answers['vivado_dir'] = '/opt/Xilinx/Vivado'
 
-if hls_dir == '':
-    hls_dir = '/opt/Xilinx/Vivado'
+if answers['hls_dir'] == '':
+    answers['hls_dir'] = '/opt/Xilinx/Vivado'
 
 
-if vivado_ver == '':
-    vivado_ver = '2018.1'
+if answers['vivado_ver'] == '':
+    answers['vivado_ver'] = '2018.1'
 
-if hls_ver == '':
-    hls_ver = '2018.1'
+if answers['hls_ver'] == '':
+    answers['hls_ver'] = '2018.1'
 
 
 print('ENVIRONMENT VARIABLES SET:')
@@ -146,7 +146,7 @@ pprint(env_var)
 
 out_file = open("my_init.sh", "w") 
 
-out_file.write("source init.sh " + galapagos_dir + ' ' + vivado_dir + ' ' + hls_dir + ' ' + vivado_ver + ' ' + hls_ver)
+out_file.write("source init.sh " + answers['galapagos_dir' + ' ' + answers['vivado_dir'] + ' ' + answers['hls_dir'] + ' ' + answers['vivado_ver'] + ' ' + answers['hls_ver'])
 
 
 
