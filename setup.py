@@ -146,7 +146,7 @@ pprint(env_var)
 
 out_file = open("my_init.sh", "w") 
 
-out_file.write("source init.sh " + answers['galapagos_dir' + ' ' + answers['vivado_dir'] + ' ' + answers['hls_dir'] + ' ' + answers['vivado_ver'] + ' ' + answers['hls_ver'])
+out_file.write("source init.sh " + answers['galapagos_dir'] + ' ' + answers['vivado_dir'] + ' ' + answers['hls_dir'] + ' ' + answers['vivado_ver'] + ' ' + answers['hls_ver'])
 
 
 
