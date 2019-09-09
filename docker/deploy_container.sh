@@ -11,4 +11,4 @@ docker run -ti -p $port:9000 \
            galapagos_docker
            bash
 
-
+docker container ls
