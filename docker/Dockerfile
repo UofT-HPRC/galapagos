@@ -30,14 +30,14 @@ RUN pip3 uninstall -y ipython
 
 RUN pip3 install ipython==6.5.0
 
-RUN cd /home && wget http://downloads.sourceforge.net/project/boost/boost/1.58.0/boost_1_58_0.tar.gz \
-  && tar xfz boost_1_58_0.tar.gz \
-  && rm boost_1_58_0.tar.gz \
-  && cd boost_1_58_0 \
-  && ./bootstrap.sh --prefix=/usr/local --with-libraries=program_options \
+RUN cd /home && wget http://downloads.sourceforge.net/project/boost/boost/1.66.0/boost_1_66_0.tar.gz \
+  && tar xfz boost_1_66_0.tar.gz \
+  && rm boost_1_66_0.tar.gz \
+  && cd boost_1_66_0 \
+  && ./bootstrap.sh --prefix=/usr/local  --with-libraries=system,thread  \
   && ./b2 install \
   && cd /home \
-  && rm -rf boost_1_58_0
+  && rm -rf boost_1_66_0
 
 RUN useradd -ms /bin/bash -G sudo user
 
@@ -49,6 +49,7 @@ RUN git clone https://github.com/takluyver/bash_kernel \
     && cd /home/user/bash_kernel \
     && pip3 install bash_kernel \
     && python3 -m bash_kernel.install
+RUN rm -rf /home/user/bash_kernel
 
 RUN git clone --recursive https://github.com/UofT-HPRC/galapagos.git
 
