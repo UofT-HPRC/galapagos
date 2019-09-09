@@ -35,9 +35,17 @@ RUN useradd -ms /bin/bash -G sudo user
 USER user
 WORKDIR /home/user
 
+#configures bash_kernel
+RUN git clone https://github.com/takluyver/bash_kernel \
+    && cd /home/user/bash_kernel \
+    && pip3 install bash_kernel \
+    && python3 -m bash_kernel.install
+
 RUN git clone --recursive https://github.com/UofT-HPRC/galapagos.git
 
 RUN git clone https://github.com/tarafdar/HCAL_HLS4ML.git
+
+
 
 ADD utoronto_license.sh /home/user/.license.sh
 
