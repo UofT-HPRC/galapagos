@@ -56,8 +56,4 @@ RUN git clone --recursive https://github.com/UofT-HPRC/galapagos.git
 RUN git clone https://github.com/tarafdar/HCAL_HLS4ML.git
 
 
-
-ADD utoronto_license.sh /home/user/.license.sh
-
-RUN touch /home/user/.bashrc \
-    && echo "source .license.sh" >> /home/user/.bashrc
+RUN cat "source .license.sh" >> /home/user/.bashrc
