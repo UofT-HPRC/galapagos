@@ -30,6 +30,15 @@ RUN pip3 uninstall -y ipython
 
 RUN pip3 install ipython==6.5.0
 
+RUN cd /home && wget http://downloads.sourceforge.net/project/boost/boost/1.58.0/boost_1_58_0.tar.gz \
+  && tar xfz boost_1_58_0.tar.gz \
+  && rm boost_1_58_0.tar.gz \
+  && cd boost_1_58_0 \
+  && ./bootstrap.sh --prefix=/usr/local --with-libraries=program_options \
+  && ./b2 install \
+  && cd /home \
+  && rm -rf boost_1_58_0
+
 RUN useradd -ms /bin/bash -G sudo user
 
 USER user
