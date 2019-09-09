@@ -108,6 +108,10 @@ elif [[ $hlsVersion == "2018.1" ]]; then
   hlsPath_append=$hlsPath/$hlsVersion  
 elif [[ $hlsVersion == "2018.2" ]]; then
   hlsPath_append=$hlsPath/$hlsVersion
+elif [[ $hlsVersion == "2018.3" ]]; then
+  hlsPath_append=$hlsPath/$hlsVersion
+elif [[ $hlsVersion == "2019.1" ]]; then
+  hlsPath_append=$hlsPath/$hlsVersion
 else
   echo "Error: unsupported Vivado HLS Version $hlsVersion"
   return 1
