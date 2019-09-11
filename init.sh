@@ -213,12 +213,12 @@ galapagos-update-versions() {
   sed -i "/^export GALAPAGOS_HLS_VERSION=/ s/export GALAPAGOS_HLS_VERSION=.*/export GALAPAGOS_HLS_VERSION=\$2/" \$configFile
 
   source \$configFile
-  source \$vivadoPath/\$GALAPAGOS_VIVADO_VERSION/settings64.sh
+  export PATH=$vivadoPath_append/bin:$PATH
 }
 EOF
 
 source $configFile
-source $vivadoPath_append/settings64.sh
+export PATH=$vivadoPath_append/bin:$PATH
 
 # if it doesn't exist in the .bashrc, add it. Otherwise, uncomment it in case
 if ! grep -Fq "# added by galapagos" ~/.bashrc; then 
