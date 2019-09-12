@@ -77,20 +77,19 @@ The following is an example kernel from the logical file:
 </kernel>
 ```
 
-The `<num>` tag refers to the unique ID of a kernel. 
-The `<rep>` refers to the number of times to repeat a kernel. The IDs are of repeated kernels are increased sequentially.
-The `<clk>` refers to the name of the clock interface, this will be tied to the clock in the Hypervisor.
-The `<aresetn>` refers to the name of the reset interface, this will be tied to the clock in the Hypervisor (negative edge triggered).
-The `<id_port>` refers to the port name in the kernel that will be tied to a constant with the value of the unique kernel ID. (optional)
-There is room for upto one output stream interface and one input stream interface denoted by the tag `<interface>`
-The `<s_axi>` refers to a port from that would be of the `s_axi` interface. If the scope is `global` then this will connect to the control interface (can be either PCIe or ARM, depending on the board). For a local scope, you can specify the `master` which would be another `m_axi` interface that is of `local` scope.
-The `<m_axi>` refers to a port that would be of the `m_axi` interface. If it's of `global` scope then it will tie to the off-chip memory, else it will connect to an `s_axi` interface that is of `local` scope.
-The `<s_axis>` and `<m_axis>` is similar to that of the above interfaces, except that is is the AXI stream. `global` scope ties to the networking port, `local` can connect to each other.
+The `<num>` tag refers to the unique ID of a kernel. <br/>
+The `<rep>` refers to the number of times to repeat a kernel. The IDs are of repeated kernels are increased sequentially. <br/>
+The `<clk>` refers to the name of the clock interface, this will be tied to the clock in the Hypervisor. <br/
+The `<aresetn>` refers to the name of the reset interface, this will be tied to the clock in the Hypervisor (negative edge triggered). <br/>
+The `<id_port>` refers to the port name in the kernel that will be tied to a constant with the value of the unique kernel ID. (optional) <br/>
+The `<s_axi>` refers to a port from that would be of the `s_axi` interface. If the scope is `global` then this will connect to the control interface (can be either PCIe or ARM, depending on the board). For a local scope, you can specify the `master` which would be another `m_axi` interface that is of `local` scope. <br/>
+The `<m_axi>` refers to a port that would be of the `m_axi` interface. If it's of `global` scope then it will tie to the off-chip memory, else it will connect to an `s_axi` interface that is of `local` scope. <br/>
+The `<s_axis>` and `<m_axis>` is similar to that of the above interfaces, except that is is the AXI stream. `global` scope ties to the networking port, `local` can connect to each other. <br/>
 
 
 ### MAPFILE
 
-The cluster is described in a MAPFILE with no notion of the mappings. 
+The cluster is described in a MAPFILE with no notion of the mappings.  <br/>
 The following is an example kernel from the map file:
 
 ```
@@ -107,8 +106,8 @@ The following is an example kernel from the map file:
 
 ```
 
-The `<board>` tag refers to the FPGA board you wish to use for this particular node.
-The `<kernel>` refers to the unique kernel ID that you wish to put on this node. 
+The `<board>` tag refers to the FPGA board you wish to use for this particular node. <br/>
+The `<kernel>` refers to the unique kernel ID that you wish to put on this node.  <br/>
 
   
 For an example refer to `galapagos/middleware/python/tests/conf0/configuration_files/*`
