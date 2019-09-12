@@ -2,19 +2,25 @@
 
 Welcome to the Galapagos Hardware Stack. 
 
+## Prerequisites
 
-## Initial Setup
+Both the Docker Container and native install requires Xilinx Vivado to be installed. Current versions supported are 2017.4, 2018.1, 2018.2, 2018.3
+
+
+## Docker Jupyter Tutorial
+
+To run tutorial refer to instructions in [this README](https://github.com/UofT-HPRC/galapagos/blob/master/docker/README.md)
+
+
+## Initial Setup for Native Install
+
 
 First you need to initialize all environment variables. This is done with a build script.
 `source build.sh`
 
-
-
 The layers of the stack that we introduce are as follows:
 
-- Programming Layer
 - Middleware Layer
-- Cloud Provisioning Layer (not integrated in Galapagos at the moment)
 - Hypervisor Layer
 - Physical Hardware /Network Setup
 
@@ -33,26 +39,8 @@ Boards without the hardened ARM are connected with an X86 CPU via PCIe.
 ## Hypervisor Layer
 
 We plan to have hypervisors setup for various boards. Currently the hypervisor abstracts away the network and PCIe interfaces. 
-You can modify the board names and version of the hypervisor by modifying the BOARD and DCP variables in the Makefile.
-Currently we have a hypervisor built for the Alphadata 8k5 board. The one for the Alphadata 8v3 board is in progress and has yet to be integrated. 
-By default to make new user applications pre-built hypervisors are download from the website. To pull the hypervisor from the server please run 
+This exposes all devices with a hypervisor as an AXI-stream in and out through the network interface, and an S_AXI interface from PCIe or ARM and M_AXI to off-chip memory
 
-
-`make dcp`
-
-This pulls the hypervisor in the shells/<board name>/ directory. 
-To make new hypervisors you would run:
-
-`make shell`
-
-This makes the hypervisor and puts it in the shells/<board name>/ directory.
-
-
-## Cloud Provisioning Layer
-It was previously made in OpenStack as a PCIe pass-through device for a virtual machine.
-This made a lightweight VM with a pcie connected FPGA. In order to passthrough the FPGA, the FPGA needs to be pre-programmed with a bitstream that has a PCIe interface (such as a Hypervisor).
-There is current work in remaking this part with containers in OpenStack and will be automated in the process soon.
-This has not been integrated in this flow just yet. 
 
 ## Middleware Layer
 
@@ -69,21 +57,23 @@ The following is an example kernel from the logical file:
         <clk> nameOfClockPort </clk>
         <id_port> nameOfIDport </id_port>
         <aresetn> nameOfResetPort </aresetn>
-        <interface>
-            <direction> in </direction>
+        <s_axis>
             <name> nameOfInputStreamInterface </name>
-        </interface>
-        <interface>
-            <direction> out </direction>
+	    <scope> scope </scope>
+        </s_axis>
+        <m_axis>
             <name> nameOfOutputStreamInterface </name>
+	    <scope> scope </scope>
             <debug/>
-        </interface>
-        <ctrl_interface>
+        </m_axis>
+        <s_axi>
             <name> nameofControlInterface </name>
-        </ctrl_interface>
-        <mem_interface>
+	    <scope> scope </scope>
+        </s_axi>
+        <m_axi>
             <name> nameOfMemoryInterface </name>
-        </mem_interface>
+	    <scope> scope </scope>
+        </m_axi>
 </kernel>
 ```
 
@@ -93,8 +83,9 @@ The `<clk>` refers to the name of the clock interface, this will be tied to the 
 The `<aresetn>` refers to the name of the reset interface, this will be tied to the clock in the Hypervisor (negative edge triggered).
 The `<id_port>` refers to the port name in the kernel that will be tied to a constant with the value of the unique kernel ID. (optional)
 There is room for upto one output stream interface and one input stream interface denoted by the tag `<interface>`
-The `<ctrl_interface>` refers to a port to be tied to the control port from PCIe in the Hypervisor. This is an AXI slave.
-The `<mem_interface>` refers to a port to be tied to off-chip memory in the Hypervisor. This is an AXI Master.
+The `<s_axi>` refers to a port from that would be of the `s_axi` interface. If the scope is `global` then this will connect to the control interface (can be either PCIe or ARM, depending on the board). For a local scope, you can specify the `master` which would be another `m_axi` interface that is of `local` scope.
+The `<m_axi>` refers to a port that would be of the `m_axi` interface. If it's of `global` scope then it will tie to the off-chip memory, else it will connect to an `s_axi` interface that is of `local` scope.
+The `<s_axis>` and `<m_axis>` is similar to that of the above interfaces, except that is is the AXI stream. `global` scope ties to the networking port, `local` can connect to each other.
 
 
 ### MAPFILE
@@ -104,13 +95,6 @@ The following is an example kernel from the map file:
 
 ```
 <node>
-        <appBridge> 
-            <name> applicationBridge_name </name> 
-            <to_app> portName_to_app </to_app>
-            <from_app> portName_from_app </from_app>
-            <to_net> portName_to_net </to_net>
-            <from_net> portName_from_net </from_net>
-        </appBridge>
         <board> adm-8k5-debug </board>
         <comm> eth </comm>
         <type> hw </type>
@@ -123,42 +107,9 @@ The following is an example kernel from the map file:
 
 ```
 
-The fields in `appBridge` refer to a description of the name of the bridge between the network port (TCP or eth) to the application. If there is no bridge application will be directly connected to the network.
 The `<board>` tag refers to the FPGA board you wish to use for this particular node.
 The `<kernel>` refers to the unique kernel ID that you wish to put on this node. 
 
   
-For an example refer to ./telepathy/sw/conf0/configuration_files/*
+For an example refer to `galapagos/middleware/python/tests/conf0/configuration_files/*`
 
-
-## MPI Programming Layer (HMPI)
-
-This builds an application that uses MPI to communcate on a heterogeneus cluster made by the layers below. HMPI is currently in the git repo https://github.com/eskandarinariman/HMPI:
-
-We provide an example in ./HMPI/mpi_app_benchmarks/HMPI_kmeans/hls/kmeans5.cpp and ./HMPI/mpi_app_benchmarks/HMPI_kmeans/hls/kmeans5_0.cpp
-
-This implements kmeans on 5 ranks. Lastly the result is sent to a sw rank. 
-
-The code for this can be seen in ./HMPI/sw_kmeans
-
-The cluster configuration is seen in ./HMPI/sw_kmeans/configuration_files
-
-You need to specify a bridge to transform AXI stream packets into MPI packets. This is defined in the mpiMap.xml file. 
-
-
-To Build K-Means MPI Example:
-1. `git clone https://github.com/eskandarinariman/HMPI` . This will clone HMPI.
-1. `make kmeans_userIP` This makes the HLS kernels with MPI
-2. Change the Logical and Mapfile in Makefile to point to ./HMPI/sw_kmeans/configuration_files/mpiLogical.xml and ./HMPI/sw_kmeans/configuration_files/mpiMap.xml 
-3. `make createCluster`
-
-## ML Application Layer on top of MPI 
-
-Look at the README in ./telepathy that specifies different configurations. Modify Makefile to point to different configurations.
-
-1. Follow instructions in MPI Programming layer and to get HMPI
-2. `mkdir -p userIP`
-2. Download PYNQ-DL Darius IP and place in userIP
-3. `make ml_userIP`. This builds and packages the ML core into a MPI core.
-4. Change the `CONF_DIR` variable to point to ./telepathy/sw. This contains the configuration files for the ML layer. 
-5. `make createCluster` 
