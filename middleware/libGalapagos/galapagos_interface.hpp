@@ -22,6 +22,9 @@
 #include "galapagos_packet.h"
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h"
+#include "spdlog/fmt/bin_to_hex.h"
+
+
 
 #define MAX_BUFFER 180 //flits approximately of MTU size 
 
@@ -71,6 +74,12 @@ namespace galapagos{
             short write_dest;
             short read_id;
             short read_dest;
+            std::vector <size_t> flit_filter_indices;
+            std::vector <size_t> packet_filter_indices;
+	    char flit_filter[sizeof(ap_uint<64> )];
+	    char packet_filter[MAX_BUFFER];
+	    bool flit_filter_status;
+	    bool packet_filter_status;
         public:
             interface(std::string _name, std::shared_ptr<spdlog::logger> _logger);
             void write(galapagos::stream_packet <T> gps);
@@ -79,6 +88,8 @@ namespace galapagos{
             size_t size();
             void packet_write(char * data, int size, short dest, short id);
             char * packet_read(size_t * size, short * dest, short * id);
+	    void set_filter_flit(size_t pos, char byte);
+	    void set_filter_packet(size_t pos, char byte);
     };
 
 }
@@ -105,6 +116,8 @@ galapagos::interface<T>::interface(
     read_in_prog_addr = 0;
     write_in_prog_addr = 0;
     curr_read_it = packets.end();
+    flit_filter_status = false;
+    packet_filter_status = false;
 }
 
 
@@ -212,6 +225,18 @@ void galapagos::interface<T>::write(galapagos::stream_packet <T> gps){
         //once buffer pushed and available for consumption
         logger->debug("Stream {0} write last flit, adding to list", name); 
     }
+    if(flit_filter_status){
+        bool pass = true;
+	for(int i=0; i<flit_filter_indices.size(); i++){ 
+	    pass= pass & (flit_filter[flit_filter_indices[i]] == gps.data.range(packet_filter_indices[i]*sizeof(ap_uint<64>), packet_filter_indices[i]*sizeof(ap_uint<64>) + sizeof(ap_uint<64>)));
+	    if(!pass) 
+	        break; 
+        }
+        if(pass){
+	    logger->info("FLIT_FILTER");
+            logger->info("{0}:flit:{1:x}", name, gps.data);
+	}
+    }
 
 }
 
@@ -267,7 +292,19 @@ void galapagos::interface<T>::packet_write(char * data, int size, short dest, sh
     packets.push_back(std::move(curr_write)); 
     cv.notify_one();
         
-    logger->debug("Stream {0} batch_write (CPU only) of {1:d} bytes", name, size); 
+    logger->debug("Stream {0} batch_write (CPU only) of {1:d} bytes", name, size);
+    if(packet_filter_status){
+        bool pass = true;
+	for(int i=0; i<packet_filter_indices.size(); i++){ 
+	    pass= pass & (packet_filter[packet_filter_indices[i]] == data[packet_filter_indices[i]]);
+	    if(!pass) 
+	        break; 
+        }
+        if(pass){
+	    logger->info("PACKET_FILTER");
+            logger->info("{0}:packet:{1:n}", name, spdlog::to_hex(data, data+size));
+	}
+    }
 }
 
 /*
@@ -328,6 +365,43 @@ template <class T>
 bool galapagos::interface<T>::empty(){
     bool ret = (size()==0);
     return ret;
+}
+
+/*
+ *Set a filter for logging when streaming out on the flit level
+ *
+ *@tparam pos postion of byte in flit to check 
+ *@returns byte actual byte value
+ *
+ *
+ */
+template <class T> 
+void galapagos::interface<T>::set_filter_flit(size_t pos, char byte){
+   
+   flit_filter_status = true; 
+   assert(pos < sizeof(T));
+   flit_filter[pos] = byte;
+   flit_filter_indices.push_back(pos);
+   assert(flit_filter_indices.size() <= sizeof(T));
+   
+
+}
+
+/*
+ *Set a filter for logging when streaming out on the packet level
+ *
+ *@tparam pos postion of byte in packet to check 
+ *@returns byte actual byte value
+ *
+ *
+ */
+template <class T> 
+void galapagos::interface<T>::set_filter_packet(size_t pos, char byte){
+    packet_filter_status = true; 
+    assert(pos < MAX_BUFFER);
+    packet_filter[pos] = byte;
+    packet_filter_indices.push_back(pos);
+    assert(packet_filter_indices.size() <= MAX_BUFFER);
 }
 
 #endif
