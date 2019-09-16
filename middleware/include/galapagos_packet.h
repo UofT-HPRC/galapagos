@@ -29,9 +29,7 @@ namespace galapagos{
     };
 }
 
-template <typename T> 
-using galapagos_packet = galapagos::stream_packet <T>;
-typedef galapagos::stream_packet <ap_uint<64> > galapagos_stream_packet;
+typedef galapagos::stream_packet <ap_uint<64> > galapagos_packet;
 
 #else
 
@@ -58,8 +56,8 @@ namespace galapagos{
     };
 }
 
-typedef hls::stream<galapagos::stream_packet<64> > galapagos_stream;
-typedef galapagos::stream_packet<64>  galapagos_stream_packet;
+typedef galapagos::stream_packet<64>  galapagos_packet;
+typedef hls::stream<galapagos::stream_packet<64> > galapagos_interface;
 
 #endif // if not CPU 
 

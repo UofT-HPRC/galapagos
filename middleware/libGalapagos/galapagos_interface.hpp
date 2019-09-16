@@ -404,4 +404,5 @@ void galapagos::interface<T>::set_filter_packet(size_t pos, char byte){
     assert(packet_filter_indices.size() <= MAX_BUFFER);
 }
 
+typedef galapagos::interface <ap_uint<64> > galapagos_interface;
 #endif

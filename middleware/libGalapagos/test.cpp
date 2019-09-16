@@ -10,7 +10,7 @@
 #include "galapagos_interface.hpp"
 
 
-#define NUM_ITERATIONS 1
+#define NUM_ITERATIONS 10000
  
 
 std::shared_ptr<spdlog::logger> my_logger;
@@ -20,9 +20,9 @@ std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
 
 //************** INPUT GENERATION KERNELS *************************//
 
-void kern_generate_flit(short id, galapagos::interface <ap_uint <64> > * in, galapagos::interface <ap_uint <64> > * out){
+void kern_generate_flit(short id, galapagos_interface * in, galapagos_interface * out){
 
-    galapagos_stream_packet gp;
+    galapagos_packet gp;
     gp.id = id;
     gp.dest = id+1;
     gp.last = 0;
@@ -38,9 +38,9 @@ void kern_generate_flit(short id, galapagos::interface <ap_uint <64> > * in, gal
     }
 }
 
-void kern_generate_packet(short id, galapagos::interface <ap_uint <64> > * in, galapagos::interface <ap_uint <64> > * out){
+void kern_generate_packet(short id, galapagos_interface * in, galapagos_interface * out){
     
-    galapagos_stream_packet gp;
+    galapagos_packet gp;
     gp.id = id;
     gp.dest = id+1;
     gp.last = 0;
@@ -65,7 +65,7 @@ void kern_generate_packet(short id, galapagos::interface <ap_uint <64> > * in, g
 
 void kern_output_flit_verify(short id, galapagos_stream * in, galapagos_stream *out){
     
-    galapagos_stream_packet gp;
+    galapagos_packet gp;
     
     for(int j=0; j<NUM_ITERATIONS; j++){
         for(int i=0; i<MAX_BUFFER; i++){
@@ -80,7 +80,7 @@ void kern_output_flit_verify(short id, galapagos_stream * in, galapagos_stream *
 
 void kern_output_packet_verify(short id, galapagos_stream * in, galapagos_stream *out){
     
-    galapagos_stream_packet gp;
+    galapagos_packet gp;
     
    
     for(int j=0; j<NUM_ITERATIONS; j++){
@@ -100,7 +100,7 @@ void kern_output_packet_verify(short id, galapagos_stream * in, galapagos_stream
 
 void kern_output_flit_perf(short id, galapagos_stream * in, galapagos_stream *out){
     
-    galapagos_stream_packet gp;
+    galapagos_packet gp;
     
     for(int j=0; j<NUM_ITERATIONS; j++){
         for(int i=0; i<MAX_BUFFER; i++){
@@ -112,7 +112,7 @@ void kern_output_flit_perf(short id, galapagos_stream * in, galapagos_stream *ou
 
 void kern_output_packet_perf(short id, galapagos_stream * in, galapagos_stream *out){
     
-    galapagos_stream_packet gp;
+    galapagos_packet gp;
     
    
     for(int j=0; j<NUM_ITERATIONS; j++){
@@ -379,6 +379,8 @@ TEST_CASE( "INTERFACE:TRACE:PACKET:PASS:1" ) {
     std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1024*1024)) << " MB/s" << std::endl;
 }
     
+
+
 
 int main(int argc, char * argv[]){
     
