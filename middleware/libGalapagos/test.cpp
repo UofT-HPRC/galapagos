@@ -8,6 +8,7 @@
 
 
 #include "galapagos_interface.hpp"
+#include "galapagos_kernel.hpp"
 
 
 #define NUM_ITERATIONS 10000
@@ -63,7 +64,7 @@ void kern_generate_packet(short id, galapagos_interface * in, galapagos_interfac
 
 //************** OUTPUT VERIFICATION KERNELS *************************//
 
-void kern_output_flit_verify(short id, galapagos_stream * in, galapagos_stream *out){
+void kern_output_flit_verify(short id, galapagos_interface * in, galapagos_interface *out){
     
     galapagos_packet gp;
     
@@ -78,7 +79,7 @@ void kern_output_flit_verify(short id, galapagos_stream * in, galapagos_stream *
     end = std::chrono::high_resolution_clock::now();
 }
 
-void kern_output_packet_verify(short id, galapagos_stream * in, galapagos_stream *out){
+void kern_output_packet_verify(short id, galapagos_interface * in, galapagos_interface *out){
     
     galapagos_packet gp;
     
@@ -98,7 +99,7 @@ void kern_output_packet_verify(short id, galapagos_stream * in, galapagos_stream
 
 //************** OUTPUT PERFORMANCE KERNELS *************************//
 
-void kern_output_flit_perf(short id, galapagos_stream * in, galapagos_stream *out){
+void kern_output_flit_perf(short id, galapagos_interface * in, galapagos_interface *out){
     
     galapagos_packet gp;
     
@@ -110,7 +111,7 @@ void kern_output_flit_perf(short id, galapagos_stream * in, galapagos_stream *ou
     end = std::chrono::high_resolution_clock::now();
 }
 
-void kern_output_packet_perf(short id, galapagos_stream * in, galapagos_stream *out){
+void kern_output_packet_perf(short id, galapagos_interface * in, galapagos_interface *out){
     
     galapagos_packet gp;
     
@@ -122,6 +123,15 @@ void kern_output_packet_perf(short id, galapagos_stream * in, galapagos_stream *
         ap_uint<64> * ptr = (ap_uint<64> *)in->packet_read(&size, &dest, &id);
     }
     end = std::chrono::high_resolution_clock::now();
+}
+
+
+void axis_fifo(galapagos_interface * s_axis, galapagos_interface * m_axis, int count){
+
+    for(int i=0; i<count; i++){
+        m_axis->splice(s_axis);	
+    }
+
 }
 
 
@@ -177,8 +187,8 @@ TEST_CASE( "INTERFACE:FUNC:3" ) {
     galapagos::interface <ap_uint <64> > gen_to_output(std::string("gen_to_output"), my_logger);
     galapagos::interface <ap_uint <64> > sink(std::string("sink"), my_logger);
     
-    std::thread t1(kern_generate_packet, 0, &source, &gen_to_output);
-    std::thread t2(kern_output_flit_verify, 1, &gen_to_output, &sink);
+    std::thread t1(kern_generate_flit, 0, &source, &gen_to_output);
+    std::thread t2(kern_output_packet_verify, 1, &gen_to_output, &sink);
 
     t1.join();
     t2.join();
@@ -260,8 +270,8 @@ TEST_CASE( "INTERFACE:PERF:3" ) {
     galapagos::interface <ap_uint <64> > gen_to_output(std::string("gen_to_output"), my_logger);
     galapagos::interface <ap_uint <64> > sink(std::string("sink"), my_logger);
     
-    std::thread t1(kern_generate_packet, 0, &source, &gen_to_output);
-    std::thread t2(kern_output_flit_perf, 1, &gen_to_output, &sink);
+    std::thread t1(kern_generate_flit, 0, &source, &gen_to_output);
+    std::thread t2(kern_output_packet_perf, 1, &gen_to_output, &sink);
 
     t1.join();
     t2.join();
@@ -294,13 +304,13 @@ TEST_CASE( "INTERFACE:PERF:4" ) {
 
 
 //Test from packet filter on flit write
-TEST_CASE( "INTERFACE:TRACE:FLIT:PASS:1" ) {
+TEST_CASE( "INTERFACE:TRACE:PASS:1" ) {
 
     galapagos::interface <ap_uint <64> > source(std::string("source"), my_logger);
     galapagos::interface <ap_uint <64> > gen_to_output(std::string("gen_to_output"), my_logger);
     galapagos::interface <ap_uint <64> > sink(std::string("sink"), my_logger);
     
-    gen_to_output.set_filter_flit(0, 0x02);
+    gen_to_output.set_filter(0, 0x00);
 
     std::thread t1(kern_generate_flit, 0, &source, &gen_to_output);
     std::thread t2(kern_output_packet_verify, 1, &gen_to_output, &sink);
@@ -316,14 +326,14 @@ TEST_CASE( "INTERFACE:TRACE:FLIT:PASS:1" ) {
 
 
 //Test from packet filter on flit write
-TEST_CASE( "INTERFACE:TRACE:FLIT:PASS:2" ) {
+TEST_CASE( "INTERFACE:TRACE:PASS:2" ) {
 
     galapagos::interface <ap_uint <64> > source(std::string("source"), my_logger);
     galapagos::interface <ap_uint <64> > gen_to_output(std::string("gen_to_output"), my_logger);
     galapagos::interface <ap_uint <64> > sink(std::string("sink"), my_logger);
     
-    gen_to_output.set_filter_flit(7, 0xde);
-    gen_to_output.set_filter_flit(6, 0xad);
+    gen_to_output.set_filter(7, 0xde);
+    gen_to_output.set_filter(6, 0xad);
 
     std::thread t1(kern_generate_flit, 0, &source, &gen_to_output);
     std::thread t2(kern_output_packet_verify, 1, &gen_to_output, &sink);
@@ -338,13 +348,13 @@ TEST_CASE( "INTERFACE:TRACE:FLIT:PASS:2" ) {
 }
 
 //Test from packet filter on flit write
-TEST_CASE( "INTERFACE:TRACE:FLIT:FAIL:1" ) {
+TEST_CASE( "INTERFACE:TRACE:FAIL:1" ) {
 
     galapagos::interface <ap_uint <64> > source(std::string("source"), my_logger);
     galapagos::interface <ap_uint <64> > gen_to_output(std::string("gen_to_output"), my_logger);
     galapagos::interface <ap_uint <64> > sink(std::string("sink"), my_logger);
     
-    gen_to_output.set_filter_flit(0, 0xff);
+    gen_to_output.set_filter(0, 0xff);
 
     std::thread t1(kern_generate_flit, 0, &source, &gen_to_output);
     std::thread t2(kern_output_packet_verify, 1, &gen_to_output, &sink);
@@ -358,27 +368,175 @@ TEST_CASE( "INTERFACE:TRACE:FLIT:FAIL:1" ) {
     std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1024*1024)) << " MB/s" << std::endl;
 }
 
-//Test from packet filter on flit write
-TEST_CASE( "INTERFACE:TRACE:PACKET:PASS:1" ) {
+TEST_CASE( "INTERFACE:SPLICE:FUNC:1" ) {
 
-    galapagos::interface <ap_uint <64> > source(std::string("source"), my_logger);
-    galapagos::interface <ap_uint <64> > gen_to_output(std::string("gen_to_output"), my_logger);
-    galapagos::interface <ap_uint <64> > sink(std::string("sink"), my_logger);
+    galapagos::interface <ap_uint <64> > kern_generate_s_axis(std::string("generate_s_axis"), my_logger);
+    galapagos::interface <ap_uint <64> > kern_generate_m_axis(std::string("generate_m_axis"), my_logger);
+    galapagos::interface <ap_uint <64> > kern_output_s_axis(std::string("output_s_axis"), my_logger);
+    galapagos::interface <ap_uint <64> > kern_output_m_axis(std::string("output_m_axis"), my_logger);
     
-    gen_to_output.set_filter_packet(0, 0x00);
-
-    std::thread t1(kern_generate_packet, 0, &source, &gen_to_output);
-    std::thread t2(kern_output_packet_verify, 1, &gen_to_output, &sink);
-
+    std::thread t1(kern_generate_flit, 0, &kern_generate_s_axis, &kern_generate_m_axis);
+    std::thread t3(axis_fifo, &kern_generate_m_axis, &kern_output_s_axis, NUM_ITERATIONS);
+    std::thread t2(kern_output_flit_verify, 1, &kern_output_s_axis, &kern_output_m_axis);
+    
     t1.join();
     t2.join();
-   
+    t3.join();
+    
     std::chrono::duration<double> diff = end-start;
     std::cout << std::endl << " ......................." << Catch::getResultCapture().getCurrentTestName() << "......................." << std::endl;
     std::cout << "RUNTIME:"  <<  diff.count() << " s" << std::endl;
     std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1024*1024)) << " MB/s" << std::endl;
 }
+
+TEST_CASE( "INTERFACE:SPLICE:FUNC:2" ) {
+
+    galapagos::interface <ap_uint <64> > kern_generate_s_axis(std::string("generate_s_axis"), my_logger);
+    galapagos::interface <ap_uint <64> > kern_generate_m_axis(std::string("generate_m_axis"), my_logger);
+    galapagos::interface <ap_uint <64> > kern_output_s_axis(std::string("output_s_axis"), my_logger);
+    galapagos::interface <ap_uint <64> > kern_output_m_axis(std::string("output_m_axis"), my_logger);
     
+    std::thread t1(kern_generate_packet, 0, &kern_generate_s_axis, &kern_generate_m_axis);
+    std::thread t3(axis_fifo, &kern_generate_m_axis, &kern_output_s_axis, NUM_ITERATIONS);
+    std::thread t2(kern_output_flit_verify, 1, &kern_output_s_axis, &kern_output_m_axis);
+    
+    t1.join();
+    t2.join();
+    t3.join();
+    
+    std::chrono::duration<double> diff = end-start;
+    std::cout << std::endl << " ......................." << Catch::getResultCapture().getCurrentTestName() << "......................." << std::endl;
+    std::cout << "RUNTIME:"  <<  diff.count() << " s" << std::endl;
+    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1024*1024)) << " MB/s" << std::endl;
+}
+
+TEST_CASE( "INTERFACE:SPLICE:FUNC:3" ) {
+
+    galapagos::interface <ap_uint <64> > kern_generate_s_axis(std::string("generate_s_axis"), my_logger);
+    galapagos::interface <ap_uint <64> > kern_generate_m_axis(std::string("generate_m_axis"), my_logger);
+    galapagos::interface <ap_uint <64> > kern_output_s_axis(std::string("output_s_axis"), my_logger);
+    galapagos::interface <ap_uint <64> > kern_output_m_axis(std::string("output_m_axis"), my_logger);
+    
+    std::thread t1(kern_generate_flit, 0, &kern_generate_s_axis, &kern_generate_m_axis);
+    std::thread t3(axis_fifo, &kern_generate_m_axis, &kern_output_s_axis, NUM_ITERATIONS);
+    std::thread t2(kern_output_packet_verify, 1, &kern_output_s_axis, &kern_output_m_axis);
+    
+    t1.join();
+    t2.join();
+    t3.join();
+    
+    std::chrono::duration<double> diff = end-start;
+    std::cout << std::endl << " ......................." << Catch::getResultCapture().getCurrentTestName() << "......................." << std::endl;
+    std::cout << "RUNTIME:"  <<  diff.count() << " s" << std::endl;
+    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1024*1024)) << " MB/s" << std::endl;
+}
+
+TEST_CASE( "INTERFACE:SPLICE:FUNC:4" ) {
+
+    galapagos::interface <ap_uint <64> > kern_generate_s_axis(std::string("generate_s_axis"), my_logger);
+    galapagos::interface <ap_uint <64> > kern_generate_m_axis(std::string("generate_m_axis"), my_logger);
+    galapagos::interface <ap_uint <64> > kern_output_s_axis(std::string("output_s_axis"), my_logger);
+    galapagos::interface <ap_uint <64> > kern_output_m_axis(std::string("output_m_axis"), my_logger);
+    
+    std::thread t1(kern_generate_packet, 0, &kern_generate_s_axis, &kern_generate_m_axis);
+    std::thread t3(axis_fifo, &kern_generate_m_axis, &kern_output_s_axis, NUM_ITERATIONS);
+    std::thread t2(kern_output_packet_verify, 1, &kern_output_s_axis, &kern_output_m_axis);
+    
+    t1.join();
+    t2.join();
+    t3.join();
+    
+    std::chrono::duration<double> diff = end-start;
+    std::cout << std::endl << " ......................." << Catch::getResultCapture().getCurrentTestName() << "......................." << std::endl;
+    std::cout << "RUNTIME:"  <<  diff.count() << " s" << std::endl;
+    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1024*1024)) << " MB/s" << std::endl;
+}
+
+
+TEST_CASE( "INTERFACE:SPLICE:PERF:1" ) {
+
+    galapagos::interface <ap_uint <64> > kern_generate_s_axis(std::string("generate_s_axis"), my_logger);
+    galapagos::interface <ap_uint <64> > kern_generate_m_axis(std::string("generate_m_axis"), my_logger);
+    galapagos::interface <ap_uint <64> > kern_output_s_axis(std::string("output_s_axis"), my_logger);
+    galapagos::interface <ap_uint <64> > kern_output_m_axis(std::string("output_m_axis"), my_logger);
+    
+    std::thread t1(kern_generate_flit, 0, &kern_generate_s_axis, &kern_generate_m_axis);
+    std::thread t3(axis_fifo, &kern_generate_m_axis, &kern_output_s_axis, NUM_ITERATIONS);
+    std::thread t2(kern_output_flit_perf, 1, &kern_output_s_axis, &kern_output_m_axis);
+    
+    t1.join();
+    t2.join();
+    t3.join();
+    
+    std::chrono::duration<double> diff = end-start;
+    std::cout << std::endl << " ......................." << Catch::getResultCapture().getCurrentTestName() << "......................." << std::endl;
+    std::cout << "RUNTIME:"  <<  diff.count() << " s" << std::endl;
+    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1024*1024)) << " MB/s" << std::endl;
+}
+
+TEST_CASE( "INTERFACE:SPLICE:PERF:2" ) {
+
+    galapagos::interface <ap_uint <64> > kern_generate_s_axis(std::string("generate_s_axis"), my_logger);
+    galapagos::interface <ap_uint <64> > kern_generate_m_axis(std::string("generate_m_axis"), my_logger);
+    galapagos::interface <ap_uint <64> > kern_output_s_axis(std::string("output_s_axis"), my_logger);
+    galapagos::interface <ap_uint <64> > kern_output_m_axis(std::string("output_m_axis"), my_logger);
+    
+    std::thread t1(kern_generate_packet, 0, &kern_generate_s_axis, &kern_generate_m_axis);
+    std::thread t3(axis_fifo, &kern_generate_m_axis, &kern_output_s_axis, NUM_ITERATIONS);
+    std::thread t2(kern_output_flit_perf, 1, &kern_output_s_axis, &kern_output_m_axis);
+    
+    t1.join();
+    t2.join();
+    t3.join();
+    
+    std::chrono::duration<double> diff = end-start;
+    std::cout << std::endl << " ......................." << Catch::getResultCapture().getCurrentTestName() << "......................." << std::endl;
+    std::cout << "RUNTIME:"  <<  diff.count() << " s" << std::endl;
+    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1024*1024)) << " MB/s" << std::endl;
+}
+
+TEST_CASE( "INTERFACE:SPLICE:PERF:3" ) {
+
+    galapagos::interface <ap_uint <64> > kern_generate_s_axis(std::string("generate_s_axis"), my_logger);
+    galapagos::interface <ap_uint <64> > kern_generate_m_axis(std::string("generate_m_axis"), my_logger);
+    galapagos::interface <ap_uint <64> > kern_output_s_axis(std::string("output_s_axis"), my_logger);
+    galapagos::interface <ap_uint <64> > kern_output_m_axis(std::string("output_m_axis"), my_logger);
+    
+    std::thread t1(kern_generate_flit, 0, &kern_generate_s_axis, &kern_generate_m_axis);
+    std::thread t3(axis_fifo, &kern_generate_m_axis, &kern_output_s_axis, NUM_ITERATIONS);
+    std::thread t2(kern_output_packet_perf, 1, &kern_output_s_axis, &kern_output_m_axis);
+    
+    t1.join();
+    t2.join();
+    t3.join();
+    
+    std::chrono::duration<double> diff = end-start;
+    std::cout << std::endl << " ......................." << Catch::getResultCapture().getCurrentTestName() << "......................." << std::endl;
+    std::cout << "RUNTIME:"  <<  diff.count() << " s" << std::endl;
+    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1024*1024)) << " MB/s" << std::endl;
+}
+
+TEST_CASE( "INTERFACE:SPLICE:PERF:4" ) {
+
+    galapagos::interface <ap_uint <64> > kern_generate_s_axis(std::string("generate_s_axis"), my_logger);
+    galapagos::interface <ap_uint <64> > kern_generate_m_axis(std::string("generate_m_axis"), my_logger);
+    galapagos::interface <ap_uint <64> > kern_output_s_axis(std::string("output_s_axis"), my_logger);
+    galapagos::interface <ap_uint <64> > kern_output_m_axis(std::string("output_m_axis"), my_logger);
+    
+    std::thread t1(kern_generate_packet, 0, &kern_generate_s_axis, &kern_generate_m_axis);
+    std::thread t3(axis_fifo, &kern_generate_m_axis, &kern_output_s_axis, NUM_ITERATIONS);
+    std::thread t2(kern_output_packet_perf, 1, &kern_output_s_axis, &kern_output_m_axis);
+    
+    t1.join();
+    t2.join();
+    t3.join();
+    
+    std::chrono::duration<double> diff = end-start;
+    std::cout << std::endl << " ......................." << Catch::getResultCapture().getCurrentTestName() << "......................." << std::endl;
+    std::cout << "RUNTIME:"  <<  diff.count() << " s" << std::endl;
+    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1024*1024)) << " MB/s" << std::endl;
+}
+
 
 
 

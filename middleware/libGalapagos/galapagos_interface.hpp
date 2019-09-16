@@ -40,8 +40,6 @@ namespace galapagos{
     }buffer;
 
 
-
-
 /*
  *Stream used within Galapagos
  *
@@ -53,7 +51,6 @@ namespace galapagos{
     template <class T> 
     class interface{
         private:
-            
             std::mutex  mutex;
             std::condition_variable cv;
             std::shared_ptr<spdlog::logger> logger;
@@ -74,12 +71,10 @@ namespace galapagos{
             short write_dest;
             short read_id;
             short read_dest;
-            std::vector <size_t> flit_filter_indices;
-            std::vector <size_t> packet_filter_indices;
-	    char flit_filter[sizeof(ap_uint<64> )];
-	    char packet_filter[MAX_BUFFER];
-	    bool flit_filter_status;
-	    bool packet_filter_status;
+            std::vector <size_t> filter_indices;
+	    char filter[MAX_BUFFER];
+	    bool filter_status;
+	    void filter_function(char *packet, int size);
         public:
             interface(std::string _name, std::shared_ptr<spdlog::logger> _logger);
             void write(galapagos::stream_packet <T> gps);
@@ -88,16 +83,20 @@ namespace galapagos{
             size_t size();
             void packet_write(char * data, int size, short dest, short id);
             char * packet_read(size_t * size, short * dest, short * id);
-	    void set_filter_flit(size_t pos, char byte);
-	    void set_filter_packet(size_t pos, char byte);
-    };
+	    void set_filter(size_t pos, char byte);
+
+	    //used to splice into another list
+    	    std::mutex * get_mutex();
+            std::list <galapagos::buffer> * get_packets();
+	    std::condition_variable * get_cv();
+	    void splice(galapagos::interface<T> * _interface);
+     };
 
 }
 
-typedef galapagos::interface <ap_uint <PACKET_DATA_LENGTH> > galapagos_stream;
 
 /*
- *Constructor for galapagos::stream
+ *Constructor for galapagos::interface
  *
  *@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
  *@param[in] name of stream, used for logging purposes
@@ -112,17 +111,16 @@ galapagos::interface<T>::interface(
         ){
     name = _name;
     logger = _logger;
-    logger->info("Making stream {0}", name);
+    logger->info("Making Galapagos Interface:{0}", name);
     read_in_prog_addr = 0;
     write_in_prog_addr = 0;
     curr_read_it = packets.end();
-    flit_filter_status = false;
-    packet_filter_status = false;
+    filter_status = false;
 }
 
 
 /*
- * Read single flit for galapagos::stream
+ * Read single flit for galapagos::interface
  *
  *@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
  *@returns single flit of galapagos packet
@@ -141,12 +139,12 @@ galapagos::stream_packet <T> galapagos::interface<T>::read(){
             while (packets.empty()) {
                 cv.wait(lock);
             }
-            logger->debug("New Stream Read:{0}", name); 
+            logger->debug("New Flit Read:{0}", name); 
             curr_read_it = packets.begin();
 
         }
         else{
-            logger->debug("In Prog Stream Read:{0}", name); 
+            logger->debug("In Prog Flit Read:{0}", name); 
         }
     }
     //once buffer available return flit of buffer and update address
@@ -180,13 +178,39 @@ galapagos::stream_packet <T> galapagos::interface<T>::read(){
 
     }
 
-    logger->debug("Stream {0} read data:{1:x}, dest{2:x}, last{3:d}, at address:{4:d}, size of packet{5:d}", name, gps.data, gps.dest, gps.last, read_in_prog_addr, curr_read_it->size); 
+    logger->debug("Interface:{0} read data:{1:x}, dest{2:x}, last{3:d}, at address:{4:d}, size of packet{5:d}", name, gps.data, gps.dest, gps.last, read_in_prog_addr, curr_read_it->size); 
 
     return gps;
 }
 
+
+
 /*
- * Write single flit for galapagos::stream
+ * Helper function for filtering packets
+ *
+ *@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+ *@param[in] gps single flit of galapagos packet to write
+ *
+ */
+template <class T> 
+void galapagos::interface<T>::filter_function(char *packet, int size){
+
+    if(filter_status){
+        bool pass = true;
+	for(int i=0; i<filter_indices.size(); i++){ 
+	    pass= pass & (filter[filter_indices[i]] == packet[filter_indices[i]]);
+	    if(!pass) 
+	        break; 
+        }
+        if(pass){
+	    logger->info("FILTER********************");
+            logger->info("{0}:packet:{1:n}", name, spdlog::to_hex(packet, packet+size));
+	}
+    }
+}
+
+/*
+ * Write single flit for galapagos::interface
  *
  *@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
  *@param[in] gps single flit of galapagos packet to write
@@ -198,20 +222,20 @@ void galapagos::interface<T>::write(galapagos::stream_packet <T> gps){
     //if not in progress get a new available buffer from end of list
     if(!write_in_prog_addr)
     {
-        logger->debug("New Stream Write:{0}", name); 
+        logger->debug("New Flit Write:{0}", name); 
         std::lock_guard<std::mutex> guard(mutex);
         curr_write.dest = gps.dest;
         curr_write.id = gps.id;
     }
     else{
-        logger->debug("In Prog Stream Write:{0}", name); 
+        logger->debug("In Prog Flit Write:{0}", name); 
     }
         
     
     //once buffer available write flit to buffer and update address
     memcpy((char *)curr_write.data + write_in_prog_addr, (char *)&gps.data, sizeof(T));
     write_in_prog_addr += sizeof(T);
-    logger->debug("Stream {0} write data:{1:x}, dest{2:x}", name, gps.data, gps.dest); 
+    logger->debug("Interface:{0} write data:{1:x}, dest{2:x}", name, gps.data, gps.dest); 
    
     //last flit, moving to list
     if (gps.last){
@@ -220,22 +244,11 @@ void galapagos::interface<T>::write(galapagos::stream_packet <T> gps){
             std::lock_guard<std::mutex> guard(mutex);
             write_in_prog_addr = 0;
             packets.push_back(std::move(curr_write)); 
+	    filter_function(curr_write.data, curr_write.size);
             cv.notify_one();
         }
         //once buffer pushed and available for consumption
-        logger->debug("Stream {0} write last flit, adding to list", name); 
-    }
-    if(flit_filter_status){
-        bool pass = true;
-	for(int i=0; i<flit_filter_indices.size(); i++){ 
-	    pass= pass & (flit_filter[flit_filter_indices[i]] == gps.data.range(packet_filter_indices[i]*sizeof(ap_uint<64>), packet_filter_indices[i]*sizeof(ap_uint<64>) + sizeof(ap_uint<64>)));
-	    if(!pass) 
-	        break; 
-        }
-        if(pass){
-	    logger->info("FLIT_FILTER");
-            logger->info("{0}:flit:{1:x}", name, gps.data);
-	}
+        logger->debug("Interface:{0} write last flit, adding to list", name); 
     }
 
 }
@@ -292,19 +305,8 @@ void galapagos::interface<T>::packet_write(char * data, int size, short dest, sh
     packets.push_back(std::move(curr_write)); 
     cv.notify_one();
         
+    filter_function(data, size);
     logger->debug("Stream {0} batch_write (CPU only) of {1:d} bytes", name, size);
-    if(packet_filter_status){
-        bool pass = true;
-	for(int i=0; i<packet_filter_indices.size(); i++){ 
-	    pass= pass & (packet_filter[packet_filter_indices[i]] == data[packet_filter_indices[i]]);
-	    if(!pass) 
-	        break; 
-        }
-        if(pass){
-	    logger->info("PACKET_FILTER");
-            logger->info("{0}:packet:{1:n}", name, spdlog::to_hex(data, data+size));
-	}
-    }
 }
 
 /*
@@ -368,41 +370,87 @@ bool galapagos::interface<T>::empty(){
 }
 
 /*
- *Set a filter for logging when streaming out on the flit level
- *
- *@tparam pos postion of byte in flit to check 
- *@returns byte actual byte value
- *
- *
- */
-template <class T> 
-void galapagos::interface<T>::set_filter_flit(size_t pos, char byte){
-   
-   flit_filter_status = true; 
-   assert(pos < sizeof(T));
-   flit_filter[pos] = byte;
-   flit_filter_indices.push_back(pos);
-   assert(flit_filter_indices.size() <= sizeof(T));
-   
-
-}
-
-/*
  *Set a filter for logging when streaming out on the packet level
  *
  *@tparam pos postion of byte in packet to check 
- *@returns byte actual byte value
+ *@tparam byte actual byte value
  *
  *
  */
 template <class T> 
-void galapagos::interface<T>::set_filter_packet(size_t pos, char byte){
-    packet_filter_status = true; 
+void galapagos::interface<T>::set_filter(size_t pos, char byte){
+    filter_status = true; 
     assert(pos < MAX_BUFFER);
-    packet_filter[pos] = byte;
-    packet_filter_indices.push_back(pos);
-    assert(packet_filter_indices.size() <= MAX_BUFFER);
+    filter[pos] = byte;
+    filter_indices.push_back(pos);
+    assert(filter_indices.size() <= MAX_BUFFER);
 }
 
-typedef galapagos::interface <ap_uint<64> > galapagos_interface;
+
+
+/*
+ *Get pointer to mutex, needed to splice
+ *
+ *@returns pointer to mutex for list 
+ *
+ *
+ */
+template <class T> 
+std::mutex * galapagos::interface<T>::get_mutex(){
+    return &mutex;
+}
+
+/*
+ *Get pointer to list of packets, needed to splice
+ *
+ *@returns pointer to list of packets 
+ *
+ *
+ */
+template <class T> 
+std::list <galapagos::buffer> * galapagos::interface<T>::get_packets(){
+    return &packets;
+}
+
+
+/*
+ *Get pointer to list of cv, needed to splice
+ *
+ *@returns pointer to list of packets 
+ *
+ *
+ */
+template <class T> 
+std::condition_variable * galapagos::interface<T>::get_cv(){
+    return &cv;
+}
+
+/*
+ * Splices last element of _interface->packets into beginning of packets
+ * The splice moves pointer and should be O(1)
+ *
+ *@tparam _interface is the interface which we are reading from
+ *
+ *
+ */
+
+template <class T> 
+void galapagos::interface<T>::splice(galapagos::interface<T> * _interface){
+
+
+    std::unique_lock<std::mutex> _lock(*(_interface->get_mutex()));
+    while (_interface->get_packets()->empty()) {
+    	_interface->get_cv()->wait(_lock);
+    }
+    std::list <galapagos::buffer>::iterator _it = _interface->get_packets()->end();
+    _it--;
+   
+    //at this point we have safely got last element of other interface
+    std::unique_lock<std::mutex> lock(mutex);
+    packets.splice(packets.begin(), *(_interface->get_packets()), _it);
+    cv.notify_one();
+
+
+}
+typedef galapagos::interface <ap_uint<PACKET_DATA_LENGTH> > galapagos_interface;
 #endif
