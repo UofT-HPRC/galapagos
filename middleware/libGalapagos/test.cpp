@@ -19,6 +19,8 @@ std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
 #include "unit_tests/interface_splice_func.h"
 #include "unit_tests/interface_splice_perf.h"
 #include "unit_tests/interface_trace.h"
+#include "unit_tests/kernel_func.h"
+#include "unit_tests/kernel_perf.h"
 
 
 
