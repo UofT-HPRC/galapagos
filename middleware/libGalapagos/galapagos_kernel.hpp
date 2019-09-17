@@ -26,16 +26,26 @@
 #include "spdlog/sinks/basic_file_sink.h"
 
 namespace galapagos {
+/*
+ *Kernel wrapper used within Galapagos
+ *
+ *@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+ *
+ *
+ *
+ */
     template <class T> 
     class kernel{
-   
-
         private:
+	    //function pointer to kernel (should be mostly functionally portable with HLS)
             void (*func)(short, interface <T> *, interface <T> *);
             std::mutex mutex;
             std::shared_ptr<spdlog::logger> logger;
+	    //thread for running function pointer
 	    std::unique_ptr<std::thread> t;
+	    //input intereface
 	    interface <T> s_axis;
+	    //output interface
 	    interface <T> m_axis;
 	    short id;
         public:
@@ -49,59 +59,57 @@ namespace galapagos {
     };
 }
 
-    template <class T> 
-    galapagos::kernel<T>::kernel(
-            short _id,
-            std::shared_ptr<spdlog::logger> _logger):
-            s_axis(std::string("kernel_") + std::to_string(_id) + std::string("_s_axis"), _logger),
-            m_axis(std::string("kernel_") + std::to_string(_id) + std::string("_m_axis"), _logger)
-    {
+template <class T> 
+galapagos::kernel<T>::kernel(
+        short _id,
+        std::shared_ptr<spdlog::logger> _logger):
+        s_axis(std::string("kernel_") + std::to_string(_id) + std::string("_s_axis"), _logger),
+        m_axis(std::string("kernel_") + std::to_string(_id) + std::string("_m_axis"), _logger)
+{
+
+    logger = _logger;
+    id = _id;
+    logger->info("Created Kernel:{0:d}", _id);
+
+}
     
-        logger = _logger;
-	id = _id;
-        logger->info("Created Kernel:{0:d}", _id);
-    
-    }
-    
-    template <class T> 
-    void galapagos::kernel<T>::set_func(void (* _func)(short, interface <T>*, interface <T>*)){
-        
-	func = _func;
-    
-    }
+template <class T> 
+void galapagos::kernel<T>::set_func(void (* _func)(short, interface <T>*, interface <T>*)){
+    func = _func;
+}
 
     
-    template <class T> 
-    void galapagos::kernel<T>::start(){
-        
-       
-        t = std::make_unique< std::thread>(func, id, &s_axis, &m_axis);
-        logger->info("Started Kernel:{0:d}", id);
-
+template <class T> 
+void galapagos::kernel<T>::start(){
     
-    }
+   
+    t = std::make_unique< std::thread>(func, id, &s_axis, &m_axis);
+    logger->info("Started Kernel:{0:d}", id);
 
 
-    template <class T> 
-    void galapagos::kernel<T>::barrier(){
+}
 
-	t.get()->join();
-        logger->info("Passed Barrier in  Kernel {0:d}", id);
-        
-        
-    }
 
-    template <class T> 
-    galapagos::interface <T> * galapagos::kernel<T>::get_s_axis(){
+template <class T> 
+void galapagos::kernel<T>::barrier(){
 
-	return &s_axis;
+    t.get()->join();
+    logger->info("Passed Barrier in  Kernel {0:d}", id);
     
-    }
     
-    template <class T> 
-    galapagos::interface <T> * galapagos::kernel<T>::get_m_axis(){
+}
 
-	return &m_axis;
-    
-    }
+template <class T> 
+galapagos::interface <T> * galapagos::kernel<T>::get_s_axis(){
+
+    return &s_axis;
+
+}
+
+template <class T> 
+galapagos::interface <T> * galapagos::kernel<T>::get_m_axis(){
+
+    return &m_axis;
+
+}
 #endif

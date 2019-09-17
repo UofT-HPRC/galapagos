@@ -56,7 +56,9 @@ namespace galapagos{
             std::shared_ptr<spdlog::logger> logger;
             std::string name;
             std::list <galapagos::buffer> packets;
-        
+       
+            //needed for size 
+            std::mutex  write_in_prog_mutex;
             // Keeps track of in progress operations
             // In progress means that we are reading/writing a single flit from the middle
             // of a packet
@@ -234,12 +236,20 @@ void galapagos::interface<T>::write(galapagos::stream_packet <T> gps){
     
     //once buffer available write flit to buffer and update address
     memcpy((char *)curr_write.data + write_in_prog_addr, (char *)&gps.data, sizeof(T));
-    write_in_prog_addr += sizeof(T);
+
+    {
+        std::lock_guard<std::mutex> guard(write_in_prog_mutex);
+    	write_in_prog_addr += sizeof(T);
+    }
     logger->debug("Interface:{0} write data:{1:x}, dest{2:x}", name, gps.data, gps.dest); 
    
     //last flit, moving to list
     if (gps.last){
-        curr_write.size = write_in_prog_addr;
+        
+	{
+            std::lock_guard<std::mutex> guard(write_in_prog_mutex);
+	    curr_write.size = write_in_prog_addr;
+	}
         {
             std::lock_guard<std::mutex> guard(mutex);
             write_in_prog_addr = 0;
@@ -268,9 +278,11 @@ size_t galapagos::interface<T>::size(){
     //list empty return 0
     if(!packets.size())
         ret = 0;
-    else{
-        ret = (packets.begin()->size - read_in_prog_addr)/8;
-    }
+   
+    std::lock_guard<std::mutex> _guard(write_in_prog_mutex);
+    if(write_in_prog_addr>0)
+	ret++;
+	 
     return ret;
 }
 
