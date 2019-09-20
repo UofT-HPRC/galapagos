@@ -3,6 +3,7 @@
 // CREATE DATE     : April 20, 2019
 //===============================
 
+
 #ifndef __GALAPAGOS_INTERFACE_HPP__   // if x.h hasn't been included yet...
 #define __GALAPAGOS_INTERFACE_HPP__
 
@@ -29,8 +30,7 @@
 #define MAX_BUFFER 180 //flits approximately of MTU size 
 
 namespace galapagos{
-    /* Struct of buffer used to store entire packets
-    *
+    /** Struct of buffer used to store entire packets
     */
     typedef struct{
         char data[MAX_BUFFER*8];
@@ -40,14 +40,14 @@ namespace galapagos{
     }buffer;
 
 
-/*
- *Stream used within Galapagos
- *
- *@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
- *
- *
- *
- */
+/** @brief Class for the Galapagos Interface.
+
+    Threadsafe for single producer, single consumer. Gives user an interface to read/write flits and entire packets.
+    Packets internally are stored in linked-list and can be spliced to other linked-lists.
+    The flit interface reads from the head packet of the linked-list and writes to the tail packet.
+    @author Naif Tarafdar 
+    @date April 20, 2019
+    */
     template <class T> 
     class interface{
         private:
@@ -86,6 +86,7 @@ namespace galapagos{
             void packet_write(char * data, int size, short dest, short id);
             char * packet_read(size_t * size, short * dest, short * id);
 	    void set_filter(size_t pos, char byte);
+	    short get_head_dest();
 
 	    //used to splice into another list
     	    std::mutex * get_mutex();
@@ -97,15 +98,11 @@ namespace galapagos{
 }
 
 
-/*
- *Constructor for galapagos::interface
- *
- *@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
- *@param[in] name of stream, used for logging purposes
- *@param[in] shared_ptr of logger used globally to log
- *
- */
-
+/**Constructor for galapagos::interface
+ @tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+ @param[in] name of stream, used for logging purposes
+ @param[in] shared_ptr of logger used globally to log
+*/
 template <class T> 
 galapagos::interface<T>::interface(
                     std::string _name,        
@@ -121,14 +118,19 @@ galapagos::interface<T>::interface(
 }
 
 
-/*
- * Read single flit for galapagos::interface
- *
- *@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
- *@returns single flit of galapagos packet
- *
- */
+template <class T> 
+short galapagos::interface<T>::get_head_dest(){
 
+    std::unique_lock<std::mutex> lock(mutex);
+    return packets.begin()->dest; 
+
+}
+
+
+/**Read single flit for galapagos::interface
+ @tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+ @returns single flit of galapagos packet
+ */
 template <class T> 
 galapagos::stream_packet <T> galapagos::interface<T>::read(){
    
@@ -187,13 +189,10 @@ galapagos::stream_packet <T> galapagos::interface<T>::read(){
 
 
 
-/*
- * Helper function for filtering packets
- *
- *@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
- *@param[in] gps single flit of galapagos packet to write
- *
- */
+/**Helper function for filtering packets
+@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+@param[in] gps single flit of galapagos packet to write
+*/
 template <class T> 
 void galapagos::interface<T>::filter_function(char *packet, int size){
 
@@ -211,13 +210,10 @@ void galapagos::interface<T>::filter_function(char *packet, int size){
     }
 }
 
-/*
- * Write single flit for galapagos::interface
- *
- *@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
- *@param[in] gps single flit of galapagos packet to write
- *
- */
+/**Write single flit for galapagos::interface
+@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+@param[in] gps single flit of galapagos packet to write
+*/
 template <class T> 
 void galapagos::interface<T>::write(galapagos::stream_packet <T> gps){
     
@@ -264,41 +260,30 @@ void galapagos::interface<T>::write(galapagos::stream_packet <T> gps){
 }
 
 
-/*
- *Get size of an available buffer to read 
- *
- *@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
- *@returns size of buffer in head of list
- *
- */
+/**Gets number of packets in list, plus if any packets are being written in progress
+@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+@returns size of buffer in head of list
+*/
 template <class T> 
 size_t galapagos::interface<T>::size(){
     size_t ret; 
     std::lock_guard<std::mutex> guard(mutex);
-    //list empty return 0
-    if(!packets.size())
-        ret = 0;
-   
-    std::lock_guard<std::mutex> _guard(write_in_prog_mutex);
-    if(write_in_prog_addr>0)
-	ret++;
+    
+    ret = packets.size();  
+    //std::lock_guard<std::mutex> _guard(write_in_prog_mutex);
+    //if(write_in_prog_addr>0)
+    //ret++;
 	 
     return ret;
 }
 
 
 
-/*
- * Executes a packet write, this function is not portable between CPU and FPGA
- * Please be careful to rewrite CPU functions to use an individual flit write when porting
- * to HLS
- *
- *
- *@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
- *@param[in] data buffer to be written
- *@param[in] size size of buffer
- *
- */
+/**Executes a packet write, this function is not portable between CPU and FPGA. Please be careful to rewrite CPU functions to use an individual flit write when porting to HLS
+@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+@param[in] data buffer to be written
+@param[in] size size of buffer
+*/
 template <class T> 
 void galapagos::interface<T>::packet_write(char * data, int size, short dest, short id){
 
@@ -321,19 +306,13 @@ void galapagos::interface<T>::packet_write(char * data, int size, short dest, sh
     logger->debug("Stream {0} batch_write (CPU only) of {1:d} bytes", name, size);
 }
 
-/*
- * Executes a packet read, this function is not portable between CPU and FPGA
- * Please be careful to rewrite CPU functions to use an individual flit write when porting
- * to HLS
- *
- *
- *@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
- *@param[out] _size size of buffer
- *@param[out] _dest dest of buffer
- *@param[out] _id id of buffer
- *@returns buffer pointing to batch of data 
- *
- */
+/**Executes a packet read, this function is not portable between CPU and FPGA. Please be careful to rewrite CPU functions to use an individual flit write when porting to HLS
+@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+@param[out] _size size of buffer
+@param[out] _dest dest of buffer
+@param[out] _id id of buffer
+@returns buffer pointing to batch of data 
+*/
 template <class T> 
 char * galapagos::interface<T>::packet_read(size_t * _size, short * _dest, short * _id){
 
@@ -367,28 +346,20 @@ char * galapagos::interface<T>::packet_read(size_t * _size, short * _dest, short
     return ret;
 }
 
-/*
- *Get if buffer is empty
- *
- *@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
- *@returns bool representing if buffer is empty
- *
- *
- */
+/**Get if buffer is empty
+@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+@returns bool representing if buffer is empty
+*/
 template <class T> 
 bool galapagos::interface<T>::empty(){
     bool ret = (size()==0);
     return ret;
 }
 
-/*
- *Set a filter for logging when streaming out on the packet level
- *
- *@tparam pos postion of byte in packet to check 
- *@tparam byte actual byte value
- *
- *
- */
+/**Set a filter for logging when streaming out on the packet level
+@tparam pos postion of byte in packet to check 
+@tparam byte actual byte value
+*/
 template <class T> 
 void galapagos::interface<T>::set_filter(size_t pos, char byte){
     filter_status = true; 
@@ -400,52 +371,34 @@ void galapagos::interface<T>::set_filter(size_t pos, char byte){
 
 
 
-/*
- *Get pointer to mutex, needed to splice
- *
- *@returns pointer to mutex for list 
- *
- *
- */
+/**Get pointer to mutex, needed to splice
+@returns pointer to mutex for list 
+*/
 template <class T> 
 std::mutex * galapagos::interface<T>::get_mutex(){
     return &mutex;
 }
 
-/*
- *Get pointer to list of packets, needed to splice
- *
- *@returns pointer to list of packets 
- *
- *
- */
+/**Get pointer to list of packets, needed to splice
+@returns pointer to list of packets 
+*/
 template <class T> 
 std::list <galapagos::buffer> * galapagos::interface<T>::get_packets(){
     return &packets;
 }
 
 
-/*
- *Get pointer to list of cv, needed to splice
- *
- *@returns pointer to list of packets 
- *
- *
- */
+/**Get pointer to list of cv, needed to splice
+@returns pointer to list of packets 
+*/
 template <class T> 
 std::condition_variable * galapagos::interface<T>::get_cv(){
     return &cv;
 }
 
-/*
- * Splices last element of _interface->packets into beginning of packets
- * The splice moves pointer and should be O(1)
- *
- *@tparam _interface is the interface which we are reading from
- *
- *
- */
-
+/**Splices last element of _interface->packets into beginning of packets. The splice moves pointer and should be O(1)
+@tparam _interface is the interface which we are reading from
+*/
 template <class T> 
 void galapagos::interface<T>::splice(galapagos::interface<T> * _interface){
 

@@ -8,68 +8,104 @@
 #define __GALAPAGOS_LOCAL_ROUTER_HPP__
 
 
-
-enum ext_port{network};
+/**external port indices
+* all external ports, , currently just have network but can be more (e.g PCIe)
+*/
+enum ext_port{NETWORK_EXT_INDEX}; 
 
 
 namespace galapagos{
-template<class T>
+
+/** @brief Class for the local_router
+
+    A software implementation of the node router, routing packets by dest sidechannel.
+    Routes between input interfaces(s_axis) and an output interface(m_axis).
+    @author Naif Tarafdar 
+    @date April 20, 2019
+    */
+    template<class T>
     class local_router{
         private:
-    	    std::vector < std::string > kern_info_table;
-            std::string my_address;
+            std::shared_ptr<spdlog::logger> logger;
+    	    std::vector < std::string > kern_info_table;  //!< Stores table indexed by dest, to the node addresses
+            std::string my_address; //!< my node address
             std::vector <galapagos::interface<T> * > ext_interfaces;
             std::vector <int > ext_interfaces_indices;
-            std::unique_ptr <std::thread> t;
-            int ext_index;
-            std::map <int, int> dest_to_kern_ind;
-            int num_local;
-            std::mutex * mutex_packets_in_flight;
-            int * packets_in_flight;
+            
+	    std::unique_ptr <std::thread> t; //!< runs local routing function
+            std::map <int, int> dest_to_kern_ind; //!< map of dest to index on router
+            int num_local; //!< number of kernels on this node
+           
+
+	    typedef struct{
+            	bool * done;
+            	std::mutex  * mutex;
+	    }_done_struct; //<! pointer to done that is set outside the router, routing function will stop when done is asserted and no more packets left in router
+
+ 
+	    typedef struct{
+	    	std::mutex * mutex_packets_in_flight;
+            	int * packets_in_flight;  
+	    }_in_flight_struct; //!< keep track of packets in flight that have left router but not yet consumed externally
+		
+	    _done_struct done_struct;            
+	    _in_flight_struct in_flight_struct;            
+
+	    std::vector <interface <T> *  >  s_axis_ptr; //<! array storing pointers to the input ports of the router
+            std::vector <interface <T> *  >  m_axis_ptr; //<! array storing pointers to the output ports of the router
+	    bool is_done();
         public:
-            router_node(std::vector <std::string>  _kern_info_table, 
+            local_router(std::vector <std::string>  _kern_info_table, 
                         std::string _my_address, 
                         bool * _done, 
                         std::mutex *_mutex, 
-                        int num_ext, 
                         std::mutex * _mutex_packets_in_flight,
                         int * _packets_in_flight,
                         std::shared_ptr<spdlog::logger> _logger
                         );
-            void route();
-            void add_kernel(kernel <T> * _gk, int index);
-            void add_ext_stream(galapagos::streaming_core <T> * gsc);
-            void start();
-            unsigned int num_packets();
-            void end();
-            ~router_node();
-    };
 
+            void route(); //!< routing function, can be overridden for different routers
+            void add_interface_pair(interface <T> * _s_axis, interface <T> * _m_axis); //!< adds a pair of axis interfaces to the router
+            void start(); //!< starts the routing function
+            unsigned int num_packets(); //!< returns current number of packets within the router
+            ~local_router();
+    };
     
 
 }
 
+/**Local Router constructor
+@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+@param[in] _kern_info_table table storing mapping of kernel dests to node addresses
+@param[in] _my_address the node address belonging to this local router 
+@param[in] _done indicates if the local node has finished processing, tells the routing function to finish routing
+@param[in] _mutex mutex associated with _done
+@param[in] _mutex_packets_in_flight mutex associated with packets_in_flight
+@param[in] _packets_in_flight stores how many packets have left the router to be consumed by external drivers 
+@param[in] _logger shared pointer to logger 
+*/
 template <class T> 
-galapagos::router_node<T>::router_node(std::vector <std::string>  _kern_info_table, 
+galapagos::local_router<T>::local_router(std::vector <std::string>  _kern_info_table, 
                                     std::string _my_address,
                                     bool * _done,
                                     std::mutex * _mutex,
-                                    int num_ext,
                                     std::mutex * _mutex_packets_in_flight,
                                     int * _packets_in_flight,
                                     std::shared_ptr<spdlog::logger> _logger
                                     )
 {
+    done_struct.done = _done;
+    done_struct.mutex = _mutex;
     logger = _logger;
-    logger->info("Local Router Constructor");
   
-    mutex_packets_in_flight = _mutex_packets_in_flight;
-    packets_in_flight = _packets_in_flight;
+    in_flight_struct.mutex_packets_in_flight = _mutex_packets_in_flight;
+    in_flight_struct.packets_in_flight = _packets_in_flight;
 
     my_address = _my_address;
-
     num_local = 0;
 
+
+    //stores table, and keeps track of how many of the kernels are local within the node
     for(unsigned int i=0; i<_kern_info_table.size(); i++){
         kern_info_table.push_back(_kern_info_table[i]);
 
@@ -79,117 +115,102 @@ galapagos::router_node<T>::router_node(std::vector <std::string>  _kern_info_tab
         }
     }
     
-    this->logger->info("Created Router Node with Local Address:{0}, {1:d} local nodes and {2:d} external nodes", my_address, num_local, num_ext);
-   
-    galapagos::router<T>::init_ports(num_local+num_ext);
-    ext_index = num_local;
+    logger->info("Created Router Node with Local Address:{0}, {1:d} local nodes", my_address, num_local);
     
 }
 
 
+/**Adds a pair of streaming interfaces to the router
+@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+@param[in] _s_axis input of kernel
+@param[out] _m_axis output of kernel
+*/
 template <class T> 
-void galapagos::router_node<T>::add_ext_stream(galapagos::streaming_core <T> * gsc){
+void galapagos::local_router<T>::add_interface_pair(interface <T> * _s_axis, interface <T> * _m_axis){
+
+    s_axis_ptr.push_back(_s_axis);
+    m_axis_ptr.push_back(_m_axis);
+
+}
+
+
+/**Returns if routing function is done
+@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+@returns if the routing function is done 
+*/
+template <class T> 
+bool galapagos::local_router<T>::is_done(){
     
-   
-    ext_streams.push_back(gsc);
-    ext_streams[ext_streams.size() - 1]->start();
-
-    ext_streams_indices.push_back(ext_index);
-    ext_index++;
-
+    std::lock_guard<std::mutex> guard(*done_struct.mutex);
+    return *done_struct.done;
 }
 
 
-
+/**Starts the routing function
+@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+*/
 template <class T> 
-void galapagos::router_node<T>::add_kernel(galapagos::kernel<T> * _gk, int index){
-
-    this->logger->info("Adding Kernel:{0:d}", index);
-    //this->logger->info("Adding Kernel to Router Node");
-    galapagos::router<T>::add_stream( _gk, index);
-
-}
-
-template <class T> 
-void galapagos::router_node<T>::start(){
-    this->logger->info("Starting Router Node with Local Address:{0}", my_address);
-    t=std::make_unique<std::thread>(&galapagos::router<T>::route, this); 
+void galapagos::local_router<T>::start(){
+    logger->info("Starting Router Node with Local Address:{0}", my_address);
+    t=std::make_unique<std::thread>(&galapagos::local_router<T>::route, this); 
     t->detach();
      
 }
 
 
-
+/**Routing function
+Round robins through the m_axis (the outputs of all kernels and external drivers). Reads header_dest of interface and splices into correct s_axis based off dest. This keeps running until the done is asserted externally.
+@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+*/
 template <class T> 
-void galapagos::router_node<T>::route(){
+void galapagos::local_router<T>::route(){
 
-    galapagos::stream_packet<T> gps;
-    this->logger->debug("in routing function, circling through {0:d} kernels", this->m_axis.size());
+    logger->debug("in routing function, circling through {0:d} kernels", m_axis_ptr.size());
 
 
     do{
-        
+        for(unsigned int i=0; i<m_axis_ptr.size(); i++){
+            galapagos::interface <T> * _m_axis = m_axis_ptr[i];
+            if(!_m_axis->empty()){
+                short head_dest = _m_axis->get_head_dest();
+                logger->debug("Node Routing Packet with dest:{0:x}", head_dest);
 
-        for(unsigned int i=0; i<this->m_axis.size(); i++){
-            if(this->m_axis[i]!=nullptr){
-                galapagos::stream <T> * stream_ptr = this->m_axis[i].get();
-                
-
-                if(stream_ptr->try_peak(gps)){
-                    this->logger->debug("Node Routing Packet with dest:{0:x}", gps.dest);
-
-                    if (kern_info_table[gps.dest] == my_address)
-                    {
-                        this->logger->debug("Node Routing Locally");
-                    	// TODO this optimization is buggy
-                        // stream_ptr->try_read(gps);
-                        // this->s_axis[dest_to_kern_ind[gps.dest]]->write(gps);
-                        int dest, src;
-                        std::vector <T> vect = stream_ptr->read(&dest, &src);
-                        this->s_axis[dest_to_kern_ind[gps.dest]]->write((char *)vect.data(), vect.size()*8, dest, src);
-                    }
-                    else{
-                        this->logger->debug("Node routing to network address {0}", kern_info_table[gps.dest]);
-                        int dest, src;
-                        {
-                            std::lock_guard <std::mutex> guard(*mutex_packets_in_flight);                        
-                            std::vector <T> vect = stream_ptr->read(&dest, &src);
-                            this->s_axis[ext_streams_indices[0]]->write((char *)vect.data(), vect.size()*8, dest, src);
-                            (*(packets_in_flight))+=vect.size();
-                        }
-                    }
-                }
-            }
-        }
+                if (kern_info_table[head_dest] == my_address)
+                {
+                    logger->debug("Node Routing Locally");
+		    s_axis_ptr[dest_to_kern_ind[head_dest]]->splice(_m_axis);
+                }//if (kern_info_table[head_dest] == my_address)
+                else{//currently only external routing is to network
+		    logger->debug("Node routing to network address {0}", kern_info_table[head_dest]);
+                    std::lock_guard <std::mutex> guard(*in_flight_struct.mutex_packets_in_flight);                       
+		    s_axis_ptr[num_local + NETWORK_EXT_INDEX]->splice(_m_axis);
+                    (*(in_flight_struct.packets_in_flight))++;
+                }//else
+            }//if(!_m_axis->empty())
+        }//for
     
-    
-    }while(!this->is_done());
+    }while(!is_done());
 
 }
 
 
+
+/**Returns number of packets within router 
+@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+@returns number of packets within router
+*/
 template <class T> 
-void galapagos::router_node<T>::end(){
-
-
-    while(!this->is_done());
-    this->logger->info("Ending Router Node with Local Address:{0}", my_address);
-
-}
-
-
-template <class T> 
-unsigned int galapagos::router_node<T>::num_packets(){
+unsigned int galapagos::local_router<T>::num_packets(){
 
         unsigned int num = 0;
 
-        for(int i=0; i<this->s_axis.size(); i++){
-            num += this->s_axis[i]->size();
+        for(int i=0; i<s_axis_ptr.size(); i++){
+            num += s_axis_ptr[i]->size();
         }
        
         //exclude packets for in flight
-        for(int i=0; i<ext_index; i++){
-            num += this->m_axis[i]->size();
+        for(int i=0; i<m_axis_ptr.size(); i++){
+            num += m_axis_ptr[i]->size();
         }
 
         return num;
@@ -197,9 +218,10 @@ unsigned int galapagos::router_node<T>::num_packets(){
 
 }
 
+/**Local router destructor
+@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+*/
 template <class T> 
-galapagos::router_node<T>::~router_node(){;}
-
-
+galapagos::local_router<T>::~local_router(){;}
 
 #endif

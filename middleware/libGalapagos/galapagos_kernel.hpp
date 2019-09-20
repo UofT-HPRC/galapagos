@@ -19,21 +19,24 @@
 #include <queue>
 #include <mutex>
 
-// #define CPU
+#ifndef DOC
 #include "galapagos_interface.hpp"
+#endif
 #include "galapagos_packet.h"
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h"
 
 namespace galapagos {
-/*
- *Kernel wrapper used within Galapagos
- *
- *@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
- *
- *
- *
- */
+
+
+
+/** @brief Class for the Kernel wrapper 
+
+    A software wrapper for a kernel object.
+    Wraps an HLS synthesizable function and an input interfaces(s_axis) and an output interface(m_axis).
+    @author Naif Tarafdar 
+    @date April 20, 2019
+    */
     template <class T> 
     class kernel{
         private:
@@ -59,6 +62,11 @@ namespace galapagos {
     };
 }
 
+/**Constructor for galapagos::kernel
+@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+@param[in] _id the dest of the kernel
+@param[in] _logger of logger used globally to log
+ */
 template <class T> 
 galapagos::kernel<T>::kernel(
         short _id,
@@ -73,12 +81,18 @@ galapagos::kernel<T>::kernel(
 
 }
     
+/**Gives kernel object function pointer of HLS synthesizable function to run
+@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+@param[in] _func function pointer for kernel object to store
+*/
 template <class T> 
 void galapagos::kernel<T>::set_func(void (* _func)(short, interface <T>*, interface <T>*)){
     func = _func;
 }
 
-    
+/**Starts function that is being pointed to by kernel
+@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+*/
 template <class T> 
 void galapagos::kernel<T>::start(){
     
@@ -89,7 +103,9 @@ void galapagos::kernel<T>::start(){
 
 }
 
-
+/**Waits for function to finish executing
+@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+*/
 template <class T> 
 void galapagos::kernel<T>::barrier(){
 
@@ -99,6 +115,10 @@ void galapagos::kernel<T>::barrier(){
     
 }
 
+/**Gets a pointer to the s_axis interface of the kernel
+@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+@returns pointer to s_axis  
+*/
 template <class T> 
 galapagos::interface <T> * galapagos::kernel<T>::get_s_axis(){
 
@@ -106,6 +126,10 @@ galapagos::interface <T> * galapagos::kernel<T>::get_s_axis(){
 
 }
 
+/**Gets a pointer to the m_axis interface of the kernel
+@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
+@returns pointer to m_axis  
+*/
 template <class T> 
 galapagos::interface <T> * galapagos::kernel<T>::get_m_axis(){
 

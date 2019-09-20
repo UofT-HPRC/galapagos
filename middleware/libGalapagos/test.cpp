@@ -8,6 +8,7 @@
 
 #include "galapagos_interface.hpp"
 #include "galapagos_kernel.hpp"
+#include "galapagos_local_router.hpp"
 
 #define NUM_ITERATIONS 10000
 std::shared_ptr<spdlog::logger> my_logger;
@@ -21,6 +22,8 @@ std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
 #include "unit_tests/interface_trace.h"
 #include "unit_tests/kernel_func.h"
 #include "unit_tests/kernel_perf.h"
+#include "unit_tests/router_kernel_func.h"
+#include "unit_tests/router_kernel_perf.h"
 
 
 
@@ -151,7 +154,7 @@ void axis_fifo(galapagos_interface * s_axis, galapagos_interface * m_axis, int c
 
 int main(int argc, char * argv[]){
     
-    my_logger = spdlog::basic_logger_mt("basic_logger", "unit_test.txt"); 
+    my_logger = spdlog::basic_logger_mt("basic_logger", "log.txt"); 
 #if LOG_LEVEL==0
     spdlog::set_level(spdlog::level::off); // Set global log level to off
 #elif LOG_LEVEL==1
