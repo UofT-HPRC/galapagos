@@ -8,6 +8,8 @@
 #define __GALAPAGOS_LOCAL_ROUTER_HPP__
 
 
+#include "common.hpp"
+
 /**external port indices
 * all external ports, , currently just have network but can be more (e.g PCIe)
 */
@@ -36,11 +38,6 @@ namespace galapagos{
             std::map <int, int> dest_to_kern_ind; //!< map of dest to index on router
             int num_local; //!< number of kernels on this node
            
-
-	    typedef struct{
-            	bool * done;
-            	std::mutex  * mutex;
-	    }_done_struct; //<! pointer to done that is set outside the router, routing function will stop when done is asserted and no more packets left in router
 
  
 	    typedef struct{

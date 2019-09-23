@@ -9,6 +9,8 @@
 #include "galapagos_interface.hpp"
 #include "galapagos_kernel.hpp"
 #include "galapagos_local_router.hpp"
+#include "galapagos_net_tcp.hpp"
+
 
 #define NUM_ITERATIONS 10000
 std::shared_ptr<spdlog::logger> my_logger;

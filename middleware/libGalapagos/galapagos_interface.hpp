@@ -93,6 +93,11 @@ namespace galapagos{
             std::list <galapagos::buffer> * get_packets();
 	    std::condition_variable * get_cv();
 	    void splice(galapagos::interface<T> * _interface);
+
+	    //used when writing to network socket
+	    std::list<buffer>::iterator get_unsafe_head_buffer();
+	    void delete_unsafe_head_buffer();
+
      };
 
 }
@@ -123,8 +128,9 @@ short galapagos::interface<T>::get_head_dest(){
 
     std::unique_lock<std::mutex> lock(mutex);
     return packets.begin()->dest; 
-
 }
+
+
 
 
 /**Read single flit for galapagos::interface
@@ -224,6 +230,8 @@ void galapagos::interface<T>::write(galapagos::stream_packet <T> gps){
         std::lock_guard<std::mutex> guard(mutex);
         curr_write.dest = gps.dest;
         curr_write.id = gps.id;
+    	write_in_prog_addr = sizeof(T);
+	
     }
     else{
         logger->debug("In Prog Flit Write:{0}", name); 
@@ -244,7 +252,13 @@ void galapagos::interface<T>::write(galapagos::stream_packet <T> gps){
         
 	{
             std::lock_guard<std::mutex> guard(write_in_prog_mutex);
-	    curr_write.size = write_in_prog_addr;
+	    curr_write.size = write_in_prog_addr - sizeof(T);
+    	    T header;
+    	    header.range(63,32) = 0; //last = 0
+    	    header.range(31,24) = curr_write.dest;
+    	    header.range(23,16) = curr_write.id;
+    	    header.range(15,0) = curr_write.size;
+            memcpy((char *)curr_write.data, (char *)&header, sizeof(T));
 	}
         {
             std::lock_guard<std::mutex> guard(mutex);
@@ -259,6 +273,20 @@ void galapagos::interface<T>::write(galapagos::stream_packet <T> gps){
 
 }
 
+
+template <class T> 
+std::list<galapagos::buffer>::iterator galapagos::interface<T>::get_unsafe_head_buffer(){
+
+    return packets.begin();
+
+}
+
+template <class T> 
+void galapagos::interface<T>::delete_unsafe_head_buffer(){
+
+    packets.erase(packets.begin());
+
+}
 
 /**Gets number of packets in list, plus if any packets are being written in progress
 @tparam T the type of data used within each galapagos packet (default ap_uint<64>)
@@ -296,7 +324,16 @@ void galapagos::interface<T>::packet_write(char * data, int size, short dest, sh
     curr_write.size = size;    
     curr_write.dest = dest;
     curr_write.id = id;
-    memcpy((char *)curr_write.data, (char *)data, size);
+
+    
+    T header;
+    header.range(63,32) = 0; //last = 0
+    header.range(31,24) = dest;
+    header.range(23,16) = id;
+    header.range(15,0) = size;
+
+    memcpy((char *)curr_write.data, &header, sizeof(T));
+    memcpy((char *)curr_write.data + sizeof(T), (char *)data, size);
     
     std::lock_guard<std::mutex> guard(mutex);
     packets.push_back(std::move(curr_write)); 
