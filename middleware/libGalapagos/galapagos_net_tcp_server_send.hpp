@@ -37,11 +37,11 @@ namespace galapagos{
 	                tcp_session_container <T> * _sessions,
 	                bool * _done,
 	                std::mutex * _done_mutex,
+			interface <T> * _s_axis,
 			std::shared_ptr <spdlog::logger> _logger
 	                );
 	        ~tcp_server_send(){;}
 	        void send_new(std::string ip_addr);
-		galapagos::interface<T> * get_s_axis();
 	    private:
 	        short port;
 	        void send_loop();
@@ -50,10 +50,10 @@ namespace galapagos{
 	        tcp_session_container <T> * sessions;
 	        std::unique_ptr <std::thread> t_send;
 
-		interface<T> s_axis;
                 std::shared_ptr<spdlog::logger> logger;
 		_done_struct done_struct;	
 		bool is_done();
+		interface <T> * s_axis;
 	};
 
     }//net namespace
@@ -77,11 +77,10 @@ tcp_server_send<T>::tcp_server_send(short _port,
                         tcp_session_container <T> * _sessions,
                         bool * _done,
                         std::mutex * _done_mutex,
+			interface <T> * _s_axis,
 			std::shared_ptr <spdlog::logger> _logger
         
-):
-s_axis(std::string("tcp_server_send_s_axis"), _logger)
-
+)
 {
 
     done_struct.done = _done;
@@ -90,7 +89,7 @@ s_axis(std::string("tcp_server_send_s_axis"), _logger)
     io_context = _io_context;
     sessions = _sessions;
 
-
+    s_axis = _s_axis;
     t_send = std::make_unique<std::thread>(&tcp_server_send::send_loop,this);
     t_send->detach();
     logger->info("Created tcp_server_send");
@@ -117,8 +116,8 @@ template <class T>
 void tcp_server_send<T>::send_loop(){
 
     do{
-        if(!s_axis.empty()){
-	    short dest = s_axis.get_head_dest();
+        if(s_axis->empty()){
+	    short dest = s_axis->get_head_dest();
     	    logger->debug("tcp_server_send, in send loop, sending buffer  to dest{0:d}", dest);
             std::string ip_addr = sessions->get_ip_addr(dest);
             bool session_found = sessions->find(ip_addr);
@@ -126,7 +125,7 @@ void tcp_server_send<T>::send_loop(){
                 send_new(ip_addr);
             }
             else{
-	        sessions->get_s_axis(ip_addr)->splice(&s_axis);		
+	        sessions->get_s_axis(ip_addr)->splice(s_axis);		
             }
         }
 
@@ -155,7 +154,7 @@ void tcp_server_send<T>::send_new(std::string ip_addr){
     	    send_successful = true;
     	    sessions->add_session(std::move(s), &io_context_local);
     	    logger->debug("tcp_server_send, send_new created socket");
-	    sessions->get_s_axis(ip_addr)->splice(&s_axis);		
+	    sessions->get_s_axis(ip_addr)->splice(s_axis);		
     	}
     	catch(const boost::system::system_error& ex){
     	    send_successful = false;
@@ -164,11 +163,4 @@ void tcp_server_send<T>::send_new(std::string ip_addr){
 }
 
 
-template <class T>
-galapagos::interface <T> * tcp_server_send<T>::get_s_axis(){
-
-    return &s_axis();
-
-
-}
 #endif
