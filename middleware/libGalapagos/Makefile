@@ -5,20 +5,24 @@
 
 include $(GALAPAGOS_PATH)/include.mk
 
-BOOST_LDFLAGS=-lboost_thread -lboost_system -lpthread
 
 DEBUG_FLAGS = -g -DLOG_LEVEL=2 
-
-
 PRODUCTION_FLAGS = -O3 -DLOG_LEVEL=1
-
-
-CXXFLAGS = -DCPU  -std=c++17 -isystem $(GALAPAGOS_HLS_PATH)/include -I$(GALAPAGOS_PATH)/middleware/include -I$(GALAPAGOS_PATH)/middleware/CPP_lib/Galapagos_lib $(INCLUDE_UTIL) ${PRODUCTION_FLAGS} 
+BOOST_LDFLAGS=-lboost_thread -lboost_system -lpthread
+ 
+release: CXXFLAGS = -DCPU  -std=c++17 -isystem $(GALAPAGOS_HLS_PATH)/include -I$(GALAPAGOS_PATH)/middleware/include -I$(GALAPAGOS_PATH)/middleware/CPP_lib/Galapagos_lib -L/usr/local/lib $(INCLUDE_UTIL) ${PRODUCTION_FLAGS} 
+release: test.exe 
+debug: CXXFLAGS = -DCPU  -std=c++17 -isystem $(GALAPAGOS_HLS_PATH)/include -I$(GALAPAGOS_PATH)/middleware/include -I$(GALAPAGOS_PATH)/middleware/CPP_lib/Galapagos_lib -L/usr/local/lib $(INCLUDE_UTIL) ${DEBUG_FLAGS} 
+debug: test.exe 
+ 
+all: release 
 
 test.exe: test.cpp *.hpp unit_tests/*
 	$(CXX) $(CXXFLAGS) -o test.exe  test.cpp $(BOOST_LDFLAGS)
 
 
+
 clean:
 	rm -rf *.o
-	rm -rf *.exe 
+	rm -rf *.exe
+	rm -rf *.txt 
