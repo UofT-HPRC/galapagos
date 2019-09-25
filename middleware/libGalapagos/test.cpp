@@ -9,10 +9,16 @@
 #include "galapagos_interface.hpp"
 #include "galapagos_kernel.hpp"
 #include "galapagos_local_router.hpp"
+#include "galapagos_external_driver.hpp"
 #include "galapagos_net_tcp.hpp"
+#include "galapagos_node.hpp"
 
-
+#if LOG_LEVEL==2
+#define NUM_ITERATIONS 1
+#else
 #define NUM_ITERATIONS 10000
+#endif
+
 std::shared_ptr<spdlog::logger> my_logger;
 std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
 
@@ -26,7 +32,9 @@ std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
 #include "unit_tests/kernel_perf.h"
 #include "unit_tests/router_kernel_func.h"
 #include "unit_tests/router_kernel_perf.h"
-
+#include "unit_tests/node_func.h"
+#include "unit_tests/node_perf.h"
+#include "unit_tests/system_func.h"
 
 
 
@@ -151,6 +159,45 @@ void axis_fifo(galapagos_interface * s_axis, galapagos_interface * m_axis, int c
 
 
 
+void kern_flit_loopback(short id, galapagos_interface * in, galapagos_interface *out){
+
+    galapagos_packet gp;
+
+    start = std::chrono::high_resolution_clock::now();
+    for(int j=0; j<NUM_ITERATIONS; j++){
+        for(int i=0; i<MAX_BUFFER; i++){
+	    gp = in->read();
+	    gp.dest = gp.id;
+	    gp.id = id;
+	    out->write(gp);
+	}
+    }
+    end = std::chrono::high_resolution_clock::now();
+}
+
+void kern_packet_loopback(short id, galapagos_interface * in, galapagos_interface *out){
+
+    galapagos_packet gp;
+
+    start = std::chrono::high_resolution_clock::now();
+    for(int j=0; j<NUM_ITERATIONS; j++){
+	size_t size;
+	short dest;
+	short recv_id;
+        ap_uint<64> * ptr = (ap_uint<64> *)in->packet_read(&size, &dest, &recv_id);
+	out->packet_write((char *)ptr, size, recv_id, id);
+    	free(ptr);
+    }
+    end = std::chrono::high_resolution_clock::now();
+}
+
+void kern_generate_output_flit_verify(short id, galapagos_interface * in, galapagos_interface *out){
+
+    kern_generate_flit(id, in, out);
+    kern_output_flit_verify(id, in, out);
+
+}
+
 
 
 
@@ -166,6 +213,7 @@ int main(int argc, char * argv[]){
 #endif
     spdlog::flush_every(std::chrono::seconds(2));
     my_logger->info("Starting Unit Tests");
+    my_logger->flush();
     int result = Catch::Session().run(argc, argv);
 
 }

@@ -33,7 +33,7 @@ namespace galapagos{
     /** Struct of buffer used to store entire packets
     */
     typedef struct{
-        char data[MAX_BUFFER*8];
+        char data[(MAX_BUFFER+1)*8];
         short dest;
         short id;
         size_t size;
@@ -151,7 +151,7 @@ galapagos::stream_packet <T> galapagos::interface<T>::read(){
             }
             logger->debug("New Flit Read:{0}", name); 
             curr_read_it = packets.begin();
-
+	    read_in_prog_addr = sizeof(T);
         }
         else{
             logger->debug("In Prog Flit Read:{0}", name); 
@@ -174,9 +174,9 @@ galapagos::stream_packet <T> galapagos::interface<T>::read(){
 
     gps.dest = curr_read_it->dest;
     gps.id = curr_read_it->id; 
-    assert(read_in_prog_addr <= curr_read_it->size);
+    assert(read_in_prog_addr <= (curr_read_it->size + sizeof(T)));
 
-    if(read_in_prog_addr == (curr_read_it->size)){
+    if(read_in_prog_addr == (curr_read_it->size + sizeof(T))){
         std::unique_lock<std::mutex> lock(mutex);
         gps.last = 1;
         read_in_prog_addr = 0;
@@ -185,7 +185,6 @@ galapagos::stream_packet <T> galapagos::interface<T>::read(){
     }
     else{
         gps.last = 0;
-
     }
 
     logger->debug("Interface:{0} read data:{1:x}, dest{2:x}, last{3:d}, at address:{4:d}, size of packet{5:d}", name, gps.data, gps.dest, gps.last, read_in_prog_addr, curr_read_it->size); 
@@ -268,7 +267,7 @@ void galapagos::interface<T>::write(galapagos::stream_packet <T> gps){
             cv.notify_one();
         }
         //once buffer pushed and available for consumption
-        logger->debug("Interface:{0} write last flit, adding to list", name); 
+        logger->debug("Interface:{0} write last flit, adding to list, with dest:{1:x}", name, curr_write.dest); 
     }
 
 }
@@ -363,7 +362,7 @@ char * galapagos::interface<T>::packet_read(size_t * _size, short * _dest, short
             }
             logger->debug("New Stream Read:{0}", name); 
             curr_read_it = packets.begin();
-
+	    read_in_prog_addr = sizeof(T);
         }
     }
 
@@ -389,6 +388,8 @@ char * galapagos::interface<T>::packet_read(size_t * _size, short * _dest, short
 */
 template <class T> 
 bool galapagos::interface<T>::empty(){
+    logger->debug("empty function of {0}", name);
+    logger->flush();
     bool ret = (size()==0);
     return ret;
 }

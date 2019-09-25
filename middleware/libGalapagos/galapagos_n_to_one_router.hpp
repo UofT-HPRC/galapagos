@@ -67,6 +67,7 @@ galapagos::n_to_one_router<T>::n_to_one_router(
                                     std::mutex * _mutex,
                                     std::shared_ptr<spdlog::logger> _logger
                                     )
+:m_axis(std::string("tcp_m_axis"), _logger)
 {
     done_struct.done = _done;
     done_struct.mutex = _mutex;
@@ -96,7 +97,7 @@ template <class T>
 void galapagos::n_to_one_router<T>::add_s_axis(galapagos::interface<T> * _s_axis){
 
     std::lock_guard<std::mutex> lock(s_axis_mutex);
-    s_axis_ptr(_s_axis);
+    s_axis_ptr.push_back(_s_axis);
 
 }
 

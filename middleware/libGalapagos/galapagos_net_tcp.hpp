@@ -45,14 +45,9 @@ namespace galapagos{
         class tcp: public galapagos::external_driver<T>{
             public:
                 tcp(
-		    short id,
                     short port, 
                     std::vector <std::string> kern_info_table, 
                     std::string  my_address, 
-                    std::mutex * _done_mutex, 
-                    bool * _done,
-                    std::mutex * _mutex_packets_in_flight,
-                    int * _packets_in_flight,
                     std::shared_ptr <spdlog::logger> _logger
                     );
                 ~tcp(){}
@@ -60,94 +55,43 @@ namespace galapagos{
                 interface<T> * get_s_axis(); 
                 interface<T> * get_m_axis();
 		void start(); 
-            protected:
+	    	void init(bool *_done, std::mutex * _done_mutex, int * _packets_in_flight, std::mutex * _mutex_packets_in_flight);
+	    private:
+		interface <T> s_axis;
                 boost::asio::io_context io_context;
-       		tcp_session_container<T> tsc;
-		interface <T> s_axis;
-	    private:
-		tcp_server_send<T> tss;
-		tcp_accept_server<T> tas;
-		n_to_one_router<T> router_out;
+       		std::unique_ptr < tcp_session_container<T> > tsc;
+		std::unique_ptr < tcp_server_send<T> > tss;
+		std::unique_ptr < tcp_accept_server<T> > tas;
+		std::unique_ptr< galapagos::n_to_one_router<T> > router_out;
+                short port;
+                std::vector <std::string>  kern_info_table;
+                std::string   my_address;
         };
         
-	template<class T>
-        class tcp_full: public tcp<T>{
-            public:
-                tcp_full(
-		    short id,
-                    short port, 
-                    std::vector <std::string> kern_info_table, 
-                    std::string   my_address, 
-                    std::mutex * _done_mutex, 
-                    bool * _done,
-                    std::mutex * _mutex_packets_in_flight,
-                    int * _packets_in_flight,
-                    std::shared_ptr <spdlog::logger> _logger
-                    );
-                ~tcp_full(){}
-            private:
-		interface <T> s_axis;
-		tcp_server_send<T> tss;
-		tcp_accept_server<T> tas;
-        };
-        
-	template<class T>
-        class tcp_send: public tcp<T>{
-            public:
-                tcp_send(
-		    short id,
-                    short port, 
-                    std::vector <std::string> kern_info_table, 
-                    std::string   my_address, 
-                    std::mutex * _done_mutex, 
-                    bool * _done,
-                    std::mutex * _mutex_packets_in_flight,
-                    int * _packets_in_flight,
-                    std::shared_ptr <spdlog::logger> _logger
-                    );
-                ~tcp_send(){}
-	    private:
-		tcp_server_send<T> tss;
-        };
-	
-	template<class T>
-        class tcp_recv: public tcp<T>{
-            public:
-                tcp_recv(
-		    short id,
-                    short port, 
-                    std::vector <std::string> kern_info_table, 
-                    std::string   my_address, 
-                    std::mutex * _done_mutex, 
-                    bool * _done,
-                    std::mutex * _mutex_packets_in_flight,
-                    int * _packets_in_flight,
-                    std::shared_ptr <spdlog::logger> _logger
-                    );
-                ~tcp_recv(){}
-	    private:
-		tcp_accept_server<T> tas;
-        };
         
     }//net namespace
 }//galapagos namespace
 
 template<class T>
-galapagos::net::tcp<T>::tcp(short _id,
-            short port, 
-            std::vector <std::string>  kern_info_table, 
-            std::string   my_address, 
-            std::mutex * _done_mutex, 
-            bool * _done,
-            std::mutex * _mutex_packets_in_flight,
-            int * _packets_in_flight,
+galapagos::net::tcp<T>::tcp(
+            short _port, 
+            std::vector <std::string>  _kern_info_table, 
+            std::string   _my_address, 
             std::shared_ptr <spdlog::logger> _logger
             )
-    	:galapagos::external_driver<T>(_done_mutex, _done, _mutex_packets_in_flight, _packets_in_flight, _logger),
-	tsc(kern_info_table, my_address, _done, _done_mutex, &router_out, _mutex_packets_in_flight, _packets_in_flight, _logger),
-    	router_out(_done, _done_mutex, _logger) 
+    	:
+	galapagos::external_driver<T>(_logger),
+	s_axis(std::string("tcp_s_axis"), _logger)
 
 {
+
+    port = _port;
+    for(int i=0; i< _kern_info_table.size(); i++)
+        kern_info_table.push_back(_kern_info_table[i]);
+    my_address = _my_address;
+    this->logger->info("created tcp");
+    this->logger->debug("tcp constructor with {0:d}", kern_info_table.size());
+    this->logger->flush();
     io_context.run();
 }
 
@@ -161,67 +105,38 @@ galapagos::interface<T> * galapagos::net::tcp<T>::get_s_axis()
 template<class T>
 galapagos::interface<T> * galapagos::net::tcp<T>::get_m_axis()
 {
-    return router_out.get_m_axis();
+    return router_out->get_m_axis();
 }
 
 
 template<class T>
 void galapagos::net::tcp<T>::start()
 {
-    router_out.start();
+    this->logger->info("tcp started");
+    this->logger->flush();
+    router_out->start();
+    tss->start();
+}
+
+template<class T>
+void galapagos::net::tcp<T>::init(bool * _done,
+					std::mutex * _done_mutex,
+					int * _packets_in_flight,
+					std::mutex * _mutex_packets_in_flight
+					)
+{
+    this->done_struct.mutex = _done_mutex;    
+    this->done_struct.done = _done;    
+    this->packets_in_flight.num = _packets_in_flight;
+    this->packets_in_flight.mutex = _mutex_packets_in_flight;
+    
+    router_out = std::make_unique< galapagos::n_to_one_router<T> > (this->done_struct.done, this->done_struct.mutex, this->logger); 
+    tsc = std::make_unique< galapagos::net::tcp_session_container<T> > (kern_info_table, my_address, this->done_struct.done, this->done_struct.mutex, router_out.get(), this->packets_in_flight.mutex, this->packets_in_flight.num, this->logger);
+    tss = std::make_unique< galapagos::net::tcp_server_send<T> > (port, &io_context, tsc.get(), this->done_struct.done, this->done_struct.mutex, &(this->s_axis), this->logger);
+    tas = std::make_unique< galapagos::net::tcp_accept_server<T> > (&io_context, my_address, port, tsc.get(), this->logger);
+
 }
 
 
-template<class T>
-galapagos::net::tcp_full<T>::tcp_full(short _id,
-            short port, 
-            std::vector <std::string>  kern_info_table, 
-            std::string   my_address, 
-            std::mutex * _done_mutex, 
-            bool * _done,
-            std::mutex * _mutex_packets_in_flight,
-            int * _packets_in_flight,
-            std::shared_ptr <spdlog::logger> _logger
-            )
-    	:
-        galapagos::net::tcp<T>(_id, port, kern_info_table, my_address, _done_mutex, _done, _mutex_packets_in_flight, _packets_in_flight, _logger),	
-	tss(port, &(this->io_context), &(this->tsc), _done, _done_mutex, &(this->s_axis), _logger),
-        tas(&(this->io_context), my_address, port, &(this->tsc), _logger)
-
-{;}
-
-template<class T>
-galapagos::net::tcp_send<T>::tcp_send(short _id,
-            short port, 
-            std::vector <std::string>  kern_info_table, 
-            std::string   my_address, 
-            std::mutex * _done_mutex, 
-            bool * _done,
-            std::mutex * _mutex_packets_in_flight,
-            int * _packets_in_flight,
-            std::shared_ptr <spdlog::logger> _logger
-            )
-    	:
-        galapagos::net::tcp<T>(_id, port, kern_info_table, my_address, _done_mutex, _done, _mutex_packets_in_flight, _packets_in_flight, _logger),	
-	tss(port, &(this->io_context), &(this->tsc), _done, _done_mutex, &(this->s_axis), _logger)
-
-{;}
-
-template<class T>
-galapagos::net::tcp_recv<T>::tcp_recv(short _id,
-            short port, 
-            std::vector <std::string>  kern_info_table, 
-            std::string   my_address, 
-            std::mutex * _done_mutex, 
-            bool * _done,
-            std::mutex * _mutex_packets_in_flight,
-            int * _packets_in_flight,
-            std::shared_ptr <spdlog::logger> _logger
-            )
-    	:
-        galapagos::net::tcp<T>(_id, port, kern_info_table, my_address, _done_mutex, _done, _mutex_packets_in_flight, _packets_in_flight, _logger),	
-        tas(&(this->io_context), my_address, port, &(this->tsc), _logger)
-
-{;}
 
 #endif

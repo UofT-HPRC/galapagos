@@ -42,6 +42,7 @@ namespace galapagos{
 	                );
 	        ~tcp_server_send(){;}
 	        void send_new(std::string ip_addr);
+   		void start();
 	    private:
 	        short port;
 	        void send_loop();
@@ -90,10 +91,22 @@ tcp_server_send<T>::tcp_server_send(short _port,
     sessions = _sessions;
 
     s_axis = _s_axis;
+    logger = _logger;
+    //_logger->info("Created tcp_server_send");
+}
+
+
+
+template <class T>
+void tcp_server_send<T>::start(){
+    
     t_send = std::make_unique<std::thread>(&tcp_server_send::send_loop,this);
     t_send->detach();
-    logger->info("Created tcp_server_send");
-}
+
+
+
+} 
+
 
 
 /**Returns if node is done 
@@ -104,8 +117,8 @@ template <class T>
 bool tcp_server_send<T>::is_done(){
 
 
-    std::lock_guard<std::mutex> guard(done_struct.mutex);
-    return *done_struct.done;
+    std::lock_guard<std::mutex> guard(*(done_struct.mutex));
+    return *(done_struct.done);
 
 }
 
@@ -116,7 +129,7 @@ template <class T>
 void tcp_server_send<T>::send_loop(){
 
     do{
-        if(s_axis->empty()){
+        if(!s_axis->empty()){
 	    short dest = s_axis->get_head_dest();
     	    logger->debug("tcp_server_send, in send loop, sending buffer  to dest{0:d}", dest);
             std::string ip_addr = sessions->get_ip_addr(dest);

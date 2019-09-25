@@ -8,6 +8,8 @@
 #define __GALAPAGOS_LOCAL_ROUTER_HPP__
 
 
+#include <map>
+#include <assert.h>
 #include "common.hpp"
 
 /**external port indices
@@ -168,6 +170,8 @@ void galapagos::local_router<T>::route(){
     do{
         for(unsigned int i=0; i<m_axis_ptr.size(); i++){
             galapagos::interface <T> * _m_axis = m_axis_ptr[i];
+            logger->debug("Checking i:{0:d}", i);
+ 	    logger->flush();
             if(!_m_axis->empty()){
                 short head_dest = _m_axis->get_head_dest();
                 logger->debug("Node Routing Packet with dest:{0:x}", head_dest);
@@ -179,7 +183,8 @@ void galapagos::local_router<T>::route(){
                 }//if (kern_info_table[head_dest] == my_address)
                 else{//currently only external routing is to network
 		    logger->debug("Node routing to network address {0}", kern_info_table[head_dest]);
-                    std::lock_guard <std::mutex> guard(*in_flight_struct.mutex_packets_in_flight);                       
+                    logger->flush();
+		    std::lock_guard <std::mutex> guard(*in_flight_struct.mutex_packets_in_flight);                       
 		    s_axis_ptr[num_local + NETWORK_EXT_INDEX]->splice(_m_axis);
                     (*(in_flight_struct.packets_in_flight))++;
                 }//else

@@ -144,6 +144,21 @@ m_axis(std::string("tcp_session_") + std::to_string(_id) + std::string("_m_axis"
 
 }
 
+template <class T>
+galapagos::interface<T> * tcp_session<T>::get_s_axis()
+{
+    return &s_axis;
+}
+
+
+template <class T>
+galapagos::interface<T> * tcp_session<T>::get_m_axis()
+{
+    return &m_axis;
+}
+
+
+
 /**Starts the tcp session read and write functions
 @tparam T the type of data used within each galapagos packet (default ap_uint<64>)
 */
@@ -251,6 +266,8 @@ tcp_session_container<T>::tcp_session_container(
 		    		  	std::shared_ptr <spdlog::logger> _logger
         ){
 
+    _logger->info("tcp_session_container constructor");
+    _logger->flush();
 
     router_out = _router_out;
     packets_in_flight.mutex = _mutex_packets_in_flight;
@@ -270,7 +287,6 @@ tcp_session_container<T>::tcp_session_container(
 
     done_struct.done = _done;
     done_struct.mutex = _mutex;
-    router_out->start();
 }
 
 
@@ -290,7 +306,7 @@ void tcp_session_container<T>::add_session(boost::asio::ip::tcp::socket  _socket
     my_sessions.push_back((new tcp_session<T>(std::move(_socket), io_context, packets_in_flight.mutex, packets_in_flight.num, done_struct.done, done_struct.mutex, my_sessions.size(), logger)));
     my_session_map[ip_addr] = my_sessions.size()-1;
 
-    router_out->add_s_axis(my_sessions[my_sessions.size()-1].get_s_axis());
+    router_out->add_s_axis(my_sessions[my_sessions.size()-1]->get_s_axis());
     my_sessions[my_sessions.size()-1]->start();
 
 }
