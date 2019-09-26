@@ -35,12 +35,10 @@ namespace galapagos{
 	    std::vector <interface <T> *  >  s_axis_ptr; //<! array storing pointers to the input ports of the router
 	    interface <T> m_axis;
 	    std::mutex s_axis_mutex;
-	    bool is_done();
 	    std::unique_ptr <std::thread> t;
         public:
             n_to_one_router(
-                        bool * _done, 
-                        std::mutex *_mutex, 
+                        done_clean * _dc,
                         std::shared_ptr<spdlog::logger> _logger
                         );
 
@@ -50,6 +48,7 @@ namespace galapagos{
             unsigned int num_packets(); //!< returns current number of packets within the router
             ~n_to_one_router();
 	    interface <T> * get_m_axis();
+            done_clean * dc;
     };
     
 
@@ -63,30 +62,18 @@ namespace galapagos{
 */
 template <class T> 
 galapagos::n_to_one_router<T>::n_to_one_router(
-                                    bool * _done,
-                                    std::mutex * _mutex,
+                                    done_clean * _dc,
                                     std::shared_ptr<spdlog::logger> _logger
                                     )
 :m_axis(std::string("tcp_m_axis"), _logger)
 {
-    done_struct.done = _done;
-    done_struct.mutex = _mutex;
+    dc = _dc;
     logger = _logger;
     logger->info("Created n to one router");
     
 }
 
 
-/**Returns if routing function is done
-@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
-@returns if the routing function is done 
-*/
-template <class T> 
-bool galapagos::n_to_one_router<T>::is_done(){
-    
-    std::lock_guard<std::mutex> guard(*done_struct.mutex);
-    return *done_struct.done;
-}
 
 
 /**Adds a new interface to the list of inputs
@@ -128,8 +115,9 @@ void galapagos::n_to_one_router<T>::route(){
 		m_axis.splice(_s_axis);
             }//if(!_s_axis->empty())
         }//for
-    }while(!is_done());
+    }while(!dc->is_done());
 
+    dc->clean();
 }
 
 

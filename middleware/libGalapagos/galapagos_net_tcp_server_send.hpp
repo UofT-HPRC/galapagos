@@ -35,14 +35,14 @@ namespace galapagos{
 	    public:
 	        tcp_server_send(short _port, boost::asio::io_context * _io_context,
 	                tcp_session_container <T> * _sessions,
-	                bool * _done,
-	                std::mutex * _done_mutex,
-			interface <T> * _s_axis,
-			std::shared_ptr <spdlog::logger> _logger
+                    done_clean * _dc,
+			        interface <T> * _s_axis,
+			        std::shared_ptr <spdlog::logger> _logger
 	                );
 	        ~tcp_server_send(){;}
 	        void send_new(std::string ip_addr);
-   		void start();
+   		    void start();
+            done_clean * dc;
 	    private:
 	        short port;
 	        void send_loop();
@@ -51,10 +51,9 @@ namespace galapagos{
 	        tcp_session_container <T> * sessions;
 	        std::unique_ptr <std::thread> t_send;
 
-                std::shared_ptr<spdlog::logger> logger;
-		_done_struct done_struct;	
-		bool is_done();
-		interface <T> * s_axis;
+            std::shared_ptr<spdlog::logger> logger;
+		    _done_struct done_struct;	
+		    interface <T> * s_axis;
 	};
 
     }//net namespace
@@ -76,16 +75,14 @@ template <class T>
 tcp_server_send<T>::tcp_server_send(short _port, 
                         boost::asio::io_context * _io_context, 
                         tcp_session_container <T> * _sessions,
-                        bool * _done,
-                        std::mutex * _done_mutex,
-			interface <T> * _s_axis,
-			std::shared_ptr <spdlog::logger> _logger
+                        done_clean * _dc,
+			            interface <T> * _s_axis,
+			            std::shared_ptr <spdlog::logger> _logger
         
 )
 {
 
-    done_struct.done = _done;
-    done_struct.mutex = _done_mutex;
+    dc = _dc;
     port = _port;
     io_context = _io_context;
     sessions = _sessions;
@@ -103,24 +100,9 @@ void tcp_server_send<T>::start(){
     t_send = std::make_unique<std::thread>(&tcp_server_send::send_loop,this);
     t_send->detach();
 
-
-
 } 
 
 
-
-/**Returns if node is done 
-@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
-@returns if the node is done 
-*/
-template <class T>
-bool tcp_server_send<T>::is_done(){
-
-
-    std::lock_guard<std::mutex> guard(*(done_struct.mutex));
-    return *(done_struct.done);
-
-}
 
 /**Reads from input and writes to session 
 @tparam T the type of data used within each galapagos packet (default ap_uint<64>)
@@ -130,7 +112,7 @@ void tcp_server_send<T>::send_loop(){
 
     do{
         if(!s_axis->empty()){
-	    short dest = s_axis->get_head_dest();
+	        short dest = s_axis->get_head_dest();
     	    logger->debug("tcp_server_send, in send loop, sending buffer  to dest{0:d}", dest);
             std::string ip_addr = sessions->get_ip_addr(dest);
             bool session_found = sessions->find(ip_addr);
@@ -138,12 +120,14 @@ void tcp_server_send<T>::send_loop(){
                 send_new(ip_addr);
             }
             else{
-	        sessions->get_s_axis(ip_addr)->splice(s_axis);		
+	            sessions->get_s_axis(ip_addr)->splice(s_axis);	
+                logger->debug("spliced(in loop) list now has {0:d} elements", s_axis->size());
             }
         }
 
-    }while(!is_done());
+    }while(!dc->is_done());
 
+    dc->clean();
 }
 
 
@@ -167,7 +151,8 @@ void tcp_server_send<T>::send_new(std::string ip_addr){
     	    send_successful = true;
     	    sessions->add_session(std::move(s), &io_context_local);
     	    logger->debug("tcp_server_send, send_new created socket");
-	    sessions->get_s_axis(ip_addr)->splice(s_axis);		
+	        sessions->get_s_axis(ip_addr)->splice(s_axis);		
+            logger->debug("spliced(in new) list now has {0:d} elements", s_axis->size());
     	}
     	catch(const boost::system::system_error& ex){
     	    send_successful = false;

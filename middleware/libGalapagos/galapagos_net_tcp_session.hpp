@@ -36,28 +36,29 @@ namespace galapagos{
     	            boost::asio::io_context * _io_context, 
     	            std::mutex * _mutex_packets_in_flight,
     	            int * _packets_in_flight,
-                    bool * _done, 
-                    std::mutex *_mutex, 
-		    short _id,
-		    std::shared_ptr <spdlog::logger> _logger
+                    short _id,
+		            done_clean * _dc,
+		            std::shared_ptr <spdlog::logger> _logger
     	           );
     	    ~tcp_session(){socket.close();}
     	    void start();
-	    interface <T>*  get_m_axis();
-	    interface <T>*  get_s_axis();
-	    short my_id;
+	        interface <T>*  get_m_axis();
+	        interface <T>*  get_s_axis();
+	        short my_id;
+            std::unique_ptr <galapagos::done_clean> read_dc;
+            std::unique_ptr <galapagos::done_clean> write_dc;
     	private:
     	    void do_read();
     	    void do_write();
-	    bool is_done();
     	    enum { max_length = MAX_BUFFER };
     	    boost::asio::ip::tcp::socket socket;
     	    boost::asio::io_context * io_context;
     	    interface<T>  s_axis;
     	    interface<T>  m_axis;
-	    _num_threadsafe packets_in_flight;
-	    _done_struct done_struct;
+	        _num_threadsafe packets_in_flight;
+	        _done_struct done_struct;
             std::shared_ptr<spdlog::logger> logger;
+            done_clean * dc;
     	};
 
 /** @brief Class for the session_container. Addressable by dest. 
@@ -72,12 +73,11 @@ namespace galapagos{
                 tcp_session_container(
                                   std::vector <std::string> & _kernel_info_table,
                                   std::string  & my_address,
-                                  bool * _done,
-                                  std::mutex * _mutex,
+                                  done_clean * _dc,
                                   n_to_one_router <T> * _router_out,
                                   std::mutex * _mutex_packets_in_flight,
                                   int * _packets_in_flight, 
-		    		  std::shared_ptr <spdlog::logger> _logger
+		    		              std::shared_ptr <spdlog::logger> _logger
                                   );
                 void add_session(boost::asio::ip::tcp::socket _socket, boost::asio::io_context * io_context);
                 std::string get_ip_addr(short dest);
@@ -85,7 +85,7 @@ namespace galapagos{
                 bool find(std::string _ip_addr);
                 void start();
                 bool barrier();
-		interface<T> * get_s_axis(std::string ip_addr);
+		        interface<T> * get_s_axis(std::string ip_addr);
             private:
                 std::mutex  mutex;
                 std::vector <tcp_session<T> * > my_sessions;
@@ -96,8 +96,9 @@ namespace galapagos{
                 n_to_one_router <T> * router_out;
                 std::vector <std::string> kernel_info_table;
                 _num_threadsafe packets_in_flight;
-                _done_struct done_struct;
                 std::shared_ptr<spdlog::logger> logger;
+                done_clean * dc;
+                void wait_for_end();
 
         };
         
@@ -121,27 +122,30 @@ tcp_session<T>::tcp_session(boost::asio::ip::tcp::socket  _socket,
                     boost::asio::io_context * _io_context,
                     std::mutex * _mutex_packets_in_flight,
                     int * _packets_in_flight,
-                    bool * _done, 
-                    std::mutex *_mutex,
-		    short _id,
-		    std::shared_ptr <spdlog::logger> _logger
+		            short _id,
+                    galapagos::done_clean * _dc,
+		            std::shared_ptr <spdlog::logger> _logger
                     )
     :socket(std::move(_socket)),
 s_axis(std::string("tcp_session_") + std::to_string(_id) + std::string("_s_axis"), _logger),
 m_axis(std::string("tcp_session_") + std::to_string(_id) + std::string("_m_axis"), _logger)
 {
 
+    //optimize for latency
+//    boost::asio::ip::tcp::no_delay option(true);
+//    socket.set_option(option);
+
+    dc = _dc;
     packets_in_flight.mutex = _mutex_packets_in_flight;
     packets_in_flight.num = _packets_in_flight;
     
     io_context = _io_context;
     
-    done_struct.done = _done;
-    done_struct.mutex = _mutex;
     logger = _logger;
     my_id = _id;
     logger->info("Created tcp_session:{0:d}", my_id); 
-
+    read_dc = std::make_unique<galapagos::done_clean>(dc->done_struct.done, dc->done_struct.mutex, logger);
+    write_dc = std::make_unique<galapagos::done_clean>(dc->done_struct.done, dc->done_struct.mutex, logger);
 }
 
 template <class T>
@@ -156,8 +160,6 @@ galapagos::interface<T> * tcp_session<T>::get_m_axis()
 {
     return &m_axis;
 }
-
-
 
 /**Starts the tcp session read and write functions
 @tparam T the type of data used within each galapagos packet (default ap_uint<64>)
@@ -180,6 +182,10 @@ template <class T>
 void tcp_session<T>::do_read()
 {
     int length;
+    int num_read = 0;
+    int dest;
+    int id;
+    int size;
     
     do{
     
@@ -188,31 +194,35 @@ void tcp_session<T>::do_read()
         if(avail>0){
             boost::system::error_code error;
             {
-                char data[MAX_BUFFER];
-                length = socket.read_some(boost::asio::buffer(data, avail), error);
+                char data[(MAX_BUFFER+1)*sizeof(T)];
+                
                 T * header = (T *)data;
-                int dest = (int)header->range(31,24);
-                int id = (int)header->range(23,16);
-                int size = (int)header->range(15,0);
+                length = socket.read_some(boost::asio::buffer((char *)header, sizeof(T)), error);
+                
+                dest = (int)header->range(31,24);
+                id = (int)header->range(23,16);
+                size = (int)header->range(15,0);
+                
+                num_read=0; 
+                while(num_read < size){
+                    avail = socket.available();
+                    if(avail > 0){
+                        length = socket.read_some(boost::asio::buffer((char *)data + sizeof(T) +  num_read, avail), error);
+                        num_read +=length;
+                    }
+                }
+                logger->debug("Received packet of {0:d} size at dest {1:x} from id {2:x}", size, dest, id);
+                logger->flush();
+                assert( size % 8 == 0);
             	m_axis.packet_write(data + sizeof(T), size, dest, id);
             }
         }
-    }while(!is_done());
+    }while(!dc->is_done());
 
-
+    read_dc->clean();
 
 }
 
-/**Returns if node is done
-@tparam T the type of data used within each galapagos packet (default ap_uint<64>)
-@returns if node is done 
-*/
-template <class T> 
-bool tcp_session<T>::is_done(){
-    
-    std::lock_guard<std::mutex> guard(*done_struct.mutex);
-    return *done_struct.done;
-}
 
 
 /**Reads from input and writes to socket
@@ -223,30 +233,39 @@ void tcp_session<T>::do_write()
 {
 
     do{
-        packets_in_flight.mutex->lock();
         if(!s_axis.empty()){
+            std::lock_guard<std::mutex> guard0(*packets_in_flight.mutex);
+            std::lock_guard<std::mutex> guard1(*s_axis.get_mutex());
             try{
-        	std::lock_guard<std::mutex> guard(*s_axis.get_mutex());
-        	boost::asio::write(socket, boost::asio::buffer(s_axis.get_unsafe_head_buffer()->data, s_axis.get_unsafe_head_buffer()->size + sizeof(T)));
-		
+        	    boost::asio::write(socket, boost::asio::buffer(s_axis.get_unsafe_head_buffer()->data, sizeof(T)));
+            }
+            catch(std::exception& e)
+            {
+                std::cout << "Header ERROR " << std::endl;
+        	    boost::asio::write(socket, boost::asio::buffer(s_axis.get_unsafe_head_buffer()->data, sizeof(T)));
+            }
+
+            try{
+        	    boost::asio::write(socket, boost::asio::buffer(s_axis.get_unsafe_head_buffer()->data + sizeof(T), s_axis.get_unsafe_head_buffer()->size));
             }
             catch(std::exception& e)
             {
                 std::cout << "ERROR " << std::endl;
-        	boost::asio::write(socket, boost::asio::buffer(s_axis.get_unsafe_head_buffer()->data, s_axis.get_unsafe_head_buffer()->size + sizeof(T)));
+        	    boost::asio::write(socket, boost::asio::buffer(s_axis.get_unsafe_head_buffer()->data + sizeof(T), s_axis.get_unsafe_head_buffer()->size + sizeof(T)));
             }
+	        s_axis.delete_unsafe_head_buffer();	
+            *packets_in_flight.num = *packets_in_flight.num - 1;
         }
-        *packets_in_flight.num = *packets_in_flight.num - 1;
-        packets_in_flight.mutex->unlock();
-    }while(!is_done());
+    }while(!dc->is_done());
 
+    write_dc->clean();
 }
 
 
 /**Constructor for galapagos::net::tcp_session_container
 @tparam T the type of data used within each galapagos packet (default ap_uint<64>)
 @param[in] _kern_info_table stores node addresses of all kernels indexed by dest 
-@param[in] my_address node network address 
+@param[in] my_address nodeinetwork address 
 @param[in] _done pointer to boolean that indicates node is done processing all local kernels 
 @param[in] _done_mutex mutex managing _done pointer
 @param[in] _router_out pointer to router that gets output of all sessions and arbitrates to connection 
@@ -258,16 +277,18 @@ template <class T>
 tcp_session_container<T>::tcp_session_container(
                                         std::vector <std::string> & _kernel_info_table,
                                         std::string & my_address,
-                                        bool * _done,
-                                        std::mutex * _mutex,
+                                        galapagos::done_clean * _dc,
                                         galapagos::n_to_one_router <T> * _router_out,
                                         std::mutex * _mutex_packets_in_flight,
                                         int * _packets_in_flight,
-		    		  	std::shared_ptr <spdlog::logger> _logger
+		    		  	                std::shared_ptr <spdlog::logger> _logger
         ){
 
-    _logger->info("tcp_session_container constructor");
-    _logger->flush();
+    dc = _dc;
+
+    logger = _logger;
+    logger->info("tcp_session_container constructor");
+    logger->flush();
 
     router_out = _router_out;
     packets_in_flight.mutex = _mutex_packets_in_flight;
@@ -285,11 +306,22 @@ tcp_session_container<T>::tcp_session_container(
         }
     }
 
-    done_struct.done = _done;
-    done_struct.mutex = _mutex;
+    std::thread t(&galapagos::net::tcp_session_container<T>::wait_for_end, this);
+    t.detach();
 }
 
 
+template <class T>
+void tcp_session_container<T>::wait_for_end()
+{
+
+    for(int i=0; i<my_sessions.size(); i++){
+        my_sessions[i]->read_dc->wait_for_clean();
+        my_sessions[i]->write_dc->wait_for_clean();
+    }
+    dc->clean();
+
+}
 
 
 /**Adds a new session of a particular socket 
@@ -303,10 +335,10 @@ void tcp_session_container<T>::add_session(boost::asio::ip::tcp::socket  _socket
     std::lock_guard <std::mutex> lock(mutex);
     
     std::string ip_addr = _socket.remote_endpoint().address().to_string();
-    my_sessions.push_back((new tcp_session<T>(std::move(_socket), io_context, packets_in_flight.mutex, packets_in_flight.num, done_struct.done, done_struct.mutex, my_sessions.size(), logger)));
+    my_sessions.push_back((new tcp_session<T>(std::move(_socket), io_context, packets_in_flight.mutex, packets_in_flight.num, my_sessions.size(), dc, logger)));
     my_session_map[ip_addr] = my_sessions.size()-1;
 
-    router_out->add_s_axis(my_sessions[my_sessions.size()-1]->get_s_axis());
+    router_out->add_s_axis(my_sessions[my_sessions.size()-1]->get_m_axis());
     my_sessions[my_sessions.size()-1]->start();
 
 }

@@ -1,5 +1,5 @@
-#ifndef UNIT_TEST_SYSTEM_FUNC
-#define UNIT_TEST_SYSTEM_FUNC
+#ifndef UNIT_TEST_SYSTEM_PERF
+#define UNIT_TEST_SYSTEM_PERF
 
 #define GALAPAGOS_PORT 8889
 
@@ -7,7 +7,7 @@
 
 
 //Test from flit to flit
-TEST_CASE( "SYSTEM:FLIT:FUNC" ) {
+TEST_CASE( "SYSTEM:FLIT:PERF" ) {
 
     std::vector<std::string> kern_info_table;
     kern_info_table.push_back(my_address); 
@@ -24,8 +24,7 @@ TEST_CASE( "SYSTEM:FLIT:FUNC" ) {
                     );
     ext_drivers.push_back(&my_tcp);
     galapagos::node<T> node0(kern_info_table, my_address, ext_drivers, my_logger);
-    node0.add_kernel(0, kern_generate_output_flit_verify);
-    //node0.add_kernel(0, send_single_flit);
+    node0.add_kernel(0, kern_generate_output_flit_perf);
     node0.start();
     node0.end();
  
@@ -37,7 +36,7 @@ TEST_CASE( "SYSTEM:FLIT:FUNC" ) {
 
 
 //Test from flit to flit
-TEST_CASE( "SYSTEM:PACKET:FUNC" ) {
+TEST_CASE( "SYSTEM:PACKET:PERF" ) {
 
     std::vector<std::string> kern_info_table;
     kern_info_table.push_back(my_address); 
@@ -54,7 +53,7 @@ TEST_CASE( "SYSTEM:PACKET:FUNC" ) {
                     );
     ext_drivers.push_back(&my_tcp);
     galapagos::node<T> node0(kern_info_table, my_address, ext_drivers, my_logger);
-    node0.add_kernel(0, kern_generate_output_packet_verify);
+    node0.add_kernel(0, kern_generate_output_packet_perf);
     node0.start();
     node0.end();
  
@@ -66,7 +65,7 @@ TEST_CASE( "SYSTEM:PACKET:FUNC" ) {
 
 
 //Test from flit to flit
-TEST_CASE( "SYSTEM:FLIT:FUNC:LOOPBACK" ) {
+TEST_CASE( "SYSTEM:FLIT:PERF:LOOPBACK" ) {
 
     std::vector<std::string> kern_info_table;
     kern_info_table.push_back(my_address); 
@@ -81,8 +80,7 @@ TEST_CASE( "SYSTEM:FLIT:FUNC:LOOPBACK" ) {
                     );
     ext_drivers.push_back(&my_tcp);
     galapagos::node<T> node0(kern_info_table, remote_address, ext_drivers, my_logger);
-    node0.add_kernel(0, kern_flit_loopback_verify);
-    //node0.add_kernel(0, recv_single_flit);
+    node0.add_kernel(0, kern_flit_loopback_perf);
     node0.start();
     node0.end();
  
@@ -95,7 +93,7 @@ TEST_CASE( "SYSTEM:FLIT:FUNC:LOOPBACK" ) {
 
 
 //Test from flit to flit
-TEST_CASE( "SYSTEM:PACKET:FUNC:LOOPBACK" ) {
+TEST_CASE( "SYSTEM:PACKET:PERF:LOOPBACK" ) {
 
     std::vector<std::string> kern_info_table;
     kern_info_table.push_back(my_address); 
@@ -110,7 +108,7 @@ TEST_CASE( "SYSTEM:PACKET:FUNC:LOOPBACK" ) {
                     );
     ext_drivers.push_back(&my_tcp);
     galapagos::node<T> node0(kern_info_table, remote_address, ext_drivers, my_logger);
-    node0.add_kernel(0, kern_packet_loopback_verify);
+    node0.add_kernel(0, kern_packet_loopback_perf);
     node0.start();
     node0.end();
  

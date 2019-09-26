@@ -13,14 +13,14 @@ namespace galapagos{
             external_driver(
                 std::shared_ptr <spdlog::logger> _logger
                 );
-            ~external_driver(){}
-	    virtual void init(bool *_done, std::mutex * _done_mutex, int * _packets_in_flight, std::mutex * _mutex_packets_in_flight) = 0;
+            ~external_driver(){;}
+	    virtual void init(done_clean * _dc, int * _packets_in_flight, std::mutex * _mutex_packets_in_flight) = 0;
             virtual interface<T> * get_s_axis() = 0; 
             virtual interface<T> * get_m_axis() = 0;
 	    virtual void start() = 0;
 
 	protected: 
-	    _done_struct done_struct;
+        done_clean * dc;
 	    _num_threadsafe packets_in_flight;
             std::shared_ptr <spdlog::logger> logger;
 	    

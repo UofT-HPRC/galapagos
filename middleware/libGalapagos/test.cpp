@@ -14,13 +14,16 @@
 #include "galapagos_node.hpp"
 
 #if LOG_LEVEL==2
-#define NUM_ITERATIONS 1
+#define NUM_ITERATIONS 3 
 #else
-#define NUM_ITERATIONS 10000
+#define NUM_ITERATIONS 100000
 #endif
 
 std::shared_ptr<spdlog::logger> my_logger;
 std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
+std::string my_address("10.0.0.1");
+std::string remote_address("10.0.0.2");
+typedef ap_uint<64> T;
 
 #include "unit_tests/kernel.h"
 #include "unit_tests/interface_func.h"
@@ -35,6 +38,7 @@ std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
 #include "unit_tests/node_func.h"
 #include "unit_tests/node_perf.h"
 #include "unit_tests/system_func.h"
+#include "unit_tests/system_perf.h"
 
 
 
@@ -159,7 +163,41 @@ void axis_fifo(galapagos_interface * s_axis, galapagos_interface * m_axis, int c
 
 
 
-void kern_flit_loopback(short id, galapagos_interface * in, galapagos_interface *out){
+
+void send_single_flit(short id, galapagos_interface * in, galapagos_interface *out){
+    galapagos_packet gp;
+    gp.data = 42;
+    gp.id = id;
+    gp.dest = id+1;
+    gp.last = 1;
+    out->write(gp);
+}
+
+void send_single_packet(short id, galapagos_interface * in, galapagos_interface *out){
+    galapagos_packet gp;
+    gp.data = 42;
+    gp.id = id;
+    gp.dest = id+1;
+    gp.last = 1;
+    out->packet_write((char *)&gp.data, sizeof(T), gp.dest, gp.id);
+}
+
+
+void recv_single_flit(short id, galapagos_interface * in, galapagos_interface *out){
+    galapagos_packet gp = in->read();
+	REQUIRE(gp.data == 42);
+}    
+
+void recv_single_packet(short id, galapagos_interface * in, galapagos_interface *out){
+    size_t size;
+    short dest;
+    short recv_id;
+    ap_uint<64> * ptr = (ap_uint<64> *)in->packet_read(&size, &dest, &recv_id);
+    free(ptr);
+}    
+
+void kern_flit_loopback_perf(short id, galapagos_interface * in, galapagos_interface *out){
+    recv_single_flit(id, in, out);
 
     galapagos_packet gp;
 
@@ -175,7 +213,28 @@ void kern_flit_loopback(short id, galapagos_interface * in, galapagos_interface 
     end = std::chrono::high_resolution_clock::now();
 }
 
-void kern_packet_loopback(short id, galapagos_interface * in, galapagos_interface *out){
+void kern_flit_loopback_verify(short id, galapagos_interface * in, galapagos_interface *out){
+    recv_single_flit(id, in, out);
+
+    galapagos_packet gp;
+
+    start = std::chrono::high_resolution_clock::now();
+    for(int j=0; j<NUM_ITERATIONS; j++){
+        for(int i=0; i<MAX_BUFFER; i++){
+	    gp = in->read();
+	    REQUIRE(gp.data.range(63,32) == 0xdeadbeef);
+	    REQUIRE(gp.data.range(31,0) == i);
+	    REQUIRE(gp.last == (i==(MAX_BUFFER - 1)));	
+	    gp.dest = gp.id;
+	    gp.id = id;
+	    out->write(gp);
+	}
+    }
+    end = std::chrono::high_resolution_clock::now();
+}
+
+void kern_packet_loopback_perf(short id, galapagos_interface * in, galapagos_interface *out){
+    recv_single_flit(id, in, out);
 
     galapagos_packet gp;
 
@@ -191,14 +250,59 @@ void kern_packet_loopback(short id, galapagos_interface * in, galapagos_interfac
     end = std::chrono::high_resolution_clock::now();
 }
 
+void kern_packet_loopback_verify(short id, galapagos_interface * in, galapagos_interface *out){
+    recv_single_flit(id, in, out);
+
+    galapagos_packet gp;
+
+    start = std::chrono::high_resolution_clock::now();
+    for(int j=0; j<NUM_ITERATIONS; j++){
+	    size_t size;
+	    short dest;
+	    short recv_id;
+        ap_uint<64> * ptr = (ap_uint<64> *)in->packet_read(&size, &dest, &recv_id);
+	    for(int i=0; i<MAX_BUFFER; i++){
+	        REQUIRE(ptr[i].range(63,32) == 0xdeadbeef);
+	        REQUIRE(ptr[i].range(31,0) == i);
+        }
+	    out->packet_write((char *)ptr, size, recv_id, id);
+    	free(ptr);
+    }
+    end = std::chrono::high_resolution_clock::now();
+}
+
 void kern_generate_output_flit_verify(short id, galapagos_interface * in, galapagos_interface *out){
 
+    send_single_flit(id, in, out);
     kern_generate_flit(id, in, out);
     kern_output_flit_verify(id, in, out);
-
 }
 
 
+void kern_generate_output_packet_verify(short id, galapagos_interface * in, galapagos_interface *out){
+
+
+    send_single_flit(id, in, out);
+    kern_generate_packet(id, in, out);
+    kern_output_packet_verify(id, in, out);
+
+}
+
+void kern_generate_output_flit_perf(short id, galapagos_interface * in, galapagos_interface *out){
+
+    send_single_flit(id, in, out);
+    kern_generate_flit(id, in, out);
+    kern_output_flit_perf(id, in, out);
+}
+
+
+void kern_generate_output_packet_perf(short id, galapagos_interface * in, galapagos_interface *out){
+
+    send_single_flit(id, in, out);
+    kern_generate_packet(id, in, out);
+    kern_output_packet_perf(id, in, out);
+
+}
 
 
 int main(int argc, char * argv[]){

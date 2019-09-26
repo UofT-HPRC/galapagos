@@ -22,11 +22,13 @@ namespace galapagos{
     class node{
         private:
             galapagos::local_router<T> my_router;
+            galapagos::done_clean my_router_dc;
             std::vector < std::unique_ptr<galapagos::kernel <T> > > kernels;
             bool done;
             std::mutex  mutex;
 
             std::vector < galapagos::external_driver<T> * > ext_drivers;
+            std::vector < std::unique_ptr<galapagos::done_clean> > ext_drivers_dc;
             std::map <int, int> dest_to_kern_ind;
             boost::shared_mutex drain_lock;
             boost::shared_lock < boost::shared_mutex > session_lock;
@@ -34,7 +36,7 @@ namespace galapagos{
             int packets_in_flight;
             int num_local;
             int kernels_added;
-	    std::shared_ptr<spdlog::logger> logger;
+	        std::shared_ptr<spdlog::logger> logger;
 
         public:
             node(std::vector <std::string>  _kern_info_table, std::string  _my_address, std::vector<galapagos::external_driver <T> * > _ext_drivers, std::shared_ptr<spdlog::logger> _logger);
@@ -46,7 +48,8 @@ namespace galapagos{
 
 template<class T>
 galapagos::node<T>::node(std::vector <std::string>   _kern_info_table, std::string  _my_address, std::vector <galapagos::external_driver <T> *> _ext_drivers, std::shared_ptr<spdlog::logger> _logger)
-:my_router(_kern_info_table, _my_address, &done, &mutex, &mutex_packets_in_flight, &packets_in_flight, _logger)
+:my_router_dc(&done, &mutex, _logger),
+my_router(_kern_info_table, _my_address, &my_router_dc, &mutex_packets_in_flight, &packets_in_flight, _logger)
 {
    
     packets_in_flight=0;
@@ -66,7 +69,9 @@ galapagos::node<T>::node(std::vector <std::string>   _kern_info_table, std::stri
 
     for(unsigned int i=0; i<_ext_drivers.size(); i++){
         ext_drivers.push_back(_ext_drivers[i]);
-	ext_drivers[i]->init(&done, &mutex, &packets_in_flight, &mutex_packets_in_flight);
+        ext_drivers_dc.push_back(std::make_unique<galapagos::done_clean> (&done, &mutex, logger));
+	    ext_drivers[i]->init(ext_drivers_dc[i].get(), &packets_in_flight, &mutex_packets_in_flight);
+
     }
 
     kernels_added = 0;
@@ -155,6 +160,13 @@ void galapagos::node<T>::end(){
     }
     logger->info("Done asserted, waiting for router and drivers to finish");
 
+    my_router_dc.wait_for_clean();
+    logger->info("Router Destroyed");
+    for(int i=0; i < ext_drivers_dc.size(); i++){
+        ext_drivers_dc[i]->wait_for_clean();
+        logger->info("Ext Driver:{0:d} destroyed", i);
+        logger->flush();
+    }
 }
 
 

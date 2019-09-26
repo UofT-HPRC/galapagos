@@ -54,7 +54,6 @@ namespace galapagos{
             std::mutex  mutex;
             std::condition_variable cv;
             std::shared_ptr<spdlog::logger> logger;
-            std::string name;
             std::list <galapagos::buffer> packets;
        
             //needed for size 
@@ -79,6 +78,7 @@ namespace galapagos{
 	    void filter_function(char *packet, int size);
         public:
             interface(std::string _name, std::shared_ptr<spdlog::logger> _logger);
+            std::string name;
             void write(galapagos::stream_packet <T> gps);
             galapagos::stream_packet<T> read();
             bool empty();
@@ -97,6 +97,7 @@ namespace galapagos{
 	    //used when writing to network socket
 	    std::list<buffer>::iterator get_unsafe_head_buffer();
 	    void delete_unsafe_head_buffer();
+	    std::list<buffer> * get_unsafe_list();
 
      };
 
@@ -151,10 +152,7 @@ galapagos::stream_packet <T> galapagos::interface<T>::read(){
             }
             logger->debug("New Flit Read:{0}", name); 
             curr_read_it = packets.begin();
-	    read_in_prog_addr = sizeof(T);
-        }
-        else{
-            logger->debug("In Prog Flit Read:{0}", name); 
+	        read_in_prog_addr = sizeof(T);
         }
     }
     //once buffer available return flit of buffer and update address
@@ -281,6 +279,13 @@ std::list<galapagos::buffer>::iterator galapagos::interface<T>::get_unsafe_head_
 }
 
 template <class T> 
+std::list<galapagos::buffer> * galapagos::interface<T>::get_unsafe_list(){
+
+    return &packets;
+
+}
+
+template <class T> 
 void galapagos::interface<T>::delete_unsafe_head_buffer(){
 
     packets.erase(packets.begin());
@@ -388,8 +393,6 @@ char * galapagos::interface<T>::packet_read(size_t * _size, short * _dest, short
 */
 template <class T> 
 bool galapagos::interface<T>::empty(){
-    logger->debug("empty function of {0}", name);
-    logger->flush();
     bool ret = (size()==0);
     return ret;
 }
@@ -452,7 +455,7 @@ void galapagos::interface<T>::splice(galapagos::interface<T> * _interface){
     std::unique_lock<std::mutex> lock(mutex);
     packets.splice(packets.begin(), *(_interface->get_packets()), _it);
     cv.notify_one();
-
+    logger->debug("Spliced from {0} to {1}", _interface->name, name);
 
 }
 typedef galapagos::interface <ap_uint<PACKET_DATA_LENGTH> > galapagos_interface;

@@ -23,12 +23,12 @@ TEST_CASE( "ROUTER:KERNEL:FUNC:1" ) {
     std::vector<std::string> kern_info_table;
     kern_info_table.push_back(std::string("10.1.2.155")); //kern 0 node address is 10.1.2.155
     kern_info_table.push_back(std::string("10.1.2.155")); //kern 1 node address is 10.1.2.155
-    
+   
+    galapagos::done_clean dc(&done, &mutex_done, my_logger);
 
     galapagos::local_router <ap_uint<64> > router(kern_info_table, 
-                				 std::string("10.1.2.155"), 
-                				 &done, 
-                				 &mutex_done, 
+                				 std::string("10.1.2.155"),
+                                 &dc,
                 				 &mutex_packets_in_flight,
                 				 &packets_in_flight,
                 				 my_logger
@@ -49,6 +49,7 @@ TEST_CASE( "ROUTER:KERNEL:FUNC:1" ) {
 	done = true;
     } 
 
+    dc.wait_for_clean();
     std::chrono::duration<double> diff = end-start;
     std::cout << std::endl << " ......................." << Catch::getResultCapture().getCurrentTestName() << "......................." << std::endl;
     std::cout << "RUNTIME:"  <<  diff.count() << " s" << std::endl;
@@ -80,11 +81,11 @@ TEST_CASE( "ROUTER:KERNEL:FUNC:2" ) {
     kern_info_table.push_back(std::string("10.1.2.155")); //kern 0 node address is 10.1.2.155
     kern_info_table.push_back(std::string("10.1.2.155")); //kern 1 node address is 10.1.2.155
     
+    galapagos::done_clean dc(&done, &mutex_done, my_logger);
 
     galapagos::local_router <ap_uint<64> > router(kern_info_table, 
                 				 std::string("10.1.2.155"), 
-                				 &done, 
-                				 &mutex_done, 
+                				 &dc, 
                 				 &mutex_packets_in_flight,
                 				 &packets_in_flight,
                 				 my_logger
@@ -105,6 +106,7 @@ TEST_CASE( "ROUTER:KERNEL:FUNC:2" ) {
 	done = true;
     } 
 
+    dc.wait_for_clean();
     std::chrono::duration<double> diff = end-start;
     std::cout << std::endl << " ......................." << Catch::getResultCapture().getCurrentTestName() << "......................." << std::endl;
     std::cout << "RUNTIME:"  <<  diff.count() << " s" << std::endl;
@@ -135,11 +137,11 @@ TEST_CASE( "ROUTER:KERNEL:FUNC:3" ) {
     kern_info_table.push_back(std::string("10.1.2.155")); //kern 0 node address is 10.1.2.155
     kern_info_table.push_back(std::string("10.1.2.155")); //kern 1 node address is 10.1.2.155
     
+    galapagos::done_clean dc(&done, &mutex_done, my_logger);
 
     galapagos::local_router <ap_uint<64> > router(kern_info_table, 
                 				 std::string("10.1.2.155"), 
-                				 &done, 
-                				 &mutex_done, 
+                				 &dc, 
                 				 &mutex_packets_in_flight,
                 				 &packets_in_flight,
                 				 my_logger
@@ -160,6 +162,7 @@ TEST_CASE( "ROUTER:KERNEL:FUNC:3" ) {
 	done = true;
     } 
 
+    dc.wait_for_clean();
     std::chrono::duration<double> diff = end-start;
     std::cout << std::endl << " ......................." << Catch::getResultCapture().getCurrentTestName() << "......................." << std::endl;
     std::cout << "RUNTIME:"  <<  diff.count() << " s" << std::endl;
@@ -187,6 +190,7 @@ TEST_CASE( "ROUTER:KERNEL:FUNC:4" ) {
 
 //    std::thread t(axis_fifo, kern0.get_m_axis(), kern1.get_s_axis(), NUM_ITERATIONS);
     
+    galapagos::done_clean dc(&done, &mutex_done, my_logger);
     std::vector<std::string> kern_info_table;
     kern_info_table.push_back(std::string("10.1.2.155")); //kern 0 node address is 10.1.2.155
     kern_info_table.push_back(std::string("10.1.2.155")); //kern 1 node address is 10.1.2.155
@@ -194,8 +198,7 @@ TEST_CASE( "ROUTER:KERNEL:FUNC:4" ) {
 
     galapagos::local_router <ap_uint<64> > router(kern_info_table, 
                 				 std::string("10.1.2.155"), 
-                				 &done, 
-                				 &mutex_done, 
+                				 &dc, 
                 				 &mutex_packets_in_flight,
                 				 &packets_in_flight,
                 				 my_logger
@@ -216,6 +219,7 @@ TEST_CASE( "ROUTER:KERNEL:FUNC:4" ) {
 	done = true;
     } 
 
+    dc.wait_for_clean();
     std::chrono::duration<double> diff = end-start;
     std::cout << std::endl << " ......................." << Catch::getResultCapture().getCurrentTestName() << "......................." << std::endl;
     std::cout << "RUNTIME:"  <<  diff.count() << " s" << std::endl;
