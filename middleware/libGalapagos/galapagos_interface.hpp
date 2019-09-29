@@ -230,9 +230,9 @@ void galapagos::interface<T>::write(galapagos::stream_packet <T> gps){
     	write_in_prog_addr = sizeof(T);
 	
     }
-    else{
-        logger->debug("In Prog Flit Write:{0}", name); 
-    }
+    //else{
+    //    logger->debug("In Prog Flit Write:{0}", name); 
+    //}
         
     
     //once buffer available write flit to buffer and update address
@@ -242,7 +242,7 @@ void galapagos::interface<T>::write(galapagos::stream_packet <T> gps){
         std::lock_guard<std::mutex> guard(write_in_prog_mutex);
     	write_in_prog_addr += sizeof(T);
     }
-    logger->debug("Interface:{0} write data:{1:x}, dest{2:x}", name, gps.data, gps.dest); 
+    //logger->debug("Interface:{0} write data:{1:x}, dest{2:x}", name, gps.data, gps.dest); 
    
     //last flit, moving to list
     if (gps.last){
@@ -265,7 +265,7 @@ void galapagos::interface<T>::write(galapagos::stream_packet <T> gps){
             cv.notify_one();
         }
         //once buffer pushed and available for consumption
-        logger->debug("Interface:{0} write last flit, adding to list, with dest:{1:x}", name, curr_write.dest); 
+        logger->debug("Interface:{0} write last flit, adding to list, with dest:{1:x}, with size{2:d}", name, curr_write.dest, curr_write.size); 
     }
 
 }
@@ -444,18 +444,24 @@ template <class T>
 void galapagos::interface<T>::splice(galapagos::interface<T> * _interface){
 
 
-    std::unique_lock<std::mutex> _lock(*(_interface->get_mutex()));
-    while (_interface->get_packets()->empty()) {
-    	_interface->get_cv()->wait(_lock);
+    {
+        std::unique_lock<std::mutex> _lock(*(_interface->get_mutex()));
+    	while (_interface->get_packets()->empty()) {
+    		_interface->get_cv()->wait(_lock);
+    	}
     }
+    std::unique_lock<std::mutex> _lock(*(_interface->get_mutex()));
     std::list <galapagos::buffer>::iterator _it = _interface->get_packets()->end();
     _it--;
    
     //at this point we have safely got last element of other interface
     std::unique_lock<std::mutex> lock(mutex);
-    packets.splice(packets.begin(), *(_interface->get_packets()), _it);
+    packets.splice(packets.end(), *(_interface->get_packets()), _it);
     cv.notify_one();
-    logger->debug("Spliced from {0} to {1}", _interface->name, name);
+
+    _it = packets.end();
+    _it--;
+    logger->debug("Spliced from {0} to {1} of size {2:d}", _interface->name, name, _it->size);
 
 }
 typedef galapagos::interface <ap_uint<PACKET_DATA_LENGTH> > galapagos_interface;

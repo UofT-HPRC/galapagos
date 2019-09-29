@@ -55,10 +55,11 @@ namespace galapagos{
     	    boost::asio::io_context * io_context;
     	    interface<T>  s_axis;
     	    interface<T>  m_axis;
-	        _num_threadsafe packets_in_flight;
-	        _done_struct done_struct;
+	    _num_threadsafe packets_in_flight;
+	    _done_struct done_struct;
             std::shared_ptr<spdlog::logger> logger;
             done_clean * dc;
+	    void write_packet_to_net();
     	};
 
 /** @brief Class for the session_container. Addressable by dest. 
@@ -207,7 +208,14 @@ void tcp_session<T>::do_read()
                 while(num_read < size){
                     avail = socket.available();
                     if(avail > 0){
-                        length = socket.read_some(boost::asio::buffer((char *)data + sizeof(T) +  num_read, avail), error);
+                        if(avail < (size-num_read)){
+			    assert(avail <= (MAX_BUFFER)*sizeof(T));
+			    length = socket.read_some(boost::asio::buffer((char *)data + sizeof(T) +  num_read, avail), error);
+			}
+			else{
+			    assert((size-num_read) <= (MAX_BUFFER)*sizeof(T));
+			    length = socket.read_some(boost::asio::buffer((char *)data + sizeof(T) +  num_read, size-num_read), error);
+			}
                         num_read +=length;
                     }
                 }
@@ -225,6 +233,19 @@ void tcp_session<T>::do_read()
 
 
 
+template <class T>
+void tcp_session<T>::write_packet_to_net()
+{
+
+    std::lock_guard<std::mutex> guard1(*s_axis.get_mutex());
+    boost::asio::write(socket, boost::asio::buffer(s_axis.get_unsafe_head_buffer()->data, sizeof(T)));
+    boost::asio::write(socket, boost::asio::buffer(s_axis.get_unsafe_head_buffer()->data + sizeof(T), s_axis.get_unsafe_head_buffer()->size));
+    logger->debug("Sent packet of {0:d} size at dest {1:x} from id {2:x}", s_axis.get_unsafe_head_buffer()->size, s_axis.get_unsafe_head_buffer()->dest, s_axis.get_unsafe_head_buffer()->id);
+    s_axis.delete_unsafe_head_buffer();	
+
+}
+
+
 /**Reads from input and writes to socket
 @tparam T the type of data used within each galapagos packet (default ap_uint<64>)
 */
@@ -235,25 +256,28 @@ void tcp_session<T>::do_write()
     do{
         if(!s_axis.empty()){
             std::lock_guard<std::mutex> guard0(*packets_in_flight.mutex);
-            std::lock_guard<std::mutex> guard1(*s_axis.get_mutex());
-            try{
-        	    boost::asio::write(socket, boost::asio::buffer(s_axis.get_unsafe_head_buffer()->data, sizeof(T)));
-            }
-            catch(std::exception& e)
             {
-                std::cout << "Header ERROR " << std::endl;
-        	    boost::asio::write(socket, boost::asio::buffer(s_axis.get_unsafe_head_buffer()->data, sizeof(T)));
-            }
+	        write_packet_to_net();
+		//std::lock_guard<std::mutex> guard1(*s_axis.get_mutex());
+                //try{
+                //        write_packet_to_net();
+                //}
+                //catch(std::exception& e)
+                //{
+                //    std::cout << "Header ERROR " << std::endl;
+                //        boost::asio::write(socket, boost::asio::buffer(s_axis.get_unsafe_head_buffer()->data, sizeof(T)));
+                //}
 
-            try{
-        	    boost::asio::write(socket, boost::asio::buffer(s_axis.get_unsafe_head_buffer()->data + sizeof(T), s_axis.get_unsafe_head_buffer()->size));
-            }
-            catch(std::exception& e)
-            {
-                std::cout << "ERROR " << std::endl;
-        	    boost::asio::write(socket, boost::asio::buffer(s_axis.get_unsafe_head_buffer()->data + sizeof(T), s_axis.get_unsafe_head_buffer()->size + sizeof(T)));
-            }
-	        s_axis.delete_unsafe_head_buffer();	
+                //try{
+                //        boost::asio::write(socket, boost::asio::buffer(s_axis.get_unsafe_head_buffer()->data + sizeof(T), s_axis.get_unsafe_head_buffer()->size));
+                //}
+                //catch(std::exception& e)
+                //{
+                //    std::cout << "ERROR " << std::endl;
+                //        boost::asio::write(socket, boost::asio::buffer(s_axis.get_unsafe_head_buffer()->data + sizeof(T), s_axis.get_unsafe_head_buffer()->size + sizeof(T)));
+                //}
+	        //s_axis.delete_unsafe_head_buffer();	
+	    }
             *packets_in_flight.num = *packets_in_flight.num - 1;
         }
     }while(!dc->is_done());

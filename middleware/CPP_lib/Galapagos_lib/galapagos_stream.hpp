@@ -3,8 +3,8 @@
 // CREATE DATE     : April 20, 2019
 //===============================
 
-#ifndef __GALAPAGOS_STREAM_HPP__   // if x.h hasn't been included yet...
-#define __GALAPAGOS_STREAM_HPP__
+#ifndef __GALAPAGOS_INTERFACE_HPP__   // if x.h hasn't been included yet...
+#define __GALAPAGOS_INTERFACE_HPP__
 
 #include <cstddef>
 #include <cstring>
@@ -48,7 +48,7 @@ namespace galapagos{
  *
  */
     template <class T> 
-    class stream{
+    class interface{
         private:
             
             std::mutex  mutex;
@@ -72,7 +72,7 @@ namespace galapagos{
             short read_id;
             short read_dest;
         public:
-            stream(std::string _name, std::shared_ptr<spdlog::logger> _logger);
+            interface(std::string _name, std::shared_ptr<spdlog::logger> _logger);
             void write(galapagos::stream_packet <T> gps);
             galapagos::stream_packet<T> read();
             bool empty();
@@ -83,7 +83,7 @@ namespace galapagos{
 
 }
 
-typedef galapagos::stream <ap_uint <PACKET_DATA_LENGTH> > galapagos_stream;
+typedef galapagos::interface <ap_uint <PACKET_DATA_LENGTH> > galapagos_stream;
 
 /*
  *Constructor for galapagos::stream
@@ -95,7 +95,7 @@ typedef galapagos::stream <ap_uint <PACKET_DATA_LENGTH> > galapagos_stream;
  */
 
 template <class T> 
-galapagos::stream<T>::stream(
+galapagos::interface<T>::interface(
                     std::string _name,        
                     std::shared_ptr<spdlog::logger> _logger
         ){
@@ -117,7 +117,7 @@ galapagos::stream<T>::stream(
  */
 
 template <class T> 
-galapagos::stream_packet <T> galapagos::stream<T>::read(){
+galapagos::stream_packet <T> galapagos::interface<T>::read(){
    
 
     //if not in progress get a new available buffer from beginning of list
@@ -180,7 +180,7 @@ galapagos::stream_packet <T> galapagos::stream<T>::read(){
  *
  */
 template <class T> 
-void galapagos::stream<T>::write(galapagos::stream_packet <T> gps){
+void galapagos::interface<T>::write(galapagos::stream_packet <T> gps){
     
     //if not in progress get a new available buffer from end of list
     if(!write_in_prog_addr)
@@ -224,7 +224,7 @@ void galapagos::stream<T>::write(galapagos::stream_packet <T> gps){
  *
  */
 template <class T> 
-size_t galapagos::stream<T>::size(){
+size_t galapagos::interface<T>::size(){
     size_t ret; 
     std::lock_guard<std::mutex> guard(mutex);
     //list empty return 0
@@ -239,7 +239,7 @@ size_t galapagos::stream<T>::size(){
 
 
 /*
- * Executes a batch write, this function is not portable between CPU and FPGA
+ * Executes a packet write, this function is not portable between CPU and FPGA
  * Please be careful to rewrite CPU functions to use an individual flit write when porting
  * to HLS
  *
@@ -250,7 +250,7 @@ size_t galapagos::stream<T>::size(){
  *
  */
 template <class T> 
-void galapagos::stream<T>::batch_write(char * data, int size, short dest, short id){
+void galapagos::interface<T>::packet_write(char * data, int size, short dest, short id){
 
     //size must be divisible by 8
     assert(size % 8 == 0);
@@ -271,7 +271,7 @@ void galapagos::stream<T>::batch_write(char * data, int size, short dest, short 
 }
 
 /*
- * Executes a batch read, this function is not portable between CPU and FPGA
+ * Executes a packet read, this function is not portable between CPU and FPGA
  * Please be careful to rewrite CPU functions to use an individual flit write when porting
  * to HLS
  *
@@ -284,7 +284,7 @@ void galapagos::stream<T>::batch_write(char * data, int size, short dest, short 
  *
  */
 template <class T> 
-char * galapagos::stream<T>::batch_read(size_t * _size, short * _dest, short * _id){
+char * galapagos::interface<T>::packet_read(size_t * _size, short * _dest, short * _id){
 
     char * ret;
     {
