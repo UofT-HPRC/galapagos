@@ -451,8 +451,8 @@ void galapagos::interface<T>::splice(galapagos::interface<T> * _interface){
     	}
     }
     std::unique_lock<std::mutex> _lock(*(_interface->get_mutex()));
-    std::list <galapagos::buffer>::iterator _it = _interface->get_packets()->end();
-    _it--;
+    std::list <galapagos::buffer>::iterator _it = _interface->get_packets()->begin();
+    //_it--;
    
     //at this point we have safely got last element of other interface
     std::unique_lock<std::mutex> lock(mutex);
