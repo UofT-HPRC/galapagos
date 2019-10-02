@@ -164,7 +164,7 @@ void tcp_to_galapagos_interface(
                 src = currWord.data(23,16);
     			read_dest.write(src);
     			state = T2G_WAIT_FOR_SESSION_ID;
-
+                rxMetaData.read();
             }
             break;
 
@@ -191,12 +191,8 @@ void tcp_to_galapagos_interface(
         case T2G_WRITE_HEADER:{
     		
             txGalapagosBridge.write(currWord);
-            if (currWord.last){
-    			state = T2G_IDLE;
-    		}
-    		else{
-    			state = T2G_WRITE_FLIT;
-    		}
+            packet.last = 0;
+    		state = T2G_WRITE_FLIT;
             break; 
                                  
         }
@@ -331,9 +327,11 @@ void galapagos_to_tcp_interface(
                         G2T_IDLE=0,
                         G2T_READ_SID,
                         G2T_WRITE_SID,
+                        G2T_WRITE_METADATA_HEADER,
+                        G2T_READ_TXSTATUS_HEADER,
+                        G2T_WRITE_HEADER,
                         G2T_WRITE_METADATA,
                         G2T_READ_TXSTATUS,
-                        G2T_WRITE_HEADER,
                         G2T_STREAM
                         } state = G2T_IDLE;
 
@@ -355,6 +353,7 @@ void galapagos_to_tcp_interface(
             if(!rxGalapagosBridge.empty())
             {
                 header = rxGalapagosBridge.read();
+                header.last = 1;
                 dest = header.data.range(31,24);
                 read_dest.write(dest);
                 state = G2T_READ_SID;
@@ -369,7 +368,7 @@ void galapagos_to_tcp_interface(
                     state = G2T_WRITE_SID;
                 }
                 else{
-                    state = G2T_WRITE_METADATA;
+                    state = G2T_WRITE_METADATA_HEADER;
                 }
             }
             break;
@@ -378,10 +377,10 @@ void galapagos_to_tcp_interface(
                 sessionID = sessionID_fifo.read();
                 write_sid.write(sessionID);
                 write_dest.write(dest);
-                state = G2T_WRITE_METADATA;
+                state = G2T_WRITE_METADATA_HEADER;
             }
             break;
-        case G2T_WRITE_METADATA:{
+        case G2T_WRITE_METADATA_HEADER:{
 	            ap_uint<16> size;
                 appTxMeta txMetaDataWord;
                 size = header.data(15,0);
@@ -389,6 +388,35 @@ void galapagos_to_tcp_interface(
                 *size_out = size;
                 *sessionID_out = sessionID;
                 txMetaDataWord.sessionID = sessionID;
+                //txMetaDataWord.length = size;
+                txMetaDataWord.length = 8;
+			    txMetaData.write(txMetaDataWord);
+                state = G2T_READ_TXSTATUS_HEADER;
+            }
+            break;
+        case G2T_READ_TXSTATUS_HEADER:
+			if(!txStatus.empty()){
+				ap_int<17> tx_not_busy = txStatus.read();
+				if(tx_not_busy < 0){
+                    state = G2T_WRITE_METADATA_HEADER;
+                }
+                else{
+                    state = G2T_WRITE_HEADER;
+                }
+            }
+            break;
+        case G2T_WRITE_HEADER:
+            txData.write(header);
+            state = G2T_WRITE_METADATA;
+            break;
+        case G2T_WRITE_METADATA:{
+	            ap_uint<16> size;
+                appTxMeta txMetaDataWord;
+                size = header.data(15,0);
+                *size_out = size;
+                *sessionID_out = sessionID;
+                txMetaDataWord.sessionID = sessionID;
+                //txMetaDataWord.length = size;
                 txMetaDataWord.length = size;
 			    txMetaData.write(txMetaDataWord);
                 state = G2T_READ_TXSTATUS;
@@ -401,16 +429,9 @@ void galapagos_to_tcp_interface(
                     state = G2T_WRITE_METADATA;
                 }
                 else{
-                    state = G2T_WRITE_HEADER;
+                    state = G2T_STREAM;
                 }
             }
-            break;
-        case G2T_WRITE_HEADER:
-            txData.write(header);
-            if(header.last)
-                state = G2T_IDLE;
-            else
-                state = G2T_STREAM;
             break;
         case G2T_STREAM:
             if(!rxGalapagosBridge.empty())

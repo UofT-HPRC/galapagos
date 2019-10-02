@@ -36,7 +36,7 @@ limitations under the License.
 
 
 void g2N_ingress(
-            galapagos_stream * input,
+            galapagos_interface * input,
             ap_uint<8*BYTESPERCYCLE> buffer_storage[MAX_SIZE/BYTESPERCYCLE],
             hls::stream< ap_uint<MAX_LENGTH_BITS> > &length_stream,
             hls::stream< ap_uint<DEST_LENGTH> > &dest_stream, 
@@ -102,7 +102,7 @@ void g2N_egress(hls::stream<netStream> *output,
 
     output->write(n);
     n.keep = 0xff;
-    n.last = 0;
+    n.last = 1;
 
 read_loop:
     for(int i=0; i<(length);i++){
@@ -121,7 +121,7 @@ read_loop:
 
 void n2G(
             hls::stream<netStream> *input,
-			galapagos_stream * output
+			galapagos_interface * output
         ){
 //#pragma HLS interface port=return ap_ctrl_none
 //#pragma HLS interface port=input axis
@@ -159,12 +159,12 @@ write_n2G_loop:
 
 
 void galapagos_bridge(
-          galapagos_stream *g2N_input,
+          galapagos_interface *g2N_input,
           hls::stream<netStream> *g2N_output,
           ap_uint<8*BYTESPERCYCLE>buffer_storage_A[MAX_SIZE/BYTESPERCYCLE],
 		  ap_uint<8*BYTESPERCYCLE>buffer_storage_B[MAX_SIZE/BYTESPERCYCLE],
 		  hls::stream<netStream> * n2G_input,
-          galapagos_stream * n2G_output
+          galapagos_interface * n2G_output
           ){
 
 #pragma HLS dataflow

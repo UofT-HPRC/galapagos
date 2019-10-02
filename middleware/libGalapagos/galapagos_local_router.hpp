@@ -193,14 +193,25 @@ template <class T>
 unsigned int galapagos::local_router<T>::num_packets(){
 
         unsigned int num = 0;
-
+        static bool found_s = false;
+        static bool found_m = false;
         for(int i=0; i<s_axis_ptr.size(); i++){
-            num += s_axis_ptr[i]->size();
+            int local_size = s_axis_ptr[i]->size();
+            if(local_size>0 && !found_s){
+                logger->debug("S_axis_{0:d} has {1:d} packets", i, local_size);
+                found_s = true;
+            }
+            num+= local_size;
         }
        
         //exclude packets for in flight
         for(int i=0; i<m_axis_ptr.size(); i++){
-            num += m_axis_ptr[i]->size();
+            int local_size = m_axis_ptr[i]->size();
+            if(local_size>0 && !found_m){
+                logger->debug("M_axis_{0:d} has {1:d} packets", i, local_size);
+                found_m = true;
+            }
+            num+= local_size;
         }
 
         return num;

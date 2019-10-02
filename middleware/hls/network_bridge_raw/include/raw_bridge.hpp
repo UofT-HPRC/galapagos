@@ -13,9 +13,9 @@ struct raw_axis{
 };
 
 void raw_bridge(
-	galapagos_stream & to_app,
+	galapagos_interface & to_app,
 	hls::stream <raw_axis> & from_raw,
-	galapagos_stream & from_app,
+	galapagos_interface & from_app,
 	hls::stream <raw_axis> & to_raw
 );
 

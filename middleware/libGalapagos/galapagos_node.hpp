@@ -9,6 +9,10 @@
 #include <map>
 #include <assert.h>
 
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/basic_file_sink.h"
+#include "spdlog/fmt/bin_to_hex.h"
+
 #include <boost/thread/locks.hpp>
 #include <boost/thread/shared_mutex.hpp>
 #include "galapagos_packet.h"
@@ -125,20 +129,21 @@ void galapagos::node<T>::end(){
     }
 
     logger->info("Kernels finished");
+    logger->flush();
 
 
     int numPacketsLeft;
 
+
     do{
         {
-            std::lock_guard < std::mutex> guard(mutex_packets_in_flight);
             numPacketsLeft = my_router.num_packets();
         }
 
     }while(numPacketsLeft!=0);
 
     logger->info("Router finished");
-
+    logger->flush();
     //if there are no external drivers then we know once kernels finish we are done
     if(ext_drivers.size() == 0)
         numPacketsLeft = 0;

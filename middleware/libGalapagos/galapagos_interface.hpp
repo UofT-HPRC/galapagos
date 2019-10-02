@@ -179,6 +179,7 @@ galapagos::stream_packet <T> galapagos::interface<T>::read(){
         gps.last = 1;
         read_in_prog_addr = 0;
         packets.erase(curr_read_it);
+        logger->debug("Interface:{0} read last flit"); 
         curr_read_it = packets.end();
     }
     else{
@@ -265,7 +266,8 @@ void galapagos::interface<T>::write(galapagos::stream_packet <T> gps){
             cv.notify_one();
         }
         //once buffer pushed and available for consumption
-        logger->debug("Interface:{0} write last flit, adding to list, with dest:{1:x}, with size{2:d}", name, curr_write.dest, curr_write.size); 
+        logger->debug("NEW:Interface:{0} write last flit, adding to list, with dest:{1:x}, with size{2:d}, packets size{3:d}", name, curr_write.dest, curr_write.size, size());
+        logger->flush();
     }
 
 }
@@ -344,7 +346,7 @@ void galapagos::interface<T>::packet_write(char * data, int size, short dest, sh
     cv.notify_one();
         
     filter_function(data, size);
-    logger->debug("Stream {0} batch_write (CPU only) of {1:d} bytes", name, size);
+    logger->debug("Stream {0} batch_write (CPU only) of {1:d} bytes, size of packets is{2:d}", name, size, packets.size());
 }
 
 /**Executes a packet read, this function is not portable between CPU and FPGA. Please be careful to rewrite CPU functions to use an individual flit write when porting to HLS
