@@ -118,14 +118,14 @@ For an example refer to `galapagos/middleware/python/tests/conf0/configuration_f
 
 - N. Eskandari, N. Tarafdar, D. Ly-Ma, P. Chow, *A Modular Heterogeneous Stack for Deploying FPGAs and CPUs in the Data Center*, in FPGA Symposium 2019.
 
-- N. Tarafdar, N. Eskandari, V. Sharma, C Lo, P. Chow, *Heterogeneous virtualized network function framework for the data center*, in FPL 2019.
-
 - N. Tarafdar, T. Lin, D. Ly-Ma, D. Rozhko, A. Leon-Garcia, P.Chow, *Building the Infrastructure for Deploying FPGAs in the Cloud*, in Hardware Accelerators in Data Center by Springer.
+
+- N. Tarafdar, N. Eskandari, V. Sharma, C Lo, P. Chow, *Heterogeneous virtualized network function framework for the data center*, in FPL 2017.
 
 - N. Tarafdar, T.Lin, E. Fukuda, H. Bannazadeh, A. Leon-Garcia, P. Chow, *Enabling Flexible Network FPGA Clusters in a Heterogeneous Cloud Data Center*, in FPGA Symposium 2017.
 
 ## Citation
-If you use the Galapagos Hardware Stack in your project please cite one of the following papers and/or link to the github project:
+If you use the Galapagos Hardware Stack in your project please cite the following paper and/or link to the github project:
 ```
 @article{tarafdar2018galapagos,
   title={Galapagos: A Full Stack Approach to FPGA Integration in the Cloud},
@@ -137,43 +137,4 @@ If you use the Galapagos Hardware Stack in your project please cite one of the f
   year={2018},
   publisher={IEEE}
 }
-
-@inproceedings{eskandari2019modular,
-  title={A Modular Heterogeneous Stack for Deploying FPGAs and CPUs in the Data Center},
-  author={Eskandari, Nariman and Tarafdar, Naif and Ly-Ma, Daniel and Chow, Paul},
-  booktitle={Proceedings of the 2019 ACM/SIGDA International Symposium on Field-Programmable Gate Arrays},
-  pages={262--271},
-  year={2019},
-  organization={ACM}
-}
-
-@inproceedings{tarafdar2017heterogeneous,
-  title={Heterogeneous virtualized network function framework for the data center},
-  author={Tarafdar, Naif and Lin, Thomas and Eskandari, Nariman and Lion, David and Leon-Garcia, Alberto and Chow, Paul},
-  booktitle={2017 27th International Conference on Field Programmable Logic and Applications (FPL)},
-  pages={1--8},
-  year={2017},
-  organization={IEEE}
-}
-
-@incollection{tarafdar2019building,
-  title={Building the Infrastructure for Deploying FPGAs in the Cloud},
-  author={Tarafdar, Naif and Lin, Thomas and Ly-Ma, Daniel and Rozhko, Daniel and Leon-Garcia, Alberto and Chow, Paul},
-  booktitle={Hardware Accelerators in Data Centers},
-  pages={9--33},
-  year={2019},
-  publisher={Springer}
-}
-
-@inproceedings{tarafdar2017enabling,
-  title={Enabling flexible network FPGA clusters in a heterogeneous cloud data center},
-  author={Tarafdar, Naif and Lin, Thomas and Fukuda, Eric and Bannazadeh, Hadi and Leon-Garcia, Alberto and Chow, Paul},
-  booktitle={Proceedings of the 2017 ACM/SIGDA International Symposium on Field-Programmable Gate Arrays},
-  pages={237--246},
-  year={2017},
-  organization={ACM}
-}
-
-
-
 ```
