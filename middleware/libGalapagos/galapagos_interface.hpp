@@ -25,15 +25,19 @@
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/fmt/bin_to_hex.h"
 
+#define JUMBO_FRAME
 
-
+#ifdef JUMBO_FRAME
+#define MAX_BUFFER 1124 //flits approximately of MTU size 
+#else
 #define MAX_BUFFER 180 //flits approximately of MTU size 
+#endif
 
 namespace galapagos{
     /** Struct of buffer used to store entire packets
     */
     typedef struct{
-        char data[(MAX_BUFFER+1)*8];
+        char data[(MAX_BUFFER+1)*64];
         short dest;
         short id;
         size_t size;
@@ -252,10 +256,11 @@ void galapagos::interface<T>::write(galapagos::stream_packet <T> gps){
             std::lock_guard<std::mutex> guard(write_in_prog_mutex);
 	    curr_write.size = write_in_prog_addr - sizeof(T);
     	    T header;
-    	    header.range(63,32) = 0; //last = 0
+    	    header.range(sizeof(T)*8 - 1,32) = 0; //last = 0
     	    header.range(31,24) = curr_write.dest;
     	    header.range(23,16) = curr_write.id;
-    	    header.range(15,0) = curr_write.size;
+    	    //header.range(15,0) = curr_write.size;
+    	    header.range(15,0) = curr_write.size/sizeof(T);
             memcpy((char *)curr_write.data, (char *)&header, sizeof(T));
 	}
         {
@@ -266,8 +271,14 @@ void galapagos::interface<T>::write(galapagos::stream_packet <T> gps){
             cv.notify_one();
         }
         //once buffer pushed and available for consumption
-        logger->debug("NEW:Interface:{0} write last flit, adding to list, with dest:{1:x}, with size{2:d}, packets size{3:d}", name, curr_write.dest, curr_write.size, size());
+        logger->debug("Interface:{0} write last flit, adding to list, with dest:{1:x}, with size{2:d}, packets size{3:d}", name, curr_write.dest, curr_write.size, size());
         logger->flush();
+    }
+    else{
+        logger->debug("Interface:{0} write flit data:{1:x}", name, gps.data);
+        logger->flush();
+
+
     }
 
 }
@@ -321,32 +332,34 @@ size_t galapagos::interface<T>::size(){
 template <class T> 
 void galapagos::interface<T>::packet_write(char * data, int size, short dest, short id){
 
+    logger->debug("Start Stream {0} batch_write (CPU only)", name);
     //size must be divisible by 8
-    assert(size % 8 == 0);
+//    assert(size % 8 == 0);
 
     //data must fit in MTU
-    assert(size <= (MAX_BUFFER*8));
+    assert((size) <= (MAX_BUFFER));
     
-    curr_write.size = size;    
+    curr_write.size = size * sizeof(T);    
+    //curr_write.size = size;    
     curr_write.dest = dest;
     curr_write.id = id;
 
     
     T header;
-    header.range(63,32) = 0; //last = 0
+    header.range(sizeof(T)*8-1,32) = 0; //last = 0
     header.range(31,24) = dest;
     header.range(23,16) = id;
     header.range(15,0) = size;
 
     memcpy((char *)curr_write.data, &header, sizeof(T));
-    memcpy((char *)curr_write.data + sizeof(T), (char *)data, size);
+    memcpy((char *)curr_write.data + sizeof(T), (char *)data, size * sizeof(T));
     
     std::lock_guard<std::mutex> guard(mutex);
     packets.push_back(std::move(curr_write)); 
     cv.notify_one();
         
     filter_function(data, size);
-    logger->debug("Stream {0} batch_write (CPU only) of {1:d} bytes, size of packets is{2:d}", name, size, packets.size());
+    logger->debug("Stream {0} batch_write (CPU only) of {1:d} bytes, size of packets is{2:d}", name, size*sizeof(T), packets.size());
 }
 
 /**Executes a packet read, this function is not portable between CPU and FPGA. Please be careful to rewrite CPU functions to use an individual flit write when porting to HLS
@@ -446,6 +459,7 @@ template <class T>
 void galapagos::interface<T>::splice(galapagos::interface<T> * _interface){
 
 
+    logger->debug("Start Spliced from {0} to {1}", _interface->name, name);
     {
         std::unique_lock<std::mutex> _lock(*(_interface->get_mutex()));
     	while (_interface->get_packets()->empty()) {
@@ -466,5 +480,7 @@ void galapagos::interface<T>::splice(galapagos::interface<T> * _interface){
     logger->debug("Spliced from {0} to {1} of size {2:d}", _interface->name, name, _it->size);
 
 }
+
 typedef galapagos::interface <ap_uint<PACKET_DATA_LENGTH> > galapagos_interface;
+//typedef galapagos::interface <T> galapagos_interface;
 #endif

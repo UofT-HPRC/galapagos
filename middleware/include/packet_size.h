@@ -4,4 +4,11 @@
 # define PACKET_KEEP_LENGTH 8
 # define PACKET_LAST
 # define PACKET_DEST_LENGTH 8
+# define PACKET_USER_LENGTH 16
+
+//# define PACKET_DATA_LENGTH 512 
+//# define PACKET_KEEP_LENGTH 8
+//# define PACKET_LAST
+//# define PACKET_DEST_LENGTH 8
+//# define PACKET_USER_LENGTH 16
 #endif

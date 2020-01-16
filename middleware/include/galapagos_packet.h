@@ -5,6 +5,14 @@
 #include "ap_int.h"
 #include "packet_size.h"
 
+
+
+#if(PACKET_DATA_LENGTH == 64)
+#define KEEP_ALL 0xff
+#elif(PACKET_DATA_LENGTH == 512)
+#define KEEP_ALL 0xffffffffffffffff
+#endif
+
 #ifdef CPU
 
 namespace galapagos{
@@ -29,9 +37,15 @@ namespace galapagos{
     };
 }
 
-typedef galapagos::stream_packet <ap_uint<64> > galapagos_packet;
+typedef galapagos::stream_packet <ap_uint<PACKET_DATA_LENGTH> > galapagos_packet;
 
-#else
+#define BYTESPERCYCLE 8
+#define ID_LENGTH 8
+#define DEST_LENGTH 8
+#define MAX_SIZE 4096
+#define MAX_LENGTH_BITS 16
+
+#else //CPU
 
 namespace galapagos{
     template <int T> 
@@ -56,9 +70,25 @@ namespace galapagos{
     };
 }
 
-typedef galapagos::stream_packet<64>  galapagos_packet;
-typedef hls::stream<galapagos::stream_packet<64> > galapagos_interface;
+typedef galapagos::stream_packet<PACKET_DATA_LENGTH>  galapagos_packet;
+typedef hls::stream<galapagos::stream_packet<PACKET_DATA_LENGTH> > galapagos_interface;
+
+ap_uint<PACKET_DATA_LENGTH> get_header(ap_uint<PACKET_DEST_LENGTH> _id, ap_uint<PACKET_DEST_LENGTH> _dest, ap_uint<PACKET_USER_LENGTH> _size){
+#pragma HLS INLINE
+
+    ap_uint<PACKET_DATA_LENGTH> retVal;
+    
+    retVal.range(PACKET_DATA_LENGTH - 1,PACKET_DEST_LENGTH+PACKET_DEST_LENGTH+PACKET_USER_LENGTH) = 0; //unused
+    retVal.range(PACKET_DEST_LENGTH+PACKET_DEST_LENGTH+PACKET_USER_LENGTH-1, PACKET_DEST_LENGTH+PACKET_USER_LENGTH) = _dest; //unused
+    retVal.range(PACKET_DEST_LENGTH+PACKET_USER_LENGTH-1, PACKET_USER_LENGTH) = _id; 
+    //retVal.range(PACKET_USER_LENGTH - 1, 0) = _size << 3; //length in bytes
+    retVal.range(PACKET_USER_LENGTH - 1, 0) = _size; //length in bytes
+
+    return retVal;
+
+}
 
 #endif // if not CPU 
+
 
 #endif //GUARD
