@@ -10,8 +10,8 @@ This example contains:
 	 - world.cpp, a Galapagos HLS kernel with DEST = 2 that ignores all
 	   incoming messages
 
-	 - generate_ips.tcl, a script that invokes Vivado HLS in order to compile
-	   the HLS code into Verilog
+	 - hello_world.tcl and world.tcl. Scripts that invoke Vivado HLS to compile
+	   hello_world.cpp and world.cpp into Verilog
 
 	 - logical.xml, the logical file
 

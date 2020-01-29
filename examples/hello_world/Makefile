@@ -10,8 +10,11 @@ all: .hello_world .world middleware pick_up_vivados_dirty_socks
 	touch .world
 
 
-middleware:
-	#TODO
+middleware: logical.xml mapping.xml
+	export LOGICALFILE=$(shell realpath logical.xml)
+	export MAPFILE=$(shell realpath mapping.xml)
+	export PROJECTNAME=hello_world
+	make -C$(GALAPAGOS_PATH) middleware
 
 pick_up_vivados_dirty_socks:
 	rm -rf vivado*	
