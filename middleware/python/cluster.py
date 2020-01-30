@@ -107,6 +107,8 @@ class cluster(abstractDict):
         if(mode=='file'):
             logical_dict = self.getDict(kernel_file)['cluster']['kernel']
             map_dict = self.getDict(map_file)['cluster']['node']
+            if not isinstance(map_dict, list):
+                map_dict = [map_dict]
         else:
             logical_dict = kernel_file['cluster']['kernel']
             map_dict = map_file['cluster']['node']
