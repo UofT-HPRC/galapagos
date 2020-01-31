@@ -31,7 +31,7 @@ For each board you wish to use,
 
     2) Use `galapagos_update_board <your board name>` to select the board, and 
     
-    3) Run `make middleware` from inside $GALAPDIR
+    3) Run `make hlsmiddleware` from inside $GALAPDIR
 
 To create a Galapagos project,
 

@@ -29,10 +29,7 @@ all: clean
 	rm -rf ${out_dir}
 	mkdir -p ${out_dir}/src
 	cp $(shell find ${src_dir} -name "*.v" -o -name "*vh" -o -name "*sv") ${out_dir}/src
-	# Remember to follow the instructions in ip_maker.tcl!
 	vivado -nolog -nojournal -notrace -mode batch -source ip_maker.tcl -tclargs ${out_dir} ${ip_name} ${part_no}
-	# Vivado leaves a bunch of crap laying around that no one cares about. So
-	# delete it.
 	rm -rf ${ip_name}_tmp_proj
 	rm -f *log
 	rm -rf .Xil
