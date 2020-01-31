@@ -20,3 +20,7 @@ This example contains:
 	 - A Makefile
 
 
+Make sure you have followed the Galapagos setup instructions (see
+documentation/galapagos_flow.txt). This Makefile will generate a Vivado project
+in projects/hello_world/0/
+
