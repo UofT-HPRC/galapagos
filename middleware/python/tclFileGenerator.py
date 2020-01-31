@@ -2031,4 +2031,5 @@ if { ! [info exists default_dir] } {\n\
         tclMain.addSource(galapagos_path + '/middleware/tclScripts/custom/' + fpga['custom'] + '.tcl')
 
     tclMain.tprint('validate_bd_design')
+    tclMain.tprint('save_bd_design')
     tclMain.close()

@@ -95,6 +95,10 @@ module axistreamstats #(
     end
     
 `endgen
+
+    //And of course, don't forget to assign the outputs!
+    assign flit_cnt = flit_cnt_r;
+    assign pkt_cnt = pkt_cnt_r;
     
 endmodule
     
