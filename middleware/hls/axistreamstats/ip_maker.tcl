@@ -12,7 +12,7 @@
 # at the end of this script
 
 
-start_gui; # Remove this line after copying TCL commands (see below)
+# start_gui; # Remove this line after copying TCL commands (see below)
 
 set out_dir [lindex $argv 0]
 set ip_name [lindex $argv 1]
