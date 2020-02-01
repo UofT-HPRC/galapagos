@@ -129,20 +129,21 @@ def getInterfaces(fpga, intf, flag = None, scope = None):
         if kern[intf] != None:
             for kern_intf in kern[intf]:
                 
+                # Why are these copied?
                 # If we don't need a specific scope, match everything
                 if (scope == None):
                     kern_intf['kernel_inst'] = kern
-                    interfaces.append(copy.deepcopy(kern_intf))
+                    interfaces.append(kern_intf)
                 
                 # Otherwise, only match the right scope
                 elif(flag == 'scope' and kern_intf['scope'] == scope):
                     kern_intf['kernel_inst'] = kern
-                    interfaces.append(copy.deepcopy(kern_intf))
+                    interfaces.append(kern_intf)
                 
                 # (Not really sure what this is for, so I'm ignoring it)
                 elif(flag == 'debug' and 'debug' in kern_intf):
                     kern_intf['kernel_inst'] = kern
-                    interfaces.append(copy.deepcopy(kern_intf))
+                    interfaces.append(kern_intf)
 
     
     #if intf=='s_axis' and flag=='scope' and scope =='global':
@@ -398,7 +399,7 @@ def userApplicationRegionKernelsInst(tcl_user_app):
                       node object and a handle to the output file)
     """
     
-    #instantiate kernels
+    #instantiate kernels and AXI Stream stat collectors
     for kern_idx, kern in enumerate(tcl_user_app.fpga['kernel']):
         instName = kern['name'] + "_inst_" + str(kern['num'])
         #instantiate kernel
@@ -460,6 +461,70 @@ def userApplicationRegionKernelsInst(tcl_user_app):
                         'port_name':const['name']
                         }
                         )
+                        
+    # Instantiate AXI Stream statistics gatherers
+    s_axis_array = getInterfaces(tcl_user_app.fpga, 's_axis', 'scope', 'global')
+    for idx, s_axis in enumerate(s_axis_array):
+        # Instantiate axistreamstat IP
+        axistat_inst_name = s_axis['kernel_inst']['inst'] + '_slv_' + str(idx)
+        tcl_user_app.instBlock(
+            {
+            'vendor': 'mmerlini.ca',
+            'lib': 'galapagos',
+            'name': 'axistreamstats',
+            'inst': axistat_inst_name,
+            'clks': ['clk'],
+            'resetns': ['rstn']
+            }
+        )
+        # Connect axistreamstat's master AXI Stream to kernel's slave AXI Steam
+        tcl_user_app.makeConnection(
+            'intf',
+            {
+                'name': axistat_inst_name,
+                'port_name': 'out',
+                'type': 'intf'
+            },
+            {
+                'name': s_axis['kernel_inst']['inst'],
+                'port_name': s_axis['name'],
+                'type': 'intf',
+            }
+        )
+        # Keep a hold of the instance of the stat gatherer on this stream. This
+        # will be used in userApplicationRegionKernelConnectSwitches
+        s_axis['axistat_inst'] = axistat_inst_name
+    
+    m_axis_array = getInterfaces(tcl_user_app.fpga, 'm_axis', 'scope', 'global')
+    for idx, m_axis in enumerate(m_axis_array):
+        axistat_inst_name = m_axis['kernel_inst']['inst'] + '_mst_' + str(idx)
+        tcl_user_app.instBlock(
+            {
+            'vendor': 'mmerlini.ca',
+            'lib': 'galapagos',
+            'name': 'axistreamstats',
+            'inst': axistat_inst_name,
+            'clks': ['clk'],
+            'resetns': ['rstn']
+            }
+        )
+        # Connect kernel's master AXI Stream to axistreamstat's slave AXI Steam
+        tcl_user_app.makeConnection(
+            'intf',
+            {
+                'name': m_axis['kernel_inst']['inst'],
+                'port_name': m_axis['name'],
+                'type': 'intf',
+            },
+            {
+                'name': axistat_inst_name,
+                'port_name': 'in',
+                'type': 'intf'
+            }
+        )
+        # Keep a hold of the instance of the stat gatherer on this stream. This
+        # will be used in userApplicationRegionKernelConnectSwitches
+        m_axis['axistat_inst'] = axistat_inst_name
 
 def userApplicationRegionSwitchesInst(tcl_user_app, sim):
     """
@@ -904,7 +969,7 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
 
         # For each s_axis connection
         for idx, s_axis in enumerate(s_axis_array):
-            instName = s_axis['kernel_inst']['inst']
+            instName = s_axis['axistat_inst']
             idx_str = "%02d"%idx
             # Connect it to the correct port on the AXI switch (NOT directly into
             # the Galapagos router; there is an AXI stream switch IP between
@@ -919,7 +984,7 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
                     {
                     'name': instName,
                     'type':'intf',
-                    'port_name':s_axis['name']
+                    'port_name':'in'
                     }
                     )
         # custom_switch_inst only exists without raw
@@ -939,6 +1004,8 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
                         }
                         )
 
+    # Special case: only one slave in the design. I'm not sure why this had to
+    # be treated separately...
     elif len(s_axis_array) == 1:
         if (sim == 1):
             tcl_user_app.makeConnection(
@@ -948,9 +1015,9 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
                     'type':'intf',
                     'port_name':'M00_AXIS'
                     },
-                    {'name': s_axis_array[0]['kernel_inst']['inst'],
+                    {'name': s_axis_array[0]['axistat_inst'],
                     'type':'intf',
-                    'port_name': s_axis_array[0]['name']
+                    'port_name': 'in'
                     }
                     )
             if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
@@ -977,9 +1044,9 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
                         'type':'intf',
                         'port_name':'M00_AXIS'
                         },
-                        {'name': s_axis_array[0]['kernel_inst']['inst'],
+                        {'name': s_axis_array[0]['axistat_inst'],
                         'type':'intf',
-                        'port_name': s_axis_array[0]['name']
+                        'port_name': 'in'
                         }
                     )
                     tcl_user_app.makeConnection(
@@ -1001,17 +1068,21 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
     # Now connect all m_axis interfaces through the output switch into the 
     # Galapagos router
     
+    # For some reason, the special case of only one master AXI Stream is 
+    # treated first, as opposed to how the slaves were done (with the multiple
+    # slaves case first)
+    
     #no output switch, direct connect if only one
     if len(m_axis_array) == 1:
         if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
-            instName = m_axis_array[0]['kernel_inst']['inst']
+            instName = m_axis_array[0]['axistat_inst']
             if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
                 tcl_user_app.makeConnection(
                         'intf',
                         {
                         'name': instName,
                         'type':'intf',
-                        'port_name': m_axis_array[0]['name']
+                        'port_name': 'out'
                         },
                         {
                         'name':'applicationRegion/custom_switch_inst',
@@ -1021,14 +1092,14 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
                         )
     elif len(m_axis_array) > 1:
         for idx, m_axis in enumerate(m_axis_array):
-            instName = m_axis['kernel_inst']['inst']
+            instName = m_axis['axistat_inst']
             idx_str = "%02d"%idx
             tcl_user_app.makeConnection(
                     'intf',
                     {
                     'name': instName ,
                     'type':'intf',
-                    'port_name': m_axis['name']
+                    'port_name': 'out'
                     },
                     {
                     'name':'applicationRegion/output_switch',
@@ -1760,7 +1831,7 @@ def bridgeConnections(outDir, fpga, sim):
                     tcl_custom.tprint('set CUSTOM_kernel_in applicationRegion/input_switch/S00_AXIS')
                     tcl_custom.tprint('set CUSTOM_kernels_stream_in ' + str(len(s_axis_array)))
             else:
-                instName = s_axis_array[0]['kernel_inst']['inst']
+                instName = s_axis_array[0]['axistat_inst']
                 if tcl_bridge_connections.fpga['comm'] != 'none':
                     tcl_bridge_connections.makeConnection(
                                 'intf',
@@ -1771,7 +1842,7 @@ def bridgeConnections(outDir, fpga, sim):
                                 },
                                 {'name': instName,
                                 'type':'intf',
-                                'port_name': s_axis_array[0]['name']
+                                'port_name': 'in'
                                 }
                                 )
                 else:
@@ -1798,14 +1869,14 @@ def bridgeConnections(outDir, fpga, sim):
                     tcl_custom.tprint('set CUSTOM_kernel_out applicationRegion/output_switch/M00_AXIS')
                     tcl_custom.tprint('set CUSTOM_kernels_stream_out ' + str(len(m_axis_array)))
             else:
-                instName = m_axis_array[0]['kernel_inst']['inst'] 
+                instName = m_axis_array[0]['axistat_inst'] 
                 if tcl_bridge_connections.fpga['comm'] != 'none':
                     tcl_bridge_connections.makeConnection(
                             'intf',
                             {
                             'name': instName,
                             'type':'intf',
-                            'port_name': m_axis_array[0]['name']
+                            'port_name': 'out'
                             },
                             {
                             'name':'network/network_bridge_inst',
@@ -1935,13 +2006,13 @@ def bridgeConnections(outDir, fpga, sim):
                         }
                         )
             else:
-                instName = m_axis_array[0]['kernel_inst']['inst'] 
+                instName = m_axis_array[0]['axistat_inst'] 
                 tcl_bridge_connections.makeConnection(
                         'intf',
                         {
                         'name': instName,
                         'type':'intf',
-                        'port_name': m_axis_array[0]['name']
+                        'port_name': 'out'
                         },
                         {
                         'name':'application_bridge_inst',
@@ -2033,3 +2104,86 @@ if { ! [info exists default_dir] } {\n\
     tclMain.tprint('validate_bd_design')
     tclMain.tprint('save_bd_design')
     tclMain.close()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# https://www.youtube.com/watch?v=SW-BU6keEUw
