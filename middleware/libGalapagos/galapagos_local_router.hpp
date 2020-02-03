@@ -13,6 +13,7 @@
 #include "common.hpp"
 #include <mutex>
 #include <condition_variable>
+#include "galapagos_interface.hpp"
 
 /**external port indices
 * all external ports, , currently just have network but can be more (e.g PCIe)
@@ -50,8 +51,8 @@ namespace galapagos{
 	        }_in_flight_struct; //!< keep track of packets in flight that have left router but not yet consumed externally
 	        _in_flight_struct in_flight_struct;
 
-	        std::vector <interface <T> *  >  s_axis_ptr; //<! array storing pointers to the input ports of the router
-            std::vector <interface <T> *  >  m_axis_ptr; //<! array storing pointers to the output ports of the router
+	        std::vector <galapagos::interface <T> *  >  s_axis_ptr; //<! array storing pointers to the input ports of the router
+            std::vector <galapagos::interface <T> *  >  m_axis_ptr; //<! array storing pointers to the output ports of the router
 
 
         public:
@@ -124,7 +125,7 @@ galapagos::local_router<T>::local_router(std::vector <std::string>  _kern_info_t
 @param[out] _m_axis output of kernel
 */
 template <class T>
-void galapagos::local_router<T>::add_interface_pair(interface <T> * _s_axis, interface <T> * _m_axis){
+void galapagos::local_router<T>::add_interface_pair(galapagos::interface <T> * _s_axis, galapagos::interface <T> * _m_axis){
 
     s_axis_ptr.push_back(_s_axis);
     m_axis_ptr.push_back(_m_axis);

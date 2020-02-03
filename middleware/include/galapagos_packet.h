@@ -50,7 +50,7 @@ typedef galapagos::stream_packet <ap_uint<PACKET_DATA_LENGTH> > galapagos_packet
 namespace galapagos{
     template <typename T>
     struct stream_packet {
-        ap_uint<T> data;
+        T data;
 #ifdef PACKET_DEST_LENGTH
         ap_uint <PACKET_DEST_LENGTH> dest;
 #endif
@@ -64,16 +64,18 @@ namespace galapagos{
         ap_uint <PACKET_USER_LENGTH> user;
 #endif
 #ifdef PACKET_KEEP_LENGTH
-        ap_uint <T/8> keep;
+        ap_uint <PACKET_KEEP_LENGTH> keep;
 #endif
 	    stream_packet() {}
     };
+
+    template<typename T>
+    using interface = hls::stream<galapagos::stream_packet<T> >;
 }
 
 typedef galapagos::stream_packet<ap_uint<PACKET_DATA_LENGTH> >  galapagos_packet;
-typedef hls::stream<galapagos::stream_packet<ap_uint<PACKET_DATA_LENGTH> > > galapagos_interface;
 
-ap_uint<PACKET_DATA_LENGTH> get_header(ap_uint<PACKET_DEST_LENGTH> _id, ap_uint<PACKET_DEST_LENGTH> _dest, ap_uint<PACKET_USER_LENGTH> _size){
+inline ap_uint<PACKET_DATA_LENGTH> get_header(ap_uint<PACKET_DEST_LENGTH> _id, ap_uint<PACKET_DEST_LENGTH> _dest, ap_uint<PACKET_USER_LENGTH> _size){
 #pragma HLS INLINE
 
     ap_uint<PACKET_DATA_LENGTH> retVal;

@@ -46,9 +46,17 @@ namespace galapagos{
         return source_masked | ((value & max_value) << lsb);
     }
 
+    // this conflicts with the one below
+    // template <class T>
+    // T range(short bit, T source, size_t value){
+    //     return range(bit, bit, source, value);
+    // }
+
     template <class T>
-    T range(short bit, T source, size_t value){
-        return range(bit, bit, source, value);
+    T range(short msb, short lsb, T source){
+        short size = msb - lsb + 1;
+        T max_value = POWER_2(size) - 1;
+        return (source >> lsb) & max_value;
     }
 
 }

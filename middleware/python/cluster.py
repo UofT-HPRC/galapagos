@@ -300,8 +300,8 @@ class cluster(abstractDict):
         # If this project directory already exists, just delete it! Oops! I forgot
         # I already had a super important project with the same name!
         # ^ this has been amended below by just removing the tcl files
-        if os.path.exists(output_path + '/' + self.name):
-            shutil.rmtree(output_path + '/' + self.name)
+        # if os.path.exists(output_path + '/' + self.name):
+        #     shutil.rmtree(output_path + '/' + self.name)
         os.makedirs(output_path + '/' + self.name, exist_ok=True)
 
         globalConfigFile = open(output_path + "/" + self.name + '/createCluster.sh', 'w')

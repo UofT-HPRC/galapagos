@@ -8,4 +8,4 @@ vivado_*
 vivado.jou
 .vscode/
 *.a
-
+*.swp

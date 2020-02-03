@@ -91,7 +91,7 @@ galapagos::net::tcp<T>::tcp(
 {
 
     port = _port;
-    for(int i=0; i< _kern_info_table.size(); i++)
+    for(unsigned int i=0; i< _kern_info_table.size(); i++)
         kern_info_table.push_back(_kern_info_table[i]);
     my_address = _my_address;
     this->logger->info("created tcp");

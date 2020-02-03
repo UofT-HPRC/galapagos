@@ -191,7 +191,7 @@ galapagos::stream_packet <T> galapagos::interface<T>::read(){
         gps.last = 0;
     }
 
-    logger->debug("Interface:{0} read data:{1:x}, dest{2:x}, last{3:d}, at address:{4:d}, size of packet{5:d}", name, gps.data, gps.dest, gps.last, read_in_prog_addr, curr_read_it->size);
+    logger->debug("Interface:{0} read data:{1:x}, dest:{2:x}, last:{3:d}, at address:{4:d}, size of packet:{5:d}", name, gps.data, gps.dest, gps.last, read_in_prog_addr, curr_read_it->size);
 
     return gps;
 }
@@ -276,7 +276,7 @@ void galapagos::interface<T>::write(galapagos::stream_packet <T> gps){
             cv.notify_one();
         }
         //once buffer pushed and available for consumption
-        logger->debug("Interface:{0} write last flit, adding to list, with dest:{1:x}, with size{2:d}, packets size{3:d}", name, curr_write.dest, curr_write.size, size());
+        logger->debug("Interface:{0} write last flit, adding to list, with dest:{1:x}, with size:{2:d}, packets size:{3:d}", name, curr_write.dest, curr_write.size, size());
         logger->flush();
     }
     else{
