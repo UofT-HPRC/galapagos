@@ -8,9 +8,59 @@ Replace innards with desired logic
 
 `include "axis_governor.v"
 
-module testbench_template;
-	reg clk;
-    //Other variables connected to your instance
+module testbench_template # (
+    parameter DATA_WIDTH = 8
+);
+	reg clk = 0;
+    //Input AXI Stream.
+    reg [DATA_WIDTH-1:0] in_TDATA = 1;
+    reg in_TVALID = 0;
+    wire in_TREADY;
+    reg [DATA_WIDTH/8 -1:0] in_TKEEP = 0;
+    reg in_TDEST = 0;
+    reg in_TID = 0;
+    reg in_TLAST = 0;
+    
+    //Inject AXI Stream. 
+    reg [DATA_WIDTH-1:0] inj_TDATA = 0;
+    reg inj_TVALID = 0;
+    wire inj_TREADY;
+    reg [DATA_WIDTH/8 -1:0] inj_TKEEP = 0;
+    reg inj_TDEST = 0;
+    reg inj_TID = 0;
+    reg inj_TLAST = 0;
+    
+    //Output AXI Stream.
+    wire [DATA_WIDTH-1:0] out_TDATA;
+    wire out_TVALID;
+    reg out_TREADY = 0;
+    wire [DATA_WIDTH/8 -1:0] out_TKEEP;
+    wire out_TDEST;
+    wire out_TID;
+    wire out_TLAST;
+    
+    //Log AXI Stream. 
+    wire [DATA_WIDTH-1:0] log_TDATA;
+    wire log_TVALID;
+    reg log_TREADY = 0;
+    wire [DATA_WIDTH/8 -1:0] log_TKEEP;
+    wire log_TDEST;
+    wire log_TID;
+    wire log_TLAST;
+    
+    //Control signals
+    wire pause;
+    wire drop;
+    wire log;
+    
+    //Simulation variables
+    wire inject;
+    reg [3:0] state = 0;
+    
+    assign pause = state[0];
+    assign drop = state[1];
+    assign log = state[2];
+    assign inject = state[3];
     
     integer fd, dummy;
     
@@ -20,39 +70,77 @@ module testbench_template;
         $dumplimit(512000);
         
         clk <= 0;
-        //Initial values for your other variables
         
-        fd = $fopen("axis_governor_drivers.mem", "r");
-        if (fd == 0) begin
-            $display("Could not open file");
-            $finish;
+        repeat(16) begin
+            repeat(24) @(negedge clk);
+            state <= state + 1;
         end
         
-        while ($fgetc(fd) != "\n") begin
-            if ($feof(fd)) begin
-                $display("Error: file is in incorrect format");
-                $finish;
-            end
-        end
+        #10
+        $finish;
     end
     
     always #5 clk <= ~clk;
     
     always @(posedge clk) begin
-        if ($feof(fd)) begin
-            $display("Reached end of drivers file");
-            #20
-            $finish;
+        in_TVALID = $random;
+        inj_TVALID = $random && inject;
+        out_TREADY = $random;
+        log_TREADY = $random;
+        
+        if (in_TREADY && in_TVALID) begin
+            in_TDATA <= in_TDATA + 2;
         end
         
-        #0.01
-        dummy = $fscanf(fd, "%F%O%R%M%A%T", /* list of variables */);
+        if (inj_TREADY && inj_TVALID) begin
+            inj_TDATA <= inj_TDATA + 2;
+        end
     end
 
-    axis_governor DUT (
-        .clk(clk),
-        ...
-    );
+axis_governor #(
+    .DATA_WIDTH(DATA_WIDTH)
+) DUT (    
+    //Input AXI Stream.
+	.in_TDATA(in_TDATA),
+	.in_TVALID(in_TVALID),
+	.in_TREADY(in_TREADY),
+	.in_TKEEP(in_TKEEP),
+	.in_TDEST(in_TDEST),
+	.in_TID(in_TID),
+	.in_TLAST(in_TLAST),
+    
+    //Inject AXI Stream. 
+	.inj_TDATA(inj_TDATA),
+	.inj_TVALID(inj_TVALID),
+	.inj_TREADY(inj_TREADY),
+	.inj_TKEEP(inj_TKEEP),
+	.inj_TDEST(inj_TDEST),
+	.inj_TID(inj_TID),
+	.inj_TLAST(inj_TLAST),
+    
+    //Output AXI Stream.
+	.out_TDATA(out_TDATA),
+	.out_TVALID(out_TVALID),
+	.out_TREADY(out_TREADY),
+	.out_TKEEP(out_TKEEP),
+	.out_TDEST(out_TDEST),
+	.out_TID(out_TID),
+	.out_TLAST(out_TLAST),
+    
+    //Log AXI Stream. 
+	.log_TDATA(log_TDATA),
+	.log_TVALID(log_TVALID),
+	.log_TREADY(log_TREADY),
+	.log_TKEEP(log_TKEEP),
+	.log_TDEST(log_TDEST),
+	.log_TID(log_TID),
+	.log_TLAST(log_TLAST),
+    
+    //Control signals
+	.pause(pause),
+	.drop(drop),
+	.log(log)
+);
 
 
 endmodule
