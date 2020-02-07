@@ -16,16 +16,39 @@ etc. For now I just wanted to simulate this.
 
 */
 
+
+`ifdef FROM_AXIS_GOVERNOR
+`include "bhand/bhand.v"
+`endif 
+
+`define NO_RESET    0
+`define ACTIVE_HIGH 1
+`define ACTIVE_LOW  2
+
+`define genif generate if
+`define end_else_genif end else if
+`define endgen end endgenerate
+
+//TODO: Find out how to selectively disable certain side channels
+//Default widths correspond to Galapagos defaults
 module axis_governor #(
-    parameter DATA_WIDTH = 64
+    parameter DATA_WIDTH = 64,
+    parameter DEST_WIDTH = 16,
+    parameter ID_WIDTH = 16,
+    parameter RESET_TYPE = `ACTIVE_LOW
 ) (    
+    input wire clk,
+    //Depending on RESET_TYPE, one or neither of these ports are used
+    input wire rst,
+    input wire rstn,
+    
     //Input AXI Stream.
     input wire [DATA_WIDTH-1:0] in_TDATA,
     input wire in_TVALID,
     output wire in_TREADY,
     input wire [DATA_WIDTH/8 -1:0] in_TKEEP,
-    input wire in_TDEST,
-    input wire in_TID,
+    input wire [DEST_WIDTH -1:0] in_TDEST,
+    input wire [ID_WIDTH -1:0] in_TID,
     input wire in_TLAST,
     
     //Inject AXI Stream. 
@@ -33,8 +56,8 @@ module axis_governor #(
     input wire inj_TVALID,
     output wire inj_TREADY,
     input wire [DATA_WIDTH/8 -1:0] inj_TKEEP,
-    input wire inj_TDEST,
-    input wire inj_TID,
+    input wire [DEST_WIDTH -1:0] inj_TDEST,
+    input wire [ID_WIDTH -1:0] inj_TID,
     input wire inj_TLAST,
     
     //Output AXI Stream.
@@ -42,8 +65,8 @@ module axis_governor #(
     output wire out_TVALID,
     input wire out_TREADY,
     output wire [DATA_WIDTH/8 -1:0] out_TKEEP,
-    output wire out_TDEST,
-    output wire out_TID,
+    output wire [DEST_WIDTH -1:0] out_TDEST,
+    output wire [ID_WIDTH -1:0] out_TID,
     output wire out_TLAST,
     
     //Log AXI Stream. 
@@ -51,30 +74,92 @@ module axis_governor #(
     output wire log_TVALID,
     input wire log_TREADY,
     output wire [DATA_WIDTH/8 -1:0] log_TKEEP,
-    output wire log_TDEST,
-    output wire log_TID,
+    output wire [DEST_WIDTH -1:0] log_TDEST,
+    output wire [ID_WIDTH -1:0] log_TID,
     output wire log_TLAST,
     
     //Control signals
     input wire pause,
     input wire drop,
-    input wire log
+    input wire log_en
     //input wire inject //Not needed; this is determined from inj_TVALID
 );
+    //We need to add an AXI Stream register slice to the log interface to
+    //satisfy the AXI Stream specification. These are the "unregistered" 
+    //signals (the "_c" means "combinational")
+    wire [DATA_WIDTH-1:0] log_TDATA_c;
+    wire log_TVALID_c;
+    wire log_TREADY_c;
+    wire [DATA_WIDTH/8 -1:0] log_TKEEP_c;
+    wire [DEST_WIDTH -1:0] log_TDEST_c;
+    wire [ID_WIDTH -1:0] log_TID_c;
+    wire log_TLAST_c;
+    
+    //Use the buffered handshake module (copied out from one of my other 
+    //projects) to connect the combinational log stream signals to the exported
+    //ones. We also use the preprocessor to select reset types
+
+`genif (RESET_TYPE == `NO_RESET) begin
+    bhand # (
+        .DATA_WIDTH(DATA_WIDTH + (DATA_WIDTH/8) + DEST_WIDTH + ID_WIDTH + 1)
+    ) sit_shake_good_boy (
+        .clk(clk),
+        .rst(1'b0), //This is the only difference between the generate blocks
+        
+        .idata({log_TDATA_c, log_TKEEP_c, log_TDEST_c, log_TID_c, log_TLAST_c}),
+        .idata_vld(log_TVALID_c),
+        .idata_rdy(log_TREADY_c),
+        
+        .odata({log_TDATA, log_TKEEP, log_TDEST, log_TID, log_TLAST}),
+        .odata_vld(log_TVALID),
+        .odata_rdy(log_TREADY)
+    );
+`end_else_genif (RESET_TYPE == `ACTIVE_HIGH) begin
+    bhand # (
+        .DATA_WIDTH(DATA_WIDTH + (DATA_WIDTH/8) + DEST_WIDTH + ID_WIDTH + 1)
+    ) sit_shake_good_boy (
+        .clk(clk),
+        .rst(rst), //This is the only difference between the generate blocks
+        
+        .idata({log_TDATA_c, log_TKEEP_c, log_TDEST_c, log_TID_c, log_TLAST_c}),
+        .idata_vld(log_TVALID_c),
+        .idata_rdy(log_TREADY_c),
+        
+        .odata({log_TDATA, log_TKEEP, log_TDEST, log_TID, log_TLAST}),
+        .odata_vld(log_TVALID),
+        .odata_rdy(log_TREADY)
+    );
+`end_else_genif (RESET_TYPE == `ACTIVE_LOW) begin
+    bhand # (
+        .DATA_WIDTH(DATA_WIDTH + (DATA_WIDTH/8) + DEST_WIDTH + ID_WIDTH + 1)
+    ) sit_shake_good_boy (
+        .clk(clk),
+        .rst(!rstn), //This is the only difference between the generate blocks
+        
+        .idata({log_TDATA_c, log_TKEEP_c, log_TDEST_c, log_TID_c, log_TLAST_c}),
+        .idata_vld(log_TVALID_c),
+        .idata_rdy(log_TREADY_c),
+        
+        .odata({log_TDATA, log_TKEEP, log_TDEST, log_TID, log_TLAST}),
+        .odata_vld(log_TVALID),
+        .odata_rdy(log_TREADY)
+    );
+`endgen
+    
     //Perform the tricky management of valids and readies.
     //This module is defined lower down in this file
     axis_governor_glue_log glue(
         .in_vld(in_TVALID),
         .out_rdy(out_TREADY),
-        .log_en(log),
-        .log_rdy(log_TREADY),
+        .log_en(log_en),
+        .log_rdy(log_TREADY_c),
         .inj_vld(inj_TVALID),
         .pause(pause),
         .drop(drop),
         
         .in_rdy(in_TREADY),
         .out_vld(out_TVALID),
-        .log_vld(log_TVALID),
+        .log_vld(log_TVALID_c),
         .inj_rdy(inj_TREADY)
     );
     
@@ -85,11 +170,11 @@ module axis_governor #(
     assign out_TID = inj_TVALID ? inj_TID : in_TID;
     assign out_TLAST = inj_TVALID ? inj_TLAST : in_TLAST;
     
-    assign log_TDATA = in_TDATA;
-    assign log_TKEEP = in_TKEEP;
-    assign log_TDEST = in_TDEST;
-    assign log_TID = in_TID;
-    assign log_TLAST = in_TLAST;
+    assign log_TDATA_c = in_TDATA;
+    assign log_TKEEP_c = in_TKEEP;
+    assign log_TDEST_c = in_TDEST;
+    assign log_TID_c = in_TID;
+    assign log_TLAST_c = in_TLAST;
 endmodule
 
 
@@ -141,3 +226,11 @@ module axis_governor_glue_log (
     assign inj_rdy = out_rdy;
 
 endmodule
+
+`undef genif
+`undef end_else_genif
+`undef endgen
+
+`undef NO_RESET
+`undef ACTIVE_HIGH
+`undef ACTIVE_LOW

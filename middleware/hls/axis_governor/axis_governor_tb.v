@@ -8,8 +8,15 @@ Replace innards with desired logic
 
 `include "axis_governor.v"
 
+`define NO_RESET    0
+`define ACTIVE_HIGH 1
+`define ACTIVE_LOW  2
+
 module testbench_template # (
-    parameter DATA_WIDTH = 8
+    parameter DATA_WIDTH = 8,
+    parameter DEST_WIDTH = 16,
+    parameter ID_WIDTH = 16,
+    parameter RESET_TYPE = `NO_RESET
 );
 	reg clk = 0;
     //Input AXI Stream.
@@ -17,8 +24,8 @@ module testbench_template # (
     reg in_TVALID = 0;
     wire in_TREADY;
     reg [DATA_WIDTH/8 -1:0] in_TKEEP = 0;
-    reg in_TDEST = 0;
-    reg in_TID = 0;
+    reg [DEST_WIDTH -1:0] in_TDEST = 0;
+    reg [ID_WIDTH -1:0] in_TID = 0;
     reg in_TLAST = 0;
     
     //Inject AXI Stream. 
@@ -26,8 +33,8 @@ module testbench_template # (
     reg inj_TVALID = 0;
     wire inj_TREADY;
     reg [DATA_WIDTH/8 -1:0] inj_TKEEP = 0;
-    reg inj_TDEST = 0;
-    reg inj_TID = 0;
+    reg [DEST_WIDTH -1:0] inj_TDEST = 0;
+    reg [ID_WIDTH -1:0] inj_TID = 0;
     reg inj_TLAST = 0;
     
     //Output AXI Stream.
@@ -35,8 +42,8 @@ module testbench_template # (
     wire out_TVALID;
     reg out_TREADY = 0;
     wire [DATA_WIDTH/8 -1:0] out_TKEEP;
-    wire out_TDEST;
-    wire out_TID;
+    wire [DEST_WIDTH -1:0] out_TDEST;
+    wire [ID_WIDTH -1:0] out_TID;
     wire out_TLAST;
     
     //Log AXI Stream. 
@@ -44,8 +51,8 @@ module testbench_template # (
     wire log_TVALID;
     reg log_TREADY = 0;
     wire [DATA_WIDTH/8 -1:0] log_TKEEP;
-    wire log_TDEST;
-    wire log_TID;
+    wire [DEST_WIDTH -1:0] log_TDEST;
+    wire [ID_WIDTH -1:0] log_TID;
     wire log_TLAST;
     
     //Control signals
@@ -99,8 +106,13 @@ module testbench_template # (
     end
 
 axis_governor #(
-    .DATA_WIDTH(DATA_WIDTH)
-) DUT (    
+    .DATA_WIDTH(DATA_WIDTH),
+    .DEST_WIDTH(DEST_WIDTH),
+    .ID_WIDTH(ID_WIDTH),
+    .RESET_TYPE(RESET_TYPE)
+) DUT (   
+    .clk(clk),
+    
     //Input AXI Stream.
 	.in_TDATA(in_TDATA),
 	.in_TVALID(in_TVALID),
@@ -140,8 +152,13 @@ axis_governor #(
     //Control signals
 	.pause(pause),
 	.drop(drop),
-	.log(log)
+	.log_en(log)
 );
 
 
 endmodule
+
+
+`undef NO_RESET
+`undef ACTIVE_HIGH
+`undef ACTIVE_LOW

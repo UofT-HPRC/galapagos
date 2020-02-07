@@ -43,7 +43,7 @@ clean:
 ip: clean
 	rm -rf ${out_dir}
 	mkdir -p ${out_dir}/src
-	cp $(shell find ${src_dir} -name "*.v" -o -name "*vh" -o -name "*sv") ${out_dir}/src
+	cp $(shell find ${src_dir} -name "*.v" -o -name "*vh" -o -name "*sv" | grep -v "tb") ${out_dir}/src
 	vivado -nolog -nojournal -notrace -mode batch -source ip_maker.tcl -tclargs ${out_dir} ${ip_name} ${part_no}
 	rm -rf ${ip_name}_tmp_proj
 	rm -f *log
