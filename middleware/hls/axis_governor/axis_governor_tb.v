@@ -72,7 +72,7 @@ module testbench_template # (
         clk <= 0;
         
         repeat(16) begin
-            repeat(24) @(negedge clk);
+            repeat(32) @(negedge clk);
             state <= state + 1;
         end
         
@@ -83,10 +83,11 @@ module testbench_template # (
     always #5 clk <= ~clk;
     
     always @(posedge clk) begin
-        in_TVALID = $random;
-        inj_TVALID = $random && inject;
-        out_TREADY = $random;
-        log_TREADY = $random;
+        #0.01 //Not sure why Vivado doesn't need this...
+        in_TVALID <= $random;
+        inj_TVALID <= $random & inject;
+        out_TREADY <= $random;
+        log_TREADY <= $random;
         
         if (in_TREADY && in_TVALID) begin
             in_TDATA <= in_TDATA + 2;

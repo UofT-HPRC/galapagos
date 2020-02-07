@@ -1,31 +1,31 @@
 [*]
 [*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
-[*] Fri Feb  7 04:27:52 2020
+[*] Fri Feb  7 04:51:07 2020
 [*]
 [dumpfile] "/home/mahkoe/research/galapagos/middleware/hls/axis_governor/axis_governor.vcd"
-[dumpfile_mtime] "Fri Feb  7 04:20:51 2020"
-[dumpfile_size] 20305
+[dumpfile_mtime] "Fri Feb  7 04:50:29 2020"
+[dumpfile_size] 31861
 [savefile] "/home/mahkoe/research/galapagos/middleware/hls/axis_governor/axis_governor.gtkw"
-[timestart] 0
+[timestart] 2515500
 [size] 1916 1060
-[pos] -1281 -1
-*-18.918512 443000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[pos] -1 -1
+*-15.918512 2655010 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] testbench_template.
 [treeopen] testbench_template.DUT.
 [sst_width] 229
 [signals_width] 142
 [sst_expanded] 1
-[sst_vpaned_height] 301
-@28
+[sst_vpaned_height] 575
+@29
 testbench_template.clk
+@28
 testbench_template.pause
 testbench_template.drop
 testbench_template.log
-@29
 testbench_template.inject
 @800200
 -in
-@22
+@24
 [color] 2
 testbench_template.in_TDATA[7:0]
 @28
@@ -37,7 +37,7 @@ testbench_template.in_TREADY
 -in
 @800200
 -log
-@22
+@24
 testbench_template.log_TDATA[7:0]
 @28
 testbench_template.log_TVALID
@@ -46,7 +46,7 @@ testbench_template.log_TREADY
 -log
 @800200
 -inj
-@22
+@24
 [color] 2
 testbench_template.inj_TDATA[7:0]
 @28
@@ -58,7 +58,7 @@ testbench_template.inj_TREADY
 -inj
 @800200
 -out
-@22
+@24
 testbench_template.out_TDATA[7:0]
 @28
 testbench_template.out_TVALID
