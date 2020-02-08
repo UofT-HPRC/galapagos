@@ -17,24 +17,19 @@ void router(
 	
         const ap_uint<NETWORK_HEADER_LENGTH> network_table[256],
         const ap_uint <NETWORK_HEADER_LENGTH> network_addr,
-        hls::stream <galapagos_packet> * stream_in,
-		hls::stream <galapagos_packet>  * stream_out_switch,
-		hls::stream <galapagos_packet>  * stream_out_network
+        galapagos_interface & stream_in,
+		galapagos_interface  & stream_out_switch,
+		galapagos_interface  & stream_out_network,
+        ap_uint<NETWORK_HEADER_LENGTH> * addr_out
 
 ){
-#pragma HLS resource core=AXI4Stream variable=stream_in
-#pragma HLS resource core=AXI4Stream variable=stream_out_switch
-#pragma HLS resource core=AXI4Stream variable=stream_out_network
-
-#pragma HLS DATA_PACK variable=stream_in
-#pragma HLS DATA_PACK variable=stream_out_switch
-#pragma HLS DATA_PACK variable=stream_out_network
-
-#pragma HLS PIPELINE
-
-#ifndef SIM
 #pragma HLS INTERFACE ap_ctrl_none port=return
-#endif
+#pragma HLS INTERFACE axis register both port=stream_in
+#pragma HLS INTERFACE axis register both port=stream_out_switch
+#pragma HLS INTERFACE axis register both port=stream_out_network
+#pragma HLS INTERFACE bram port=network_table
+#pragma HLS PIPELINE II=1
+
 
 	galapagos_packet packetIn;
 	galapagos_packet packetOut;
@@ -42,16 +37,25 @@ void router(
 	bool inFPGA = false;
     ap_uint <NETWORK_HEADER_LENGTH> network_addr_in;
 
-	if(!stream_in->empty()){
-		packetIn = stream_in->read();
-        network_addr_in = network_table[packetIn.dest];
-        inFPGA = (network_addr == network_addr_in);
+	if(!stream_in.empty()){
+		packetIn = stream_in.read();
 
+        packetOut.data = packetIn.data;
+        packetOut.last = packetIn.last;
+        packetOut.keep = packetIn.keep;
+        packetOut.dest = packetIn.dest;
+        packetOut.id = packetIn.id;
+        packetOut.user = packetIn.user;
+
+        network_addr_in = network_table[packetIn.dest];
+        *addr_out = network_addr_in;
+        inFPGA = (network_addr == network_addr_in);
+        
         if(inFPGA){
-        	stream_out_switch->write(packetIn);
+        	stream_out_switch.write(packetOut);
         }
         else{
-        	stream_out_network->write(packetIn);
+        	stream_out_network.write(packetOut);
         }
 	}
 
