@@ -135,7 +135,7 @@ module axis_governor_glue_log (
     //Note: this next line is written this way to let Vivado synthesize the logic
     //in simple LUTs. However, it is better understood as
     //
-    //assign log_vld = log_en && in_vld && m_rdy;
+    //assign log_vld = log_en && in_vld && s_rdy;
     //
     //Also note that log_vld depends on log_rdy. Technically, this violates the
     //AXI Stream specification. In order for this to work, you need to connect

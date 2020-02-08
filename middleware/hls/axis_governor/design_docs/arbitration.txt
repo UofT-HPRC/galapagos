@@ -291,7 +291,7 @@ straight out of my Verilog implementation):
     //AXI Stream specification. In order for this to work, you need to connect
     //the log AXI Stream channel to a core which does not have a combinational
     //path from ready to valid (a register slice, for example)
-    assign log_vld = log_en && ~pause && in_vld && log_rdy && (drop || (~inj_vld && out_rdy));
+    assign log_vld = log_en && ~pause && in_vld && (drop || (~inj_vld && out_rdy));
     
     //At least this is simple...
     assign inj_rdy = out_rdy;
