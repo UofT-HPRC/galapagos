@@ -8,15 +8,10 @@ Replace innards with desired logic
 
 `include "axis_governor.v"
 
-`define NO_RESET    0
-`define ACTIVE_HIGH 1
-`define ACTIVE_LOW  2
-
 module testbench_template # (
     parameter DATA_WIDTH = 8,
     parameter DEST_WIDTH = 16,
-    parameter ID_WIDTH = 16,
-    parameter RESET_TYPE = `NO_RESET
+    parameter ID_WIDTH = 16
 );
 	reg clk = 0;
     //Input AXI Stream.
@@ -108,8 +103,7 @@ module testbench_template # (
 axis_governor #(
     .DATA_WIDTH(DATA_WIDTH),
     .DEST_WIDTH(DEST_WIDTH),
-    .ID_WIDTH(ID_WIDTH),
-    .RESET_TYPE(RESET_TYPE)
+    .ID_WIDTH(ID_WIDTH)
 ) DUT (   
     .clk(clk),
     
@@ -157,8 +151,3 @@ axis_governor #(
 
 
 endmodule
-
-
-`undef NO_RESET
-`undef ACTIVE_HIGH
-`undef ACTIVE_LOW

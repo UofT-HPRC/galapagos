@@ -176,18 +176,18 @@ we might make a combinational loop involving Brittany.vld and Brittany.rdy!
 And by the way, this same problem also exists for the Log output.
 
 
-BAND-AID FIX TO COMBINATIONAL LOOPS
------------------------------------
+FIXING COMBINATIONAL LOOPS
+--------------------------
 
-I was not able to completely remove this problem, and I'm not sure that's even 
-possible. However, I do have a solution: since we are ostensibly in charge of 
-the logging circuitry, we'll guarantee that the logging output does not have a 
-combinational path from vld to rdy (we can do this with an AXI Stream register 
-slice, for example).
+The idea is this: Log is only valid if Alex is valid and Brittany is ready. 
+Likewise, Brittany is only valid if Alex is valid and the Log is ready. It's 
+actually easier to understand this reasoning if we had, say, five slaves. The 
+master should never send unless all five are ready, but each slave should never
+receive unless the master is valid AND all the other slaves are ready.
 
 The final circuit is as follows:
 
-
+[TODO: UPDATE]
                                         __
   +-----------+                      +-|  \         +-----------+
   |        vld|-+--------------------|-|__/-------->|vld        |
