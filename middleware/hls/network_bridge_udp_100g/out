@@ -1,0 +1,263 @@
+mkdir -p /home/tarafdar/workDir/galapagos/hlsBuild/sidewinder/ip/network_bridge_udp_100g
+vivado_hls /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/generate_hls.tcl
+
+****** Vivado(TM) HLS - High-Level Synthesis from C, C++ and SystemC v2018.3 (64-bit)
+  **** SW Build 2405991 on Thu Dec  6 23:36:41 MST 2018
+  **** IP Build 2404404 on Fri Dec  7 01:43:56 MST 2018
+    ** Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
+
+source /opt/Xilinx/Vivado/2018.3/scripts/vivado_hls/hls.tcl -notrace
+INFO: [HLS 200-10] Running '/opt/Xilinx/Vivado/2018.3/bin/unwrapped/lnx64.o/vivado_hls'
+INFO: [HLS 200-10] For user 'tarafdar' on host 'localhost' (Linux_x86_64 version 4.4.0-159-generic) on Thu Dec 05 19:56:20 UTC 2019
+INFO: [HLS 200-10] On os Ubuntu 16.04.6 LTS
+INFO: [HLS 200-10] In directory '/home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g'
+INFO: [HLS 200-10] Opening project '/home/tarafdar/workDir/galapagos/hlsBuild/sidewinder/ip/network_bridge_udp_100g'.
+INFO: [HLS 200-10] Opening solution '/home/tarafdar/workDir/galapagos/hlsBuild/sidewinder/ip/network_bridge_udp_100g/solution1'.
+INFO: [SYN 201-201] Setting up clock 'default' with a period of 3.103ns.
+INFO: [HLS 200-10] Setting target device to 'xczu19eg-ffvc1760-2-i'
+INFO: [HLS 200-10] Adding design file '/home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp' to the project
+INFO: [SCHED 204-61] Option 'relax_ii_for_timing' is enabled, will increase II to preserve clock frequency constraints.
+INFO: [HLS 200-10] Analyzing design file '/home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp' ... 
+ERROR: [HLS 200-70] Compilation errors found: In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:1:
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:36:
+In file included from /opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int.h:55:
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int_base.h:150:29: error: implicit instantiation of undefined template 'ssdm_int<1536, false>'
+struct ap_int_base : public ssdm_int<_AP_W, _AP_S> {
+                            ^
+/home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:52:13: note: in instantiation of template class 'ap_int_base<1536, false>' requested here
+    return (inputVector.range(7,0), inputVector(15, 8), inputVector(23, 16), inputVector(31, 24), inputVector(39,32), inputVector(47,40), inputVector(55,48), inputVector(63,56),
+            ^
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_common.h:221:8: note: template is declared here
+struct ssdm_int;
+       ^
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:1:
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:36:
+In file included from /opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int.h:55:
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int_base.h:150:29: error: implicit instantiation of undefined template 'ssdm_int<2048, false>'
+struct ap_int_base : public ssdm_int<_AP_W, _AP_S> {
+                            ^
+/home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:52:13: note: in instantiation of template class 'ap_int_base<2048, false>' requested here
+    return (inputVector.range(7,0), inputVector(15, 8), inputVector(23, 16), inputVector(31, 24), inputVector(39,32), inputVector(47,40), inputVector(55,48), inputVector(63,56),
+            ^
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_common.h:221:8: note: template is declared here
+struct ssdm_int;
+       ^
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:1:
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:36:
+In file included from /opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int.h:55:
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int_base.h:150:29: error: implicit instantiation of undefined template 'ssdm_int<2560, false>'
+struct ap_int_base : public ssdm_int<_AP_W, _AP_S> {
+                            ^
+/home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:52:13: note: in instantiation of template class 'ap_int_base<2560, false>' requested here
+    return (inputVector.range(7,0), inputVector(15, 8), inputVector(23, 16), inputVector(31, 24), inputVector(39,32), inputVector(47,40), inputVector(55,48), inputVector(63,56),
+            ^
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_common.h:221:8: note: template is declared here
+struct ssdm_int;
+       ^
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:1:
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:36:
+In file included from /opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int.h:55:
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int_base.h:150:29: error: implicit instantiation of undefined template 'ssdm_int<3072, false>'
+struct ap_int_base : public ssdm_int<_AP_W, _AP_S> {
+                            ^
+/home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:52:13: note: in instantiation of template class 'ap_int_base<3072, false>' requested here
+    return (inputVector.range(7,0), inputVector(15, 8), inputVector(23, 16), inputVector(31, 24), inputVector(39,32), inputVector(47,40), inputVector(55,48), inputVector(63,56),
+            ^
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_common.h:221:8: note: template is declared here
+struct ssdm_int;
+       ^
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:1:
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:36:
+In file included from /opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int.h:55:
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int_base.h:150:29: error: implicit instantiation of undefined template 'ssdm_int<3584, false>'
+struct ap_int_base : public ssdm_int<_AP_W, _AP_S> {
+                            ^
+/home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:52:13: note: in instantiation of template class 'ap_int_base<3584, false>' requested here
+    return (inputVector.range(7,0), inputVector(15, 8), inputVector(23, 16), inputVector(31, 24), inputVector(39,32), inputVector(47,40), inputVector(55,48), inputVector(63,56),
+            ^
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_common.h:221:8: note: template is declared here
+struct ssdm_int;
+       ^
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:1:
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:36:
+In file included from /opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int.h:55:
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int_base.h:150:29: error: implicit instantiation of undefined template 'ssdm_int<4096, false>'
+struct ap_int_base : public ssdm_int<_AP_W, _AP_S> {
+                            ^
+/home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:52:13: note: in instantiation of template class 'ap_int_base<4096, false>' requested here
+    return (inputVector.range(7,0), inputVector(15, 8), inputVector(23, 16), inputVector(31, 24), inputVector(39,32), inputVector(47,40), inputVector(55,48), inputVector(63,56),
+            ^
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_common.h:221:8: note: template is declared here
+struct ssdm_int;
+       ^
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:1:
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:36:
+In file included from /opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int.h:55:
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int_base.h:150:29: error: implicit instantiation of undefined template 'ssdm_int<4608, false>'
+struct ap_int_base : public ssdm_int<_AP_W, _AP_S> {
+                            ^
+/home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:52:13: note: in instantiation of template class 'ap_int_base<4608, false>' requested here
+    return (inputVector.range(7,0), inputVector(15, 8), inputVector(23, 16), inputVector(31, 24), inputVector(39,32), inputVector(47,40), inputVector(55,48), inputVector(63,56),
+            ^
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_common.h:221:8: note: template is declared here
+struct ssdm_int;
+       ^
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:1:
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:36:
+In file included from /opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int.h:55:
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int_base.h:150:29: error: implicit instantiation of undefined template 'ssdm_int<5120, false>'
+struct ap_int_base : public ssdm_int<_AP_W, _AP_S> {
+                            ^
+/home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:52:13: note: in instantiation of template class 'ap_int_base<5120, false>' requested here
+    return (inputVector.range(7,0), inputVector(15, 8), inputVector(23, 16), inputVector(31, 24), inputVector(39,32), inputVector(47,40), inputVector(55,48), inputVector(63,56),
+            ^
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_common.h:221:8: note: template is declared here
+struct ssdm_int;
+       ^
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:1:
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:36:
+In file included from /opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int.h:55:
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int_base.h:150:29: error: implicit instantiation of undefined template 'ssdm_int<5632, false>'
+struct ap_int_base : public ssdm_int<_AP_W, _AP_S> {
+                            ^
+/home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:52:13: note: in instantiation of template class 'ap_int_base<5632, false>' requested here
+    return (inputVector.range(7,0), inputVector(15, 8), inputVector(23, 16), inputVector(31, 24), inputVector(39,32), inputVector(47,40), inputVector(55,48), inputVector(63,56),
+            ^
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_common.h:221:8: note: template is declared here
+struct ssdm_int;
+       ^
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:1:
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:36:
+In file included from /opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int.h:55:
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int_base.h:150:29: error: implicit instantiation of undefined template 'ssdm_int<6144, false>'
+struct ap_int_base : public ssdm_int<_AP_W, _AP_S> {
+                            ^
+/home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:52:13: note: in instantiation of template class 'ap_int_base<6144, false>' requested here
+    return (inputVector.range(7,0), inputVector(15, 8), inputVector(23, 16), inputVector(31, 24), inputVector(39,32), inputVector(47,40), inputVector(55,48), inputVector(63,56),
+            ^
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_common.h:221:8: note: template is declared here
+struct ssdm_int;
+       ^
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:1:
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:36:
+In file included from /opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int.h:55:
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int_base.h:150:29: error: implicit instantiation of undefined template 'ssdm_int<6656, false>'
+struct ap_int_base : public ssdm_int<_AP_W, _AP_S> {
+                            ^
+/home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:52:13: note: in instantiation of template class 'ap_int_base<6656, false>' requested here
+    return (inputVector.range(7,0), inputVector(15, 8), inputVector(23, 16), inputVector(31, 24), inputVector(39,32), inputVector(47,40), inputVector(55,48), inputVector(63,56),
+            ^
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_common.h:221:8: note: template is declared here
+struct ssdm_int;
+       ^
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:1:
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:36:
+In file included from /opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int.h:55:
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int_base.h:150:29: error: implicit instantiation of undefined template 'ssdm_int<7168, false>'
+struct ap_int_base : public ssdm_int<_AP_W, _AP_S> {
+                            ^
+/home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:52:13: note: in instantiation of template class 'ap_int_base<7168, false>' requested here
+    return (inputVector.range(7,0), inputVector(15, 8), inputVector(23, 16), inputVector(31, 24), inputVector(39,32), inputVector(47,40), inputVector(55,48), inputVector(63,56),
+            ^
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_common.h:221:8: note: template is declared here
+struct ssdm_int;
+       ^
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:1:
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:36:
+In file included from /opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int.h:55:
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int_base.h:150:29: error: implicit instantiation of undefined template 'ssdm_int<7680, false>'
+struct ap_int_base : public ssdm_int<_AP_W, _AP_S> {
+                            ^
+/home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:52:13: note: in instantiation of template class 'ap_int_base<7680, false>' requested here
+    return (inputVector.range(7,0), inputVector(15, 8), inputVector(23, 16), inputVector(31, 24), inputVector(39,32), inputVector(47,40), inputVector(55,48), inputVector(63,56),
+            ^
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_common.h:221:8: note: template is declared here
+struct ssdm_int;
+       ^
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:1:
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:36:
+In file included from /opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int.h:55:
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int_base.h:150:29: error: implicit instantiation of undefined template 'ssdm_int<8192, false>'
+struct ap_int_base : public ssdm_int<_AP_W, _AP_S> {
+                            ^
+/home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:52:13: note: in instantiation of template class 'ap_int_base<8192, false>' requested here
+    return (inputVector.range(7,0), inputVector(15, 8), inputVector(23, 16), inputVector(31, 24), inputVector(39,32), inputVector(47,40), inputVector(55,48), inputVector(63,56),
+            ^
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_common.h:221:8: note: template is declared here
+struct ssdm_int;
+       ^
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:1:
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:36:
+In file included from /opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int.h:55:
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int_base.h:150:29: error: implicit instantiation of undefined template 'ssdm_int<8704, false>'
+struct ap_int_base : public ssdm_int<_AP_W, _AP_S> {
+                            ^
+/home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:52:13: note: in instantiation of template class 'ap_int_base<8704, false>' requested here
+    return (inputVector.range(7,0), inputVector(15, 8), inputVector(23, 16), inputVector(31, 24), inputVector(39,32), inputVector(47,40), inputVector(55,48), inputVector(63,56),
+            ^
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_common.h:221:8: note: template is declared here
+struct ssdm_int;
+       ^
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:1:
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:36:
+In file included from /opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int.h:55:
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int_base.h:150:29: error: implicit instantiation of undefined template 'ssdm_int<9216, false>'
+struct ap_int_base : public ssdm_int<_AP_W, _AP_S> {
+                            ^
+/home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:52:13: note: in instantiation of template class 'ap_int_base<9216, false>' requested here
+    return (inputVector.range(7,0), inputVector(15, 8), inputVector(23, 16), inputVector(31, 24), inputVector(39,32), inputVector(47,40), inputVector(55,48), inputVector(63,56),
+            ^
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_common.h:221:8: note: template is declared here
+struct ssdm_int;
+       ^
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:1:
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:36:
+In file included from /opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int.h:55:
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int_base.h:150:29: error: implicit instantiation of undefined template 'ssdm_int<9728, false>'
+struct ap_int_base : public ssdm_int<_AP_W, _AP_S> {
+                            ^
+/home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:52:13: note: in instantiation of template class 'ap_int_base<9728, false>' requested here
+    return (inputVector.range(7,0), inputVector(15, 8), inputVector(23, 16), inputVector(31, 24), inputVector(39,32), inputVector(47,40), inputVector(55,48), inputVector(63,56),
+            ^
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_common.h:221:8: note: template is declared here
+struct ssdm_int;
+       ^
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:1:
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:36:
+In file included from /opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int.h:55:
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int_base.h:150:29: error: implicit instantiation of undefined template 'ssdm_int<10240, false>'
+struct ap_int_base : public ssdm_int<_AP_W, _AP_S> {
+                            ^
+/home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:52:13: note: in instantiation of template class 'ap_int_base<10240, false>' requested here
+    return (inputVector.range(7,0), inputVector(15, 8), inputVector(23, 16), inputVector(31, 24), inputVector(39,32), inputVector(47,40), inputVector(55,48), inputVector(63,56),
+            ^
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_common.h:221:8: note: template is declared here
+struct ssdm_int;
+       ^
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:1:
+In file included from /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:36:
+In file included from /opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int.h:55:
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_int_base.h:150:29: error: implicit instantiation of undefined template 'ssdm_int<10752, false>'
+struct ap_int_base : public ssdm_int<_AP_W, _AP_S> {
+                            ^
+/home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/src/network_bridge_udp_100g.cpp:52:13: note: in instantiation of template class 'ap_int_base<10752, false>' requested here
+    return (inputVector.range(7,0), inputVector(15, 8), inputVector(23, 16), inputVector(31, 24), inputVector(39,32), inputVector(47,40), inputVector(55,48), inputVector(63,56),
+            ^
+/opt/Xilinx/Vivado/2018.3/common/technology/autopilot/ap_common.h:221:8: note: template is declared here
+struct ssdm_int;
+       ^
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+Failed during preprocessing.
+    while executing
+"source /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/generate_hls.tcl"
+    invoked from within
+"hls::main /home/tarafdar/workDir/galapagos/middleware/hls/network_bridge_udp_100g/generate_hls.tcl"
+    ("uplevel" body line 1)
+    invoked from within
+"uplevel 1 hls::main {*}$args"
+    (procedure "hls_proc" line 5)
+    invoked from within
+"hls_proc $argv"
+INFO: [Common 17-206] Exiting vivado_hls at Thu Dec  5 19:56:27 2019...
+Makefile:28: recipe for target 'hls' failed
