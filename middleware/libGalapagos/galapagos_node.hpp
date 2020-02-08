@@ -25,8 +25,8 @@ namespace galapagos{
     template<class T>
     class node{
         private:
-            galapagos::local_router<T> my_router;
             galapagos::done_clean my_router_dc;
+            galapagos::local_router<T> my_router;
             std::vector < std::unique_ptr<galapagos::kernel <T> > > kernels;
             bool done;
             std::mutex  mutex;
@@ -55,7 +55,7 @@ galapagos::node<T>::node(std::vector <std::string>   _kern_info_table, std::stri
 :my_router_dc(&done, &mutex, _logger),
 my_router(_kern_info_table, _my_address, &my_router_dc, &mutex_packets_in_flight, &packets_in_flight, _logger)
 {
-   
+
     packets_in_flight=0;
     done = false;
     logger = _logger;
@@ -81,7 +81,7 @@ my_router(_kern_info_table, _my_address, &my_router_dc, &mutex_packets_in_flight
     kernels_added = 0;
 
 }
-    
+
 template<class T>
 void galapagos::node<T>::add_kernel(short id, void (*func)(short , interface <T> *, interface <T> *)){
 
@@ -91,7 +91,7 @@ void galapagos::node<T>::add_kernel(short id, void (*func)(short , interface <T>
      my_router.add_interface_pair(kernels[index]->get_s_axis(), kernels[index]->get_m_axis());
      kernels_added++;
      if(kernels_added == num_local){
-	for(int i=0; i<ext_drivers.size(); i++){
+	for(unsigned int i=0; i<ext_drivers.size(); i++){
 	   my_router.add_interface_pair(ext_drivers[i]->get_s_axis(), ext_drivers[i]->get_m_axis());
 	}
      }
@@ -103,7 +103,7 @@ void galapagos::node<T>::start(){
     {
         std::lock_guard <std::mutex> guard(mutex);
         done = false;
-    
+
     }
 
     for(unsigned int i=0; i<kernels.size(); i++){
@@ -112,7 +112,7 @@ void galapagos::node<T>::start(){
         }
     }
     my_router.start();
-    for(int i=0; i<ext_drivers.size(); i++){
+    for(unsigned int i=0; i<ext_drivers.size(); i++){
        ext_drivers[i]->start();
     }
 }
@@ -147,7 +147,7 @@ void galapagos::node<T>::end(){
     //if there are no external drivers then we know once kernels finish we are done
     if(ext_drivers.size() == 0)
         numPacketsLeft = 0;
-        
+
 
      //get all packets that are in flight at the ports
      do{
@@ -167,7 +167,7 @@ void galapagos::node<T>::end(){
 
     my_router_dc.wait_for_clean();
     logger->info("Router Destroyed");
-    for(int i=0; i < ext_drivers_dc.size(); i++){
+    for(unsigned int i=0; i < ext_drivers_dc.size(); i++){
         ext_drivers_dc[i]->wait_for_clean();
         logger->info("Ext Driver:{0:d} destroyed", i);
         logger->flush();

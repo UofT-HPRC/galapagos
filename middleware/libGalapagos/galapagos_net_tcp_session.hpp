@@ -183,7 +183,7 @@ void tcp_session<T>::start()
 void tcp_session<T>::do_read()
 {
     int length;
-    int num_read = 0;
+    unsigned int num_read = 0;
     int dest;
     int id;
     int size;
@@ -191,7 +191,7 @@ void tcp_session<T>::do_read()
     do{
 
         socket.wait(boost::asio::ip::tcp::socket::wait_read);
-        int avail = socket.available();
+        unsigned int avail = socket.available();
         if(avail>0){
             boost::system::error_code error;
             {
@@ -200,9 +200,12 @@ void tcp_session<T>::do_read()
                 T * header = (T *)data;
                 length = socket.read_some(boost::asio::buffer((char *)header, sizeof(T)), error);
 
-                dest = (int)header->range(31,24);
-                id = (int)header->range(23,16);
-                size = (int)header->range(15,0);
+                // dest = (int)header->range(31,24);
+                // id = (int)header->range(23,16);
+                // size = (int)header->range(15,0);
+                dest = galapagos::range(31, 24, *header);
+                id = galapagos::range(23, 16, *header);
+                size = galapagos::range(15, 0, *header);
 
                 num_read=0; 
                 logger->debug ("do_read, size is {0:d}, max_size is {1:d}", size, (MAX_BUFFER+1));
@@ -225,7 +228,7 @@ void tcp_session<T>::do_read()
                 logger->debug("Net:Received packet of {0:d} size at dest {1:x} from id {2:x}", size, dest, id);
                 logger->flush();
                 //assert( size % 8 == 0);
-                m_axis.packet_write(data + sizeof(T), size * sizeof(T), dest, id);
+                m_axis.packet_write(data + sizeof(T), size, dest, id);
             }
         }
     }while(!dc->is_done());
@@ -345,7 +348,7 @@ tcp_session_container<T>::tcp_session_container(
 void tcp_session_container<T>::wait_for_end()
 {
 
-    for(int i=0; i<my_sessions.size(); i++){
+    for(unsigned int i=0; i<my_sessions.size(); i++){
         my_sessions[i]->read_dc->wait_for_clean();
         my_sessions[i]->write_dc->wait_for_clean();
     }
