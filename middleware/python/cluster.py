@@ -10,20 +10,20 @@ import socket, struct
 import glob
 
 class cluster(abstractDict):
-    """ This class is the top-level interface to the myriad other objects used 
-    by Galapagos. Note that the globalFPGAParser provides a rudimentary command 
+    """ This class is the top-level interface to the myriad other objects used
+    by Galapagos. Note that the globalFPGAParser provides a rudimentary command
     line tool to interact with these cluster objects. """
 
     def getDict(self, file_name):
         """
         Checks whether a file's extension is ".xml" or ".json", and parses the
         file (depending on the extension) as XML or JSON.
-        
+
         Args:
             file_name (string): File name
-        
+
         Returns:
-            Python dict filled with info from file. Hierarchy is faithfully 
+            Python dict filled with info from file. Hierarchy is faithfully
             reproduced.
         """
         filename, extension = os.path.splitext(file_name)
@@ -46,7 +46,7 @@ class cluster(abstractDict):
     def __init__(self, name, kernel_file, map_file, mode='file'):
         """
         Initializes the cluster object using logical file and mapping file
-        
+
         Args:
             name (string?): Cluster's name. Set this to project name?
             kernel_file (string): Filename of XML logical file
@@ -57,11 +57,11 @@ class cluster(abstractDict):
 
         #placeholder defaults so functions still work
         self.packet_data = 64
-        self.packet_dest = 8 
-        self.packet_keep = 0 
-        self.packet_last = 0 
-        self.packet_id = 0 
-        self.packet_user = 0 
+        self.packet_dest = 8
+        self.packet_keep = 0
+        self.packet_last = 0
+        self.packet_id = 0
+        self.packet_user = 0
 
         if(mode=='file'):
             top_dict = self.getDict(kernel_file)['cluster']
@@ -85,7 +85,7 @@ class cluster(abstractDict):
                 self.packet_id = packet['id']
             if 'user' in packet:
                 self.packet_user = packet['user']
-            
+
             galapagos_path = str(os.environ.get('GALAPAGOS_PATH'))
 
             f = open(galapagos_path + '/middleware/include/packet_size.h', 'w')
@@ -100,6 +100,8 @@ class cluster(abstractDict):
                 f.write("# define PACKET_ID_LENGTH " + str(self.packet_id) + '\n')
             if self.packet_user:
                 f.write("# define PACKET_USER_LENGTH " + str(self.packet_user) + '\n')
+            else:
+                f.write("# define PACKET_USER_LENGTH 16\n")
             if self.packet_dest:
                 f.write("# define PACKET_DEST_LENGTH " + str(self.packet_dest) + '\n')
             f.write("#endif\n")
@@ -123,11 +125,11 @@ class cluster(abstractDict):
                     kern_dict_local = copy.deepcopy(kern_dict)
                     # Set number for this kernel instance
                     kern_dict_local['num'] = base_num + i
-                    
-                    # This code is setting some mysterious values inside the 
+
+                    # This code is setting some mysterious values inside the
                     # dictionary, which probably get used by another function?
                     # Otherwise, I have no idea what this is doing...
-                    
+
                     # (This is a guess) Naif mentioned that you can hook up local
                     # AXI full/lite connections between your kernels (unrelated to
                     # Galapagos's router, network bridge, etc.). This must be the
@@ -160,17 +162,17 @@ class cluster(abstractDict):
                         else:
                             if kern_dict_local['s_axis']['scope'] == 'local':
                                 kern_dict_local['s_axis']['master']['num'] = str( i + int(kern_dict_local['s_axis']['master']['num']))
-                    
+
                     # I have no idea what this is for
                     if 'wire_slave' in kern_dict_local:
                         if type(kern_dict_local['wire_slave']) == type([]):
                             for slave_idx, slave in enumerate(kern_dict_local['wire_slave']):
                                 kern_dict_local['wire_slave'][slave_idx]['master']['num'] = str(i + int(slave['master']['num']))
-                        else:  
+                        else:
                             kern_dict_local['wire_slave']['master']['num'] = str(i + int(slave['master']['num']))
-                    
-                    
-                    
+
+
+
                     #print("kern dicT " + str(kern_dict_local))
                     # This basically copies the dictionary parsed from the <kernel> tags into another dictionary,
                     # but it does also check the fields to make sure they're all valid and that no mandatory info
@@ -195,12 +197,12 @@ class cluster(abstractDict):
             # but it does also check the fields to make sure they're all valid and that no mandatory info
             # is missing
             node_inst = node(**node_dict)
-            
+
             # I'm fairly sure these next few lines of code are just converting
             # data formats
             node_inst['kernel'] = []
-            
-            # 
+
+            #
             for kmap_node in node_dict['kernel']:
                 for kern_idx, kern in enumerate(self.kernels):
                     # Perform linear search through self.kernels (the array of
@@ -223,7 +225,7 @@ class cluster(abstractDict):
             self.nodes.append(node_inst)
 
     def writeClusterTCL(self, output_path, sim):
-        
+
         for node_idx, node in enumerate(self.nodes):
             if node['type'] == 'hw':
                 tclFileGenerator.makeTCLFiles(node, self.name, output_path, sim)
@@ -240,7 +242,7 @@ class cluster(abstractDict):
             bramFile = open(output_path + '/' + self.name + '/ip.coe', 'w')
             bramFile.write('memory_initialization_radix=10;\n')
         bramFile.write('memory_initialization_vector=\n')
-        
+
         kernelIndex = 0
         #iterate through kernels in order of tdest, populating the ipaddress at that location
         maxKernelIndex = 0
@@ -268,7 +270,7 @@ class cluster(abstractDict):
                 if addr_type == 'mac':
                     defaultStr = 'ffffffffffff'
                 else: #ip
-                    defaultStr = str(struct.unpack("!L", socket.inet_aton('1.1.1.1'))[0]) 
+                    defaultStr = str(struct.unpack("!L", socket.inet_aton('1.1.1.1'))[0])
 
                 if currIndex != (len(self.kernels) - 1):
                     bramFile.write(defaultStr + ',')
@@ -280,23 +282,23 @@ class cluster(abstractDict):
         """
         As per the name, makes a project cluster script. You may be wondering what a
         project cluster script is. Me too.
-        
+
         It looks like this automatically generates bash scripts which take care of
-        making a cluster of _vivado_ projects, one for each hardware node (i.e. 
-        <nodes> in the mapping file with <type>hw</type>. 
-        
+        making a cluster of _vivado_ projects, one for each hardware node (i.e.
+        <nodes> in the mapping file with <type>hw</type>.
+
         Galapagos's project management is (in my opinion) too gardenwalled. There is
-        one common projects directory (which is under projects/ in the Galapagos 
+        one common projects directory (which is under projects/ in the Galapagos
         install location by default) and it makes a subdirectory named after each
-        project. I really dislike this kind of file management, and it will only 
+        project. I really dislike this kind of file management, and it will only
         cause headaches with permissions. Also, I hate playing the guessing game of
         "will it automatically make a directory for me or not?" And one more thing:
-        this means that your project name has to be a valid folder name. 
-        
+        this means that your project name has to be a valid folder name.
+
         Args:
             output_path (string): Location of Galapagos's projects folder.
         """
-    
+
         # If this project directory already exists, just delete it! Oops! I forgot
         # I already had a super important project with the same name!
         # ^ this has been amended below by just removing the tcl files
@@ -312,13 +314,13 @@ class cluster(abstractDict):
             #only need vivado project for hw nodes
             if node_obj['type'] == 'hw':
                 dirName = output_path + '/' + self.name + '/' + str(node_idx)
-                
+
                 if os.path.exists(dirName):
                     fileList = glob.glob(dirName + "/*.tcl")
                     for f in fileList:
                         os.remove(f)
                 os.makedirs(dirName, exist_ok=True)
-                
+
                 #currently only making flattened bitstreams
                 globalConfigFile.write("galapagos-update-board " + node_obj['board'] + "\n")
                 globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + self.name +  " --start_synth 1" + "\n")
