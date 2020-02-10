@@ -14,6 +14,9 @@ things, accept commands to allow single-stepping, running to a "breakpoint" or
 "watchpoint", repackage logged streams to move the side channels into TDATA, 
 etc. For now I just wanted to simulate this.
 
+This module requires 2 LUTs for the glue logic, and whatever LUTs/MUXes are 
+needed for the multiplexers at the output
+
 */
 
 //TODO: Find out how to selectively disable certain side channels

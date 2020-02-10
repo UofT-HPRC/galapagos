@@ -190,20 +190,22 @@ The final circuit is as follows:
 [TODO: UPDATE]
                                         __
   +-----------+                      +-|  \         +-----------+
-  |        vld|-+--------------------|-|__/-------->|vld        |
-  |           | |    __              |              |           |
-  | Alex      | | +-|  \         __  |              |  Brittany |
-  |           | +-|-|__/------+ /  |-+              |           |
-  |        rdy|<--+-------------\__|-|--------------|rdy        |
-  +-----------+               |      |              +-----------+
+  |        vld|--------------+-------|-|__/-------->|vld        |
+  |           |              | /--+  |              |           |
+  | Alex      |              ---  |  |              |  Brittany |
+  |           |        __    \_/  |  |              |           |
+  |        rdy|<------/  |----|---+--|--------------|rdy        |
+  +-----------+       \__|----|------+              +-----------+
                               |      |
                               v      |
-                           +------------+
-                           | vld    rdy |
-                           |            |
-                           |     Log    |
-                           |            |
-                           +------------+
+                           +------------+      +------------------+
+                           | vld    rdy |      |  a b             |
+                           |            |      |  | |             |
+                           |     Log    |      |  ---             |
+                           |            |      |  \_/  f = a AND b|
+                           +------------+      |   |              |
+                                               |   f              |
+                                               +------------------+
 
 This is much more subtle. If Log.rdy is low, then Alex.rdy is low and 
 Brittany.vld is low; this backpressures Alex and makes sure Brittany doesn't 
@@ -356,17 +358,17 @@ way of doing just that?
 EXPLANATION OF THE ATTACHED FILES AND SPREADSHEETS
 --------------------------------------------------
 
-First of all, notice that there is a gov.circ and a gov2.circ in 
+First of all, notice that there is a gov.circ, gov2.circ, and gov3.circ in 
 early_attempts/. These were the attempts I did by just trying to draw the 
 circuit without really thinking about it in a structured way. In other words, 
 this whole discussion about combining the pause, drop, log, and inject 
 primitives (taking care of precedence) didn't occur to me until I had tried to 
 make the circuit twice and found errors.
 
-The first two sheets in the spreadsheet show the truth tables for my first two 
-attempts. The third one shows the final circuit that passed all my tests.
+The first three sheets in the spreadsheet show the truth tables for my first 
+three attempts. The fourth one shows the final circuit that passed all my tests.
 
-The fourth spreadsheet was how I confirmed to myself that I had correctly 
+The fifth spreadsheet was how I confirmed to myself that I had correctly 
 transcribed the logical formulas from the diagram. The truth table is the same 
 one from the correct circuit.
 
