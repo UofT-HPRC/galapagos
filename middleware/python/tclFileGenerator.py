@@ -297,48 +297,48 @@ def userApplicationRegionMemInstGlobal(tcl_user_app, shared):
 
         # print('axi interconnect mem properties ' + str(properties))
 
-        enable_AXI_mem_interconnect = True
+        # enable_AXI_mem_interconnect = True
 
-        if 'custom' in tcl_user_app.fpga:
-            if tcl_user_app.fpga['custom'] == 'GAScore':
-                enable_AXI_mem_interconnect = False
+        # if 'custom' in tcl_user_app.fpga:
+        #     if tcl_user_app.fpga['custom'] == 'GAScore':
+        #         enable_AXI_mem_interconnect = False
 
-        if enable_AXI_mem_interconnect:
-            tcl_user_app.instBlock(
+        # if enable_AXI_mem_interconnect:
+        tcl_user_app.instBlock(
+                {
+                'name':'axi_interconnect',
+                'inst':'applicationRegion/axi_interconnect_mem',
+                'clks':inc_clks,
+                'resetns':inc_resetns,
+                'properties':properties
+                }
+                )
+
+        tcl_user_app.makeConnection(
+                    'intf',
                     {
-                    'name':'axi_interconnect',
-                    'inst':'applicationRegion/axi_interconnect_mem',
-                    'clks':inc_clks,
-                    'resetns':inc_resetns,
-                    'properties':properties
+                    'name':'applicationRegion/axi_interconnect_mem',
+                    'type':'intf',
+                    'port_name':'M00_AXI'
+                    },
+                    {'name':None,
+                    'type':'intf_port',
+                    'port_name':'S_AXI_MEM_0'
                     }
                     )
-
+        if shared:
             tcl_user_app.makeConnection(
                         'intf',
                         {
                         'name':'applicationRegion/axi_interconnect_mem',
                         'type':'intf',
-                        'port_name':'M00_AXI'
+                        'port_name':'M01_AXI'
                         },
                         {'name':None,
                         'type':'intf_port',
-                        'port_name':'S_AXI_MEM_0'
+                        'port_name':'S_AXI_MEM_1'
                         }
                         )
-            if shared:
-                tcl_user_app.makeConnection(
-                            'intf',
-                            {
-                            'name':'applicationRegion/axi_interconnect_mem',
-                            'type':'intf',
-                            'port_name':'M01_AXI'
-                            },
-                            {'name':None,
-                            'type':'intf_port',
-                            'port_name':'S_AXI_MEM_1'
-                            }
-                            )
 
 
     else:
@@ -476,14 +476,14 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
 
     # I think this is the BRAM which stores the routing table
     if tcl_user_app.fpga['comm'] != 'none':
-        if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
-            tcl_user_app.instBlock(
-                    {
-                    'name':'blk_mem_gen',
-                    'inst':'applicationRegion/blk_mem_switch_rom',
-                    }
-                    )
-
+        # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
+        tcl_user_app.instBlock(
+                {
+                'name':'blk_mem_gen',
+                'inst':'applicationRegion/blk_mem_switch_rom',
+                }
+                )
+    
     # The next 250 lines of code are a big if-elif-else statement which generate
     # the correct Galapagos router depending on whether the communication type is
     # "tcp", "eth", or "raw"
@@ -548,64 +548,64 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
 
     # Refer to comments in the case for TCP (above)
     elif tcl_user_app.fpga['comm'] == 'eth':
-        if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
-            tcl_user_app.instBlock(
-                    {'vendor':'xilinx.com',
-                    'lib':'hls',
-                    'name':'width48router',
-                    'inst':'applicationRegion/custom_switch_inst',
-                    'clks':['aclk'],
-                    'resetns':['aresetn']
-                    }
-                    )
+        # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
+        tcl_user_app.instBlock(
+                {'vendor':'xilinx.com',
+                'lib':'hls',
+                'name':'width48router',
+                'inst':'applicationRegion/custom_switch_inst',
+                'clks':['aclk'],
+                'resetns':['aresetn']
+                }
+                )
 
-            properties =['CONFIG.Memory_Type {Single_Port_ROM}',
-                        'CONFIG.Enable_32bit_Address {true}',
-                        'CONFIG.Use_Byte_Write_Enable {false}',
-                        'CONFIG.Byte_Size {8}',
-                        'CONFIG.Write_Width_A {64}',
-                        'CONFIG.Write_Depth_A {256}',
-                        'CONFIG.Read_Width_A {64}',
-                        'CONFIG.Write_Width_B {64}',
-                        'CONFIG.Read_Width_B {64}',
-                        'CONFIG.Register_PortA_Output_of_Memory_Primitives {false}',
-                        'CONFIG.Use_RSTA_Pin {true}',
-                        'CONFIG.Port_A_Write_Rate {0}',
-                        'CONFIG.use_bram_block {BRAM_Controller}',
-                        'CONFIG.EN_SAFETY_CKT {true}',
-                        'CONFIG.Load_init_file {true}',
-                        'CONFIG.Coe_File $top_path/projects/$default_dir/mac.coe'
-                        ]
+        properties =['CONFIG.Memory_Type {Single_Port_ROM}',
+                    'CONFIG.Enable_32bit_Address {true}',
+                    'CONFIG.Use_Byte_Write_Enable {false}',
+                    'CONFIG.Byte_Size {8}',
+                    'CONFIG.Write_Width_A {64}',
+                    'CONFIG.Write_Depth_A {256}',
+                    'CONFIG.Read_Width_A {64}',
+                    'CONFIG.Write_Width_B {64}',
+                    'CONFIG.Read_Width_B {64}',
+                    'CONFIG.Register_PortA_Output_of_Memory_Primitives {false}',
+                    'CONFIG.Use_RSTA_Pin {true}',
+                    'CONFIG.Port_A_Write_Rate {0}',
+                    'CONFIG.use_bram_block {BRAM_Controller}',
+                    'CONFIG.EN_SAFETY_CKT {true}',
+                    'CONFIG.Load_init_file {true}',
+                    'CONFIG.Coe_File $top_path/projects/$default_dir/mac.coe'
+                    ]
 
-            tcl_user_app.setProperties('applicationRegion/blk_mem_switch_rom', properties)
+        tcl_user_app.setProperties('applicationRegion/blk_mem_switch_rom', properties)
 
-            tcl_user_app.makeConnection(
-                        'net',
-                        {
-                        'name':'network/ip_constant_block_inst',
-                        'type':'pin',
-                        'port_name':'mac_big'
-                        },
-                        {
-                        'name':'applicationRegion/custom_switch_inst',
-                        'type':'pin',
-                        'port_name':'network_addr_V'
-                        }
-                        )
-
-            tcl_user_app.makeConnection(
-                    'intf',
+        tcl_user_app.makeConnection(
+                    'net',
                     {
-                    'name':'applicationRegion/custom_switch_inst',
-                    'type':'intf',
-                    'port_name':'network_table_V_PORTA'
+                    'name':'network/ip_constant_block_inst',
+                    'type':'pin',
+                    'port_name':'mac_big'
                     },
                     {
-                    'name':'applicationRegion/blk_mem_switch_rom',
-                    'type':'intf',
-                    'port_name':'BRAM_PORTA'
+                    'name':'applicationRegion/custom_switch_inst',
+                    'type':'pin',
+                    'port_name':'network_addr_V'
                     }
                     )
+
+        tcl_user_app.makeConnection(
+                'intf',
+                {
+                'name':'applicationRegion/custom_switch_inst',
+                'type':'intf',
+                'port_name':'network_table_V_PORTA'
+                },
+                {
+                'name':'applicationRegion/blk_mem_switch_rom',
+                'type':'intf',
+                'port_name':'BRAM_PORTA'
+                }
+                )
 
     elif tcl_user_app.fpga['comm'] == 'raw':
 
@@ -768,36 +768,36 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                             }
                         )
             elif tcl_user_app.fpga['comm'] not in ['raw', 'none']:
-                if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
-                    tcl_user_app.instBlock(
-                            {
-                            'name':'axis_switch',
-                            'inst':'applicationRegion/input_switch',
-                            'clks':['aclk'],
-                            'resetns':['aresetn'],
-                            'properties':['CONFIG.NUM_SI {2}',
-                                'CONFIG.NUM_MI {' + str(num_slave_s_axis_global) + '}',
-                                'CONFIG.HAS_TLAST {1}',
-                                'CONFIG.ARB_ON_TLAST {1}'
-                                ]
-                            }
-                            )
-
-                else:
-                    if num_slave_s_axis_global > 1:
-                        tcl_user_app.instBlock(
-                                {
-                                'name':'axis_switch',
-                                'inst':'applicationRegion/input_switch',
-                                'clks':['aclk'],
-                                'resetns':['aresetn'],
-                                'properties':['CONFIG.NUM_SI {1}',
-                                    'CONFIG.NUM_MI {' + str(num_slave_s_axis_global) + '}',
-                                    'CONFIG.HAS_TLAST {1}',
-                                    'CONFIG.ARB_ON_TLAST {1}'
-                                    ]
-                                }
-                            )
+                # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
+                tcl_user_app.instBlock(
+                        {
+                        'name':'axis_switch',
+                        'inst':'applicationRegion/input_switch',
+                        'clks':['aclk'],
+                        'resetns':['aresetn'],
+                        'properties':['CONFIG.NUM_SI {2}',
+                            'CONFIG.NUM_MI {' + str(num_slave_s_axis_global) + '}',
+                            'CONFIG.HAS_TLAST {1}',
+                            'CONFIG.ARB_ON_TLAST {1}'
+                            ]
+                        }
+                        )
+                    
+                # else:
+                #     if num_slave_s_axis_global > 1:
+                #         tcl_user_app.instBlock(
+                #                 {
+                #                 'name':'axis_switch',
+                #                 'inst':'applicationRegion/input_switch',
+                #                 'clks':['aclk'],
+                #                 'resetns':['aresetn'],
+                #                 'properties':['CONFIG.NUM_SI {1}',
+                #                     'CONFIG.NUM_MI {' + str(num_slave_s_axis_global) + '}',
+                #                     'CONFIG.HAS_TLAST {1}',
+                #                     'CONFIG.ARB_ON_TLAST {1}'
+                #                     ]
+                #                 }
+                #             )
 
 
 
@@ -828,9 +828,9 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
 
         # this condition is prerequisite to have an input_switch
         if num_slave_s_axis_global > 1 or tcl_user_app.fpga['comm'] != 'raw':
-            if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
-                tcl_user_app.setProperties('applicationRegion/input_switch', properties)
-
+            # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
+            tcl_user_app.setProperties('applicationRegion/input_switch', properties)
+    
 
     # Ask how many (global) m_axis connections are in the user app region.
     num_slave_m_axis_global = len(getInterfaces(tcl_user_app.fpga, 'm_axis', 'scope', 'global'))
@@ -924,20 +924,20 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
                     )
         # custom_switch_inst only exists without raw
         if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
-            if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
+            # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
                 # Connect the AXI input switch to the Galapagos router
-                tcl_user_app.makeConnection(
-                        'intf',
-                        {
-                        'name':'applicationRegion/custom_switch_inst',
-                        'type':'intf',
-                        'port_name':'stream_out_switch'
-                        },
-                        {'name':'applicationRegion/input_switch',
-                        'type':'intf',
-                        'port_name':'S01_AXIS'
-                        }
-                        )
+            tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                    'name':'applicationRegion/custom_switch_inst',
+                    'type':'intf',
+                    'port_name':'stream_out_switch'
+                    },
+                    {'name':'applicationRegion/input_switch',
+                    'type':'intf',
+                    'port_name':'S01_AXIS'
+                    }
+                    )
 
     elif len(s_axis_array) == 1:
         if (sim == 1):
@@ -969,32 +969,32 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
         else:
             # there's no input switch in this case
             if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
-                if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
-                    tcl_user_app.makeConnection(
-                        'intf',
-                        {
-                        'name':'applicationRegion/input_switch',
-                        'type':'intf',
-                        'port_name':'M00_AXIS'
-                        },
-                        {'name': s_axis_array[0]['kernel_inst']['inst'],
-                        'type':'intf',
-                        'port_name': s_axis_array[0]['name']
-                        }
-                    )
-                    tcl_user_app.makeConnection(
-                        'intf',
-                        {
-                        'name':'applicationRegion/custom_switch_inst',
-                        'type':'intf',
-                        'port_name':'stream_out_switch'
-                        },
-                        {'name':'applicationRegion/input_switch',
-                        'type':'intf',
-                        'port_name':'S01_AXIS'
-                        }
-                    )
-
+                # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
+                tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                    'name':'applicationRegion/input_switch',
+                    'type':'intf',
+                    'port_name':'M00_AXIS'
+                    },
+                    {'name': s_axis_array[0]['kernel_inst']['inst'],
+                    'type':'intf',
+                    'port_name': s_axis_array[0]['name']
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                    'name':'applicationRegion/custom_switch_inst',
+                    'type':'intf',
+                    'port_name':'stream_out_switch_V'
+                    },
+                    {'name':'applicationRegion/input_switch',
+                    'type':'intf',
+                    'port_name':'S01_AXIS'
+                    }
+                )
+    
 
     m_axis_array = getInterfaces(tcl_user_app.fpga, 'm_axis', 'scope', 'global')
 
@@ -1005,20 +1005,20 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
     if len(m_axis_array) == 1:
         if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
             instName = m_axis_array[0]['kernel_inst']['inst']
-            if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
-                tcl_user_app.makeConnection(
-                        'intf',
-                        {
-                        'name': instName,
-                        'type':'intf',
-                        'port_name': m_axis_array[0]['name']
-                        },
-                        {
-                        'name':'applicationRegion/custom_switch_inst',
-                        'type':'intf',
-                        'port_name':'stream_in'
-                        }
-                        )
+            # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
+            tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                    'name': instName,
+                    'type':'intf',
+                    'port_name': m_axis_array[0]['name']
+                    },
+                    {
+                    'name':'applicationRegion/custom_switch_inst',
+                    'type':'intf',
+                    'port_name':'stream_in'
+                    }
+                    )
     elif len(m_axis_array) > 1:
         for idx, m_axis in enumerate(m_axis_array):
             instName = m_axis['kernel_inst']['inst']
@@ -1037,20 +1037,20 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
                     }
                     )
         if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
-            if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
-                tcl_user_app.makeConnection(
-                    'intf',
-                    {
-                        'name':'applicationRegion/output_switch',
-                        'type':'intf',
-                        'port_name':'M00_AXIS'
-                    },
-                    {
-                        'name':'applicationRegion/custom_switch_inst',
-                        'type':'intf',
-                        'port_name':'stream_in'
-                    }
-                )
+            # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
+            tcl_user_app.makeConnection(
+                'intf',
+                {
+                    'name':'applicationRegion/output_switch',
+                    'type':'intf',
+                    'port_name':'M00_AXIS'
+                },
+                {
+                    'name':'applicationRegion/custom_switch_inst',
+                    'type':'intf',
+                    'port_name':'stream_in'
+                }
+            )
 
 
     # Now handle the control interfaces
@@ -1073,31 +1073,32 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
 
     # And finally the off-chip memory interface
 
-    enable_AXI_mem_interconnect = True
+    # enable_AXI_mem_interconnect = True
 
-    if 'custom' in tcl_user_app.fpga:
-        if tcl_user_app.fpga['custom'] == 'GAScore':
-            enable_AXI_mem_interconnect = False
+    # if 'custom' in tcl_user_app.fpga:
+    #     if tcl_user_app.fpga['custom'] == 'GAScore':
+    #         enable_AXI_mem_interconnect = False
 
     m_axi_array = getInterfaces(tcl_user_app.fpga, 'm_axi', 'scope', 'global')
-    if enable_AXI_mem_interconnect:
-        for idx, m_axi in enumerate(m_axi_array):
-            instName = m_axi['kernel_inst']['inst']
-            idx_str = "%02d"%idx
-            tcl_user_app.makeConnection(
-                    'intf',
-                    {
-                    'name': instName,
-                    'type':'intf',
-                    'port_name':m_axi['name']
-                    },
-                    {
-                    'name':'applicationRegion/axi_interconnect_mem',
-                    'type':'intf',
-                    'port_name':'S' +idx_str + '_AXI'
-                    }
-                    )
-    else:
+    # if enable_AXI_mem_interconnect:
+    for idx, m_axi in enumerate(m_axi_array):
+        instName = m_axi['kernel_inst']['inst']
+        idx_str = "%02d"%idx
+        tcl_user_app.makeConnection(
+                'intf',
+                {
+                'name': instName,
+                'type':'intf',
+                'port_name':m_axi['name']
+                },
+                {
+                'name':'applicationRegion/axi_interconnect_mem',
+                'type':'intf',
+                'port_name':'S' +idx_str + '_AXI'
+                }
+                )
+    # else:
+    if 'custom' in tcl_user_app.fpga:
         tcl_custom = tclMeFile( outDir + '/' + str(tcl_user_app.fpga['num']) + '_custom', tcl_user_app.fpga)
         memory_lines = []
         prev_instName = ""
@@ -1296,20 +1297,20 @@ def userApplicationRegionAssignAddresses(tcl_user_app, shared):
         shared: Not really sure what this is for
     """
 
-    if 'custom' in tcl_user_app.fpga and tcl_user_app.fpga['custom'] == 'GAScore':
-        s_axi_array = getInterfaces(tcl_user_app.fpga, 's_axi', 'scope', 'global')
-        master = 'S_AXI_CONTROL'
-        for global_s_axi in s_axi_array:
-            slave_inst = global_s_axi['kernel_inst']['inst']
-            slave_inst, slave_port, slave_base, properties = getSlaveAddressInfo(global_s_axi)
-            tcl_user_app.assign_address(slave_inst, slave_port, slave_base)
-            if 'offset' in properties:
-                prop = {'offset': properties['offset']}
-                tcl_user_app.set_address_properties(slave_inst, slave_port, slave_base, master, **prop)
-            if 'range' in properties:
-                prop = {'range': properties['range']}
-                tcl_user_app.set_address_properties(slave_inst, slave_port, slave_base, master, **prop)
-        return
+    # if 'custom' in tcl_user_app.fpga and tcl_user_app.fpga['custom'] == 'GAScore':
+    #     s_axi_array = getInterfaces(tcl_user_app.fpga, 's_axi', 'scope', 'global')
+    #     master = 'S_AXI_CONTROL'
+    #     for global_s_axi in s_axi_array:
+    #         slave_inst = global_s_axi['kernel_inst']['inst']
+    #         slave_inst, slave_port, slave_base, properties = getSlaveAddressInfo(global_s_axi) 
+    #         tcl_user_app.assign_address(slave_inst, slave_port, slave_base)
+    #         if 'offset' in properties:
+    #             prop = {'offset': properties['offset']}
+    #             tcl_user_app.set_address_properties(slave_inst, slave_port, slave_base, master, **prop)
+    #         if 'range' in properties:
+    #             prop = {'range': properties['range']}
+    #             tcl_user_app.set_address_properties(slave_inst, slave_port, slave_base, master, **prop)
+    #     return
 
     #global m_axi
     m_axi_array = getInterfaces(tcl_user_app.fpga, 'm_axi', 'scope', 'global')
@@ -1690,7 +1691,7 @@ def bridgeConnections(outDir, fpga, sim):
 
         # custom_switch_inst only exists without raw
         if tcl_bridge_connections.fpga['comm'] not in ['raw', 'none']:
-            if 'custom' not in tcl_bridge_connections.fpga or tcl_bridge_connections.fpga['custom'] != 'GAScore':
+            # if 'custom' not in tcl_bridge_connections.fpga or tcl_bridge_connections.fpga['custom'] != 'GAScore':
                 tcl_bridge_connections.makeConnection(
                         'intf',
                         {
@@ -1718,7 +1719,8 @@ def bridgeConnections(outDir, fpga, sim):
                         'port_name':'${netBridge_from_app}'
                         }
                         )
-            else:
+            # else:
+            if "custom" in tcl_bridge_connections.fpga:
                 tcl_custom.tprint('set CUSTOM_net_out network/network_bridge_inst/${netBridge_from_app}')
                 s_axis_array = getInterfaces(tcl_bridge_connections.fpga, 's_axis', 'scope', 'global')
                 if len(s_axis_array) > 1:
@@ -1820,34 +1822,34 @@ def bridgeConnections(outDir, fpga, sim):
 
         if tcl_bridge_connections.fpga['comm'] not in ['raw', 'none']:
             if (sim == 0):
-                if 'custom' not in tcl_bridge_connections.fpga or tcl_bridge_connections.fpga['custom'] != 'GAScore':
-                    tcl_bridge_connections.makeConnection(
-                            'intf',
-                            {
-                            'name':'network/network_bridge_inst',
-                            'type':'intf',
-                            'port_name':'${netBridge_to_app}'
-                            },
-                            {
-                            'name':'network/galapagos_bridge_inst',
-                            'type':'intf',
-                            'port_name':'n2G_input'
-                            }
-                            )
-                    tcl_bridge_connections.makeConnection(
-                            'intf',
-                            {
-                            'name':'network/galapagos_bridge_inst',
-                            'type':'intf',
-                            'port_name':'n2G_output'
-                            },
-                            {
-                            'name':'applicationRegion/input_switch',
-                            'type':'intf',
-                            'port_name':'S00_AXIS'
-                            }
-                            )
-                else:
+                # if 'custom' not in tcl_bridge_connections.fpga or tcl_bridge_connections.fpga['custom'] != 'GAScore':
+                tcl_bridge_connections.makeConnection(
+                        'intf',
+                        {
+                        'name':'network/network_bridge_inst',
+                        'type':'intf',
+                        'port_name':'${netBridge_to_app}'
+                        },
+                        {
+                        'name':'network/galapagos_bridge_inst',
+                        'type':'intf',
+                        'port_name':'n2G_input'
+                        }
+                        )
+                tcl_bridge_connections.makeConnection(
+                        'intf',
+                        {
+                        'name':'network/galapagos_bridge_inst',
+                        'type':'intf',
+                        'port_name':'n2G_output'
+                        },
+                        {
+                        'name':'applicationRegion/input_switch',
+                        'type':'intf',
+                        'port_name':'S00_AXIS'
+                        }
+                        )
+                if "custom" in tcl_bridge_connections.fpga:
                     tcl_custom.tprint('set CUSTOM_net_in network/network_bridge_inst/${netBridge_to_app}')
             else: #sim == 1
                 tcl_bridge_connections.makeConnection(
