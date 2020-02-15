@@ -11,7 +11,7 @@ using namespace  std;
 
 class control_device {
     public:
-        control_device(std::string);
+        control_device(std::string, bool _logging, int _offset_ctrl, int _offset_dma);
         void * dev_read_axil(off_t ,size_t );
         void dev_write_axil(void * , off_t , size_t );
         void * dev_read_dma(off_t ,size_t );
@@ -24,6 +24,9 @@ class control_device {
         void * get_page_map();
         bool axi_full;
         int open_device_file(std::string);
+        bool logging;
+        int offset_ctrl;
+        int offset_dma;
 };
 
 #endif // guard

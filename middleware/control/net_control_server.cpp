@@ -12,6 +12,9 @@ int main(int argc, const char **argv){
 
     int port;
     std::string device_file;
+    int offset_ctrl;
+    int offset_dma;
+    bool logging;
 
     try
     {
@@ -21,7 +24,10 @@ int main(int argc, const char **argv){
         desc.add_options()
                 ("help,h", "Help screen")
                 ("port", boost::program_options::value<int>()->default_value(8892), "port")
-                ("device", boost::program_options::value<std::string>()->default_value("/dev/xdma0"), "device");
+                ("offset_ctrl", boost::program_options::value<int>()->default_value(0), "offset_ctrl")
+                ("offset_dma", boost::program_options::value<int>()->default_value(0), "offset_dma")
+                ("device", boost::program_options::value<std::string>()->default_value("/dev/xdma0"), "device")
+                ("logging", boost::program_options::value<bool>()->default_value(false), "logging");
         boost::program_options::variables_map vm;
         store(parse_command_line(argc, argv, desc), vm);
         notify(vm);
@@ -32,6 +38,12 @@ int main(int argc, const char **argv){
             port = vm["port"].as<int>();
         if(vm.count("device"))
             device_file = vm["device"].as<std::string>();
+        if(vm.count("offset_dma"))
+            offset_dma = vm["offset_dma"].as<int>();
+        if(vm.count("offset_ctl"))
+            offset_ctrl = vm["offset_ctrl"].as<int>();
+        if(vm.count("logging"))
+            logging = vm["logging"].as<bool>();
 
 
 
@@ -46,7 +58,7 @@ int main(int argc, const char **argv){
 
 
 
-    net_control_device device(device_file, port, false);
+    net_control_device device(device_file, port, logging, offset_ctrl, offset_dma);
    
 
 }

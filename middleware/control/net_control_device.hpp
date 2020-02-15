@@ -10,6 +10,7 @@
 #include <memory>
 #include <utility>
 #include <boost/asio.hpp>
+#include <boost/log/trivial.hpp>
 
 #include "util.h"
 #include "control_device.hpp"
@@ -29,9 +30,10 @@ class net_control_device {
     control_device dev;
     boost::asio::io_context io_context;
     boost::asio::ip::tcp::acceptor acceptor_;
-    
+    bool logging;
+
     public:
-        net_control_device(std::string, int port, bool axi_full);
+        net_control_device(std::string, int port, bool logging, int offset_ctrl, int offset_dma);
 
 
 };
