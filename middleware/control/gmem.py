@@ -1,7 +1,6 @@
 import sys
 import socket
 import struct
-import numpy as np
 
 def connect_to_device(ip_addr, port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -43,5 +42,5 @@ if len(sys.argv) > 4:
     print("SET ", addr, write_data)
     set_word(sock, addr, write_data)
 elif len(sys.argv) == 4:
-    print("GET ", addr)
+    #print("GET ", addr)
     get_word(sock, addr)

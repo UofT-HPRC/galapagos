@@ -1,7 +1,7 @@
 #include "net_control_device.hpp"
 
 net_control_device::net_control_device(std::string device_name, int port, bool axi_full)
-:dev (device_name, axi_full),
+:dev (device_name),
 acceptor_(io_context, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
 {
     io_context.run();
@@ -18,10 +18,10 @@ acceptor_(io_context, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(),
             char * data = (char *)malloc(message[SIZE]);
             length = socket.read_some(boost::asio::buffer((char *)data, sizeof(int)*NUM_INT_PER_MESSAGE), error);
             off_t target = message[ADDR];
-            dev.dev_write(data, (off_t)message[ADDR], (size_t)message[SIZE]);
+            dev.dev_write_axil(data, (off_t)message[ADDR], (size_t)message[SIZE]);
         }
         else if(message[CMD] == GET){
-            char * data = (char *)dev.dev_read((off_t)message[ADDR], (size_t) message[SIZE]);
+            char * data = (char *)dev.dev_read_axil((off_t)message[ADDR], (size_t) message[SIZE]);
             boost::asio::write(socket, boost::asio::buffer(data, (size_t)message[SIZE]));
         }
         socket.close(error);

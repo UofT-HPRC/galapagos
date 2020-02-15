@@ -1,62 +1,78 @@
 #include "control_device.hpp"
 
-control_device::control_device(std::string device_name, bool _axi_full){
 
-    if ((fd = open(device_name.c_str(), O_RDWR | O_SYNC)) == -1) FATAL;
-    std::cout << "Character device " << device_name << " opened" << std::endl;
-
-    axi_full = _axi_full;
-
+int control_device::open_device_file(std::string file_name){
+   
+    int fd;
+    if ((fd = open(file_name.c_str(), O_RDWR | O_SYNC)) == -1) FATAL;
+    std::cout << "Character device " << file_name << " opened" << std::endl;
+    return fd;
 
 }
 
-void * control_device::get_page_map(){
+control_device::control_device(std::string device_name){
+
+
+    std::string dev_name_axil = device_name + "_user";
+    std::string dev_name_h2c = device_name + "_h2c_0";
+    std::string dev_name_c2h = device_name + "_c2h_0";
+    fd_axil = open_device_file(dev_name_axil);
+    fd_c2h = open_device_file(dev_name_c2h);
+    fd_h2c = open_device_file(dev_name_h2c);
     
-    void * map_base;
-    map_base = mmap(0, MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    map_base = mmap(0, MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd_axil, 0);
     if (map_base == (void *) -1) FATAL;
-    return map_base;
+
 }
 
-void *control_device::dev_read(off_t target, size_t size){
-    
-    void * ret_addr = malloc(size);
-    
-    if(!axi_full){
-        void * map_base = get_page_map();
-        void * virt_addr =(void *)((char *)map_base + target);
-        memcpy(ret_addr, virt_addr, size);
-    }
-    else{
-        size_t rc;
-        if(target){
-            rc = lseek(fd, target, SEEK_SET);
-            if(rc != target) FATAL;
-        }
-        rc = read(fd, ret_addr, size);
+void *control_device::dev_read_axil(off_t target, size_t size){
 
+    void * ret_addr = malloc(size);
+    void * virt_addr =(void *)((char *)map_base + target);
+    memcpy(ret_addr, virt_addr, size);
+    return ret_addr;
+}
+
+
+void *control_device::dev_read_dma(off_t target, size_t size){
+    
+
+    size_t rc;
+   
+    void * ret_addr = aligned_alloc(DMA_ALIGNMENT, size+DMA_ALIGNMENT);
+
+    if(target){
+        rc = lseek(fd_c2h, target, SEEK_SET);
+        if(rc != target) FATAL;
     }
+    rc = read(fd_c2h, ret_addr, size);
+
     return ret_addr;
     
 }
 
+void control_device::dev_write_axil(void * data, off_t target, size_t size){
+    
+    void * virt_addr =(void *)((char *)map_base + target);
+    memcpy(virt_addr, data, size);
 
-void control_device::dev_write(void * data, off_t target, size_t size){
+
+}
 
 
-    if(!axi_full){
-        void * map_base = get_page_map();
-        void * virt_addr =(void *)((char *)map_base + target);
-        memcpy(virt_addr, data, size);
+void control_device::dev_write_dma(void * data, off_t target, size_t size){
+
+
+    void * data_aligned = aligned_alloc(DMA_ALIGNMENT, size+DMA_ALIGNMENT);
+    memcpy(data_aligned, data, size);
+    
+    size_t rc;
+    if(target){
+        rc = lseek(fd_h2c, target, SEEK_SET);
+        if(rc != target) FATAL;
     }
-    else{
-        size_t rc;
-        if(target){
-            rc = lseek(fd, target, SEEK_SET);
-            if(rc != target) FATAL;
-        }
-        rc = write(fd, data, size);
-    }
+    rc = write(fd_h2c, data_aligned, size);
+
 }
 
 

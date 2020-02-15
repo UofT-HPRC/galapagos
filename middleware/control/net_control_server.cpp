@@ -21,7 +21,7 @@ int main(int argc, const char **argv){
         desc.add_options()
                 ("help,h", "Help screen")
                 ("port", boost::program_options::value<int>()->default_value(8892), "port")
-                ("device", boost::program_options::value<std::string>()->default_value("/dev/xdma0_user"), "device");
+                ("device", boost::program_options::value<std::string>()->default_value("/dev/xdma0"), "device");
         boost::program_options::variables_map vm;
         store(parse_command_line(argc, argv, desc), vm);
         notify(vm);
