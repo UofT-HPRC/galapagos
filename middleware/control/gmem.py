@@ -2,6 +2,7 @@ import sys
 import socket
 import struct
 
+
 def connect_to_device(ip_addr, port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((ip_addr, port))
@@ -34,13 +35,15 @@ def set_word(sock, addr, write_data):
 
 ip_addr = sys.argv[1]
 port = int(sys.argv[2])
-addr = int(sys.argv[3])
+addr = int(sys.argv[3],0)
+
+
+
 sock = connect_to_device(ip_addr, port)
 
 if len(sys.argv) > 4:
-    write_data = int(sys.argv[4])
+    write_data = int(sys.argv[4],0)
     print("SET ", addr, write_data)
     set_word(sock, addr, write_data)
 elif len(sys.argv) == 4:
-    #print("GET ", addr)
     get_word(sock, addr)
