@@ -33,6 +33,28 @@ acceptor_(io_context, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(),
                 BOOST_LOG_TRIVIAL(trace) << "GET AT ADDR:" << message[ADDR] << " DATA:" << ((int *)data)[0] ;
             }
         }
+        else if(message[CMD] == SET_BIN){
+            int bytes_written = 0;
+            while(bytes_written < message[SIZE]){
+            
+                char * data = (char *)malloc(message[SIZE]);
+                length = socket.read_some(boost::asio::buffer((char *)data, sizeof(int)*NUM_INT_PER_MESSAGE), error);
+                off_t target = message[ADDR];
+                if(logging){
+                    BOOST_LOG_TRIVIAL(trace) << "SET_BIN AT ADDR:" << message[ADDR];
+                }
+                dev.dev_write_dma(data, (off_t)message[ADDR] + bytes_written, (size_t)message[SIZE]);
+                bytes_written+=length;
+
+            }
+        }
+        else if(message[CMD] == GET_BIN){
+            char * data = (char *)dev.dev_read_dma((off_t)message[ADDR], (size_t) message[SIZE]);
+            boost::asio::write(socket, boost::asio::buffer(data, (size_t)message[SIZE]));
+            if(logging){
+                BOOST_LOG_TRIVIAL(trace) << "GET_BIN AT ADDR:" << message[ADDR];
+            }
+        }
         socket.close(error);
 
     }

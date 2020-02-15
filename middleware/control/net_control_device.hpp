@@ -25,6 +25,8 @@
 
 #define SET 0
 #define GET 1
+#define SET_BIN 2 
+#define GET_BIN 3 
 
 class net_control_device {
     control_device dev;
