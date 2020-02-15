@@ -987,7 +987,7 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
                     {
                     'name':'applicationRegion/custom_switch_inst',
                     'type':'intf',
-                    'port_name':'stream_out_switch_V'
+                    'port_name':'stream_out_switch'
                     },
                     {'name':'applicationRegion/input_switch',
                     'type':'intf',
@@ -1692,36 +1692,36 @@ def bridgeConnections(outDir, fpga, sim):
         # custom_switch_inst only exists without raw
         if tcl_bridge_connections.fpga['comm'] not in ['raw', 'none']:
             # if 'custom' not in tcl_bridge_connections.fpga or tcl_bridge_connections.fpga['custom'] != 'GAScore':
-                tcl_bridge_connections.makeConnection(
-                        'intf',
-                        {
-                        'name':'applicationRegion/custom_switch_inst',
-                        'type':'intf',
-                        'port_name':'stream_out_network'
-                        },
-                        {
-                        'name':'network/galapagos_bridge_inst',
-                        'type':'intf',
-                        'port_name':'g2N_input'
-                        }
-                        )
+            tcl_bridge_connections.makeConnection(
+                    'intf',
+                    {
+                    'name':'applicationRegion/custom_switch_inst',
+                    'type':'intf',
+                    'port_name':'stream_out_network'
+                    },
+                    {
+                    'name':'network/galapagos_bridge_inst',
+                    'type':'intf',
+                    'port_name':'g2N_input'
+                    }
+                    )
 
-                tcl_bridge_connections.makeConnection(
-                        'intf',
-                        {
-                        'name':'network/galapagos_bridge_inst',
-                        'type':'intf',
-                        'port_name':'g2N_output'
-                        },
-                        {
-                        'name':'network/network_bridge_inst',
-                        'type':'intf',
-                        'port_name':'${netBridge_from_app}'
-                        }
-                        )
+            tcl_bridge_connections.makeConnection(
+                    'intf',
+                    {
+                    'name':'network/galapagos_bridge_inst',
+                    'type':'intf',
+                    'port_name':'g2N_output'
+                    },
+                    {
+                    'name':'network/network_bridge_inst',
+                    'type':'intf',
+                    'port_name':'${netBridge_from_app}'
+                    }
+                    )
             # else:
             if "custom" in tcl_bridge_connections.fpga:
-                tcl_custom.tprint('set CUSTOM_net_out network/network_bridge_inst/${netBridge_from_app}')
+                tcl_custom.tprint('set CUSTOM_net_out network/galapagos_bridge_inst/g2N_input')
                 s_axis_array = getInterfaces(tcl_bridge_connections.fpga, 's_axis', 'scope', 'global')
                 if len(s_axis_array) > 1:
                     tcl_custom.tprint('set CUSTOM_kernel_in applicationRegion/input_switch/S00_AXIS')
@@ -1850,7 +1850,7 @@ def bridgeConnections(outDir, fpga, sim):
                         }
                         )
                 if "custom" in tcl_bridge_connections.fpga:
-                    tcl_custom.tprint('set CUSTOM_net_in network/network_bridge_inst/${netBridge_to_app}')
+                    tcl_custom.tprint('set CUSTOM_net_in network/galapagos_bridge_inst/n2G_output')
             else: #sim == 1
                 tcl_bridge_connections.makeConnection(
                         'intf',
