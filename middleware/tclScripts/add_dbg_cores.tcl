@@ -6,6 +6,17 @@ proc add_dbg_core_to_net {n inst} {
     set pins [get_bd_intf_pins -of_objects $n -quiet]
     set ports [get_bd_intf_ports -of_objects $n -quiet]
     
+    # For some RIDICULOUS reason, a hierarchy port is both a port and a pin!
+    # So we do a little band-aid fix here and remove any element from pins
+    # that also appears in ports
+    foreach p $ports {
+        # see https://stackoverflow.com/questions/5701947/tcl-remove-an-element-from-a-list
+        set idx [lsearch $pins $p]
+        if {$idx != -1} {
+            set pins [lreplace $pins $idx $idx]
+        }
+    } 
+    
     set npins [llength $pins]
     set nports [llength $ports]
     
@@ -58,15 +69,15 @@ proc add_dbg_core_to_net {n inst} {
     delete_bd_objs $n
     
     # Instantiate the dbg_guv
-    set g [create_bd_cell -vlnv mmerlini:yov:dbg_guv $inst]
+    set g [create_bd_cell -vlnv mmerlini:yov:dbg_guv applicationRegion/$inst]
 
     # Connect the dbg_guv to the loose endpoints
     if ![string compare [get_property MODE $left] Master] {
-        connect_bd_intf_net -intf_net GUV_${inst}_mst $g/out $right
-        connect_bd_intf_net -intf_net GUV_${inst}_slv $left $g/in
+        connect_bd_intf_net $g/out $right
+        connect_bd_intf_net $left $g/in
     } else {
-        connect_bd_intf_net -intf_net GUV_${inst}_mst $g/out $left
-        connect_bd_intf_net -intf_net GUV_${inst}_slv $right $g/in
+        connect_bd_intf_net $g/out $left
+        connect_bd_intf_net $right $g/in
     }
     
     return $g

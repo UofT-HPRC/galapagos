@@ -868,6 +868,8 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
     Now that the kernels, Galapagos router, and memory controllers are instantiated,
     it's time to connect them all together.
     
+    MM Feb 29/2020: All AXI Stream wires to kernels are now highlighted
+    
     Args:
         tcl_user_app: a tclMe object (which contains references to the FPGA's
                       node object and a handle to the output file)
@@ -909,7 +911,7 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
             # Connect it to the correct port on the AXI switch (NOT directly into
             # the Galapagos router; there is an AXI stream switch IP between
             # the router and the kernel(s) )
-            tcl_user_app.makeConnection(
+            tcl_user_app.makeHighlightedConnection(
                     'intf',
                     {
                     'name':'applicationRegion/input_switch',
@@ -938,10 +940,11 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
                         'port_name':'S01_AXIS'
                         }
                         )
-
+    
+    # Special case where there is only one kernel slave
     elif len(s_axis_array) == 1:
         if (sim == 1):
-            tcl_user_app.makeConnection(
+            tcl_user_app.makeHighlightedConnection(
                     'intf',
                     {
                     'name':'applicationRegion/arbiter',
@@ -970,7 +973,7 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
             # there's no input switch in this case
             if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
                 if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
-                    tcl_user_app.makeConnection(
+                    tcl_user_app.makeHighlightedConnection(
                         'intf',
                         {
                         'name':'applicationRegion/input_switch',
@@ -1006,7 +1009,7 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
         if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
             instName = m_axis_array[0]['kernel_inst']['inst']
             if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
-                tcl_user_app.makeConnection(
+                tcl_user_app.makeHighlightedConnection(
                         'intf',
                         {
                         'name': instName,
@@ -1023,7 +1026,7 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
         for idx, m_axis in enumerate(m_axis_array):
             instName = m_axis['kernel_inst']['inst']
             idx_str = "%02d"%idx
-            tcl_user_app.makeConnection(
+            tcl_user_app.makeHighlightedConnection(
                     'intf',
                     {
                     'name': instName ,
@@ -1540,7 +1543,11 @@ def userApplicationRegion(outDir, fpga, sim):
     userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim)
     userApplicationRegionAssignAddresses(tcl_user_app, tcl_user_app.fpga['comm'] !='tcp' and tcl_user_app.fpga.address_space == 64)
     userApplicationLocalConnections(tcl_user_app)
-
+    
+    galapagos_path = str(os.environ.get('GALAPAGOS_PATH'))
+    tcl_user_app.addSource(galapagos_path + '/middleware/tclScripts/add_dbg_cores.tcl')
+    tcl_user_app.tprint_raw('add_dbg_core_to_highlighted 0')
+    
     tcl_user_app.close()
     #return num_debug_interfaces
 
@@ -2029,7 +2036,7 @@ if { ! [info exists default_dir] } {\n\
     if 'custom' in fpga:
         tclMain.addSource(outDir + '/' + str(fpga['num']) + '_custom.tcl')
         tclMain.addSource(galapagos_path + '/middleware/tclScripts/custom/' + fpga['custom'] + '.tcl')
-
+    
     tclMain.tprint('validate_bd_design')
     tclMain.tprint('save_bd_design')
     tclMain.close()

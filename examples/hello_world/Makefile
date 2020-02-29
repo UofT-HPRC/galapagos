@@ -10,11 +10,12 @@ world: .world
 	vivado_hls world.tcl
 	touch .world
 
+export LOGICALFILE=$(shell realpath logical.xml)
+export MAPFILE=$(shell realpath mapping.xml)
+export PROJECTNAME=hello_world
+
 middleware: .middleware
 .middleware: logical.xml mapping.xml .hello_world .world
-	export LOGICALFILE=$(shell realpath logical.xml)
-	export MAPFILE=$(shell realpath mapping.xml)
-	export PROJECTNAME=hello_world
 	make -C$(GALAPAGOS_PATH) middleware
 	touch .middleware
 
