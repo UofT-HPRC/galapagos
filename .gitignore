@@ -6,4 +6,5 @@ my_init.sh
 vivado_*
 vivado.log
 vivado.jou
-
+examples/hello_world/.*
+tags
