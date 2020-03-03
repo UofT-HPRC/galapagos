@@ -143,29 +143,29 @@ class tclMeFile():
             self.tprint_raw('get_bd_pins ', end = '')
             self.tprint_raw(sink['name'] + '/' + sink['port_name'] + ']')
     
-    # MM Feb 29 / 2020: Copy-pasted makeConnection and added a few lines to 
-    # add highlighting. This was the easiest way to run a proc later on that
-    # adds debug cores
-    def makeHighlightedConnection(self, conn_type, source, sink):
-        if conn_type == 'net':
-            self.tprint('set g [connect_bd_net [', end = '')
-        elif conn_type == 'intf':
-            self.tprint('set g [connect_bd_intf_net [', end = '')
-
+    # MM Mar 2 / 2020: Copy-pasted makeConnection and added a few lines to 
+    # save nets into a list called "marcos_list_of_dbg_nets"
+    def makeMarkedConnection(self, conn_type, source, sink):
+        src_port = ""
         if source['type'] == 'port':
-            self.tprint_raw('get_bd_ports ', end = '')
-            self.tprint_raw(source['port_name'] + '] [', end = '')
+            src_port += 'get_bd_ports '
+            src_port += source['port_name']
         elif source['type'] == 'intf_port':
-            self.tprint_raw('get_bd_intf_ports ', end = '')
-            self.tprint_raw(source['port_name'] + '] [', end = '')
+            src_port += 'get_bd_intf_ports '
+            src_port += source['port_name']
         elif source['type'] == 'intf':
-            self.tprint_raw('get_bd_intf_pins ', end = '')
-            self.tprint_raw(source['name'] + '/' + source['port_name'] + '] [', end = '')
+            src_port += 'get_bd_intf_pins '
+            src_port += source['name'] + '/' + source['port_name']
         elif source['type'] == 'pin':
-            self.tprint_raw('get_bd_pins ', end = '')
-            self.tprint_raw(source['name'] + '/' + source['port_name'] + '] [', end = '')
+            src_port += 'get_bd_pins '
+            src_port += source['name'] + '/' + source['port_name']
 
-
+        if conn_type == 'net':
+            self.tprint('connect_bd_net [', end='')
+        elif conn_type == 'intf':
+            self.tprint('connect_bd_intf_net [', end='')
+        
+        self.tprint_raw(src_port, end = '] [')
 
         if sink['type'] == 'port':
             self.tprint_raw('get_bd_ports ', end='')
@@ -180,8 +180,8 @@ class tclMeFile():
             self.tprint_raw('get_bd_pins ', end = '')
             self.tprint_raw(sink['name'] + '/' + sink['port_name'] + ']')
         
-        self.tprint_raw(']')
-        self.tprint_raw('highlight_objects -color_index 3 $g')
+        self.tprint_raw('set g [get_bd_intf_nets -of_objects [' + src_port, end=']]\n')
+        self.tprint_raw('lappend marcos_list_of_dbg_nets $g')
     
     def close(self):
         self.fileHandle.close()

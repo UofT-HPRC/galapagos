@@ -2,6 +2,11 @@
 
 # Replaces the bd_intf_net n with a dbg_guv core named "inst"
 proc add_dbg_core_to_net {n inst} {
+    puts "add_dbg_core_to_net args:"
+    puts "n = $n"
+    puts "inst = $inst"
+    puts "----"
+    
     # Get the two endpoints of this net
     set pins [get_bd_intf_pins -of_objects $n -quiet]
     set ports [get_bd_intf_ports -of_objects $n -quiet]
@@ -69,7 +74,9 @@ proc add_dbg_core_to_net {n inst} {
     delete_bd_objs $n
     
     # Instantiate the dbg_guv
-    set g [create_bd_cell -vlnv mmerlini:yov:dbg_guv applicationRegion/$inst]
+    # We do an UGLY hack to deal with Vivado's annoying rules about hierarchies
+    set prefix [lindex [regexp -inline {(.*)\/[^\/]*$} "[get_property PATH $n]"] 1]
+    set g [create_bd_cell -vlnv mmerlini:yov:dbg_guv $prefix/$inst]
 
     # Connect the dbg_guv to the loose endpoints
     if ![string compare [get_property MODE $left] Master] {
@@ -85,6 +92,8 @@ proc add_dbg_core_to_net {n inst} {
 
 # Searches current BD to get next ID to use for a dbg_guv
 proc get_next_dbg_core_id {} {
+    puts "get_next_dbg_core_id args:"
+    puts "----"
     set cells [get_bd_cells -hierarchical -filter {VLNV == mmerlini:yov:dbg_guv:1.0} -quiet]
     set next_id 0
     foreach c $cells {
@@ -101,8 +110,12 @@ proc get_next_dbg_core_id {} {
 
 # Given a list of AXI Stream masters (with only TDATA, TREADY, TVALID, and TLAST)
 # hooks up an automatically sized arbiter tree
+# Returns a reference to the tree's final output
 # TODO?: Special case for n=1
 proc rr_tree {msts} {
+    puts "rr_tree args:"
+    puts "msts = $msts"
+    puts "----"
     startgroup
     set nnodes [expr ([llength $msts]+1)/3]    
     
@@ -142,8 +155,9 @@ proc rr_tree {msts} {
         
         connect_bd_net [list [get_bd_pins /DBG_GUV_TREE/*/clk] [get_bd_pins /DBG_GUV_TREE/clk]]
     }
-    
     endgroup
+    
+    return [get_bd_intf_pins /DBG_GUV_TREE/o]
 }
 
 
@@ -175,7 +189,7 @@ proc del_dbg_core {c} {
 proc del_all_dbg_cores {} {
     startgroup
     delete_bd_objs [get_bd_cells DBG_GUV_TREE -quiet] -quiet
-    set dbg_guvs [get_bd_cells -filter {VLNV =~ "*dbg_guv*"} -quiet]
+    set dbg_guvs [get_bd_cells -hierarchical -filter {VLNV =~ "*dbg_guv*"} -quiet]
     foreach d $dbg_guvs {
         set nets [get_bd_intf_nets -of_objects $d -quiet]
         delete_bd_objs [get_bd_intf_nets $d/log_catted -quiet] -quiet
@@ -185,7 +199,20 @@ proc del_all_dbg_cores {} {
     endgroup
 }
 
-proc add_dbg_core_to_highlighted {{safe_mode 1}} {
+# Given a list of nets, instrument each one with a dbg_guv. This code handles a
+# number of common issues, such as not adding dbg_guvs if there is already one 
+# there, checking if the net is actually an AXI Stream, and of course, the 
+# frustrating special cases of port vs. pin
+# The safe_mode argument will, when set to 1, delete all existing debug infra
+# before adding in new cores. I only made this a parameter so that I could
+# disable it in Galapagos's automatic generator; you normally want this to be on
+# Finally, this proc returns a list containing the first cmd_in in the dbg_guv
+# daisy chain, and the last output of the arbiter tree
+proc add_dbg_core_to_list {nets {safe_mode 1}} {
+    puts "add_dbg_core_to_list args:"
+    puts "nets = $nets"
+    puts "safe_mode = $safe_mode"
+    puts "----"
     startgroup
     
     if {$safe_mode} {
@@ -198,9 +225,8 @@ proc add_dbg_core_to_highlighted {{safe_mode 1}} {
     # Stores the previous cmd_out
     set last_cmd {}
     
-    
-    # Get all highlihgted nets
-    set nets [get_bd_intf_nets [get_highlighted_objects]]
+    # Stores the first cmd_in in the daisy chain
+    set first_cmd_in {}
     
     foreach n $nets {
         # Choose an ID. get_next_dbg_core_id guarantees it will be unique, and 
@@ -210,6 +236,10 @@ proc add_dbg_core_to_highlighted {{safe_mode 1}} {
         
         # g holds a reference to the newly create dbg_guv cell
         set g [add_dbg_core_to_net $n GUV_$next_id]
+        if {$g == 0} {
+            # add_Dbg_core_to_net (correctly) did not add a dbg_guv
+            continue
+        }
         
         set_property CONFIG.ADDR $next_id $g
         
@@ -219,6 +249,8 @@ proc add_dbg_core_to_highlighted {{safe_mode 1}} {
         # If last_cmd is not empty, connect its cmd_out to $g/cmd_in
         if {[llength $last_cmd] == 1} {
             connect_bd_intf_net [get_bd_intf_pins $last_cmd] [get_bd_intf_pins $g/cmd_in]
+        } else {
+            set first_cmd_in [get_bd_intf_pins $g/cmd_in]
         }
         
         # Update last_cmd
@@ -226,13 +258,21 @@ proc add_dbg_core_to_highlighted {{safe_mode 1}} {
     }
     
     # Put in the arbiter tree
-    rr_tree $log_outs
+    set tree_out [rr_tree $log_outs]
     
     # Connect up the clocks
     # TODO: If I ever plan to allow multiple clock domains, this will have to 
     # change
-    connect_bd_net [list [get_bd_pins -of_objects [get_bd_cells -hierarchical  -filter {VLNV == mmerlini:yov:dbg_guv:1.0}] -filter {NAME == clk}] [get_bd_pins /DBG_GUV_TREE/clk]]
+    if {[llength $log_outs] > 1} {
+        connect_bd_net [list [get_bd_pins -of_objects [get_bd_cells -hierarchical  -filter {VLNV == mmerlini:yov:dbg_guv:1.0}] -filter {NAME == clk}] [get_bd_pins /DBG_GUV_TREE/clk]]
+    }
     endgroup
+    
+    return [list $first_cmd_in $tree_out]
+}
+
+proc add_dbg_core_to_highlighted {{safe_mode 1}} {
+    add_dbg_core_to_list [get_bd_intf_nets [get_highlighted_objects]] $safe_mode
 }
 
 proc del_highlighted_dbg_cores {} {

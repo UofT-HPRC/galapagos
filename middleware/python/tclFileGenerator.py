@@ -911,7 +911,7 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
             # Connect it to the correct port on the AXI switch (NOT directly into
             # the Galapagos router; there is an AXI stream switch IP between
             # the router and the kernel(s) )
-            tcl_user_app.makeHighlightedConnection(
+            tcl_user_app.makeMarkedConnection(
                     'intf',
                     {
                     'name':'applicationRegion/input_switch',
@@ -944,7 +944,7 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
     # Special case where there is only one kernel slave
     elif len(s_axis_array) == 1:
         if (sim == 1):
-            tcl_user_app.makeHighlightedConnection(
+            tcl_user_app.makeMarkedConnection(
                     'intf',
                     {
                     'name':'applicationRegion/arbiter',
@@ -973,7 +973,7 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
             # there's no input switch in this case
             if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
                 if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
-                    tcl_user_app.makeHighlightedConnection(
+                    tcl_user_app.makeMarkedConnection(
                         'intf',
                         {
                         'name':'applicationRegion/input_switch',
@@ -1009,7 +1009,7 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
         if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
             instName = m_axis_array[0]['kernel_inst']['inst']
             if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
-                tcl_user_app.makeHighlightedConnection(
+                tcl_user_app.makeMarkedConnection(
                         'intf',
                         {
                         'name': instName,
@@ -1026,7 +1026,7 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
         for idx, m_axis in enumerate(m_axis_array):
             instName = m_axis['kernel_inst']['inst']
             idx_str = "%02d"%idx
-            tcl_user_app.makeHighlightedConnection(
+            tcl_user_app.makeMarkedConnection(
                     'intf',
                     {
                     'name': instName ,
@@ -1544,10 +1544,6 @@ def userApplicationRegion(outDir, fpga, sim):
     userApplicationRegionAssignAddresses(tcl_user_app, tcl_user_app.fpga['comm'] !='tcp' and tcl_user_app.fpga.address_space == 64)
     userApplicationLocalConnections(tcl_user_app)
     
-    galapagos_path = str(os.environ.get('GALAPAGOS_PATH'))
-    tcl_user_app.addSource(galapagos_path + '/middleware/tclScripts/add_dbg_cores.tcl')
-    tcl_user_app.tprint_raw('add_dbg_core_to_highlighted 0')
-    
     tcl_user_app.close()
     #return num_debug_interfaces
 
@@ -1769,7 +1765,7 @@ def bridgeConnections(outDir, fpga, sim):
             else:
                 instName = s_axis_array[0]['kernel_inst']['inst']
                 if tcl_bridge_connections.fpga['comm'] != 'none':
-                    tcl_bridge_connections.makeConnection(
+                    tcl_bridge_connections.makeMarkedConnection(
                                 'intf',
                                 {
                                 'name':'network/network_bridge_inst',
@@ -1807,7 +1803,7 @@ def bridgeConnections(outDir, fpga, sim):
             else:
                 instName = m_axis_array[0]['kernel_inst']['inst'] 
                 if tcl_bridge_connections.fpga['comm'] != 'none':
-                    tcl_bridge_connections.makeConnection(
+                    tcl_bridge_connections.makeMarkedConnection(
                             'intf',
                             {
                             'name': instName,
@@ -1987,6 +1983,19 @@ def bridgeConnections(outDir, fpga, sim):
                     )
     if tcl_bridge_connections.fpga['comm'] == 'none':
         tcl_custom.close()
+    
+    # MM Mar 2 / 2020 Added this call to one of my TCL scripts to wire up the
+    # custom debug cores
+    
+    galapagos_path = str(os.environ.get('GALAPAGOS_PATH'))
+    tcl_bridge_connections.addSource(galapagos_path + '/middleware/tclScripts/add_dbg_cores.tcl')
+    tcl_bridge_connections.tprint_raw('set g [add_dbg_core_to_list $marcos_list_of_dbg_nets 0]')
+    tcl_bridge_connections.tprint_raw('set first_cmd_in [lindex $g 0]')
+    tcl_bridge_connections.tprint_raw('set tree_out [lindex $g 1]')
+    
+    tcl_bridge_connections.addSource(galapagos_path + '/middleware/tclScripts/replace_dbg_placeholder.tcl')
+    tcl_bridge_connections.tprint_raw('replace_dbg_placeholder $first_cmd_in $tree_out')
+    
     tcl_bridge_connections.close()
 
 
