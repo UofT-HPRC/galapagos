@@ -1989,7 +1989,26 @@ def bridgeConnections(outDir, fpga, sim):
     
     galapagos_path = str(os.environ.get('GALAPAGOS_PATH'))
     tcl_bridge_connections.addSource(galapagos_path + '/middleware/tclScripts/add_dbg_cores.tcl')
-    tcl_bridge_connections.tprint_raw('set g [add_dbg_core_to_list $marcos_list_of_dbg_nets 0]')
+    # Get the packet sizes. To avoid Verilog syntax errors, I intentionally make each width 1 if it was 0
+    # (It's something I eventually want to fix, but Vivado's Verilog optimizer will remove the
+    # extra wires anyway)
+    c = fpga.parent_cluster
+    tdata_w = str(c.packet_data)
+    
+    tdest_w = c.packet_dest
+    if tdest_w == 0:
+        tdest_w = "1"
+    else:
+        tdest_w = str(tdest_w)
+    
+    tid_w = c.packet_id
+    if tid_w == 0:
+        tid_w = "1"
+    else:
+        tid_w = str(tid_w)
+    
+    # The last three positional arguments to this TCL function are the TDATA, TDEST, and TID widths
+    tcl_bridge_connections.tprint_raw('set g [add_dbg_core_to_list $marcos_list_of_dbg_nets 0 ' + tdata_w + ' ' + tdest_w + ' ' + tid_w + ']')
     tcl_bridge_connections.tprint_raw('set first_cmd_in [lindex $g 0]')
     tcl_bridge_connections.tprint_raw('set tree_out [lindex $g 1]')
     

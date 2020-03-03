@@ -8,3 +8,4 @@ vivado.log
 vivado.jou
 examples/hello_world/.*
 tags
+*.pyc

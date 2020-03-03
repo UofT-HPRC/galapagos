@@ -1,10 +1,13 @@
 # These procs are used to automatically insert dbg_guvs into a design
 
 # Replaces the bd_intf_net n with a dbg_guv core named "inst"
-proc add_dbg_core_to_net {n inst} {
+proc add_dbg_core_to_net {n inst {tdata_width 64} {tdest_width 8} {tid_width 8}} {
     puts "add_dbg_core_to_net args:"
     puts "n = $n"
     puts "inst = $inst"
+    puts "tdata_width = $tdata_width"
+    puts "tdest_width = $tdest_width"
+    puts "tid_width = $tid_width"
     puts "----"
     
     # Get the two endpoints of this net
@@ -77,7 +80,9 @@ proc add_dbg_core_to_net {n inst} {
     # We do an UGLY hack to deal with Vivado's annoying rules about hierarchies
     set prefix [lindex [regexp -inline {(.*)\/[^\/]*$} "[get_property PATH $n]"] 1]
     set g [create_bd_cell -vlnv mmerlini:yov:dbg_guv $prefix/$inst]
-
+    
+    set_property -dict [list CONFIG.DATA_WIDTH $tdata_width CONFIG.DEST_WIDTH $tdest_width CONFIG.ID_WIDTH $tid_width] [get_bd_cells $g]
+    
     # Connect the dbg_guv to the loose endpoints
     if ![string compare [get_property MODE $left] Master] {
         connect_bd_intf_net $g/out $right
@@ -111,12 +116,25 @@ proc get_next_dbg_core_id {} {
 # Given a list of AXI Stream masters (with only TDATA, TREADY, TVALID, and TLAST)
 # hooks up an automatically sized arbiter tree
 # Returns a reference to the tree's final output
-# TODO?: Special case for n=1
-proc rr_tree {msts} {
+proc rr_tree {msts {data_w 64}} {
     puts "rr_tree args:"
     puts "msts = $msts"
+    puts "data_w = $data_w"
     puts "----"
+    
+    # Quit gracefully if there is no tree to add
+    if {[llength $msts] == 0} {
+        return
+    }
+    
     startgroup
+    # We need to keep track of the port at the root of the arbitration tree
+    # If the user called this function with only one dbg_guv, then no tree will
+    # be generated. Otherwise, if we go on to generate a tree, this variable 
+    # will be updated
+    set arbiter_out [lindex $msts 0]
+    
+    # Number of rr4 nodes needed to construct the tree
     set nnodes [expr ([llength $msts]+1)/3]    
     
     set slvs {}
@@ -124,7 +142,11 @@ proc rr_tree {msts} {
     while {$nnodes > 0} {
         set node [create_bd_cell -vlnv Marco_Merlini:fpga_bpf:rr4 -name node_$nnodes]
         
+        # Don't bother with reset lines. They only make timing harder to close,
+        # and for these little infrstructure IPs I don't really care
         set_property CONFIG.RESET_TYPE 0 $node
+        # Set the width
+        set_property CONFIG.DATA_WIDTH [expr $data_w + $data_w/8] $node
         
         lappend nodes $node
         lappend slvs [get_bd_intf_pins $node/s0]
@@ -154,10 +176,21 @@ proc rr_tree {msts} {
         create_bd_pin -dir I DBG_GUV_TREE/clk
         
         connect_bd_net [list [get_bd_pins /DBG_GUV_TREE/*/clk] [get_bd_pins /DBG_GUV_TREE/clk]]
+        
+        # Update arbiter_out now that the tree is generated
+        set arbiter_out [get_bd_intf_pins /DBG_GUV_TREE/o]
     }
     endgroup
     
-    return [get_bd_intf_pins /DBG_GUV_TREE/o]
+    # UGLY BAND-AID FIX: until I have a more robust method of handling generic
+    # choices for AXI Stream channel widths, I've added in an axis_unconcat to
+    # bridge the gap here
+    set uncat [create_bd_cell -type ip -vlnv mmerlini:yov:axis_unconcat:1.0 axis_unconcat_0]
+    set_property -dict [list CONFIG.DATA_WIDTH $data_w CONFIG.OUT_ENABLE_KEEP {true} CONFIG.IN_ENABLE_LAST {1} CONFIG.OUT_ENABLE_LAST {true}] $uncat
+    connect_bd_intf_net [get_bd_intf_pins $arbiter_out] [get_bd_intf_pins $uncat/left]
+    connect_bd_net [get_bd_pins /DBG_GUV_TREE/clk] [get_bd_pins $uncat/clk]
+    
+    return [get_bd_intf_pins $uncat/right]
 }
 
 
@@ -208,10 +241,13 @@ proc del_all_dbg_cores {} {
 # disable it in Galapagos's automatic generator; you normally want this to be on
 # Finally, this proc returns a list containing the first cmd_in in the dbg_guv
 # daisy chain, and the last output of the arbiter tree
-proc add_dbg_core_to_list {nets {safe_mode 1}} {
+proc add_dbg_core_to_list {nets {safe_mode 1} {tdata_width 64} {tdest_width 8} {tid_width 8}} {
     puts "add_dbg_core_to_list args:"
     puts "nets = $nets"
     puts "safe_mode = $safe_mode"
+    puts "tdata_width = $tdata_width"
+    puts "tdest_width = $tdest_width"
+    puts "tid_width = $tid_width"
     puts "----"
     startgroup
     
@@ -235,9 +271,13 @@ proc add_dbg_core_to_list {nets {safe_mode 1}} {
         set next_id [get_next_dbg_core_id]
         
         # g holds a reference to the newly create dbg_guv cell
-        set g [add_dbg_core_to_net $n GUV_$next_id]
+        set g [add_dbg_core_to_net $n GUV_$next_id $tdata_width $tdest_width $tid_width]
         if {$g == 0} {
-            # add_Dbg_core_to_net (correctly) did not add a dbg_guv
+            # add_dbg_core_to_net (correctly) did not add a dbg_guv
+            continue
+        } elseif {$g == -1} {
+            # add_dbg_core_to_net encountered an error
+            puts "Warning: I can no longer guarantee that the debug cores will work! You may need to add them manually"
             continue
         }
         
@@ -258,7 +298,7 @@ proc add_dbg_core_to_list {nets {safe_mode 1}} {
     }
     
     # Put in the arbiter tree
-    set tree_out [rr_tree $log_outs]
+    set tree_out [rr_tree $log_outs $tdata_width]
     
     # Connect up the clocks
     # TODO: If I ever plan to allow multiple clock domains, this will have to 
@@ -271,8 +311,8 @@ proc add_dbg_core_to_list {nets {safe_mode 1}} {
     return [list $first_cmd_in $tree_out]
 }
 
-proc add_dbg_core_to_highlighted {{safe_mode 1}} {
-    add_dbg_core_to_list [get_bd_intf_nets [get_highlighted_objects]] $safe_mode
+proc add_dbg_core_to_highlighted {{safe_mode 1} {tdata_width 64} {tdest_width 8} {tid_width 8}} {
+    add_dbg_core_to_list [get_bd_intf_nets [get_highlighted_objects]] $safe_mode $tdata_width $tdest_width $tid_width
 }
 
 proc del_highlighted_dbg_cores {} {

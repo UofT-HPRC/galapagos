@@ -244,6 +244,9 @@ class cluster(abstractDict):
             # is missing
             node_inst = node(**node_dict)
             
+            # MM Mar 3 / 2020 Save a reference to the parent cluster in each node
+            node_inst.parent_cluster = self
+            
             # I'm fairly sure these next few lines of code are just converting
             # data formats
             node_inst['kernel'] = []

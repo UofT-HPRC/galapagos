@@ -37,14 +37,7 @@ proc replace_dbg_placeholder {first_cmd_in tree_out} {
     connect_bd_intf_net [get_bd_intf_pins $first_cmd_in] $in_port
     
     # Rewire the output
-    # UGLY BAND-AID FIX: until I have a more robust method of handling generic
-    # choices for AXI Stream channel widths, I've hardcoded an axis_unconcat to
-    # bridge the gap here
-    set uncat [create_bd_cell -type ip -vlnv mmerlini:yov:axis_unconcat:1.0 axis_unconcat_0]
-    set_property -dict [list CONFIG.DATA_WIDTH {64} CONFIG.OUT_ENABLE_KEEP {true} CONFIG.IN_ENABLE_LAST {1} CONFIG.OUT_ENABLE_LAST {true}] $uncat
-    connect_bd_intf_net [get_bd_intf_pins /DBG_GUV_TREE/o] [get_bd_intf_pins $uncat/left]
-    connect_bd_net [get_bd_ports CLK] [get_bd_pins $uncat/clk]
-    connect_bd_intf_net [get_bd_intf_pins $uncat/right] [get_bd_intf_pins $out_port]
+    connect_bd_intf_net [get_bd_intf_pins $tree_out] [get_bd_intf_pins $out_port]
     
     # It's ugly, but it works!
 }
