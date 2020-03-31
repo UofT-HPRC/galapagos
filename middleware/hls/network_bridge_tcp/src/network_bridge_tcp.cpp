@@ -3,6 +3,7 @@
 using namespace hls;
 
 ap_uint<32> ip_table[256];
+ap_uint<32> node_table[256];
 /**
  * Streams sessionIDs from table that stores open sessionIDs indexed by dest 
  *
@@ -379,6 +380,7 @@ void galapagos_to_tcp_interface(
 				stream<ap_uint<16> >& read_sid,
 				stream<ap_uint<8> >& write_dest,
 				stream<ap_uint<16> >& write_sid,
+                ap_uint<8> node_id,
                 ap_uint<4> * state_out,
                 ap_uint<64> * header_out,
                 ap_uint<16>  * size_out,
@@ -422,6 +424,7 @@ void galapagos_to_tcp_interface(
     static ap_uint<8> dest;
     static axiWord header;
     ap_uint<16> check_empty = 0x03e8;
+    axiWord header_raw;
 
 
 
@@ -430,9 +433,11 @@ void galapagos_to_tcp_interface(
         case G2T_IDLE:
             if(!rxGalapagosBridge.empty())
             {
-                header = rxGalapagosBridge.read();
+                header_raw = rxGalapagosBridge.read();
+                header_raw.data.range(23,16) = node_id;
+                header = header_raw;
                 dest = header.data.range(31,24);
-                read_dest.write(dest);
+                read_dest.write(node_table[dest]);
                 state = G2T_READ_SID;
                 *header_out = header.data;
             }
@@ -453,7 +458,7 @@ void galapagos_to_tcp_interface(
 			if(!sessionID_fifo.empty()){
                 sessionID = sessionID_fifo.read();
                 write_sid.write(sessionID);
-                write_dest.write(dest);
+                write_dest.write(node_table[dest]);
                 state = G2T_WRITE_METADATA;
             }
             break;
@@ -518,6 +523,7 @@ void network_bridge_tcp(
 		stream<ap_uint<16> >& rxMetaData,
 		stream<axiWord>& rxData,
 		stream<axiWord>& txGalapagosBridge,
+        ap_uint <8> node_id,
         ap_uint <4> * state_out,
         ap_uint <64> * header_out,
         ap_uint<16> * size_out,
@@ -532,6 +538,7 @@ void network_bridge_tcp(
 
 #pragma HLS INTERFACE ap_ctrl_none port=return
 #pragma HLS DATAFLOW
+#pragma HLS INTERFACE ap_stable port=node_id
 #pragma HLS resource core=AXIS variable=rxGalapagosBridge      metadata="-bus_bundle s_axis_rxGalapagosBridge"
 #pragma HLS resource core=AXIS variable=txGalapagosBridge      metadata="-bus_bundle m_axis_txGalapagosBridge"
 #pragma HLS resource core=AXIS variable=listenPort       metadata="-bus_bundle m_axis_listen_port"
@@ -726,6 +733,7 @@ void network_bridge_tcp(
                               g2t_read_sid,
                               g2t_write_dest,
                               g2t_write_sid,
+                              node_id,
                               state_out,
                               header_out,
                               size_out,
