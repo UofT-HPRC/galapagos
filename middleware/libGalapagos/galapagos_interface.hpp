@@ -276,7 +276,7 @@ void galapagos::interface<T>::write(galapagos::stream_packet <T> gps){
             cv.notify_one();
         }
         //once buffer pushed and available for consumption
-        logger->debug("Interface:{0} write last flit, adding to list, with dest:{1:x}, with size:{2:d}, packets size:{3:d}", name, curr_write.dest, curr_write.size, size());
+        logger->debug("Interface:{0} write last flit, adding to list, with id:{1:x}, dest:{1:x}, with size:{2:d}, packets size:{3:d}", name, curr_write.id, curr_write.dest, curr_write.size, size());
         logger->flush();
     }
     else{

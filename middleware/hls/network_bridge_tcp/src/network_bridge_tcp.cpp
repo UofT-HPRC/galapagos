@@ -139,7 +139,7 @@ void tcp_to_galapagos_interface(
 	static axiWord currWord;
 	static ap_uint<8> dest;
 	static ap_uint<8> src;
-	axiWord packet;
+	static axiWord packet;
 
 
 

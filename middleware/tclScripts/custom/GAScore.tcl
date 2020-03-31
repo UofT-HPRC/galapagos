@@ -50,7 +50,7 @@ foreach app_coordinate $app_indices {
     create_bd_cell -type hier ${app}_mem_xbar
 
     set ctrl_bus_index [format "%02d" $app_index]
-    
+
 
     # TODO assuming only 2 memory interfaces on each IP
     for {set i 1; set j 0} {$i < 3} {incr i; incr j} {
@@ -145,11 +145,12 @@ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_bram_ctrl:4.0 applicationRegion/
 connect_bd_intf_net [get_bd_intf_pins applicationRegion/axi_bram_ctrl_0/S_AXI] [get_bd_intf_pins applicationRegion/hls_kernel_inst_1/m_axi_instr_mem]
 connect_bd_net [get_bd_pins applicationRegion/CLK] [get_bd_pins applicationRegion/axi_bram_ctrl_0/s_axi_aclk]
 connect_bd_net [get_bd_pins applicationRegion/ARESETN] [get_bd_pins applicationRegion/axi_bram_ctrl_0/s_axi_aresetn]
-set_property -dict [list CONFIG.DATA_WIDTH {64} CONFIG.SINGLE_PORT_BRAM {1} CONFIG.ECC_TYPE {0}] [get_bd_cells applicationRegion/axi_bram_ctrl_0]
-create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen:8.4 applicationRegion/blk_mem_gen_0
-connect_bd_intf_net [get_bd_intf_pins applicationRegion/blk_mem_gen_0/BRAM_PORTA] [get_bd_intf_pins applicationRegion/axi_bram_ctrl_0/BRAM_PORTA]
+set_property -dict [list CONFIG.DATA_WIDTH {32} CONFIG.SINGLE_PORT_BRAM {1} CONFIG.ECC_TYPE {0}] [get_bd_cells applicationRegion/axi_bram_ctrl_0]
+create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen:8.4 applicationRegion/instr_blk_mem
+connect_bd_intf_net [get_bd_intf_pins applicationRegion/instr_blk_mem/BRAM_PORTA] [get_bd_intf_pins applicationRegion/axi_bram_ctrl_0/BRAM_PORTA]
 assign_bd_address [get_bd_addr_segs {applicationRegion/axi_bram_ctrl_0/S_AXI/Mem0 }]
 set_property offset 0x00000000 [get_bd_addr_segs {applicationRegion/hls_kernel_inst_1/Data_m_axi_instr_mem/SEG_axi_bram_ctrl_0_Mem0}]
+set_property range 4K [get_bd_addr_segs {applicationRegion/hls_kernel_inst_1/Data_m_axi_instr_mem/SEG_axi_bram_ctrl_0_Mem0}]
 
 # extra commands to validate bd
 connect_bd_net [get_bd_pins network/tcp_ip_inst/s_axis_close_connection_TVALID] [get_bd_pins network/xlconstant_disable/dout]
@@ -158,6 +159,6 @@ connect_bd_intf_net -boundary_type upper [get_bd_intf_pins applicationRegion/S_A
 delete_bd_objs [get_bd_cells applicationRegion/axi_vip_ctrl]
 assign_bd_address [get_bd_addr_segs {applicationRegion/axi_timer_0/S_AXI/Reg }]
 
-set constraints_path ${::env(SHOAL_PATH)}
-add_files -fileset constrs_1 -norecurse {$constraints_paths/ad_8k5.xdc $constraints_paths/bitstream.xdc $constraints_paths/ddr4_test.xdc $constraints_paths/ddr4_test_axi4.xdc $constraints_paths/ddr4sdram_b0_lane8.xdc $constraints_paths/ddr4sdram_b0_unused.xdc $constraints_paths/ddr4sdram_b1_lane8.xdc $constraints_paths/ddr4sdram_b1_unused.xdc $constraints_paths/ddr4sdram_locs_b0_twin_die.xdc $constraints_paths/ddr4sdram_locs_b0_x64.xdc $constraints_paths/ddr4sdram_locs_b0_x72.xdc $constraints_paths/ddr4sdram_locs_b1_twin_die.xdc $constraints_paths/ddr4sdram_locs_b1_x64.xdc $constraints_paths/ddr4sdram_locs_b1_x72.xdc $constraints_paths/ddr4sdram_props_b0_twin_die.xdc $constraints_paths/ddr4sdram_props_b1_twin_die.xdc $constraints_paths/pcie.xdc $constraints_paths/refclk200.xdc}
-import_files -fileset constrs_1 {$constraints_paths/ad_8k5.xdc $constraints_paths/bitstream.xdc $constraints_paths/ddr4_test.xdc $constraints_paths/ddr4_test_axi4.xdc $constraints_paths/ddr4sdram_b0_lane8.xdc $constraints_paths/ddr4sdram_b0_unused.xdc $constraints_paths/ddr4sdram_b1_lane8.xdc $constraints_paths/ddr4sdram_b1_unused.xdc $constraints_paths/ddr4sdram_locs_b0_twin_die.xdc $constraints_paths/ddr4sdram_locs_b0_x64.xdc $constraints_paths/ddr4sdram_locs_b0_x72.xdc $constraints_paths/ddr4sdram_locs_b1_twin_die.xdc $constraints_paths/ddr4sdram_locs_b1_x64.xdc $constraints_paths/ddr4sdram_locs_b1_x72.xdc $constraints_paths/ddr4sdram_props_b0_twin_die.xdc $constraints_paths/ddr4sdram_props_b1_twin_die.xdc $constraints_paths/pcie.xdc $constraints_paths/refclk200.xdc}
+set constraints_path ${::env(SHOAL_PATH)}/repo/constraints/8k5
+add_files -fileset constrs_1 -norecurse [list $constraints_path/ad_8k5.xdc $constraints_path/bitstream.xdc $constraints_path/ddr4_test.xdc $constraints_path/ddr4_test_axi4.xdc $constraints_path/ddr4sdram_b0_lane8.xdc $constraints_path/ddr4sdram_b0_unused.xdc $constraints_path/ddr4sdram_b1_lane8.xdc $constraints_path/ddr4sdram_b1_unused.xdc $constraints_path/ddr4sdram_locs_b0_twin_die.xdc $constraints_path/ddr4sdram_locs_b0_x64.xdc $constraints_path/ddr4sdram_locs_b0_x72.xdc $constraints_path/ddr4sdram_locs_b1_twin_die.xdc $constraints_path/ddr4sdram_locs_b1_x64.xdc $constraints_path/ddr4sdram_locs_b1_x72.xdc $constraints_path/ddr4sdram_props_b0_twin_die.xdc $constraints_path/ddr4sdram_props_b1_twin_die.xdc $constraints_path/pcie.xdc $constraints_path/refclk200.xdc]
+import_files -fileset constrs_1 [list $constraints_path/ad_8k5.xdc $constraints_path/bitstream.xdc $constraints_path/ddr4_test.xdc $constraints_path/ddr4_test_axi4.xdc $constraints_path/ddr4sdram_b0_lane8.xdc $constraints_path/ddr4sdram_b0_unused.xdc $constraints_path/ddr4sdram_b1_lane8.xdc $constraints_path/ddr4sdram_b1_unused.xdc $constraints_path/ddr4sdram_locs_b0_twin_die.xdc $constraints_path/ddr4sdram_locs_b0_x64.xdc $constraints_path/ddr4sdram_locs_b0_x72.xdc $constraints_path/ddr4sdram_locs_b1_twin_die.xdc $constraints_path/ddr4sdram_locs_b1_x64.xdc $constraints_path/ddr4sdram_locs_b1_x72.xdc $constraints_path/ddr4sdram_props_b0_twin_die.xdc $constraints_path/ddr4sdram_props_b1_twin_die.xdc $constraints_path/pcie.xdc $constraints_path/refclk200.xdc]
