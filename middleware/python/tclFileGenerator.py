@@ -483,7 +483,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                 'inst':'applicationRegion/blk_mem_switch_rom',
                 }
                 )
-    
+
     # The next 250 lines of code are a big if-elif-else statement which generate
     # the correct Galapagos router depending on whether the communication type is
     # "tcp", "eth", or "raw"
@@ -782,7 +782,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                             ]
                         }
                         )
-                    
+
                 # else:
                 #     if num_slave_s_axis_global > 1:
                 #         tcl_user_app.instBlock(
@@ -830,7 +830,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
         if num_slave_s_axis_global > 1 or tcl_user_app.fpga['comm'] != 'raw':
             # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
             tcl_user_app.setProperties('applicationRegion/input_switch', properties)
-    
+
 
     # Ask how many (global) m_axis connections are in the user app region.
     num_slave_m_axis_global = len(getInterfaces(tcl_user_app.fpga, 'm_axis', 'scope', 'global'))
@@ -994,7 +994,7 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
                     'port_name':'S01_AXIS'
                     }
                 )
-    
+
 
     m_axis_array = getInterfaces(tcl_user_app.fpga, 'm_axis', 'scope', 'global')
 
@@ -1302,7 +1302,7 @@ def userApplicationRegionAssignAddresses(tcl_user_app, shared):
     #     master = 'S_AXI_CONTROL'
     #     for global_s_axi in s_axi_array:
     #         slave_inst = global_s_axi['kernel_inst']['inst']
-    #         slave_inst, slave_port, slave_base, properties = getSlaveAddressInfo(global_s_axi) 
+    #         slave_inst, slave_port, slave_base, properties = getSlaveAddressInfo(global_s_axi)
     #         tcl_user_app.assign_address(slave_inst, slave_port, slave_base)
     #         if 'offset' in properties:
     #             prop = {'offset': properties['offset']}
@@ -1597,6 +1597,29 @@ def netBridgeConstants(tcl_net):
     galapagos_path = str(os.environ.get('GALAPAGOS_PATH'))
     if tcl_net.fpga['comm'] == 'tcp':
         tcl_net.addSource(galapagos_path + '/middleware/tclScripts/pr_tcp_bridge.tcl')
+        tcl_net.instBlock(
+            {
+                'name':'xlconstant',
+                'inst': 'network/node_id',
+                'properties':[
+                    'CONFIG.CONST_WIDTH {8}',
+                    'CONFIG.CONST_VAL {' + str(tcl_net.fpga['num']) + '}'
+                ]
+            }
+        )
+        tcl_net.makeConnection(
+            'net',
+            {
+                'name':'network/node_id',
+                'type':'pin',
+                'port_name':'dout'
+            },
+            {
+                'name':'network/network_bridge_inst',
+                'type':'pin',
+                'port_name': 'node_id_V'
+            }
+        )
     elif tcl_net.fpga['comm'] == 'eth':
         tcl_net.addSource(galapagos_path + '/middleware/tclScripts/pr_eth_bridge.tcl')
     elif tcl_net.fpga['comm'] == 'raw':

@@ -241,6 +241,9 @@ class cluster(abstractDict):
         else: #ip
             bramFile = open(output_path + '/' + self.name + '/ip.coe', 'w')
             bramFile.write('memory_initialization_radix=10;\n')
+            nodeFile = open(output_path + '/' + self.name + '/node.coe', 'w')
+            nodeFile.write('memory_initialization_radix=10;\n')
+            nodeFile.write('memory_initialization_vector=\n')
         bramFile.write('memory_initialization_vector=\n')
 
         kernelIndex = 0
@@ -277,6 +280,19 @@ class cluster(abstractDict):
                 else:
                     bramFile.write(defaultStr + ';')
                 break
+
+            if addr_type == "ip":
+                for node in self.nodes:
+                    for kern in node["kernel"]:
+                        if currIndex == int(kern["num"]):
+                            writeStr = str(node["num"])
+                            if currIndex != (len(self.kernels) - 1):
+                                nodeFile.write(writeStr + ',')
+                            else:
+                                nodeFile.write(writeStr + ';')
+        if addr_type == "ip":
+            nodeFile.close()
+        bramFile.close()
 
     def makeProjectClusterScript(self, output_path):
         """
