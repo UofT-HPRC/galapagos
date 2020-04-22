@@ -182,10 +182,21 @@ def getSlaveInterfaces(fpga, intf, master):
     # First get all the interfaces that could connect to this master
     slave_array = getInterfaces(fpga, intf, 'scope', 'local')
 
+    #print("local connections for :" + str(master['kernel_inst']['name']))
     for slave in slave_array:
-        #print ("slave num " + slave['master']['num'])
-        if ( (int(slave['master']['num'])  == int(master['kernel_inst']['num'])) and strCompare(slave['master']['port'], master['name'])):
+        #print (str(slave))
+        #print ("slave " + str(slave['master']['node']) + " port: " + slave['master']['port'])
+        #print ("master " + str(master['kernel_inst']['num']) + " port: " + master['name'])
+        #if  (int(slave['master']['node'])  == int(master['kernel_inst']['num'])):
+        #    print(" adding to interfaces clause_1")
+        #if (strCompare(slave['master']['port'], master['name'])):
+        #    print(" adding to interfaces clause_2")
+        if ( (int(slave['master']['node'])  == int(master['kernel_inst']['num'])) and strCompare(slave['master']['port'], master['name'])):
             interfaces.append(copy.deepcopy(slave))
+            #TODO hack: to speed up assuming all local streams fanout to one node
+            if(intf == 's_axis'):
+                break
+
     return interfaces
 
 def userApplicationRegionMemInstLocal(tcl_user_app):
@@ -439,12 +450,13 @@ def userApplicationRegionKernelsInst(tcl_user_app):
 
         if kern['const'] != None:
             for const in kern['const']:
+                #print(const)
                 tcl_user_app.instBlock(
                         {
                         'name':'xlconstant',
                         'inst': 'applicationRegion/' + instName + '_' + const['name'],
-                        'properties':['CONFIG.CONST_WIDTH {' + const['width'] + '}',
-                            ' CONFIG.CONST_VAL {'+ const['val'] + '}']
+                        'properties':['CONFIG.CONST_WIDTH {' + str(const['width']) + '}',
+                            ' CONFIG.CONST_VAL {'+ str(const['val']) + '}']
                         }
                         )
                 tcl_user_app.makeConnection(
@@ -487,7 +499,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
     # The next 250 lines of code are a big if-elif-else statement which generate
     # the correct Galapagos router depending on whether the communication type is
     # "tcp", "eth", or "raw"
-    if tcl_user_app.fpga['comm'] == 'tcp':
+    if tcl_user_app.fpga['comm'] == 'tcp' or tcl_user_app.fpga['comm'] == 'udp':
         tcl_user_app.instBlock(
             {'vendor':'xilinx.com',
             'lib':'hls',
@@ -843,7 +855,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                 'clks':['aclk'],
                 'resetns':['aresetn'],
                 'properties':['CONFIG.NUM_SI {2}',
-                    'CONFIG.NUM_MI {' + num_slave_s_axis_global + '}',
+                    'CONFIG.NUM_MI {' + str(num_slave_s_axis_global) + '}',
                     'CONFIG.ARB_ON_TLAST {1}']
                 }
 
@@ -1433,65 +1445,80 @@ def userApplicationLocalConnections(tcl_user_app):
     m_axis_array = getInterfaces(tcl_user_app.fpga, 'm_axis', 'scope', 'local')
 
     for local_m_axis in m_axis_array:
-        s_axis_array = getSlaveInterfaces(tcl_user_app.fpga, 's_axis', local_m_axis)
+        #s_axis_array = getSlaveInterfaces(tcl_user_app.fpga, 's_axis', local_m_axis)
+        s_axis = local_m_axis['slave']
+        s_axis_kernel = tcl_user_app.fpga['kernel'][tcl_user_app.fpga['kernel_map'][s_axis['node']]]['inst']
+        tcl_user_app.makeConnection(
+                'intf',
+                {
+                'name': local_m_axis['kernel_inst']['inst'],
+                'type':'intf',
+                'port_name': local_m_axis['name']
+                },
+                {
+                'name':  s_axis_kernel,
+                'type':'intf',
+                'port_name': s_axis['port']
+                }
+                )
+       # #insert broadcaster
+       # if (len(s_axis_array) > 1):
+       #     tcl_user_app.instBlock(
+       #             {
+       #             'name':'axis_broadcaster',
+       #             'inst': local_m_axis['kernel_inst']['inst'] + '_' +local_m_axis['name'] + '_broadcaster',
+       #             'clks':['aclk'],
+       #             'resetns':['aresetn'],
+       #             'properties':['CONFIG.NUM_MI {'+ str(len(s_axis))  +'}']
+       #             }
+       #             )
+       #     tcl_user_app.makeConnection(
+       #             'intf',
+       #             {
+       #             'name': local_m_axis['kernel_inst']['inst'] + '_' +local_m_axis['name'] + '_broadcaster',
+       #             'type':'intf',
+       #             'port_name':'S_AXIS'
+       #             },
+       #             {
+       #             'name': local_m_axis['kernel_inst']['inst'],
+       #             'type':'intf',
+       #             'port_name': local_m_axis['name']
+       #             }
+       #             )
+       #     for s_axis_idx, s_axis in enumerate(s_axis_array):
+       #         s_axis_idx_str = "%02d"%s_axis_idx
+       #         tcl_user_app.makeConnection(
+       #                 'intf',
+       #                 {
+       #                 'name': local_m_axis['kernel_inst']['inst'] + '_' +local_m_axis['name'] + '_broadcaster',
+       #                 'type':'intf',
+       #                 'port_name':'M' + s_axis_idx_str + '_AXIS'
+       #                 },
+       #                 {
+       #                 'name':  s_axis['kernel_inst']['inst'],
+       #                 'type':'intf',
+       #                 'port_name': s_axis['name']
+       #                 }
+       #                 )
+       # elif (len(s_axis_array) == 1):
+       #     s_axis = s_axis_array[0]
+       #     tcl_user_app.makeConnection(
+       #             'intf',
+       #             {
+       #             'name': local_m_axis['kernel_inst']['inst'],
+       #             'type':'intf',
+       #             'port_name': local_m_axis['name']
+       #             },
+       #             {
+       #             'name':  s_axis['kernel_inst']['inst'],
+       #             'type':'intf',
+       #             'port_name': s_axis['name']
+       #             }
+       #             )
 
-        #insert broadcaster
-        if (len(s_axis_array) > 1):
-            tcl_user_app.instBlock(
-                    {
-                    'name':'axis_broadcaster',
-                    'inst': local_m_axis['kernel_inst']['inst'] + '_' +local_m_axis['name'] + '_broadcaster',
-                    'clks':['aclk'],
-                    'resetns':['aresetn'],
-                    'properties':['CONFIG.NUM_MI {'+ str(len(s_axis))  +'}']
-                    }
-                    )
-            tcl_user_app.makeConnection(
-                    'intf',
-                    {
-                    'name': local_m_axis['kernel_inst']['inst'] + '_' +local_m_axis['name'] + '_broadcaster',
-                    'type':'intf',
-                    'port_name':'S_AXIS'
-                    },
-                    {
-                    'name': local_m_axis['kernel_inst']['inst'],
-                    'type':'intf',
-                    'port_name': local_m_axis['name']
-                    }
-                    )
-            for s_axis_idx, s_axis in enumerate(s_axis_array):
-                s_axis_idx_str = "%02d"%s_axis_idx
-                tcl_user_app.makeConnection(
-                        'intf',
-                        {
-                        'name': local_m_axis['kernel_inst']['inst'] + '_' +local_m_axis['name'] + '_broadcaster',
-                        'type':'intf',
-                        'port_name':'M' + s_axis_idx_str + '_AXIS'
-                        },
-                        {
-                        'name':  s_axis['kernel_inst']['inst'],
-                        'type':'intf',
-                        'port_name': s_axis['name']
-                        }
-                        )
-        elif (len(s_axis_array) == 1):
-            tcl_user_app.makeConnection(
-                    'intf',
-                    {
-                    'name': local_m_axis['kernel_inst']['inst'],
-                    'type':'intf',
-                    'port_name': local_m_axis['name']
-                    },
-                    {
-                    'name':  s_axis['kernel_inst']['inst'],
-                    'type':'intf',
-                    'port_name': s_axis['name']
-                    }
-                    )
-
-        else:
-            raise ValueError("Local Master needs at least one local slave")
-
+#        else:
+#            raise ValueError("Local Master needs at least one local slave")
+#
 
     wire_master_array = getInterfaces(tcl_user_app.fpga, 'wire_master', 'scope' ,'local')
 
@@ -1624,6 +1651,13 @@ def netBridgeConstants(tcl_net):
         tcl_net.addSource(galapagos_path + '/middleware/tclScripts/pr_eth_bridge.tcl')
     elif tcl_net.fpga['comm'] == 'raw':
         tcl_net.addSource(galapagos_path + '/middleware/tclScripts/pr_raw_bridge.tcl')
+    elif tcl_net.fpga['comm'] == 'udp':
+        ip_addr = tcl_net.fpga['ip'].split(".")
+        tcl_net.tprint('set ip_addr 0x' + '0x{0:0{1}X}'.format(int(ip_addr[3]),2) +'0x{0:0{1}X}'.format(int(ip_addr[2]),2)[2:] + '0x{0:0{1}X}'.format(int(ip_addr[1]),2)[2:]   + '0x{0:0{1}X}'.format(int(ip_addr[0]),2)[2:]   )
+        tcl_net.tprint('set ip_gateway 0x' + '0x{0:0{1}X}'.format(int(ip_addr[3]),2) +'0x{0:0{1}X}'.format(int(ip_addr[2]),2)[2:] + '0x{0:0{1}X}'.format(int(ip_addr[1]),2)[2:]   + '0x{0:0{1}X}'.format(0,2)[2:]   )
+        tcl_net.tprint('set mac_addr 0x' + tcl_net.fpga['mac'].replace(":","")    )
+        tcl_net.addSource(galapagos_path + '/middleware/tclScripts/pr_udp100_bridge.tcl')
+
 
 def netBridge(outDir, fpga):
     """
@@ -2025,7 +2059,6 @@ def makeTCLFiles(fpga, projectName, output_path, sim):
     #make bridge to network
     if fpga['comm'] != 'none':
         netBridge(outDir, fpga)
-
     userApplicationRegion(outDir, fpga, sim)
     bridgeConnections(outDir, fpga, sim)
     #if(num_debug_interfaces > 0):
@@ -2042,6 +2075,8 @@ if { ! [info exists default_dir] } {\n\
 }\n\
 "
     )
+    if fpga['board'] == 'sidewinder':
+        tclMain.tprint('set HUNDREDG 1')
     tclMain.addSource(galapagos_path + '/shells/tclScripts/pr_standard_interfaces.tcl')
     if fpga['comm'] != 'none':
         tclMain.addSource(outDir + '/' + str(fpga['num']) + '_net.tcl')

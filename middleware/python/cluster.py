@@ -1,3 +1,4 @@
+import threading
 import warnings
 import shutil
 import copy
@@ -62,6 +63,7 @@ class cluster(abstractDict):
         self.packet_last = 0
         self.packet_id = 0
         self.packet_user = 0
+
 
         if(mode=='file'):
             top_dict = self.getDict(kernel_file)['cluster']
@@ -158,18 +160,18 @@ class cluster(abstractDict):
                         if type(kern_dict_local['s_axis']) == type([]):
                             for s_axis_idx, s_axis in enumerate(kern_dict_local['s_axis']):
                                 if s_axis['scope'] == 'local':
-                                    kern_dict_local['s_axis'][s_axis_idx]['master']['num'] = str(i + int(s_axis['master']['num']))
+                                    kern_dict_local['s_axis'][s_axis_idx]['master']['node'] = str(i + int(s_axis['master']['node']))
                         else:
                             if kern_dict_local['s_axis']['scope'] == 'local':
-                                kern_dict_local['s_axis']['master']['num'] = str( i + int(kern_dict_local['s_axis']['master']['num']))
+                                kern_dict_local['s_axis']['master']['node'] = str( i + int(kern_dict_local['s_axis']['master']['node']))
 
                     # I have no idea what this is for
                     if 'wire_slave' in kern_dict_local:
                         if type(kern_dict_local['wire_slave']) == type([]):
                             for slave_idx, slave in enumerate(kern_dict_local['wire_slave']):
-                                kern_dict_local['wire_slave'][slave_idx]['master']['num'] = str(i + int(slave['master']['num']))
+                                kern_dict_local['wire_slave'][slave_idx]['master']['node'] = str(i + int(slave['master']['node']))
                         else:
-                            kern_dict_local['wire_slave']['master']['num'] = str(i + int(slave['master']['num']))
+                            kern_dict_local['wire_slave']['master']['node'] = str(i + int(kern_dict_local['wire_slave']['master']['node']))
 
 
 
@@ -201,7 +203,7 @@ class cluster(abstractDict):
             # I'm fairly sure these next few lines of code are just converting
             # data formats
             node_inst['kernel'] = []
-
+            node_inst['kernel_map'] = {}
             #
             for kmap_node in node_dict['kernel']:
                 for kern_idx, kern in enumerate(self.kernels):
@@ -211,6 +213,7 @@ class cluster(abstractDict):
                     if int(kern['num']) == int(kmap_node):
                         # Instead of having numbers in node_inst['kernel'], have
                         # pointers to our properly parsed kernel objects
+                        node_inst['kernel_map'][kern['num']] = len(node_inst['kernel'])
                         node_inst['kernel'].append(kern)
                         # At the same time, append mac and ip information to each
                         # kernel object? Not sure why we have to do this. By the
@@ -226,10 +229,16 @@ class cluster(abstractDict):
 
     def writeClusterTCL(self, output_path, sim):
 
+        #tclFileThreads = []
         for node_idx, node in enumerate(self.nodes):
+            #tclFileThreads.append(threading.Thread(target=tclFileGenerator.makeTCLFiles, args=(node,self.name, output_path, sim)))
             if node['type'] == 'hw':
+                #tclFileThreads.append(threading.Thread(target=tclFileGenerator.makeTCLFiles, args=(node,self.name, output_path, sim)))
+                #tclFileThreads[len(tclFileThreads)-1].start()
                 tclFileGenerator.makeTCLFiles(node, self.name, output_path, sim)
 
+#        for thread in tclFileThreads:
+#            thread.join()
 
 
 
@@ -349,10 +358,12 @@ if __name__=='__main__':
 
     #logical_file = 'hwMiddleware/packetSwitch/tests/conf0/logical.xml'
     #map_file = 'hwMiddleware/packetSwitch/tests/conf0/map.xml'
-    logical_file = 'telepathy/middlewareInput/conf0/mpiLogical.xml'
-    map_file = 'telepathy/middlewareInput/conf0/mpiMap.xml'
+    path = '/home/tarafdar/workDir/galapagos/projects'
+    logical_file = '/home/tarafdar/workDir/aegean/examples/resnet50/logical_aegean.json'
+    map_file = '/home/tarafdar/workDir/aegean/examples/resnet50/map_aegean.json'
     cluster_inst = cluster('naif', logical_file, map_file)
-    cluster_inst.makeProjectClusterScript()
-    cluster_inst.writeClusterTCL()
-    cluster_inst.writeBRAMFile('mac')
-    cluster_inst.writeBRAMFile('ip')
+    cluster_inst.makeProjectClusterScript(path)
+    cluster_inst.writeClusterTCL(path, 0)
+    cluster_inst.writeBRAMFile(path, 'mac')
+    cluster_inst.writeBRAMFile(path, 'ip')
+

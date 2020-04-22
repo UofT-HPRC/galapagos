@@ -18,14 +18,14 @@ class node(abstractDict):
         Fills underlying dict representation with kwargs. Since this uses the call
         to abstractDict's constructor, this will also check that all mandatory
         arguments are present and that there are no unrecognized arguments.
-        
+
         Args:
             **kwargs: The stuff to put in this dictionary
         """
 
         self.address_space = address_space
         mandatory_array = ('num', 'type', 'comm')
-        optional_array = ('board', 'mac', 'ip', 'app_bridge', 'debug', 'kernel', 'custom')
+        optional_array = ('board', 'mac', 'ip', 'app_bridge', 'debug', 'kernel', 'custom', 'kernel_map')
 
         super().__init__(mandatory_array, optional_array, **kwargs)
 

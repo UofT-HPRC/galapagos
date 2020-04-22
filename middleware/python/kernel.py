@@ -12,7 +12,7 @@ class kernel(abstractDict):
         Fills underlying dict representation with kwargs. Since this uses the call
         to abstractDict's constructor, this will also check that all mandatory
         arguments are present and that there are no unrecognized arguments.
-        
+
         Args:
             **kwargs: The stuff to put in this dictionary
         """
@@ -20,7 +20,7 @@ class kernel(abstractDict):
         self.cycle_count, mandatory_array,optional_array = self.init_vars()
         super().__init__(mandatory_array, optional_array, **kwargs)
         array_of_arrays = ['clk', 'aresetn', 'm_axi', 's_axi', 'm_axis', 's_axis', 'wire_slave', 'wire_master', 'const', 'properties']
-        
+
         for elem in array_of_arrays:
             if type(self.data[elem]) != type([])  and self.data[elem] != None:
                 self.data[elem] = [self.data[elem]]
@@ -29,11 +29,11 @@ class kernel(abstractDict):
 
     def init_vars(self):
         """
-        Used by the constructor. Simply creates the default values for the 
+        Used by the constructor. Simply creates the default values for the
         kernel's member vars
-        
+
         Returns:
-            The intial cycle count, mandatory arguments array, and optional 
+            The intial cycle count, mandatory arguments array, and optional
             arguments array
         """
         cycle_count = 0
@@ -54,11 +54,18 @@ class kernel(abstractDict):
             'm_axis',
             'wire_master',
             'wire_slave',
+            'm_axi_map',
+            's_axi_map',
+            's_axis_map',
+            'm_axis_map',
+            'wire_master_map',
+            'wire_slave_map',
             'ip',
             'mac',
             'const',
             'properties',
-            'board'
+            'board',
+
         )
 
 
