@@ -33,9 +33,11 @@ class net_control_device {
     boost::asio::io_context io_context;
     boost::asio::ip::tcp::acceptor acceptor_;
     bool logging;
+    bool jtag;
+    std::string program_tcl;
 
     public:
-        net_control_device(std::string, int port, bool logging, int offset_ctrl, int offset_dma);
+        net_control_device(std::string, int port, bool logging, int offset_ctrl, int offset_dma, bool jtag, std::string program_tcl);
 
 
 };

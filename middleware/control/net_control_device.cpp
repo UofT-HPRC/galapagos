@@ -1,13 +1,16 @@
 #include "net_control_device.hpp"
 
 
-net_control_device::net_control_device(std::string device_name, int port, bool _logging, int offset_ctrl, int offset_dma)
+net_control_device::net_control_device(std::string device_name, int port, bool _logging, int offset_ctrl, int offset_dma, bool _jtag, std::string _program_tcl)
 :dev (device_name, _logging, offset_ctrl, offset_dma),
 acceptor_(io_context, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
 {
     io_context.run();
 
     logging = _logging;
+    jtag = _jtag;
+    program_tcl = _program_tcl;
+
 
     for(;;)
     {
@@ -55,6 +58,20 @@ acceptor_(io_context, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(),
                 BOOST_LOG_TRIVIAL(trace) << "GET_BIN AT ADDR:" << message[ADDR];
             }
         }
+        else if(message[CMD] == PROGRAM_BITSTREAM){
+            if(jtag){
+                char * data = (char *)malloc(message[SIZE]);
+                length = socket.read_some(boost::asio::buffer((char *)data, sizeof(int)*NUM_INT_PER_MESSAGE), error);
+                auto myfile = std::fstream("prog.bit", std::ios::out | std::ios::binary);
+                myfile.write((char *)data, length);
+                myfile.close();
+                std::string cmd = std::string("vivado -mode batch --source ") + program_tcl + std::string(" -tclargs --bitstream prog.bit") + 
+                system(cmd.c_str());
+            }
+
+
+        }
+
         socket.close(error);
 
     }

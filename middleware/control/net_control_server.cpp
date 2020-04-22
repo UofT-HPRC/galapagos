@@ -15,6 +15,8 @@ int main(int argc, const char **argv){
     int offset_ctrl;
     int offset_dma;
     bool logging;
+    bool jtag;
+    std::string program_tcl;
 
     try
     {
@@ -24,6 +26,8 @@ int main(int argc, const char **argv){
         desc.add_options()
                 ("help,h", "Help screen")
                 ("port", boost::program_options::value<int>()->default_value(8892), "port")
+                ("program_interface", boost::program_options::value<std::string>()->default_value("jtag", "program_interface"))
+                ("program_tcl", boost::program_options::value<std::string>()->default_value("", "program_tcl"))
                 ("offset_ctrl", boost::program_options::value<int>()->default_value(0), "offset_ctrl")
                 ("offset_dma", boost::program_options::value<int>()->default_value(0), "offset_dma")
                 ("device", boost::program_options::value<std::string>()->default_value("/dev/xdma0"), "device")
@@ -44,6 +48,10 @@ int main(int argc, const char **argv){
             offset_ctrl = vm["offset_ctrl"].as<int>();
         if(vm.count("logging"))
             logging = vm["logging"].as<bool>();
+        if(vm.count("program_interface"))
+            jtag = vm["program_interface"].as<std::string>() == std::string("jtag");
+        if(vm.count("program_tcl"))
+            program_tcl = vm["program_tcl"].as<std::string>();
 
 
 
@@ -58,7 +66,7 @@ int main(int argc, const char **argv){
 
 
 
-    net_control_device device(device_file, port, logging, offset_ctrl, offset_dma);
+    net_control_device device(device_file, port, logging, offset_ctrl, offset_dma, jtag, program_tcl);
    
 
 }
