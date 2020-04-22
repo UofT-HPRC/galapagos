@@ -2,19 +2,19 @@ import warnings
 
 class abstractDict():
     '''
-    This class defines a dictionary with the additional enforcement of the 
-    existence of keys as stated in the mandatory_array and optional keys that 
+    This class defines a dictionary with the additional enforcement of the
+    existence of keys as stated in the mandatory_array and optional keys that
     may be included in optional_array.
     '''
 
     def __init__(self, mandatory_array, optional_array, **kwargs):
         '''
         Initializes the abstract dictionary
-        
+
         Args:
             mandatory_array (list): list of keys that must exist in this dict
             optional_array (list): keys that may be optionally in this dict
-        
+
         Raises:
             ValueError: Raised if unknown key is specified
         '''
@@ -30,18 +30,19 @@ class abstractDict():
             if key in self.data:
                 self.data[key] = value
             else:
+                print('Init with ' + key + ' failed. Key does not exist')
                 raise ValueError('Init with ' + key + ' failed. Key does not exist')
         self.check_elements(mandatory_array, optional_array)
 
     def check_elements(self, mandatory_array, optional_array):
         '''
-        Checks the initialized dictionary to enforce that all mandatory keys exist. 
+        Checks the initialized dictionary to enforce that all mandatory keys exist.
         It issues a warning for optional keys that may be missing.
-        
+
         Args:
             mandatory_array (list): keys that must exist in this dict
             optional_array (list): keys that may optionally exist in this dict
-        
+
         Raises:
             ValueError: Raised if a mandatory key is missing
         '''
@@ -62,7 +63,7 @@ class abstractDict():
             return self.data[key]
         else:
             raise ValueError('Key \"' + key + '\"  not found')
-    
+
     def __contains__(self, key):
         return self.data[key]
 

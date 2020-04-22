@@ -7,12 +7,16 @@ find_family () {
   part=$2
 
   FPGA_family="${part:2:1}"
+  echo $part
+  echo $FPGA_family
   if [[ $FPGA_family == 'k' ]]; then
     FPGA_family='Kintex'
   elif [[ $FPGA_family == 'v' ]]; then
     FPGA_family='Virtex'
   elif [[ $FPGA_family == '7' ]]; then
     FPGA_family='7series'
+  elif [[ $FPGA_family == 'u' ]]; then
+    FPGA_family='Ultrascale_Plus'
   else
     FPGA_family="${part:2:2}"
     if [[ $FPGA_family != 'zu' ]]; then
@@ -43,6 +47,8 @@ find_family () {
 
   if [[ $FPGA_family == 'zu' ]]; then
     Solution='Zynq_Ultrascale_Plus'
+  elif [[ $FPGA_family == 'Ultrascale_Plus' ]]; then
+    Solution='Ultrascale_Plus'
   else
     Solution=${FPGA_family}_${FPGA_type}
   fi
@@ -105,7 +111,7 @@ if [[ $hlsVersion == "2017.2" ]]; then
 elif [[ $hlsVersion == "2017.4" ]]; then
   hlsPath_append=$hlsPath/$hlsVersion
 elif [[ $hlsVersion == "2018.1" ]]; then
-  hlsPath_append=$hlsPath/$hlsVersion  
+  hlsPath_append=$hlsPath/$hlsVersion
 elif [[ $hlsVersion == "2018.2" ]]; then
   hlsPath_append=$hlsPath/$hlsVersion
 elif [[ $hlsVersion == "2018.3" ]]; then
@@ -154,12 +160,12 @@ galapagos-update-board() {
     echo "Usage: galapagos-update-board board"
     return 1
   fi
-  
+
   if [[ \$1 == "pynq-z2" ]]; then
     partName=xc7z020clg400-1
     board=tul.com.tw:pynq-z2:part0:1.0
   elif [[ \$1 == "zedboard" ]]; then
-    partName=xc7z020clg484-1    
+    partName=xc7z020clg484-1
     board=em.avnet.com:zed:part0:1.3
   elif [[ \$1 == "sidewinder" ]]; then
     partName=xczu19eg-ffvc1760-2-i
@@ -170,11 +176,14 @@ galapagos-update-board() {
   elif [[ \$1 == "adm-8k5-debug" ]]; then
     partName=xcku115-flva1517-2-e
     board="NULL"
+  elif [[ \$1 == "au200" ]]; then
+    partName=xcu200-fsgd2104-2-e
+    board=xilinx.com:au200:part0:1.3
   else
     echo "Unknown board \$1 specified. No changes made to galapagos"
     return 1
   fi
-  
+
   boardName=\$1
 
   if [[ \$board != "NULL" ]]; then
@@ -221,7 +230,7 @@ source $configFile
 export PATH=$vivadoPath_append/bin:$PATH
 
 # if it doesn't exist in the .bashrc, add it. Otherwise, uncomment it in case
-if ! grep -Fq "# added by galapagos" ~/.bashrc; then 
+if ! grep -Fq "# added by galapagos" ~/.bashrc; then
   echo "source $configFile # added by galapagos" >> ~/.bashrc
 else
   sed -i '/# added by galapagos/s/^#//' ~/.bashrc
