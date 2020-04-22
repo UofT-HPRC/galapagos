@@ -7,3 +7,6 @@
 [submodule "util/Catch2"]
 	path = util/Catch2
 	url = https://github.com/catchorg/Catch2.git
+[submodule "middleware/libGalapagos"]
+	path = middleware/libGalapagos
+	url = https://github.com/UofT-HPRC/libGalapagos.git
