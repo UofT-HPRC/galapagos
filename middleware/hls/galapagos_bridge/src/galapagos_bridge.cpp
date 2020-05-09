@@ -70,7 +70,7 @@ void n2G(
         gp.dest = dest;
         gp.user = size;
         gp.data = np.data;
-        gp.last = np.last;
+        gp.last = (i == size-1);
         gp.keep = np.keep;
         output->write(gp);
     }

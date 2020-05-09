@@ -157,6 +157,8 @@ void tcp_to_galapagos_interface(
     static ap_uint<16> size = 0;
     static ap_uint<16> num_written = 0;
     static ap_uint<1> incomplete = 0;
+    static ap_uint<16> left_to_read = 0;
+    ap_uint<16> to_read;
 
     *state_out = state;
     *incomplete_out = incomplete;
@@ -171,7 +173,9 @@ void tcp_to_galapagos_interface(
 		        std::cout << notification.ipAddress << "\t" << notification.dstPort << std::endl;
 		        if (notification.length != 0)
 		        {
-			        readRequest.write(appReadRequest(notification.sessionID, notification.length));
+                    to_read = notification.length + left_to_read;
+                    left_to_read = to_read & 7;
+			        readRequest.write(appReadRequest(notification.sessionID, to_read & 0xFFF8));
 		        }
                 state = T2G_READ_METADATA;       
                 *state_out = state;
@@ -184,8 +188,10 @@ void tcp_to_galapagos_interface(
     			rxMetaData.read(sessionID);
                 if(!incomplete)
     			    state = T2G_WAIT_FOR_HEADER;
-                else
+                else{
                     state = T2G_WRITE_FLIT;
+                    packet.last = 0;
+                }
                 *state_out = state;
     		}
     		break;
