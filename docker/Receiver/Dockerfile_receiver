@@ -1,0 +1,35 @@
+FROM ubuntu:16.04
+
+RUN apt-get update && apt-get install -y \
+    wget \
+    vim \
+    sudo \
+    netcat-openbsd \
+    net-tools \
+    cmake \
+    build-essential \
+    python3 \
+    grep \
+   # libx11-6 \
+    libglib2.0-0 \
+    libsm6 \
+    libxrender1 \
+    libxrandr2 \
+    libfreetype6 \
+    libfontconfig \
+    libxtst6 \
+    openjdk-8-jre-headless \
+    && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN useradd -ms /bin/bash -G sudo user
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+USER user
+WORKDIR /home/user
+
+COPY inside_container.sh .
+COPY program_fpga.tcl .
+
+#exposing port for file transfer
+EXPOSE 44444
