@@ -2,7 +2,6 @@
 source deploy_receiver.sh
 
 #getting ip addr of receiver container
-cd Sender
 source get_receiver_id.sh
 source get_receiver_ip.sh
 
