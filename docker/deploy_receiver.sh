@@ -2,7 +2,6 @@ echo "Please enter vivado install path"
 read vivado_dir
 
 docker run -ti \
-           --net=host \
            -d -v $vivado_dir:/opt/Xilinx \
            --rm \
            -e DISPLAY=$DISPLAY \
@@ -11,3 +10,4 @@ docker run -ti \
            bash
 
 docker container ls
+          # --net=host \
