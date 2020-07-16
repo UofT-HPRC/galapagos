@@ -58,11 +58,4 @@ RUN git clone --recursive https://github.com/UofT-HPRC/galapagos.git
 RUN git clone https://github.com/tarafdar/HCAL_HLS4ML.git
 
 COPY shellTop.bit .
-<<<<<<< HEAD
-COPY receiver_ip.txt .
-COPY receiver_id.txt .
 COPY inside_sender.sh .
-=======
-COPY ip.txt .
-COPY id.txt .
->>>>>>> 022411790c4d1f1a92fb1ef4f53f3e4908f87911
