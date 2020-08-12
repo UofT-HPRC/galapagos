@@ -39,7 +39,7 @@ RUN cd /home && wget http://downloads.sourceforge.net/project/boost/boost/1.66.0
   && rm -rf boost_1_66_0
 
 RUN useradd -ms /bin/bash -G sudo user
-#RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 USER user
 WORKDIR /home/user
