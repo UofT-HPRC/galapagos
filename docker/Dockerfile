@@ -44,6 +44,7 @@ RUN useradd -ms /bin/bash -G sudo user
 USER user
 WORKDIR /home/user
 
+COPY inside_container.sh .
 #configures bash_kernel
 RUN git clone https://github.com/takluyver/bash_kernel \
     && cd /home/user/bash_kernel \
@@ -51,7 +52,7 @@ RUN git clone https://github.com/takluyver/bash_kernel \
     && python3 -m bash_kernel.install
 RUN rm -rf /home/user/bash_kernel
 
-RUN git clone --recursive https://github.com/UofT-HPRC/galapagos.git
+RUN git clone --recursive -b docker_dev https://github.com/UofT-HPRC/galapagos.git
 
 RUN git clone https://github.com/tarafdar/HCAL_HLS4ML.git
 

@@ -1,3 +1,6 @@
-export RECEIVER_IP=$(cat receiver_ip.txt)
+cd /home/user/galapagos
+sudo chmod -R 777 hlsBuild
+sudo chmod -R 777 projects
+cd middleware/python
+source 03_building_the_project.py
 
-nc $RECEIVER_IP 44444 < shellTop.bit
