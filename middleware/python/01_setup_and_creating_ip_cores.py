@@ -16,7 +16,7 @@
 # In[5]:
 
 
-galapagos_path=home/user/galapagos
+galapagos_path=/home/user/galapagos
 cd $galapagos_path
 
 vivado_version=2018.1
@@ -122,8 +122,8 @@ ls
 # In[6]:
 
 
-cd /home/user/HCAL_HLS4ML
-make cpu_node.exe
+#cd /home/user/HCAL_HLS4ML
+#make cpu_node.exe
 
 
 # ## Example Galapagos Kernel
