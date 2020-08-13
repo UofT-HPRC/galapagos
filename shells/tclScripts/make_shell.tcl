@@ -292,8 +292,8 @@ if { $start_synth != 0 } {
     wait_on_run synth_1
     launch_runs impl_1 -to_step write_bitstream -jobs 8
     wait_on_run impl_1
-    file mkdir $project_path/$project_name.sdk
-    file copy -force $project_path/$project_name.runs/impl_1/shellTop.sysdef $project_path/$project_name.sdk/shellTop.hdf
+    #file mkdir $project_path/$project_name.sdk
+    #file copy -force $project_path/$project_name.runs/impl_1/shellTop.sysdef $project_path/$project_name.sdk/shellTop.hdf
 }
 #source ./tclScripts/synth_impl.tcl
 #close_project
