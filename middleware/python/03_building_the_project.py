@@ -17,7 +17,7 @@ vivado_version=2018.1
 hls_version=2018.1
 galapagos_board=adm-8k5-debug
 vivado_path=/opt/Xilinx/Vivado
-hls_path=/opt/Xilinx/Vivado_HLS
+hls_path=/opt/Xilinx/Vivado/$hls_version
 project_name=middleware_test
 
 source /home/user/.license.sh
