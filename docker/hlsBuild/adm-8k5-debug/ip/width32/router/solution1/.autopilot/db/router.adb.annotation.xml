@@ -1,0 +1,5 @@
+<annotationInfo>
+<item  id="25" filename="/home/user/galapagos/middleware/include/galapagos_packet.h" linenumber="38" name="tmp_dest_V" contextFuncName="operator=" moduleName="router" rtlName="tmp_dest_V_fu_102_p4" latency="0" BRAM="-1" DSP="-1" FF="-1" LUT="-1" fileDirectory="/home/user/galapagos/middleware/hls/router"></item>
+<item  id="26" filename="/home/user/galapagos/middleware/hls/router/src/router.cpp" linenumber="47" name="tmp_2" contextFuncName="router" moduleName="router" rtlName="tmp_2_fu_112_p1" latency="0" BRAM="-1" DSP="-1" FF="-1" LUT="-1" fileDirectory="/home/user/galapagos/middleware/hls/router"></item>
+<item  id="29" filename="/home/user/galapagos/middleware/hls/router/src/router.cpp" linenumber="48" name="inFPGA" contextFuncName="router" moduleName="router" rtlName="inFPGA_fu_117_p2" latency="0" BRAM="-1" DSP="-1" FF="0" LUT="20" fileDirectory="/home/user/galapagos/middleware/hls/router"></item>
+</annotationInfo>

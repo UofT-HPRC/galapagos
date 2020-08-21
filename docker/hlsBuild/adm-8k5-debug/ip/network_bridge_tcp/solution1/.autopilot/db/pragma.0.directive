@@ -1,0 +1,583 @@
+<AutoPilot:ProjectResources xmlns:AutoPilot="com.autoesl.autopilot.ui.directiveView">
+<sourceFile name="">
+<directive functionLabel="" functionName="reg" label="">
+<pragma name="INLINE">
+<option name="self" positionalBoolean="type" value=""/>
+<option name="off" positionalBoolean="1" value=""/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="reg" label="">
+<pragma name="INTERFACE">
+<option name="ap_none" positionalBoolean="mode" value=""/>
+<option name="register" positionalBoolean="register" value=""/>
+<option name="port" positionalBoolean="4" value="return"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sin_or_cos_approximation" label="">
+<pragma name="ARRAY_PARTITION">
+<option name="variable" positionalBoolean="4" value="swap_table"/>
+<option name="complete" positionalBoolean="type" value=""/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sin_or_cos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="fourth_order_double::sin_cos_K0"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sin_or_cos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="fourth_order_double::sin_cos_K1"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sin_or_cos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="fourth_order_double::sin_cos_K2"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sin_or_cos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="fourth_order_double::sin_cos_K3"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sin_or_cos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="fourth_order_double::sin_cos_K4"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sincos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="fourth_order_double::cos_K0"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sincos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="fourth_order_double::cos_K1"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sincos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="fourth_order_double::cos_K2"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sincos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="fourth_order_double::cos_K3"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sincos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="fourth_order_double::cos_K4"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sincos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="fourth_order_double::sin_K0"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sincos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="fourth_order_double::sin_K1"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sincos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="fourth_order_double::sin_K2"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sincos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="fourth_order_double::sin_K3"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sincos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="fourth_order_double::sin_K4"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sin_or_cos_approximation" label="">
+<pragma name="ARRAY_PARTITION">
+<option name="variable" positionalBoolean="4" value="swap_table"/>
+<option name="complete" positionalBoolean="type" value=""/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sin_or_cos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="second_order_float::sin_cos_K0"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sin_or_cos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="second_order_float::sin_cos_K1"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sin_or_cos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="second_order_float::sin_cos_K2"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sincos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="second_order_float::cos_K0"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sincos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="second_order_float::cos_K1"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sincos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="second_order_float::cos_K2"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sincos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="second_order_float::sin_K0"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sincos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="second_order_float::sin_K1"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sincos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="second_order_float::sin_K2"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sin_or_cos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="first_order_fixed_16::sin_cos_K0"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sin_or_cos_approximation" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="first_order_fixed_16::sin_cos_K1"/>
+<option name="core" value="ROM_1P_LUTRAM"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sinf_or_cosf" label="">
+<pragma name="ARRAY_PARTITION">
+<option name="variable" positionalBoolean="4" value="swap_table"/>
+<option name="complete" positionalBoolean="type" value=""/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sinf_or_cosf" label="">
+<pragma name="ARRAY_PARTITION">
+<option name="variable" positionalBoolean="4" value="neg_sin_table"/>
+<option name="complete" positionalBoolean="type" value=""/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sinf_or_cosf" label="">
+<pragma name="ARRAY_PARTITION">
+<option name="variable" positionalBoolean="4" value="neg_cos_table"/>
+<option name="complete" positionalBoolean="type" value=""/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sinf_or_cosf" label="">
+<pragma name="ARRAY_PARTITION">
+<option name="variable" positionalBoolean="4" value="swap_table"/>
+<option name="complete" positionalBoolean="type" value=""/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sinf_or_cosf" label="">
+<pragma name="ARRAY_PARTITION">
+<option name="variable" positionalBoolean="4" value="neg_sin_table"/>
+<option name="complete" positionalBoolean="type" value=""/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sinf_or_cosf" label="">
+<pragma name="ARRAY_PARTITION">
+<option name="variable" positionalBoolean="4" value="neg_cos_table"/>
+<option name="complete" positionalBoolean="type" value=""/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sinf_or_cosf" label="">
+<pragma name="ARRAY_PARTITION">
+<option name="variable" positionalBoolean="4" value="neg_sin_table"/>
+<option name="complete" positionalBoolean="type" value=""/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="sinf_or_cosf" label="">
+<pragma name="ARRAY_PARTITION">
+<option name="variable" positionalBoolean="4" value="neg_cos_table"/>
+<option name="complete" positionalBoolean="type" value=""/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="cordic_circ_apfixed" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="doublecordic_apfixed" label="">
+<pragma name="PIPELINE">
+<option name="II" value="5"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="doublecordic_apfixed" label="">
+<pragma name="PIPELINE">
+<option name="II" value="3"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="doublecordic_apfixed" label="">
+<pragma name="PIPELINE">
+<option name="II" value="1"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="doublecordic_apfixed" label="">
+<pragma name="PIPELINE">
+<option name="II" value="4"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="generic_tan" label="">
+<pragma name="UNROLL"/>
+</directive>
+<directive functionLabel="" functionName="generic_atan2" label="">
+<pragma name="UNROLL"/>
+</directive>
+<directive functionLabel="" functionName="generic_atan2" label="">
+<pragma name="UNROLL"/>
+</directive>
+<directive functionLabel="" functionName="sinh_cosh_range_redux_cordic" label="">
+<pragma name="UNROLL"/>
+</directive>
+<directive functionLabel="" functionName="sinh_cosh_range_redux_cordic" label="">
+<pragma name="UNROLL"/>
+</directive>
+<directive functionLabel="" functionName="exp" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="exp_core" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="log" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="log10" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="sqrt_fixed" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="rsqrt_fixed" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="recip_fixed" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="ceil_fixed" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="ceil_fixed" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="trunc_fixed" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="trunc_fixed" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="sessionID_table_steaming" label="">
+<pragma name="PIPELINE">
+<option name="II" value="1"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="open_port" label="">
+<pragma name="PIPELINE">
+<option name="II" value="1"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="tcp_to_galapagos_interface" label="">
+<pragma name="PIPELINE">
+<option name="II" value="1"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="open_connections" label="">
+<pragma name="PIPELINE">
+<option name="II" value="1"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="galapagos_to_tcp_interface" label="">
+<pragma name="PIPELINE">
+<option name="II" value="1"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="INTERFACE">
+<option name="ap_ctrl_none" positionalBoolean="mode" value=""/>
+<option name="port" positionalBoolean="4" value="return"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="DATAFLOW"/>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="rxGalapagosBridge"/>
+<option name="core" value="AXIS"/>
+<option name="metadata" value="&quot;-bus_bundle s_axis_rxGalapagosBridge&quot;"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="txGalapagosBridge"/>
+<option name="core" value="AXIS"/>
+<option name="metadata" value="&quot;-bus_bundle m_axis_txGalapagosBridge&quot;"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="listenPort"/>
+<option name="core" value="AXIS"/>
+<option name="metadata" value="&quot;-bus_bundle m_axis_listen_port&quot;"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="listenPortStatus"/>
+<option name="core" value="AXIS"/>
+<option name="metadata" value="&quot;-bus_bundle m_axis_listen_port_status&quot;"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="openConnection"/>
+<option name="core" value="AXIS"/>
+<option name="metadata" value="&quot;-bus_bundle m_axis_open_connection&quot;"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="openConStatus"/>
+<option name="core" value="AXIS"/>
+<option name="metadata" value="&quot;-bus_bundle s_axis_open_status&quot;"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="notifications"/>
+<option name="core" value="AXIS"/>
+<option name="metadata" value="&quot;-bus_bundle s_axis_notifications&quot;"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="readRequest"/>
+<option name="core" value="AXIS"/>
+<option name="metadata" value="&quot;-bus_bundle m_axis_read_package&quot;"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="rxMetaData"/>
+<option name="core" value="AXIS"/>
+<option name="metadata" value="&quot;-bus_bundle s_axis_rx_metadata&quot;"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="rxData"/>
+<option name="core" value="AXIS"/>
+<option name="metadata" value="&quot;-bus_bundle s_axis_rx_data&quot;"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="txMetaData"/>
+<option name="core" value="AXIS"/>
+<option name="metadata" value="&quot;-bus_bundle m_axis_tx_metadata&quot;"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="txData"/>
+<option name="core" value="AXIS"/>
+<option name="metadata" value="&quot;-bus_bundle m_axis_tx_data&quot;"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="txStatus"/>
+<option name="core" value="AXIS"/>
+<option name="metadata" value="&quot;-bus_bundle s_axis_tx_status&quot;"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="DATA_PACK">
+<option name="variable" positionalBoolean="4" value="rxGalapagosBridge"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="DATA_PACK">
+<option name="variable" positionalBoolean="4" value="txGalapagosBridge"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="DATA_PACK">
+<option name="variable" positionalBoolean="4" value="listenPort"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="DATA_PACK">
+<option name="variable" positionalBoolean="4" value="listenPortStatus"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="DATA_PACK">
+<option name="variable" positionalBoolean="4" value="openConnection"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="DATA_PACK">
+<option name="variable" positionalBoolean="4" value="openConStatus"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="DATA_PACK">
+<option name="variable" positionalBoolean="4" value="notifications"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="DATA_PACK">
+<option name="variable" positionalBoolean="4" value="readRequest"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="DATA_PACK">
+<option name="variable" positionalBoolean="4" value="rxMetaData"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="DATA_PACK">
+<option name="variable" positionalBoolean="4" value="rxData"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="DATA_PACK">
+<option name="variable" positionalBoolean="4" value="txMetaData"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="DATA_PACK">
+<option name="variable" positionalBoolean="4" value="txData"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="DATA_PACK">
+<option name="variable" positionalBoolean="4" value="txStatus"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="DATAFLOW"/>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="listenPort"/>
+<option name="core" value="AXI4Stream"/>
+<option name="metadata" value="&quot;-bus_bundle m_axis_listen_port&quot;"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="RESOURCE">
+<option name="variable" positionalBoolean="4" value="listenPortStatus"/>
+<option name="core" value="AXI4Stream"/>
+<option name="metadata" value="&quot;-bus_bundle s_axis_listen_port_status&quot;"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="STREAM">
+<option name="variable" positionalBoolean="4" value="esa_sessionidFifo"/>
+<option name="depth" value="64"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="STREAM">
+<option name="variable" positionalBoolean="4" value="esa_lengthFifo"/>
+<option name="depth" value="64"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="STREAM">
+<option name="variable" positionalBoolean="4" value="ip_fifo"/>
+<option name="depth" value="256"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="STREAM">
+<option name="variable" positionalBoolean="4" value="sessionID_fifo"/>
+<option name="depth" value="256"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="STREAM">
+<option name="variable" positionalBoolean="4" value="t2g_read_dest"/>
+<option name="depth" value="256"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="STREAM">
+<option name="variable" positionalBoolean="4" value="t2g_read_sid"/>
+<option name="depth" value="256"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="STREAM">
+<option name="variable" positionalBoolean="4" value="t2g_write_dest"/>
+<option name="depth" value="256"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="STREAM">
+<option name="variable" positionalBoolean="4" value="t2g_write_sid"/>
+<option name="depth" value="256"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="STREAM">
+<option name="variable" positionalBoolean="4" value="g2t_read_dest"/>
+<option name="depth" value="256"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="STREAM">
+<option name="variable" positionalBoolean="4" value="g2t_read_sid"/>
+<option name="depth" value="256"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="STREAM">
+<option name="variable" positionalBoolean="4" value="g2t_write_dest"/>
+<option name="depth" value="256"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="network_bridge_tcp" label="">
+<pragma name="STREAM">
+<option name="variable" positionalBoolean="4" value="g2t_write_sid"/>
+<option name="depth" value="256"/>
+</pragma>
+</directive>
+</sourceFile>
+</AutoPilot:ProjectResources>

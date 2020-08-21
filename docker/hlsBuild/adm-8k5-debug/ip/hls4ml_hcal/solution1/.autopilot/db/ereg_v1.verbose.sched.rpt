@@ -1,0 +1,391 @@
+
+
+================================================================
+== Vivado HLS Report for 'ereg_v1'
+================================================================
+* Date:           Wed Aug 12 00:45:07 2020
+
+* Version:        2018.1 (Build 2188600 on Wed Apr 04 19:04:02 MDT 2018)
+* Project:        hls4ml_hcal
+* Solution:       solution1
+* Product family: kintexu
+* Target device:  xcku115-flva1517-2-e
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |   4.00|      3.33|        0.50|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+-----+-----+-----+----------+
+    |  Latency  |  Interval | Pipeline |
+    | min | max | min | max |   Type   |
+    +-----+-----+-----+-----+----------+
+    |   23|   23|    6|    6| function |
+    +-----+-----+-----+-----+----------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        N/A
+
+============================================================
++ Verbose Summary: Synthesis Manager
+============================================================
+InlineROM: 1
+ExposeGlobal: 1
+============================================================
++ Verbose Summary: CDFG Model
+============================================================
+IsTopModel: 0
+ResetActiveHigh: 1
+IsCombinational: 0
+IsDatapathOnly: 0
+HasWiredReturn: 1
+HasMFsm: 2
+HasVarLatency: 0
+IsPipeline: 1
+IsRtlPipelined: 1
+IsInstanceOverlapped: 0
+IsDontTouch: 0
+HasImplIP: 0
+IsGatedGlobalClock: 0
+
++ Individual pipeline summary: 
+  * Pipeline-0: initiation interval (II) = 6, depth = 24
+
+
+============================================================
++ Verbose Summary: Schedule
+============================================================
+* Number of FSM states : 24
+* Pipeline : 1
+  Pipeline-0 : II = 6, D = 24, States = { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 }
+* Dataflow Pipeline: 0
+
+* FSM state transitions: 
+1 --> 
+	2  / true
+2 --> 
+	3  / true
+3 --> 
+	4  / true
+4 --> 
+	5  / true
+5 --> 
+	6  / true
+6 --> 
+	7  / true
+7 --> 
+	8  / true
+8 --> 
+	9  / true
+9 --> 
+	10  / true
+10 --> 
+	11  / true
+11 --> 
+	12  / true
+12 --> 
+	13  / true
+13 --> 
+	14  / true
+14 --> 
+	15  / true
+15 --> 
+	16  / true
+16 --> 
+	17  / true
+17 --> 
+	18  / true
+18 --> 
+	19  / true
+19 --> 
+	20  / true
+20 --> 
+	21  / true
+21 --> 
+	22  / true
+22 --> 
+	23  / true
+23 --> 
+	24  / true
+24 --> 
+
+* FSM state operations: 
+
+ <State 1> : 2.24ns
+ST_1 : Operation 25 [1/1] (0.00ns)   --->   "%data_V_offset1_read = call i5 @_ssdm_op_Read.ap_auto.i5(i5 %data_V_offset1)"
+ST_1 : Operation 26 [1/1] (0.00ns)   --->   "%data_V_offset_read = call i10 @_ssdm_op_Read.ap_auto.i10(i10 %data_V_offset)"
+ST_1 : Operation 27 [1/1] (0.00ns)   --->   "%tmp = trunc i10 %data_V_offset_read to i9" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]
+ST_1 : Operation 28 [12/12] (2.24ns)   --->   "%call_ret4 = call fastcc { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } @compute_layer.0.0.0..1([5632 x i32]* %data_V, [5632 x i32]* %data_V1, [5632 x i32]* %data_V2, [5632 x i32]* %data_V3, [5632 x i32]* %data_V4, [5632 x i32]* %data_V5, [5632 x i32]* %data_V6, [5632 x i32]* %data_V7, [5632 x i32]* %data_V8, [5632 x i32]* %data_V9, [5632 x i32]* %data_V10, [5632 x i32]* %data_V11, [5632 x i32]* %data_V12, [5632 x i32]* %data_V13, [5632 x i32]* %data_V14, [5632 x i32]* %data_V15, [5632 x i32]* %data_V16, [5632 x i32]* %data_V17, [5632 x i32]* %data_V18, [5632 x i32]* %data_V19, [5632 x i32]* %data_V20, [5632 x i32]* %data_V21, [5632 x i32]* %data_V22, [5632 x i32]* %data_V23, [5632 x i32]* %data_V24, [5632 x i32]* %data_V25, [5632 x i32]* %data_V26, [5632 x i32]* %data_V27, [5632 x i32]* %data_V28, [5632 x i32]* %data_V29, i9 %tmp, i5 %data_V_offset1_read)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+ <State 2> : 3.33ns
+ST_2 : Operation 29 [11/12] (3.33ns)   --->   "%call_ret4 = call fastcc { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } @compute_layer.0.0.0..1([5632 x i32]* %data_V, [5632 x i32]* %data_V1, [5632 x i32]* %data_V2, [5632 x i32]* %data_V3, [5632 x i32]* %data_V4, [5632 x i32]* %data_V5, [5632 x i32]* %data_V6, [5632 x i32]* %data_V7, [5632 x i32]* %data_V8, [5632 x i32]* %data_V9, [5632 x i32]* %data_V10, [5632 x i32]* %data_V11, [5632 x i32]* %data_V12, [5632 x i32]* %data_V13, [5632 x i32]* %data_V14, [5632 x i32]* %data_V15, [5632 x i32]* %data_V16, [5632 x i32]* %data_V17, [5632 x i32]* %data_V18, [5632 x i32]* %data_V19, [5632 x i32]* %data_V20, [5632 x i32]* %data_V21, [5632 x i32]* %data_V22, [5632 x i32]* %data_V23, [5632 x i32]* %data_V24, [5632 x i32]* %data_V25, [5632 x i32]* %data_V26, [5632 x i32]* %data_V27, [5632 x i32]* %data_V28, [5632 x i32]* %data_V29, i9 %tmp, i5 %data_V_offset1_read)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+ <State 3> : 3.33ns
+ST_3 : Operation 30 [10/12] (3.33ns)   --->   "%call_ret4 = call fastcc { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } @compute_layer.0.0.0..1([5632 x i32]* %data_V, [5632 x i32]* %data_V1, [5632 x i32]* %data_V2, [5632 x i32]* %data_V3, [5632 x i32]* %data_V4, [5632 x i32]* %data_V5, [5632 x i32]* %data_V6, [5632 x i32]* %data_V7, [5632 x i32]* %data_V8, [5632 x i32]* %data_V9, [5632 x i32]* %data_V10, [5632 x i32]* %data_V11, [5632 x i32]* %data_V12, [5632 x i32]* %data_V13, [5632 x i32]* %data_V14, [5632 x i32]* %data_V15, [5632 x i32]* %data_V16, [5632 x i32]* %data_V17, [5632 x i32]* %data_V18, [5632 x i32]* %data_V19, [5632 x i32]* %data_V20, [5632 x i32]* %data_V21, [5632 x i32]* %data_V22, [5632 x i32]* %data_V23, [5632 x i32]* %data_V24, [5632 x i32]* %data_V25, [5632 x i32]* %data_V26, [5632 x i32]* %data_V27, [5632 x i32]* %data_V28, [5632 x i32]* %data_V29, i9 %tmp, i5 %data_V_offset1_read)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+ <State 4> : 3.33ns
+ST_4 : Operation 31 [9/12] (3.33ns)   --->   "%call_ret4 = call fastcc { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } @compute_layer.0.0.0..1([5632 x i32]* %data_V, [5632 x i32]* %data_V1, [5632 x i32]* %data_V2, [5632 x i32]* %data_V3, [5632 x i32]* %data_V4, [5632 x i32]* %data_V5, [5632 x i32]* %data_V6, [5632 x i32]* %data_V7, [5632 x i32]* %data_V8, [5632 x i32]* %data_V9, [5632 x i32]* %data_V10, [5632 x i32]* %data_V11, [5632 x i32]* %data_V12, [5632 x i32]* %data_V13, [5632 x i32]* %data_V14, [5632 x i32]* %data_V15, [5632 x i32]* %data_V16, [5632 x i32]* %data_V17, [5632 x i32]* %data_V18, [5632 x i32]* %data_V19, [5632 x i32]* %data_V20, [5632 x i32]* %data_V21, [5632 x i32]* %data_V22, [5632 x i32]* %data_V23, [5632 x i32]* %data_V24, [5632 x i32]* %data_V25, [5632 x i32]* %data_V26, [5632 x i32]* %data_V27, [5632 x i32]* %data_V28, [5632 x i32]* %data_V29, i9 %tmp, i5 %data_V_offset1_read)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+ <State 5> : 3.33ns
+ST_5 : Operation 32 [8/12] (3.33ns)   --->   "%call_ret4 = call fastcc { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } @compute_layer.0.0.0..1([5632 x i32]* %data_V, [5632 x i32]* %data_V1, [5632 x i32]* %data_V2, [5632 x i32]* %data_V3, [5632 x i32]* %data_V4, [5632 x i32]* %data_V5, [5632 x i32]* %data_V6, [5632 x i32]* %data_V7, [5632 x i32]* %data_V8, [5632 x i32]* %data_V9, [5632 x i32]* %data_V10, [5632 x i32]* %data_V11, [5632 x i32]* %data_V12, [5632 x i32]* %data_V13, [5632 x i32]* %data_V14, [5632 x i32]* %data_V15, [5632 x i32]* %data_V16, [5632 x i32]* %data_V17, [5632 x i32]* %data_V18, [5632 x i32]* %data_V19, [5632 x i32]* %data_V20, [5632 x i32]* %data_V21, [5632 x i32]* %data_V22, [5632 x i32]* %data_V23, [5632 x i32]* %data_V24, [5632 x i32]* %data_V25, [5632 x i32]* %data_V26, [5632 x i32]* %data_V27, [5632 x i32]* %data_V28, [5632 x i32]* %data_V29, i9 %tmp, i5 %data_V_offset1_read)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+ <State 6> : 3.33ns
+ST_6 : Operation 33 [7/12] (3.33ns)   --->   "%call_ret4 = call fastcc { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } @compute_layer.0.0.0..1([5632 x i32]* %data_V, [5632 x i32]* %data_V1, [5632 x i32]* %data_V2, [5632 x i32]* %data_V3, [5632 x i32]* %data_V4, [5632 x i32]* %data_V5, [5632 x i32]* %data_V6, [5632 x i32]* %data_V7, [5632 x i32]* %data_V8, [5632 x i32]* %data_V9, [5632 x i32]* %data_V10, [5632 x i32]* %data_V11, [5632 x i32]* %data_V12, [5632 x i32]* %data_V13, [5632 x i32]* %data_V14, [5632 x i32]* %data_V15, [5632 x i32]* %data_V16, [5632 x i32]* %data_V17, [5632 x i32]* %data_V18, [5632 x i32]* %data_V19, [5632 x i32]* %data_V20, [5632 x i32]* %data_V21, [5632 x i32]* %data_V22, [5632 x i32]* %data_V23, [5632 x i32]* %data_V24, [5632 x i32]* %data_V25, [5632 x i32]* %data_V26, [5632 x i32]* %data_V27, [5632 x i32]* %data_V28, [5632 x i32]* %data_V29, i9 %tmp, i5 %data_V_offset1_read)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+ <State 7> : 3.33ns
+ST_7 : Operation 34 [6/12] (3.33ns)   --->   "%call_ret4 = call fastcc { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } @compute_layer.0.0.0..1([5632 x i32]* %data_V, [5632 x i32]* %data_V1, [5632 x i32]* %data_V2, [5632 x i32]* %data_V3, [5632 x i32]* %data_V4, [5632 x i32]* %data_V5, [5632 x i32]* %data_V6, [5632 x i32]* %data_V7, [5632 x i32]* %data_V8, [5632 x i32]* %data_V9, [5632 x i32]* %data_V10, [5632 x i32]* %data_V11, [5632 x i32]* %data_V12, [5632 x i32]* %data_V13, [5632 x i32]* %data_V14, [5632 x i32]* %data_V15, [5632 x i32]* %data_V16, [5632 x i32]* %data_V17, [5632 x i32]* %data_V18, [5632 x i32]* %data_V19, [5632 x i32]* %data_V20, [5632 x i32]* %data_V21, [5632 x i32]* %data_V22, [5632 x i32]* %data_V23, [5632 x i32]* %data_V24, [5632 x i32]* %data_V25, [5632 x i32]* %data_V26, [5632 x i32]* %data_V27, [5632 x i32]* %data_V28, [5632 x i32]* %data_V29, i9 %tmp, i5 %data_V_offset1_read)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+ <State 8> : 3.33ns
+ST_8 : Operation 35 [5/12] (3.33ns)   --->   "%call_ret4 = call fastcc { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } @compute_layer.0.0.0..1([5632 x i32]* %data_V, [5632 x i32]* %data_V1, [5632 x i32]* %data_V2, [5632 x i32]* %data_V3, [5632 x i32]* %data_V4, [5632 x i32]* %data_V5, [5632 x i32]* %data_V6, [5632 x i32]* %data_V7, [5632 x i32]* %data_V8, [5632 x i32]* %data_V9, [5632 x i32]* %data_V10, [5632 x i32]* %data_V11, [5632 x i32]* %data_V12, [5632 x i32]* %data_V13, [5632 x i32]* %data_V14, [5632 x i32]* %data_V15, [5632 x i32]* %data_V16, [5632 x i32]* %data_V17, [5632 x i32]* %data_V18, [5632 x i32]* %data_V19, [5632 x i32]* %data_V20, [5632 x i32]* %data_V21, [5632 x i32]* %data_V22, [5632 x i32]* %data_V23, [5632 x i32]* %data_V24, [5632 x i32]* %data_V25, [5632 x i32]* %data_V26, [5632 x i32]* %data_V27, [5632 x i32]* %data_V28, [5632 x i32]* %data_V29, i9 %tmp, i5 %data_V_offset1_read)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+ <State 9> : 3.33ns
+ST_9 : Operation 36 [4/12] (3.33ns)   --->   "%call_ret4 = call fastcc { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } @compute_layer.0.0.0..1([5632 x i32]* %data_V, [5632 x i32]* %data_V1, [5632 x i32]* %data_V2, [5632 x i32]* %data_V3, [5632 x i32]* %data_V4, [5632 x i32]* %data_V5, [5632 x i32]* %data_V6, [5632 x i32]* %data_V7, [5632 x i32]* %data_V8, [5632 x i32]* %data_V9, [5632 x i32]* %data_V10, [5632 x i32]* %data_V11, [5632 x i32]* %data_V12, [5632 x i32]* %data_V13, [5632 x i32]* %data_V14, [5632 x i32]* %data_V15, [5632 x i32]* %data_V16, [5632 x i32]* %data_V17, [5632 x i32]* %data_V18, [5632 x i32]* %data_V19, [5632 x i32]* %data_V20, [5632 x i32]* %data_V21, [5632 x i32]* %data_V22, [5632 x i32]* %data_V23, [5632 x i32]* %data_V24, [5632 x i32]* %data_V25, [5632 x i32]* %data_V26, [5632 x i32]* %data_V27, [5632 x i32]* %data_V28, [5632 x i32]* %data_V29, i9 %tmp, i5 %data_V_offset1_read)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+ <State 10> : 3.33ns
+ST_10 : Operation 37 [3/12] (3.33ns)   --->   "%call_ret4 = call fastcc { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } @compute_layer.0.0.0..1([5632 x i32]* %data_V, [5632 x i32]* %data_V1, [5632 x i32]* %data_V2, [5632 x i32]* %data_V3, [5632 x i32]* %data_V4, [5632 x i32]* %data_V5, [5632 x i32]* %data_V6, [5632 x i32]* %data_V7, [5632 x i32]* %data_V8, [5632 x i32]* %data_V9, [5632 x i32]* %data_V10, [5632 x i32]* %data_V11, [5632 x i32]* %data_V12, [5632 x i32]* %data_V13, [5632 x i32]* %data_V14, [5632 x i32]* %data_V15, [5632 x i32]* %data_V16, [5632 x i32]* %data_V17, [5632 x i32]* %data_V18, [5632 x i32]* %data_V19, [5632 x i32]* %data_V20, [5632 x i32]* %data_V21, [5632 x i32]* %data_V22, [5632 x i32]* %data_V23, [5632 x i32]* %data_V24, [5632 x i32]* %data_V25, [5632 x i32]* %data_V26, [5632 x i32]* %data_V27, [5632 x i32]* %data_V28, [5632 x i32]* %data_V29, i9 %tmp, i5 %data_V_offset1_read)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+ <State 11> : 3.33ns
+ST_11 : Operation 38 [2/12] (3.33ns)   --->   "%call_ret4 = call fastcc { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } @compute_layer.0.0.0..1([5632 x i32]* %data_V, [5632 x i32]* %data_V1, [5632 x i32]* %data_V2, [5632 x i32]* %data_V3, [5632 x i32]* %data_V4, [5632 x i32]* %data_V5, [5632 x i32]* %data_V6, [5632 x i32]* %data_V7, [5632 x i32]* %data_V8, [5632 x i32]* %data_V9, [5632 x i32]* %data_V10, [5632 x i32]* %data_V11, [5632 x i32]* %data_V12, [5632 x i32]* %data_V13, [5632 x i32]* %data_V14, [5632 x i32]* %data_V15, [5632 x i32]* %data_V16, [5632 x i32]* %data_V17, [5632 x i32]* %data_V18, [5632 x i32]* %data_V19, [5632 x i32]* %data_V20, [5632 x i32]* %data_V21, [5632 x i32]* %data_V22, [5632 x i32]* %data_V23, [5632 x i32]* %data_V24, [5632 x i32]* %data_V25, [5632 x i32]* %data_V26, [5632 x i32]* %data_V27, [5632 x i32]* %data_V28, [5632 x i32]* %data_V29, i9 %tmp, i5 %data_V_offset1_read)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+ <State 12> : 2.56ns
+ST_12 : Operation 39 [1/12] (2.55ns)   --->   "%call_ret4 = call fastcc { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } @compute_layer.0.0.0..1([5632 x i32]* %data_V, [5632 x i32]* %data_V1, [5632 x i32]* %data_V2, [5632 x i32]* %data_V3, [5632 x i32]* %data_V4, [5632 x i32]* %data_V5, [5632 x i32]* %data_V6, [5632 x i32]* %data_V7, [5632 x i32]* %data_V8, [5632 x i32]* %data_V9, [5632 x i32]* %data_V10, [5632 x i32]* %data_V11, [5632 x i32]* %data_V12, [5632 x i32]* %data_V13, [5632 x i32]* %data_V14, [5632 x i32]* %data_V15, [5632 x i32]* %data_V16, [5632 x i32]* %data_V17, [5632 x i32]* %data_V18, [5632 x i32]* %data_V19, [5632 x i32]* %data_V20, [5632 x i32]* %data_V21, [5632 x i32]* %data_V22, [5632 x i32]* %data_V23, [5632 x i32]* %data_V24, [5632 x i32]* %data_V25, [5632 x i32]* %data_V26, [5632 x i32]* %data_V27, [5632 x i32]* %data_V28, [5632 x i32]* %data_V29, i9 %tmp, i5 %data_V_offset1_read)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+ST_12 : Operation 40 [1/1] (0.00ns)   --->   "%logits1_0_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret4, 0" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]
+ST_12 : Operation 41 [1/1] (0.00ns)   --->   "%logits1_1_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret4, 1" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]
+ST_12 : Operation 42 [1/1] (0.00ns)   --->   "%logits1_2_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret4, 2" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]
+ST_12 : Operation 43 [1/1] (0.00ns)   --->   "%logits1_3_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret4, 3" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]
+ST_12 : Operation 44 [1/1] (0.00ns)   --->   "%logits1_4_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret4, 4" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]
+ST_12 : Operation 45 [1/1] (0.00ns)   --->   "%logits1_5_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret4, 5" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]
+ST_12 : Operation 46 [1/1] (0.00ns)   --->   "%logits1_6_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret4, 6" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]
+ST_12 : Operation 47 [1/1] (0.00ns)   --->   "%logits1_7_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret4, 7" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]
+ST_12 : Operation 48 [1/1] (0.00ns)   --->   "%logits1_8_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret4, 8" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]
+ST_12 : Operation 49 [1/1] (0.00ns)   --->   "%logits1_9_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret4, 9" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]
+ST_12 : Operation 50 [1/1] (0.00ns)   --->   "%logits1_10_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret4, 10" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]
+ST_12 : Operation 51 [1/1] (0.00ns)   --->   "%logits1_11_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret4, 11" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]
+ST_12 : Operation 52 [1/1] (0.00ns)   --->   "%logits1_12_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret4, 12" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]
+ST_12 : Operation 53 [1/1] (0.00ns)   --->   "%logits1_13_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret4, 13" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]
+ST_12 : Operation 54 [1/1] (0.00ns)   --->   "%logits1_14_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret4, 14" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:64]
+
+ <State 13> : 1.57ns
+ST_13 : Operation 55 [1/1] (0.00ns)   --->   "%call_ret1 = call fastcc { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } @linear.2(i32 %logits1_0_V, i32 %logits1_1_V, i32 %logits1_2_V, i32 %logits1_3_V, i32 %logits1_4_V, i32 %logits1_5_V, i32 %logits1_6_V, i32 %logits1_7_V, i32 %logits1_8_V, i32 %logits1_9_V, i32 %logits1_10_V, i32 %logits1_11_V, i32 %logits1_12_V, i32 %logits1_13_V, i32 %logits1_14_V)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:65]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+ST_13 : Operation 56 [1/1] (0.00ns)   --->   "%layer1_out_0_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret1, 0" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:65]
+ST_13 : Operation 57 [1/1] (0.00ns)   --->   "%layer1_out_1_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret1, 1" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:65]
+ST_13 : Operation 58 [1/1] (0.00ns)   --->   "%layer1_out_2_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret1, 2" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:65]
+ST_13 : Operation 59 [1/1] (0.00ns)   --->   "%layer1_out_3_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret1, 3" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:65]
+ST_13 : Operation 60 [1/1] (0.00ns)   --->   "%layer1_out_4_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret1, 4" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:65]
+ST_13 : Operation 61 [1/1] (0.00ns)   --->   "%layer1_out_5_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret1, 5" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:65]
+ST_13 : Operation 62 [1/1] (0.00ns)   --->   "%layer1_out_6_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret1, 6" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:65]
+ST_13 : Operation 63 [1/1] (0.00ns)   --->   "%layer1_out_7_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret1, 7" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:65]
+ST_13 : Operation 64 [1/1] (0.00ns)   --->   "%layer1_out_8_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret1, 8" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:65]
+ST_13 : Operation 65 [1/1] (0.00ns)   --->   "%layer1_out_9_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret1, 9" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:65]
+ST_13 : Operation 66 [1/1] (0.00ns)   --->   "%layer1_out_10_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret1, 10" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:65]
+ST_13 : Operation 67 [1/1] (0.00ns)   --->   "%layer1_out_11_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret1, 11" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:65]
+ST_13 : Operation 68 [1/1] (0.00ns)   --->   "%layer1_out_12_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret1, 12" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:65]
+ST_13 : Operation 69 [1/1] (0.00ns)   --->   "%layer1_out_13_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret1, 13" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:65]
+ST_13 : Operation 70 [1/1] (0.00ns)   --->   "%layer1_out_14_V = extractvalue { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 } %call_ret1, 14" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:65]
+ST_13 : Operation 71 [6/6] (1.56ns)   --->   "%call_ret2 = call fastcc { i32, i32, i32, i32, i32 } @compute_layer.0.0.0.(i32 %layer1_out_0_V, i32 %layer1_out_1_V, i32 %layer1_out_2_V, i32 %layer1_out_3_V, i32 %layer1_out_4_V, i32 %layer1_out_5_V, i32 %layer1_out_6_V, i32 %layer1_out_7_V, i32 %layer1_out_8_V, i32 %layer1_out_9_V, i32 %layer1_out_10_V, i32 %layer1_out_11_V, i32 %layer1_out_12_V, i32 %layer1_out_13_V, i32 %layer1_out_14_V)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:71]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+ <State 14> : 3.33ns
+ST_14 : Operation 72 [5/6] (3.33ns)   --->   "%call_ret2 = call fastcc { i32, i32, i32, i32, i32 } @compute_layer.0.0.0.(i32 %layer1_out_0_V, i32 %layer1_out_1_V, i32 %layer1_out_2_V, i32 %layer1_out_3_V, i32 %layer1_out_4_V, i32 %layer1_out_5_V, i32 %layer1_out_6_V, i32 %layer1_out_7_V, i32 %layer1_out_8_V, i32 %layer1_out_9_V, i32 %layer1_out_10_V, i32 %layer1_out_11_V, i32 %layer1_out_12_V, i32 %layer1_out_13_V, i32 %layer1_out_14_V)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:71]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+ <State 15> : 3.33ns
+ST_15 : Operation 73 [4/6] (3.33ns)   --->   "%call_ret2 = call fastcc { i32, i32, i32, i32, i32 } @compute_layer.0.0.0.(i32 %layer1_out_0_V, i32 %layer1_out_1_V, i32 %layer1_out_2_V, i32 %layer1_out_3_V, i32 %layer1_out_4_V, i32 %layer1_out_5_V, i32 %layer1_out_6_V, i32 %layer1_out_7_V, i32 %layer1_out_8_V, i32 %layer1_out_9_V, i32 %layer1_out_10_V, i32 %layer1_out_11_V, i32 %layer1_out_12_V, i32 %layer1_out_13_V, i32 %layer1_out_14_V)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:71]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+ <State 16> : 3.33ns
+ST_16 : Operation 74 [3/6] (3.33ns)   --->   "%call_ret2 = call fastcc { i32, i32, i32, i32, i32 } @compute_layer.0.0.0.(i32 %layer1_out_0_V, i32 %layer1_out_1_V, i32 %layer1_out_2_V, i32 %layer1_out_3_V, i32 %layer1_out_4_V, i32 %layer1_out_5_V, i32 %layer1_out_6_V, i32 %layer1_out_7_V, i32 %layer1_out_8_V, i32 %layer1_out_9_V, i32 %layer1_out_10_V, i32 %layer1_out_11_V, i32 %layer1_out_12_V, i32 %layer1_out_13_V, i32 %layer1_out_14_V)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:71]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+ <State 17> : 3.33ns
+ST_17 : Operation 75 [2/6] (3.33ns)   --->   "%call_ret2 = call fastcc { i32, i32, i32, i32, i32 } @compute_layer.0.0.0.(i32 %layer1_out_0_V, i32 %layer1_out_1_V, i32 %layer1_out_2_V, i32 %layer1_out_3_V, i32 %layer1_out_4_V, i32 %layer1_out_5_V, i32 %layer1_out_6_V, i32 %layer1_out_7_V, i32 %layer1_out_8_V, i32 %layer1_out_9_V, i32 %layer1_out_10_V, i32 %layer1_out_11_V, i32 %layer1_out_12_V, i32 %layer1_out_13_V, i32 %layer1_out_14_V)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:71]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+ <State 18> : 2.95ns
+ST_18 : Operation 76 [1/6] (2.95ns)   --->   "%call_ret2 = call fastcc { i32, i32, i32, i32, i32 } @compute_layer.0.0.0.(i32 %layer1_out_0_V, i32 %layer1_out_1_V, i32 %layer1_out_2_V, i32 %layer1_out_3_V, i32 %layer1_out_4_V, i32 %layer1_out_5_V, i32 %layer1_out_6_V, i32 %layer1_out_7_V, i32 %layer1_out_8_V, i32 %layer1_out_9_V, i32 %layer1_out_10_V, i32 %layer1_out_11_V, i32 %layer1_out_12_V, i32 %layer1_out_13_V, i32 %layer1_out_14_V)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:71]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+ST_18 : Operation 77 [1/1] (0.00ns)   --->   "%logits2_0_V = extractvalue { i32, i32, i32, i32, i32 } %call_ret2, 0" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:71]
+ST_18 : Operation 78 [1/1] (0.00ns)   --->   "%logits2_1_V = extractvalue { i32, i32, i32, i32, i32 } %call_ret2, 1" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:71]
+ST_18 : Operation 79 [1/1] (0.00ns)   --->   "%logits2_2_V = extractvalue { i32, i32, i32, i32, i32 } %call_ret2, 2" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:71]
+ST_18 : Operation 80 [1/1] (0.00ns)   --->   "%logits2_3_V = extractvalue { i32, i32, i32, i32, i32 } %call_ret2, 3" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:71]
+ST_18 : Operation 81 [1/1] (0.00ns)   --->   "%logits2_4_V = extractvalue { i32, i32, i32, i32, i32 } %call_ret2, 4" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:71]
+
+ <State 19> : 1.10ns
+ST_19 : Operation 82 [1/1] (0.00ns)   --->   "%call_ret3 = call fastcc { i32, i32, i32, i32, i32 } @linear.1(i32 %logits2_0_V, i32 %logits2_1_V, i32 %logits2_2_V, i32 %logits2_3_V, i32 %logits2_4_V)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:72]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+ST_19 : Operation 83 [1/1] (0.00ns)   --->   "%layer2_out_0_V = extractvalue { i32, i32, i32, i32, i32 } %call_ret3, 0" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:72]
+ST_19 : Operation 84 [1/1] (0.00ns)   --->   "%layer2_out_1_V = extractvalue { i32, i32, i32, i32, i32 } %call_ret3, 1" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:72]
+ST_19 : Operation 85 [1/1] (0.00ns)   --->   "%layer2_out_2_V = extractvalue { i32, i32, i32, i32, i32 } %call_ret3, 2" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:72]
+ST_19 : Operation 86 [1/1] (0.00ns)   --->   "%layer2_out_3_V = extractvalue { i32, i32, i32, i32, i32 } %call_ret3, 3" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:72]
+ST_19 : Operation 87 [1/1] (0.00ns)   --->   "%layer2_out_4_V = extractvalue { i32, i32, i32, i32, i32 } %call_ret3, 4" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:72]
+ST_19 : Operation 88 [6/6] (1.10ns)   --->   "%logits3_0_V = call fastcc i29 @compute_layer.0.0(i32 %layer2_out_0_V, i32 %layer2_out_1_V, i32 %layer2_out_2_V, i32 %layer2_out_3_V, i32 %layer2_out_4_V)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:76]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+ <State 20> : 3.33ns
+ST_20 : Operation 89 [5/6] (3.33ns)   --->   "%logits3_0_V = call fastcc i29 @compute_layer.0.0(i32 %layer2_out_0_V, i32 %layer2_out_1_V, i32 %layer2_out_2_V, i32 %layer2_out_3_V, i32 %layer2_out_4_V)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:76]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+ <State 21> : 3.33ns
+ST_21 : Operation 90 [4/6] (3.33ns)   --->   "%logits3_0_V = call fastcc i29 @compute_layer.0.0(i32 %layer2_out_0_V, i32 %layer2_out_1_V, i32 %layer2_out_2_V, i32 %layer2_out_3_V, i32 %layer2_out_4_V)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:76]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+ <State 22> : 3.33ns
+ST_22 : Operation 91 [3/6] (3.33ns)   --->   "%logits3_0_V = call fastcc i29 @compute_layer.0.0(i32 %layer2_out_0_V, i32 %layer2_out_1_V, i32 %layer2_out_2_V, i32 %layer2_out_3_V, i32 %layer2_out_4_V)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:76]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+ <State 23> : 3.33ns
+ST_23 : Operation 92 [2/6] (3.33ns)   --->   "%logits3_0_V = call fastcc i29 @compute_layer.0.0(i32 %layer2_out_0_V, i32 %layer2_out_1_V, i32 %layer2_out_2_V, i32 %layer2_out_3_V, i32 %layer2_out_4_V)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:76]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+ <State 24> : 1.06ns
+ST_24 : Operation 93 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecPipeline(i32 -1, i32 1, i32 1, i32 0, [1 x i8]* @p_str6) nounwind" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:48]
+ST_24 : Operation 94 [1/6] (1.06ns)   --->   "%logits3_0_V = call fastcc i29 @compute_layer.0.0(i32 %layer2_out_0_V, i32 %layer2_out_1_V, i32 %layer2_out_2_V, i32 %layer2_out_3_V, i32 %layer2_out_4_V)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:76]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+ST_24 : Operation 95 [1/1] (0.00ns)   --->   "%res_V_write_assign_t = sext i29 %logits3_0_V to i32" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:77]
+ST_24 : Operation 96 [1/1] (0.00ns)   --->   "%res_V_write_assign = call fastcc i32 @linear(i32 %res_V_write_assign_t)" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:77]   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+ST_24 : Operation 97 [1/1] (0.00ns)   --->   "ret i32 %res_V_write_assign" [/home/user/HCAL_HLS4ML/ereg_v1.cpp:80]
+
+
+============================================================
++ Verbose Summary: Timing violations
+============================================================
+Target clock period: 4ns, clock uncertainty: 0.5ns.
+
+ <State 1>: 2.24ns
+The critical path consists of the following:
+	wire read on port 'data_V_offset1' [34]  (0 ns)
+	'call' operation ('call_ret4', /home/user/HCAL_HLS4ML/ereg_v1.cpp:64) to 'compute_layer.0.0.0..1' [37]  (2.24 ns)
+
+ <State 2>: 3.33ns
+The critical path consists of the following:
+	'call' operation ('call_ret4', /home/user/HCAL_HLS4ML/ereg_v1.cpp:64) to 'compute_layer.0.0.0..1' [37]  (3.33 ns)
+
+ <State 3>: 3.33ns
+The critical path consists of the following:
+	'call' operation ('call_ret4', /home/user/HCAL_HLS4ML/ereg_v1.cpp:64) to 'compute_layer.0.0.0..1' [37]  (3.33 ns)
+
+ <State 4>: 3.33ns
+The critical path consists of the following:
+	'call' operation ('call_ret4', /home/user/HCAL_HLS4ML/ereg_v1.cpp:64) to 'compute_layer.0.0.0..1' [37]  (3.33 ns)
+
+ <State 5>: 3.33ns
+The critical path consists of the following:
+	'call' operation ('call_ret4', /home/user/HCAL_HLS4ML/ereg_v1.cpp:64) to 'compute_layer.0.0.0..1' [37]  (3.33 ns)
+
+ <State 6>: 3.33ns
+The critical path consists of the following:
+	'call' operation ('call_ret4', /home/user/HCAL_HLS4ML/ereg_v1.cpp:64) to 'compute_layer.0.0.0..1' [37]  (3.33 ns)
+
+ <State 7>: 3.33ns
+The critical path consists of the following:
+	'call' operation ('call_ret4', /home/user/HCAL_HLS4ML/ereg_v1.cpp:64) to 'compute_layer.0.0.0..1' [37]  (3.33 ns)
+
+ <State 8>: 3.33ns
+The critical path consists of the following:
+	'call' operation ('call_ret4', /home/user/HCAL_HLS4ML/ereg_v1.cpp:64) to 'compute_layer.0.0.0..1' [37]  (3.33 ns)
+
+ <State 9>: 3.33ns
+The critical path consists of the following:
+	'call' operation ('call_ret4', /home/user/HCAL_HLS4ML/ereg_v1.cpp:64) to 'compute_layer.0.0.0..1' [37]  (3.33 ns)
+
+ <State 10>: 3.33ns
+The critical path consists of the following:
+	'call' operation ('call_ret4', /home/user/HCAL_HLS4ML/ereg_v1.cpp:64) to 'compute_layer.0.0.0..1' [37]  (3.33 ns)
+
+ <State 11>: 3.33ns
+The critical path consists of the following:
+	'call' operation ('call_ret4', /home/user/HCAL_HLS4ML/ereg_v1.cpp:64) to 'compute_layer.0.0.0..1' [37]  (3.33 ns)
+
+ <State 12>: 2.56ns
+The critical path consists of the following:
+	'call' operation ('call_ret4', /home/user/HCAL_HLS4ML/ereg_v1.cpp:64) to 'compute_layer.0.0.0..1' [37]  (2.56 ns)
+
+ <State 13>: 1.57ns
+The critical path consists of the following:
+	'call' operation ('call_ret1', /home/user/HCAL_HLS4ML/ereg_v1.cpp:65) to 'linear.2' [53]  (0 ns)
+	'call' operation ('call_ret2', /home/user/HCAL_HLS4ML/ereg_v1.cpp:71) to 'compute_layer.0.0.0.' [69]  (1.57 ns)
+
+ <State 14>: 3.33ns
+The critical path consists of the following:
+	'call' operation ('call_ret2', /home/user/HCAL_HLS4ML/ereg_v1.cpp:71) to 'compute_layer.0.0.0.' [69]  (3.33 ns)
+
+ <State 15>: 3.33ns
+The critical path consists of the following:
+	'call' operation ('call_ret2', /home/user/HCAL_HLS4ML/ereg_v1.cpp:71) to 'compute_layer.0.0.0.' [69]  (3.33 ns)
+
+ <State 16>: 3.33ns
+The critical path consists of the following:
+	'call' operation ('call_ret2', /home/user/HCAL_HLS4ML/ereg_v1.cpp:71) to 'compute_layer.0.0.0.' [69]  (3.33 ns)
+
+ <State 17>: 3.33ns
+The critical path consists of the following:
+	'call' operation ('call_ret2', /home/user/HCAL_HLS4ML/ereg_v1.cpp:71) to 'compute_layer.0.0.0.' [69]  (3.33 ns)
+
+ <State 18>: 2.95ns
+The critical path consists of the following:
+	'call' operation ('call_ret2', /home/user/HCAL_HLS4ML/ereg_v1.cpp:71) to 'compute_layer.0.0.0.' [69]  (2.95 ns)
+
+ <State 19>: 1.1ns
+The critical path consists of the following:
+	'call' operation ('call_ret3', /home/user/HCAL_HLS4ML/ereg_v1.cpp:72) to 'linear.1' [75]  (0 ns)
+	'call' operation ('logits3_0_V', /home/user/HCAL_HLS4ML/ereg_v1.cpp:76) to 'compute_layer.0.0' [81]  (1.1 ns)
+
+ <State 20>: 3.33ns
+The critical path consists of the following:
+	'call' operation ('logits3_0_V', /home/user/HCAL_HLS4ML/ereg_v1.cpp:76) to 'compute_layer.0.0' [81]  (3.33 ns)
+
+ <State 21>: 3.33ns
+The critical path consists of the following:
+	'call' operation ('logits3_0_V', /home/user/HCAL_HLS4ML/ereg_v1.cpp:76) to 'compute_layer.0.0' [81]  (3.33 ns)
+
+ <State 22>: 3.33ns
+The critical path consists of the following:
+	'call' operation ('logits3_0_V', /home/user/HCAL_HLS4ML/ereg_v1.cpp:76) to 'compute_layer.0.0' [81]  (3.33 ns)
+
+ <State 23>: 3.33ns
+The critical path consists of the following:
+	'call' operation ('logits3_0_V', /home/user/HCAL_HLS4ML/ereg_v1.cpp:76) to 'compute_layer.0.0' [81]  (3.33 ns)
+
+ <State 24>: 1.06ns
+The critical path consists of the following:
+	'call' operation ('logits3_0_V', /home/user/HCAL_HLS4ML/ereg_v1.cpp:76) to 'compute_layer.0.0' [81]  (1.06 ns)
+
+
+============================================================
++ Verbose Summary: Binding
+============================================================
+N/A
+* FSMD analyzer results:
+  - Output states:
+ - Input state : 
+  - Chain level:
+	State 1
+	State 2
+	State 3
+	State 4
+	State 5
+	State 6
+	State 7
+	State 8
+	State 9
+	State 10
+	State 11
+	State 12
+	State 13
+	State 14
+	State 15
+	State 16
+	State 17
+	State 18
+	State 19
+	State 20
+	State 21
+	State 22
+	State 23
+	State 24
+
+
+============================================================
++ Verbose Summary: Datapath Resource usage 
+============================================================
+N/A

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xd:acceleratorMap xmlns:xd="http://www.xilinx.com/xidane" xd:functionName="galapagos_bridge" xd:componentRef="galapagos_bridge" xd:initiationInterval="65542" xd:clockPeriod="10.000" xd:sequential="true" xd:hostMachine="64" xd:reset="control">
+  <xd:arg xd:name="g2N_input.data" xd:originalName="g2N_input" xd:direction="in" xd:interfaceRef="s_axis_g2N" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="63:0" xd:dataWidth="64"/>
+  <xd:arg xd:name="g2N_input.dest" xd:originalName="g2N_input" xd:direction="in" xd:interfaceRef="s_axis_g2N" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="71:64" xd:dataWidth="8"/>
+  <xd:arg xd:name="g2N_input.last" xd:originalName="g2N_input" xd:direction="in" xd:interfaceRef="s_axis_g2N" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="72:72" xd:dataWidth="1"/>
+  <xd:arg xd:name="g2N_input.id" xd:originalName="g2N_input" xd:direction="in" xd:interfaceRef="s_axis_g2N" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="80:73" xd:dataWidth="8"/>
+  <xd:arg xd:name="g2N_input.keep" xd:originalName="g2N_input" xd:direction="in" xd:interfaceRef="s_axis_g2N" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="88:81" xd:dataWidth="8"/>
+  <xd:arg xd:name="g2N_output.data" xd:originalName="g2N_output" xd:direction="out" xd:interfaceRef="m_axis_g2N" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="63:0" xd:dataWidth="64"/>
+  <xd:arg xd:name="g2N_output.keep" xd:originalName="g2N_output" xd:direction="out" xd:interfaceRef="m_axis_g2N" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="71:64" xd:dataWidth="8"/>
+  <xd:arg xd:name="g2N_output.last" xd:originalName="g2N_output" xd:direction="out" xd:interfaceRef="m_axis_g2N" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="72:72" xd:dataWidth="1"/>
+  <xd:arg xd:name="buffer_storage_A[]" xd:originalName="buffer_storage_A" xd:direction="out" xd:interfaceRef="buffer_storage_A_V_PORTA" xd:busTypeRef="bram" xd:arraySize="512" xd:dataWidth="64"/>
+  <xd:arg xd:name="buffer_storage_B[]" xd:originalName="buffer_storage_B" xd:direction="in" xd:interfaceRef="buffer_storage_B_V_PORTA" xd:busTypeRef="bram" xd:arraySize="512" xd:dataWidth="64"/>
+  <xd:arg xd:name="n2G_input.data" xd:originalName="n2G_input" xd:direction="in" xd:interfaceRef="s_axis_n2G" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="63:0" xd:dataWidth="64"/>
+  <xd:arg xd:name="n2G_input.keep" xd:originalName="n2G_input" xd:direction="in" xd:interfaceRef="s_axis_n2G" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="71:64" xd:dataWidth="8"/>
+  <xd:arg xd:name="n2G_input.last" xd:originalName="n2G_input" xd:direction="in" xd:interfaceRef="s_axis_n2G" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="72:72" xd:dataWidth="1"/>
+  <xd:arg xd:name="n2G_output.data" xd:originalName="n2G_output" xd:direction="out" xd:interfaceRef="m_axis_n2G" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="63:0" xd:dataWidth="64"/>
+  <xd:arg xd:name="n2G_output.dest" xd:originalName="n2G_output" xd:direction="out" xd:interfaceRef="m_axis_n2G" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="71:64" xd:dataWidth="8"/>
+  <xd:arg xd:name="n2G_output.last" xd:originalName="n2G_output" xd:direction="out" xd:interfaceRef="m_axis_n2G" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="72:72" xd:dataWidth="1"/>
+  <xd:arg xd:name="n2G_output.id" xd:originalName="n2G_output" xd:direction="out" xd:interfaceRef="m_axis_n2G" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="80:73" xd:dataWidth="8"/>
+  <xd:arg xd:name="n2G_output.keep" xd:originalName="n2G_output" xd:direction="out" xd:interfaceRef="m_axis_n2G" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="88:81" xd:dataWidth="8"/>
+  <xd:latencyEstimates xd:best-case="6" xd:worst-case="65541" xd:average-case="undef"/>
+  <xd:resourceEstimates xd:LUT="466" xd:FF="296" xd:BRAM="0" xd:DSP="0"/>
+</xd:acceleratorMap>

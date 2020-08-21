@@ -1,1 +1,1 @@
-docker build -t "galapagos_docker" .
+docker build -t "galapagos_docker" -f Dockerfile .

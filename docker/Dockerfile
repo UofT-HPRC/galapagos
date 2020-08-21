@@ -53,7 +53,7 @@ RUN git clone https://github.com/takluyver/bash_kernel \
 RUN rm -rf /home/user/bash_kernel
 
 RUN git clone --recursive -b docker_dev https://github.com/UofT-HPRC/galapagos.git
-
+#RUN git pull
 RUN git clone https://github.com/tarafdar/HCAL_HLS4ML.git
 
 

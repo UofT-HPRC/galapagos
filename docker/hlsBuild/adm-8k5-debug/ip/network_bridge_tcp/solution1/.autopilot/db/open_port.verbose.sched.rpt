@@ -1,0 +1,152 @@
+
+
+================================================================
+== Vivado HLS Report for 'open_port'
+================================================================
+* Date:           Wed Aug 12 00:41:21 2020
+
+* Version:        2018.1 (Build 2188600 on Wed Apr 04 19:04:02 MDT 2018)
+* Project:        network_bridge_tcp
+* Solution:       solution1
+* Product family: kintexu
+* Target device:  xcku115-flva1517-2-e
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |   4.00|      1.10|        0.50|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+-----+-----+-----+----------+
+    |  Latency  |  Interval | Pipeline |
+    | min | max | min | max |   Type   |
+    +-----+-----+-----+-----+----------+
+    |    1|    1|    1|    1| function |
+    +-----+-----+-----+-----+----------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        N/A
+
+============================================================
++ Verbose Summary: Synthesis Manager
+============================================================
+InlineROM: 1
+ExposeGlobal: 1
+============================================================
++ Verbose Summary: CDFG Model
+============================================================
+IsTopModel: 0
+ResetActiveHigh: 1
+IsCombinational: 2
+IsDatapathOnly: 0
+HasWiredReturn: 1
+HasMFsm: 2
+HasVarLatency: 0
+IsPipeline: 1
+IsRtlPipelined: 1
+IsInstanceOverlapped: 0
+IsDontTouch: 0
+HasImplIP: 0
+IsGatedGlobalClock: 0
+
++ Individual pipeline summary: 
+  * Pipeline-0: initiation interval (II) = 1, depth = 2
+
+
+============================================================
++ Verbose Summary: Schedule
+============================================================
+* Number of FSM states : 2
+* Pipeline : 1
+  Pipeline-0 : II = 1, D = 2, States = { 1 2 }
+* Dataflow Pipeline: 0
+
+* FSM state transitions: 
+1 --> 
+	2  / true
+2 --> 
+
+* FSM state operations: 
+
+ <State 1> : 1.10ns
+ST_1 : Operation 3 [1/1] (0.00ns)   --->   "%listenDone_load = load i1* @listenDone, align 1" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:69]
+ST_1 : Operation 4 [1/1] (0.00ns)   --->   "%waitPortStatus_load = load i1* @waitPortStatus, align 1" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:69]
+ST_1 : Operation 5 [1/1] (0.33ns)   --->   "%brmerge = or i1 %listenDone_load, %waitPortStatus_load" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:69]   --->   Core 27 'LogicGate' <Latency = 0> <II = 1> <Delay = 0.33> <FuncUnit> <Opcode : 'and' 'or' 'xor'> <InPorts = 2> <OutPorts = 1>
+ST_1 : Operation 6 [1/1] (0.00ns)   --->   "br i1 %brmerge, label %._crit_edge, label %1" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:69]
+ST_1 : Operation 7 [1/1] (0.83ns)   --->   "store i1 true, i1* @waitPortStatus, align 1" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:77]
+ST_1 : Operation 8 [1/1] (0.00ns)   --->   "br i1 %waitPortStatus_load, label %2, label %._crit_edge22" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:80]
+ST_1 : Operation 9 [1/1] (0.00ns)   --->   "%tmp = call i1 @_ssdm_op_NbReadReq.ap_fifo.i1P(i1* %listenPortStatus_V, i32 1)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:80]   --->   Core 5 'AXI4Stream' <Latency = 0> <II = 1> <Delay = 1.00> <Adapter> <Opcode : >
+ST_1 : Operation 10 [1/1] (0.00ns)   --->   "br i1 %tmp, label %3, label %._crit_edge22" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:80]
+ST_1 : Operation 11 [1/1] (0.00ns)   --->   "%tmp_11 = call i1 @_ssdm_op_Read.ap_fifo.volatile.i1P(i1* %listenPortStatus_V)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:82]   --->   Core 5 'AXI4Stream' <Latency = 0> <II = 1> <Delay = 1.00> <Adapter> <Opcode : >
+ST_1 : Operation 12 [1/1] (0.00ns)   --->   "store i1 %tmp_11, i1* @listenDone, align 1" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:82]
+ST_1 : Operation 13 [1/1] (0.83ns)   --->   "store i1 false, i1* @waitPortStatus, align 1" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:83]
+ST_1 : Operation 14 [1/1] (0.00ns)   --->   "%tmp_2 = call i1 @_ssdm_op_NbReadReq.ap_fifo.i81P(i81* %notifications_V, i32 1)"   --->   Core 5 'AXI4Stream' <Latency = 0> <II = 1> <Delay = 1.00> <Adapter> <Opcode : >
+ST_1 : Operation 15 [1/1] (0.00ns)   --->   "br i1 %tmp_2, label %5, label %._crit_edge24" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:87]
+ST_1 : Operation 16 [1/1] (0.00ns)   --->   "%tmp1 = call i81 @_ssdm_op_Read.ap_fifo.volatile.i81P(i81* %notifications_V)"   --->   Core 5 'AXI4Stream' <Latency = 0> <II = 1> <Delay = 1.00> <Adapter> <Opcode : >
+ST_1 : Operation 17 [1/1] (0.00ns)   --->   "%tmp_length_V = call i16 @_ssdm_op_PartSelect.i16.i81.i32.i32(i81 %tmp1, i32 16, i32 31)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/include/./toe.hpp:496->/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:89]
+ST_1 : Operation 18 [1/1] (1.09ns)   --->   "%tmp_s = icmp eq i16 %tmp_length_V, 0" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:91]   --->   Core 25 'Cmp' <Latency = 0> <II = 1> <Delay = 1.09> <FuncUnit> <Opcode : 'icmp'> <InPorts = 2> <OutPorts = 1>
+ST_1 : Operation 19 [1/1] (0.00ns)   --->   "br i1 %tmp_s, label %._crit_edge25, label %6" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:91]
+ST_1 : Operation 20 [1/1] (0.00ns)   --->   "%tmp_1 = trunc i81 %tmp1 to i32" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:93]
+
+ <State 2> : 0.00ns
+ST_2 : Operation 21 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecIFCore(i32* %readRequest_V, [1 x i8]* @p_str, [5 x i8]* @p_str24, [1 x i8]* @p_str, i32 -1, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, [32 x i8]* @p_str32)"
+ST_2 : Operation 22 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecIFCore(i81* %notifications_V, [1 x i8]* @p_str, [5 x i8]* @p_str24, [1 x i8]* @p_str, i32 -1, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, [33 x i8]* @p_str31)"
+ST_2 : Operation 23 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecIFCore(i1* %listenPortStatus_V, [1 x i8]* @p_str, [5 x i8]* @p_str24, [1 x i8]* @p_str, i32 -1, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, [38 x i8]* @p_str28)"
+ST_2 : Operation 24 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecIFCore(i16* %listenPort_V_V, [1 x i8]* @p_str, [5 x i8]* @p_str24, [1 x i8]* @p_str, i32 -1, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, [31 x i8]* @p_str27)"
+ST_2 : Operation 25 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i16* %listenPort_V_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str, i32 0, i32 0, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str, [1 x i8]* @p_str)"
+ST_2 : Operation 26 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i1* %listenPortStatus_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str, i32 0, i32 0, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str, [1 x i8]* @p_str)"
+ST_2 : Operation 27 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i81* %notifications_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str, i32 0, i32 0, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str, [1 x i8]* @p_str)"
+ST_2 : Operation 28 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i32* %readRequest_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str, i32 0, i32 0, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str, [1 x i8]* @p_str)"
+ST_2 : Operation 29 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecPipeline(i32 1, i32 1, i32 1, i32 0, [1 x i8]* @p_str) nounwind" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:61]
+ST_2 : Operation 30 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_fifo.volatile.i16P(i16* %listenPort_V_V, i16 7)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:75]   --->   Core 5 'AXI4Stream' <Latency = 0> <II = 1> <Delay = 1.00> <Adapter> <Opcode : >
+ST_2 : Operation 31 [1/1] (0.00ns)   --->   "br label %4" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:78]
+ST_2 : Operation 32 [1/1] (0.00ns)   --->   "br label %._crit_edge22" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:84]
+ST_2 : Operation 33 [1/1] (0.00ns)   --->   "br label %4"
+ST_2 : Operation 34 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_fifo.volatile.i32P(i32* %readRequest_V, i32 %tmp_1)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:93]   --->   Core 5 'AXI4Stream' <Latency = 0> <II = 1> <Delay = 1.00> <Adapter> <Opcode : >
+ST_2 : Operation 35 [1/1] (0.00ns)   --->   "br label %._crit_edge25" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:95]
+ST_2 : Operation 36 [1/1] (0.00ns)   --->   "br label %._crit_edge24" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:96]
+ST_2 : Operation 37 [1/1] (0.00ns)   --->   "ret void" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:97]
+
+
+============================================================
++ Verbose Summary: Timing violations
+============================================================
+Target clock period: 4ns, clock uncertainty: 0.5ns.
+
+ <State 1>: 1.1ns
+The critical path consists of the following:
+	fifo read on port 'notifications_V' [40]  (0 ns)
+	'icmp' operation ('tmp_s', /home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:91) [42]  (1.1 ns)
+
+ <State 2>: 0ns
+The critical path consists of the following:
+
+
+============================================================
++ Verbose Summary: Binding
+============================================================
+N/A
+* FSMD analyzer results:
+  - Output states:
+ - Input state : 
+  - Chain level:
+	State 1
+	State 2
+
+
+============================================================
++ Verbose Summary: Datapath Resource usage 
+============================================================
+N/A

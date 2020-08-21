@@ -1,0 +1,207 @@
+<AutoPilot:ProjectResources xmlns:AutoPilot="com.autoesl.autopilot.ui.directiveView">
+<sourceFile name="">
+<directive functionLabel="" functionName="compute_layer" label="">
+<pragma name="FUNCTION_INSTANTIATE">
+<option name="variable" positionalBoolean="4" value="weights,biases"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="compute_layer" label="">
+<pragma name="PIPELINE">
+<option name="II" value="CONFIG_T::reuse_factor"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="compute_layer" label="">
+<pragma name="ARRAY_PARTITION">
+<option name="variable" positionalBoolean="4" value="biases"/>
+<option name="complete" positionalBoolean="type" value=""/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="compute_layer" label="">
+<pragma name="ARRAY_PARTITION">
+<option name="variable" positionalBoolean="4" value="mult"/>
+<option name="complete" positionalBoolean="type" value=""/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="compute_layer" label="">
+<pragma name="ARRAY_PARTITION">
+<option name="variable" positionalBoolean="4" value="acc"/>
+<option name="complete" positionalBoolean="type" value=""/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="compute_layer" label="">
+<pragma name="ALLOCATION">
+<option name="instances" positionalBoolean="4" value="mul"/>
+<option name="limit" value="multiplier_limit"/>
+<option name="operation" positionalBoolean="type" value=""/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="compute_layer" label="">
+<pragma name="ARRAY_RESHAPE">
+<option name="variable" positionalBoolean="4" value="weights"/>
+<option name="complete" positionalBoolean="type" value=""/>
+<option name="dim" value="2"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="compute_layer" label="">
+<pragma name="ARRAY_PARTITION">
+<option name="variable" positionalBoolean="4" value="mult"/>
+<option name="complete" positionalBoolean="type" value=""/>
+<option name="dim" value="2"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="compute_layer" label="">
+<pragma name="ARRAY_PARTITION">
+<option name="variable" positionalBoolean="4" value="acc"/>
+<option name="complete" positionalBoolean="type" value=""/>
+<option name="dim" value="1"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="compute_layer" label="">
+<pragma name="DATAFLOW"/>
+</directive>
+<directive functionLabel="" functionName="compute_layer" label="">
+<pragma name="STREAM">
+<option name="variable" positionalBoolean="4" value="mult"/>
+<option name="depth" value="1"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="compute_layer" label="">
+<pragma name="STREAM">
+<option name="variable" positionalBoolean="4" value="acc"/>
+<option name="depth" value="1"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="compute_layer" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="compute_layer" label="">
+<pragma name="ALLOCATION">
+<option name="instances" positionalBoolean="4" value="mul"/>
+<option name="limit" value="multiplier_limit"/>
+<option name="operation" positionalBoolean="type" value=""/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="compute_layer" label="">
+<pragma name="UNROLL"/>
+</directive>
+<directive functionLabel="" functionName="compute_layer" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="compute_layer" label="">
+<pragma name="UNROLL"/>
+</directive>
+<directive functionLabel="" functionName="conv_1d" label="">
+<pragma name="ARRAY_PARTITION">
+<option name="variable" positionalBoolean="4" value="mult"/>
+<option name="complete" positionalBoolean="type" value=""/>
+<option name="dim" value="0"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="conv_1d" label="">
+<pragma name="ARRAY_PARTITION">
+<option name="variable" positionalBoolean="4" value="acc"/>
+<option name="complete" positionalBoolean="type" value=""/>
+<option name="dim" value="0"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="conv_1d" label="">
+<pragma name="FUNCTION_INSTANTIATE">
+<option name="variable" positionalBoolean="4" value="weights,biases"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="conv_1d" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="conv_1d" label="">
+<pragma name="ARRAY_PARTITION">
+<option name="variable" positionalBoolean="4" value="biases"/>
+<option name="complete" positionalBoolean="type" value=""/>
+<option name="dim" value="0"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="conv_1d" label="">
+<pragma name="ALLOCATION">
+<option name="instances" positionalBoolean="4" value="mul"/>
+<option name="limit" value="multiplier_limit"/>
+<option name="operation" positionalBoolean="type" value=""/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="linear" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="linear" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="relu" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="relu" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="relu_max" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="relu_max" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="sigmoid" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="sigmoid" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="softmax" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="softmax" label="">
+<pragma name="UNROLL"/>
+</directive>
+<directive functionLabel="" functionName="softmax" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="tanh" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="tanh" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="ereg_v1" label="">
+<pragma name="PIPELINE"/>
+</directive>
+<directive functionLabel="" functionName="ereg_v1" label="">
+<pragma name="ARRAY_PARTITION">
+<option name="variable" positionalBoolean="4" value="layer1_out"/>
+<option name="complete" positionalBoolean="type" value=""/>
+<option name="dim" value="0"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="ereg_v1" label="">
+<pragma name="ARRAY_PARTITION">
+<option name="variable" positionalBoolean="4" value="logits1"/>
+<option name="complete" positionalBoolean="type" value=""/>
+<option name="dim" value="0"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="ereg_v1" label="">
+<pragma name="ARRAY_PARTITION">
+<option name="variable" positionalBoolean="4" value="layer2_out"/>
+<option name="complete" positionalBoolean="type" value=""/>
+<option name="dim" value="0"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="ereg_v1" label="">
+<pragma name="ARRAY_PARTITION">
+<option name="variable" positionalBoolean="4" value="logits2"/>
+<option name="complete" positionalBoolean="type" value=""/>
+<option name="dim" value="0"/>
+</pragma>
+</directive>
+<directive functionLabel="" functionName="ereg_v1" label="">
+<pragma name="ARRAY_PARTITION">
+<option name="variable" positionalBoolean="4" value="logits3"/>
+<option name="complete" positionalBoolean="type" value=""/>
+<option name="dim" value="0"/>
+</pragma>
+</directive>
+</sourceFile>
+</AutoPilot:ProjectResources>

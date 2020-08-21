@@ -1,0 +1,151 @@
+<profile>
+
+<section name = "Vivado HLS Report for 'galapagos_bridge'" level="0">
+<item name = "Date">Wed Aug 12 00:40:08 2020
+</item>
+<item name = "Version">2018.1 (Build 2188600 on Wed Apr 04 19:04:02 MDT 2018)</item>
+<item name = "Project">galapagos_bridge</item>
+<item name = "Solution">solution1</item>
+<item name = "Product family">kintexu</item>
+<item name = "Target device">xcku115-flva1517-2-e</item>
+</section>
+
+<section name = "Performance Estimates" level="0">
+<item name = "Timing (ns)">
+<section name = "" level="1">
+<item name = "Summary"><table name="" hasTotal="0">
+<keys size="4">Clock, Target, Estimated, Uncertainty</keys>
+<column name="ap_clk">10.00, 2.56, 1.25</column>
+</table>
+</item>
+</section>
+</item>
+<item name = "Latency (clock cycles)">
+<section name = "" level="1">
+<item name = "Summary"><table name="" hasTotal="0">
+<keys size="6">, min, max, min, max, Type</keys>
+<column name="">6, 65541, 5, 65538, dataflow</column>
+</table>
+</item>
+<item name = "Detail">
+<section name = "" level="1">
+<item name = "Instance"><table name="" hasTotal="0">
+<keys size="7">Instance, Module, min, max, min, max, Type</keys>
+<column name="g2N_egress_U0">g2N_egress, 2, 65537, 2, 65537, none</column>
+<column name="n2G_U0">n2G, 4, 515, 4, 515, none</column>
+<column name="g2N_ingress_U0">g2N_ingress, 3, 514, 3, 514, none</column>
+</table>
+</item>
+<item name = "Loop"><table name="" hasTotal="0">
+<keys size="8">Loop Name, min, max, Latency, achieved, target, Count, Pipelined</keys>
+</table>
+</item>
+</section>
+</item>
+</section>
+</item>
+</section>
+
+<section name = "Utilization Estimates" level="0">
+<item name = "Summary"><table name="" hasTotal="1">
+<keys size="5">Name, BRAM_18K, DSP48E, FF, LUT</keys>
+<column name="DSP">-, -, -, -</column>
+<column name="Expression">-, -, 0, 16</column>
+<column name="FIFO">0, -, 15, 68</column>
+<column name="Instance">-, -, 276, 355</column>
+<column name="Memory">-, -, -, -</column>
+<column name="Multiplexer">-, -, -, 27</column>
+<column name="Register">-, -, 5, -</column>
+<specialColumn name="Available SLR">2160, 2760, 663360, 331680</specialColumn>
+<specialColumn name="Utilization SLR (%)">0, 0, ~0, ~0</specialColumn>
+<specialColumn name="Available">4320, 5520, 1326720, 663360</specialColumn>
+<specialColumn name="Utilization (%)">0, 0, ~0, ~0</specialColumn>
+</table>
+</item>
+<item name = "Detail">
+<section name = "" level="1">
+<item name = "Instance"><table name="" hasTotal="1">
+<keys size="6">Instance, Module, BRAM_18K, DSP48E, FF, LUT</keys>
+<column name="g2N_egress_U0">g2N_egress, 0, 0, 56, 191</column>
+<column name="g2N_ingress_U0">g2N_ingress, 0, 0, 114, 69</column>
+<column name="n2G_U0">n2G, 0, 0, 106, 95</column>
+</table>
+</item>
+<item name = "DSP48"><table name="" hasTotal="0">
+<keys size="3">Instance, Module, Expression</keys>
+</table>
+</item>
+<item name = "Memory"><table name="" hasTotal="1">
+<keys size="9">Memory, Module, BRAM_18K, FF, LUT, Words, Bits, Banks, W*Bits*Banks</keys>
+</table>
+</item>
+<item name = "FIFO"><table name="" hasTotal="1">
+<keys size="7">Name, BRAM_18K, FF, LUT, Depth, Bits, Size:D*B</keys>
+<column name="dest_stream_V_V_U">0, 5, 20, 2, 8, 16</column>
+<column name="length_stream_V_V_U">0, 5, 28, 2, 16, 32</column>
+<column name="src_stream_V_V_U">0, 5, 20, 2, 8, 16</column>
+</table>
+</item>
+<item name = "Expression"><table name="" hasTotal="1">
+<keys size="7">Variable Name, Operation, DSP48E, FF, LUT, Bitwidth P0, Bitwidth P1</keys>
+<column name="ap_channel_done_dest_stream_V_V">and, 0, 0, 2, 1, 1</column>
+<column name="ap_channel_done_length_stream_V_V">and, 0, 0, 2, 1, 1</column>
+<column name="ap_channel_done_src_stream_V_V">and, 0, 0, 2, 1, 1</column>
+<column name="g2N_egress_U0_ap_start">and, 0, 0, 2, 1, 1</column>
+<column name="g2N_ingress_U0_ap_continue">and, 0, 0, 2, 1, 1</column>
+<column name="ap_sync_channel_write_dest_stream_V_V">or, 0, 0, 2, 1, 1</column>
+<column name="ap_sync_channel_write_length_stream_V_V">or, 0, 0, 2, 1, 1</column>
+<column name="ap_sync_channel_write_src_stream_V_V">or, 0, 0, 2, 1, 1</column>
+</table>
+</item>
+<item name = "Multiplexer"><table name="" hasTotal="1">
+<keys size="5">Name, LUT, Input Size, Bits, Total Bits</keys>
+<column name="ap_sync_reg_channel_write_dest_stream_V_V">9, 2, 1, 2</column>
+<column name="ap_sync_reg_channel_write_length_stream_V_V">9, 2, 1, 2</column>
+<column name="ap_sync_reg_channel_write_src_stream_V_V">9, 2, 1, 2</column>
+</table>
+</item>
+<item name = "Register"><table name="" hasTotal="1">
+<keys size="5">Name, FF, LUT, Bits, Const Bits</keys>
+<column name="ap_sync_reg_channel_write_dest_stream_V_V">1, 0, 1, 0</column>
+<column name="ap_sync_reg_channel_write_length_stream_V_V">1, 0, 1, 0</column>
+<column name="ap_sync_reg_channel_write_src_stream_V_V">1, 0, 1, 0</column>
+<column name="g2N_ingress_U0_ap_start">1, 0, 1, 0</column>
+<column name="n2G_U0_ap_start">1, 0, 1, 0</column>
+</table>
+</item>
+</section>
+</item>
+</section>
+
+<section name = "Interface" level="0">
+<item name = "Summary"><table name="" hasTotal="0">
+<keys size="6">RTL Ports, Dir, Bits, Protocol, Source Object, C Type</keys>
+<column name="g2N_input_V_dout">in, 89, ap_fifo, g2N_input_V, pointer</column>
+<column name="g2N_input_V_empty_n">in, 1, ap_fifo, g2N_input_V, pointer</column>
+<column name="g2N_input_V_read">out, 1, ap_fifo, g2N_input_V, pointer</column>
+<column name="g2N_output_V_din">out, 73, ap_fifo, g2N_output_V, pointer</column>
+<column name="g2N_output_V_full_n">in, 1, ap_fifo, g2N_output_V, pointer</column>
+<column name="g2N_output_V_write">out, 1, ap_fifo, g2N_output_V, pointer</column>
+<column name="buffer_storage_A_V_address0">out, 9, ap_memory, buffer_storage_A_V, array</column>
+<column name="buffer_storage_A_V_ce0">out, 1, ap_memory, buffer_storage_A_V, array</column>
+<column name="buffer_storage_A_V_d0">out, 64, ap_memory, buffer_storage_A_V, array</column>
+<column name="buffer_storage_A_V_q0">in, 64, ap_memory, buffer_storage_A_V, array</column>
+<column name="buffer_storage_A_V_we0">out, 1, ap_memory, buffer_storage_A_V, array</column>
+<column name="buffer_storage_B_V_address0">out, 9, ap_memory, buffer_storage_B_V, array</column>
+<column name="buffer_storage_B_V_ce0">out, 1, ap_memory, buffer_storage_B_V, array</column>
+<column name="buffer_storage_B_V_d0">out, 64, ap_memory, buffer_storage_B_V, array</column>
+<column name="buffer_storage_B_V_q0">in, 64, ap_memory, buffer_storage_B_V, array</column>
+<column name="buffer_storage_B_V_we0">out, 1, ap_memory, buffer_storage_B_V, array</column>
+<column name="n2G_input_V_dout">in, 73, ap_fifo, n2G_input_V, pointer</column>
+<column name="n2G_input_V_empty_n">in, 1, ap_fifo, n2G_input_V, pointer</column>
+<column name="n2G_input_V_read">out, 1, ap_fifo, n2G_input_V, pointer</column>
+<column name="n2G_output_V_din">out, 89, ap_fifo, n2G_output_V, pointer</column>
+<column name="n2G_output_V_full_n">in, 1, ap_fifo, n2G_output_V, pointer</column>
+<column name="n2G_output_V_write">out, 1, ap_fifo, n2G_output_V, pointer</column>
+<column name="ap_clk">in, 1, ap_ctrl_none, galapagos_bridge, return value</column>
+<column name="ap_rst">in, 1, ap_ctrl_none, galapagos_bridge, return value</column>
+</table>
+</item>
+</section>
+</profile>

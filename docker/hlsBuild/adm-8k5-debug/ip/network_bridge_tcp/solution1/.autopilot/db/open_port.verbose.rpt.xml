@@ -1,0 +1,144 @@
+<profile>
+
+<section name = "Vivado HLS Report for 'open_port'" level="0">
+<item name = "Date">Wed Aug 12 00:41:22 2020
+</item>
+<item name = "Version">2018.1 (Build 2188600 on Wed Apr 04 19:04:02 MDT 2018)</item>
+<item name = "Project">network_bridge_tcp</item>
+<item name = "Solution">solution1</item>
+<item name = "Product family">kintexu</item>
+<item name = "Target device">xcku115-flva1517-2-e</item>
+</section>
+
+<section name = "Performance Estimates" level="0">
+<item name = "Timing (ns)">
+<section name = "" level="1">
+<item name = "Summary"><table name="" hasTotal="0">
+<keys size="4">Clock, Target, Estimated, Uncertainty</keys>
+<column name="ap_clk">4.00, 1.10, 0.50</column>
+</table>
+</item>
+</section>
+</item>
+<item name = "Latency (clock cycles)">
+<section name = "" level="1">
+<item name = "Summary"><table name="" hasTotal="0">
+<keys size="6">, min, max, min, max, Type</keys>
+<column name="">1, 1, 1, 1, function</column>
+</table>
+</item>
+<item name = "Detail">
+<section name = "" level="1">
+<item name = "Instance"><table name="" hasTotal="0">
+<keys size="7">Instance, Module, min, max, min, max, Type</keys>
+</table>
+</item>
+<item name = "Loop"><table name="" hasTotal="0">
+<keys size="8">Loop Name, min, max, Latency, achieved, target, Count, Pipelined</keys>
+</table>
+</item>
+</section>
+</item>
+</section>
+</item>
+</section>
+
+<section name = "Utilization Estimates" level="0">
+<item name = "Summary"><table name="" hasTotal="1">
+<keys size="5">Name, BRAM_18K, DSP48E, FF, LUT</keys>
+<column name="DSP">-, -, -, -</column>
+<column name="Expression">-, -, 0, 29</column>
+<column name="FIFO">-, -, -, -</column>
+<column name="Instance">-, -, -, -</column>
+<column name="Memory">-, -, -, -</column>
+<column name="Multiplexer">-, -, -, 45</column>
+<column name="Register">-, -, 40, -</column>
+<specialColumn name="Available SLR">2160, 2760, 663360, 331680</specialColumn>
+<specialColumn name="Utilization SLR (%)">0, 0, ~0, ~0</specialColumn>
+<specialColumn name="Available">4320, 5520, 1326720, 663360</specialColumn>
+<specialColumn name="Utilization (%)">0, 0, ~0, ~0</specialColumn>
+</table>
+</item>
+<item name = "Detail">
+<section name = "" level="1">
+<item name = "Instance"><table name="" hasTotal="1">
+<keys size="6">Instance, Module, BRAM_18K, DSP48E, FF, LUT</keys>
+</table>
+</item>
+<item name = "DSP48"><table name="" hasTotal="0">
+<keys size="3">Instance, Module, Expression</keys>
+</table>
+</item>
+<item name = "Memory"><table name="" hasTotal="1">
+<keys size="9">Memory, Module, BRAM_18K, FF, LUT, Words, Bits, Banks, W*Bits*Banks</keys>
+</table>
+</item>
+<item name = "FIFO"><table name="" hasTotal="1">
+<keys size="7">Name, BRAM_18K, FF, LUT, Depth, Bits, Size:D*B</keys>
+</table>
+</item>
+<item name = "Expression"><table name="" hasTotal="1">
+<keys size="7">Variable Name, Operation, DSP48E, FF, LUT, Bitwidth P0, Bitwidth P1</keys>
+<column name="ap_condition_96">and, 0, 0, 2, 1, 1</column>
+<column name="ap_predicate_op11_read_state1">and, 0, 0, 2, 1, 1</column>
+<column name="ap_predicate_op34_write_state2">and, 0, 0, 2, 1, 1</column>
+<column name="tmp_s_fu_151_p2">icmp, 0, 0, 13, 16, 1</column>
+<column name="ap_block_pp0_stage0_01001">or, 0, 0, 2, 1, 1</column>
+<column name="ap_block_state1_pp0_stage0_iter0">or, 0, 0, 2, 1, 1</column>
+<column name="ap_block_state2_pp0_stage0_iter1">or, 0, 0, 2, 1, 1</column>
+<column name="brmerge_fu_117_p2">or, 0, 0, 2, 1, 1</column>
+<column name="ap_enable_pp0">xor, 0, 0, 2, 1, 2</column>
+</table>
+</item>
+<item name = "Multiplexer"><table name="" hasTotal="1">
+<keys size="5">Name, LUT, Input Size, Bits, Total Bits</keys>
+<column name="ap_done">9, 2, 1, 2</column>
+<column name="listenPortStatus_V_blk_n">9, 2, 1, 2</column>
+<column name="listenPort_V_V_blk_n">9, 2, 1, 2</column>
+<column name="notifications_V_blk_n">9, 2, 1, 2</column>
+<column name="readRequest_V_blk_n">9, 2, 1, 2</column>
+</table>
+</item>
+<item name = "Register"><table name="" hasTotal="1">
+<keys size="5">Name, FF, LUT, Bits, Const Bits</keys>
+<column name="ap_CS_fsm">1, 0, 1, 0</column>
+<column name="ap_done_reg">1, 0, 1, 0</column>
+<column name="ap_enable_reg_pp0_iter1">1, 0, 1, 0</column>
+<column name="brmerge_reg_165">1, 0, 1, 0</column>
+<column name="listenDone">1, 0, 1, 0</column>
+<column name="tmp_1_reg_181">32, 0, 32, 0</column>
+<column name="tmp_2_reg_173">1, 0, 1, 0</column>
+<column name="tmp_s_reg_177">1, 0, 1, 0</column>
+<column name="waitPortStatus">1, 0, 1, 0</column>
+</table>
+</item>
+</section>
+</item>
+</section>
+
+<section name = "Interface" level="0">
+<item name = "Summary"><table name="" hasTotal="0">
+<keys size="6">RTL Ports, Dir, Bits, Protocol, Source Object, C Type</keys>
+<column name="ap_clk">in, 1, ap_ctrl_hs, open_port, return value</column>
+<column name="ap_rst">in, 1, ap_ctrl_hs, open_port, return value</column>
+<column name="ap_start">in, 1, ap_ctrl_hs, open_port, return value</column>
+<column name="ap_done">out, 1, ap_ctrl_hs, open_port, return value</column>
+<column name="ap_continue">in, 1, ap_ctrl_hs, open_port, return value</column>
+<column name="ap_idle">out, 1, ap_ctrl_hs, open_port, return value</column>
+<column name="ap_ready">out, 1, ap_ctrl_hs, open_port, return value</column>
+<column name="listenPortStatus_V_dout">in, 1, ap_fifo, listenPortStatus_V, pointer</column>
+<column name="listenPortStatus_V_empty_n">in, 1, ap_fifo, listenPortStatus_V, pointer</column>
+<column name="listenPortStatus_V_read">out, 1, ap_fifo, listenPortStatus_V, pointer</column>
+<column name="notifications_V_dout">in, 81, ap_fifo, notifications_V, pointer</column>
+<column name="notifications_V_empty_n">in, 1, ap_fifo, notifications_V, pointer</column>
+<column name="notifications_V_read">out, 1, ap_fifo, notifications_V, pointer</column>
+<column name="listenPort_V_V_din">out, 16, ap_fifo, listenPort_V_V, pointer</column>
+<column name="listenPort_V_V_full_n">in, 1, ap_fifo, listenPort_V_V, pointer</column>
+<column name="listenPort_V_V_write">out, 1, ap_fifo, listenPort_V_V, pointer</column>
+<column name="readRequest_V_din">out, 32, ap_fifo, readRequest_V, pointer</column>
+<column name="readRequest_V_full_n">in, 1, ap_fifo, readRequest_V, pointer</column>
+<column name="readRequest_V_write">out, 1, ap_fifo, readRequest_V, pointer</column>
+</table>
+</item>
+</section>
+</profile>

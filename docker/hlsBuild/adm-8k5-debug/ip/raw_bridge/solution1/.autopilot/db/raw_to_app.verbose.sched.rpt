@@ -1,0 +1,149 @@
+
+
+================================================================
+== Vivado HLS Report for 'raw_to_app'
+================================================================
+* Date:           Wed Aug 12 00:42:11 2020
+
+* Version:        2018.1 (Build 2188600 on Wed Apr 04 19:04:02 MDT 2018)
+* Project:        raw_bridge
+* Solution:       solution1
+* Product family: kintexu
+* Target device:  xcku115-flva1517-2-e
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |   4.00|      0.83|        0.50|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+-----+-----+-----+----------+
+    |  Latency  |  Interval | Pipeline |
+    | min | max | min | max |   Type   |
+    +-----+-----+-----+-----+----------+
+    |    1|    1|    1|    1| function |
+    +-----+-----+-----+-----+----------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        N/A
+
+============================================================
++ Verbose Summary: Synthesis Manager
+============================================================
+InlineROM: 1
+ExposeGlobal: 1
+============================================================
++ Verbose Summary: CDFG Model
+============================================================
+IsTopModel: 0
+ResetActiveHigh: 1
+IsCombinational: 2
+IsDatapathOnly: 0
+HasWiredReturn: 1
+HasMFsm: 2
+HasVarLatency: 0
+IsPipeline: 1
+IsRtlPipelined: 1
+IsInstanceOverlapped: 0
+IsDontTouch: 0
+HasImplIP: 0
+IsGatedGlobalClock: 0
+
++ Individual pipeline summary: 
+  * Pipeline-0: initiation interval (II) = 1, depth = 2
+
+
+============================================================
++ Verbose Summary: Schedule
+============================================================
+* Number of FSM states : 2
+* Pipeline : 1
+  Pipeline-0 : II = 1, D = 2, States = { 1 2 }
+* Dataflow Pipeline: 0
+
+* FSM state transitions: 
+1 --> 
+	2  / true
+2 --> 
+
+* FSM state operations: 
+
+ <State 1> : 0.83ns
+ST_1 : Operation 3 [1/1] (0.00ns)   --->   "%state_V_1_load = load i3* @state_V_1, align 1" [/home/user/galapagos/middleware/hls/network_bridge_raw/src/raw_bridge.cpp:55]
+ST_1 : Operation 4 [1/1] (0.72ns)   --->   "switch i3 %state_V_1_load, label %._crit_edge72 [
+    i3 2, label %0
+    i3 3, label %2
+  ]" [/home/user/galapagos/middleware/hls/network_bridge_raw/src/raw_bridge.cpp:55]
+ST_1 : Operation 5 [1/1] (0.00ns)   --->   "%tmp_1 = call i1 @_ssdm_op_NbReadReq.ap_fifo.i73P(i73* %from_raw_V, i32 1)"   --->   Core 5 'AXI4Stream' <Latency = 0> <II = 1> <Delay = 1.00> <Adapter> <Opcode : >
+ST_1 : Operation 6 [1/1] (0.00ns)   --->   "%tmp_119 = call i73 @_ssdm_op_Read.ap_fifo.volatile.i73P(i73* %from_raw_V)"   --->   Core 5 'AXI4Stream' <Latency = 0> <II = 1> <Delay = 1.00> <Adapter> <Opcode : >
+ST_1 : Operation 7 [1/1] (0.00ns)   --->   "%tmp_data_V = trunc i73 %tmp_119 to i64" [/home/user/galapagos/middleware/hls/network_bridge_raw/include/raw_bridge.hpp:9->/home/user/galapagos/middleware/hls/network_bridge_raw/src/raw_bridge.cpp:70]
+ST_1 : Operation 8 [1/1] (0.00ns)   --->   "%tmp_last_V = call i1 @_ssdm_op_BitSelect.i1.i73.i32(i73 %tmp_119, i32 64)" [/home/user/galapagos/middleware/hls/network_bridge_raw/include/raw_bridge.hpp:9->/home/user/galapagos/middleware/hls/network_bridge_raw/src/raw_bridge.cpp:70]
+ST_1 : Operation 9 [1/1] (0.00ns)   --->   "%tmp_keep_V = call i8 @_ssdm_op_PartSelect.i8.i73.i32.i32(i73 %tmp_119, i32 65, i32 72)" [/home/user/galapagos/middleware/hls/network_bridge_raw/include/raw_bridge.hpp:9->/home/user/galapagos/middleware/hls/network_bridge_raw/src/raw_bridge.cpp:70]
+ST_1 : Operation 10 [1/1] (0.83ns)   --->   "store i3 2, i3* @state_V_1, align 1" [/home/user/galapagos/middleware/hls/network_bridge_raw/src/raw_bridge.cpp:78]
+ST_1 : Operation 11 [1/1] (0.00ns)   --->   "%tmp = call i1 @_ssdm_op_NbReadReq.ap_fifo.i73P(i73* %from_raw_V, i32 1)"   --->   Core 5 'AXI4Stream' <Latency = 0> <II = 1> <Delay = 1.00> <Adapter> <Opcode : >
+ST_1 : Operation 12 [1/1] (0.00ns)   --->   "%tmp12 = call i73 @_ssdm_op_Read.ap_fifo.volatile.i73P(i73* %from_raw_V)"   --->   Core 5 'AXI4Stream' <Latency = 0> <II = 1> <Delay = 1.00> <Adapter> <Opcode : >
+ST_1 : Operation 13 [1/1] (0.00ns)   --->   "%tmp_2 = call i8 @_ssdm_op_PartSelect.i8.i73.i32.i32(i73 %tmp12, i32 48, i32 55)"
+ST_1 : Operation 14 [1/1] (0.00ns)   --->   "store i8 %tmp_2, i8* @dest_V, align 1" [/home/user/galapagos/middleware/hls/network_bridge_raw/src/raw_bridge.cpp:62]
+ST_1 : Operation 15 [1/1] (0.83ns)   --->   "store i3 3, i3* @state_V_1, align 1" [/home/user/galapagos/middleware/hls/network_bridge_raw/src/raw_bridge.cpp:63]
+
+ <State 2> : 0.00ns
+ST_2 : Operation 16 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecIFCore(i73* %from_raw_V, [1 x i8]* @p_str, [11 x i8]* @p_str1, [1 x i8]* @p_str, i32 -1, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str)"
+ST_2 : Operation 17 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecIFCore(i89* %to_app_V, [1 x i8]* @p_str, [11 x i8]* @p_str1, [1 x i8]* @p_str, i32 -1, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str)"
+ST_2 : Operation 18 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i89* %to_app_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str, i32 0, i32 0, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str, [1 x i8]* @p_str)"
+ST_2 : Operation 19 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i73* %from_raw_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str, i32 0, i32 0, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str, [1 x i8]* @p_str)"
+ST_2 : Operation 20 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecPipeline(i32 1, i32 1, i32 1, i32 0, [1 x i8]* @p_str) nounwind" [/home/user/galapagos/middleware/hls/network_bridge_raw/src/raw_bridge.cpp:47]
+ST_2 : Operation 21 [1/1] (0.00ns)   --->   "%tmp_dest_V = load i8* @dest_V, align 1"
+ST_2 : Operation 22 [1/1] (0.00ns)   --->   "br i1 %tmp_1, label %3, label %._crit_edge74" [/home/user/galapagos/middleware/hls/network_bridge_raw/src/raw_bridge.cpp:69]
+ST_2 : Operation 23 [1/1] (0.00ns)   --->   "%tmp_22 = call i89 @_ssdm_op_BitConcatenate.i89.i8.i8.i1.i8.i64(i8 %tmp_keep_V, i8 0, i1 %tmp_last_V, i8 %tmp_dest_V, i64 %tmp_data_V)" [/home/user/galapagos/middleware/hls/network_bridge_raw/src/raw_bridge.cpp:76]
+ST_2 : Operation 24 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_fifo.volatile.i89P(i89* %to_app_V, i89 %tmp_22)" [/home/user/galapagos/middleware/hls/network_bridge_raw/src/raw_bridge.cpp:76]   --->   Core 5 'AXI4Stream' <Latency = 0> <II = 1> <Delay = 1.00> <Adapter> <Opcode : >
+ST_2 : Operation 25 [1/1] (0.00ns)   --->   "br i1 %tmp_last_V, label %4, label %._crit_edge75" [/home/user/galapagos/middleware/hls/network_bridge_raw/src/raw_bridge.cpp:77]
+ST_2 : Operation 26 [1/1] (0.00ns)   --->   "br label %._crit_edge75" [/home/user/galapagos/middleware/hls/network_bridge_raw/src/raw_bridge.cpp:79]
+ST_2 : Operation 27 [1/1] (0.00ns)   --->   "br label %._crit_edge74" [/home/user/galapagos/middleware/hls/network_bridge_raw/src/raw_bridge.cpp:80]
+ST_2 : Operation 28 [1/1] (0.00ns)   --->   "br label %._crit_edge72" [/home/user/galapagos/middleware/hls/network_bridge_raw/src/raw_bridge.cpp:81]
+ST_2 : Operation 29 [1/1] (0.00ns)   --->   "br i1 %tmp, label %1, label %._crit_edge73" [/home/user/galapagos/middleware/hls/network_bridge_raw/src/raw_bridge.cpp:59]
+ST_2 : Operation 30 [1/1] (0.00ns)   --->   "br label %._crit_edge73" [/home/user/galapagos/middleware/hls/network_bridge_raw/src/raw_bridge.cpp:65]
+ST_2 : Operation 31 [1/1] (0.00ns)   --->   "br label %._crit_edge72" [/home/user/galapagos/middleware/hls/network_bridge_raw/src/raw_bridge.cpp:66]
+ST_2 : Operation 32 [1/1] (0.00ns)   --->   "ret void" [/home/user/galapagos/middleware/hls/network_bridge_raw/src/raw_bridge.cpp:83]
+
+
+============================================================
++ Verbose Summary: Timing violations
+============================================================
+Target clock period: 4ns, clock uncertainty: 0.5ns.
+
+ <State 1>: 0.835ns
+The critical path consists of the following:
+	'store' operation (/home/user/galapagos/middleware/hls/network_bridge_raw/src/raw_bridge.cpp:78) of constant 2 on static variable 'state_V_1' [25]  (0.835 ns)
+
+ <State 2>: 0ns
+The critical path consists of the following:
+
+
+============================================================
++ Verbose Summary: Binding
+============================================================
+N/A
+* FSMD analyzer results:
+  - Output states:
+ - Input state : 
+  - Chain level:
+	State 1
+	State 2
+
+
+============================================================
++ Verbose Summary: Datapath Resource usage 
+============================================================
+N/A

@@ -1,0 +1,180 @@
+
+
+================================================================
+== Vivado HLS Report for 'galapagos_bridge'
+================================================================
+* Date:           Wed Aug 12 00:40:08 2020
+
+* Version:        2018.1 (Build 2188600 on Wed Apr 04 19:04:02 MDT 2018)
+* Project:        galapagos_bridge
+* Solution:       solution1
+* Product family: kintexu
+* Target device:  xcku115-flva1517-2-e
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |  10.00|      2.56|        1.25|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+-------+-----+-------+----------+
+    |   Latency   |   Interval  | Pipeline |
+    | min |  max  | min |  max  |   Type   |
+    +-----+-------+-----+-------+----------+
+    |    6|  65541|    5|  65538| dataflow |
+    +-----+-------+-----+-------+----------+
+
+    + Detail: 
+        * Instance: 
+        +----------------+-------------+-----+-------+-----+-------+---------+
+        |                |             |   Latency   |   Interval  | Pipeline|
+        |    Instance    |    Module   | min |  max  | min |  max  |   Type  |
+        +----------------+-------------+-----+-------+-----+-------+---------+
+        |g2N_egress_U0   |g2N_egress   |    2|  65537|    2|  65537|   none  |
+        |n2G_U0          |n2G          |    4|    515|    4|    515|   none  |
+        |g2N_ingress_U0  |g2N_ingress  |    3|    514|    3|    514|   none  |
+        +----------------+-------------+-----+-------+-----+-------+---------+
+
+        * Loop: 
+        N/A
+
+
+
+================================================================
+== Utilization Estimates
+================================================================
+* Summary: 
++---------------------+---------+-------+---------+--------+
+|         Name        | BRAM_18K| DSP48E|    FF   |   LUT  |
++---------------------+---------+-------+---------+--------+
+|DSP                  |        -|      -|        -|       -|
+|Expression           |        -|      -|        0|      16|
+|FIFO                 |        0|      -|       15|      68|
+|Instance             |        -|      -|      276|     355|
+|Memory               |        -|      -|        -|       -|
+|Multiplexer          |        -|      -|        -|      27|
+|Register             |        -|      -|        5|       -|
++---------------------+---------+-------+---------+--------+
+|Total                |        0|      0|      296|     466|
++---------------------+---------+-------+---------+--------+
+|Available SLR        |     2160|   2760|   663360|  331680|
++---------------------+---------+-------+---------+--------+
+|Utilization SLR (%)  |        0|      0|    ~0   |   ~0   |
++---------------------+---------+-------+---------+--------+
+|Available            |     4320|   5520|  1326720|  663360|
++---------------------+---------+-------+---------+--------+
+|Utilization (%)      |        0|      0|    ~0   |   ~0   |
++---------------------+---------+-------+---------+--------+
+
++ Detail: 
+    * Instance: 
+    +----------------+-------------+---------+-------+-----+-----+
+    |    Instance    |    Module   | BRAM_18K| DSP48E|  FF | LUT |
+    +----------------+-------------+---------+-------+-----+-----+
+    |g2N_egress_U0   |g2N_egress   |        0|      0|   56|  191|
+    |g2N_ingress_U0  |g2N_ingress  |        0|      0|  114|   69|
+    |n2G_U0          |n2G          |        0|      0|  106|   95|
+    +----------------+-------------+---------+-------+-----+-----+
+    |Total           |             |        0|      0|  276|  355|
+    +----------------+-------------+---------+-------+-----+-----+
+
+    * DSP48: 
+    N/A
+
+    * Memory: 
+    N/A
+
+    * FIFO: 
+    +---------------------+---------+---+----+------+-----+---------+
+    |         Name        | BRAM_18K| FF| LUT| Depth| Bits| Size:D*B|
+    +---------------------+---------+---+----+------+-----+---------+
+    |dest_stream_V_V_U    |        0|  5|  20|     2|    8|       16|
+    |length_stream_V_V_U  |        0|  5|  28|     2|   16|       32|
+    |src_stream_V_V_U     |        0|  5|  20|     2|    8|       16|
+    +---------------------+---------+---+----+------+-----+---------+
+    |Total                |        0| 15|  68|     6|   32|       64|
+    +---------------------+---------+---+----+------+-----+---------+
+
+    * Expression: 
+    +-----------------------------------------+----------+-------+---+----+------------+------------+
+    |              Variable Name              | Operation| DSP48E| FF| LUT| Bitwidth P0| Bitwidth P1|
+    +-----------------------------------------+----------+-------+---+----+------------+------------+
+    |ap_channel_done_dest_stream_V_V          |    and   |      0|  0|   2|           1|           1|
+    |ap_channel_done_length_stream_V_V        |    and   |      0|  0|   2|           1|           1|
+    |ap_channel_done_src_stream_V_V           |    and   |      0|  0|   2|           1|           1|
+    |g2N_egress_U0_ap_start                   |    and   |      0|  0|   2|           1|           1|
+    |g2N_ingress_U0_ap_continue               |    and   |      0|  0|   2|           1|           1|
+    |ap_sync_channel_write_dest_stream_V_V    |    or    |      0|  0|   2|           1|           1|
+    |ap_sync_channel_write_length_stream_V_V  |    or    |      0|  0|   2|           1|           1|
+    |ap_sync_channel_write_src_stream_V_V     |    or    |      0|  0|   2|           1|           1|
+    +-----------------------------------------+----------+-------+---+----+------------+------------+
+    |Total                                    |          |      0|  0|  16|           8|           8|
+    +-----------------------------------------+----------+-------+---+----+------------+------------+
+
+    * Multiplexer: 
+    +---------------------------------------------+----+-----------+-----+-----------+
+    |                     Name                    | LUT| Input Size| Bits| Total Bits|
+    +---------------------------------------------+----+-----------+-----+-----------+
+    |ap_sync_reg_channel_write_dest_stream_V_V    |   9|          2|    1|          2|
+    |ap_sync_reg_channel_write_length_stream_V_V  |   9|          2|    1|          2|
+    |ap_sync_reg_channel_write_src_stream_V_V     |   9|          2|    1|          2|
+    +---------------------------------------------+----+-----------+-----+-----------+
+    |Total                                        |  27|          6|    3|          6|
+    +---------------------------------------------+----+-----------+-----+-----------+
+
+    * Register: 
+    +---------------------------------------------+---+----+-----+-----------+
+    |                     Name                    | FF| LUT| Bits| Const Bits|
+    +---------------------------------------------+---+----+-----+-----------+
+    |ap_sync_reg_channel_write_dest_stream_V_V    |  1|   0|    1|          0|
+    |ap_sync_reg_channel_write_length_stream_V_V  |  1|   0|    1|          0|
+    |ap_sync_reg_channel_write_src_stream_V_V     |  1|   0|    1|          0|
+    |g2N_ingress_U0_ap_start                      |  1|   0|    1|          0|
+    |n2G_U0_ap_start                              |  1|   0|    1|          0|
+    +---------------------------------------------+---+----+-----+-----------+
+    |Total                                        |  5|   0|    5|          0|
+    +---------------------------------------------+---+----+-----+-----------+
+
+
+
+================================================================
+== Interface
+================================================================
+* Summary: 
++-----------------------------+-----+-----+--------------+--------------------+--------------+
+|          RTL Ports          | Dir | Bits|   Protocol   |    Source Object   |    C Type    |
++-----------------------------+-----+-----+--------------+--------------------+--------------+
+|g2N_input_V_dout             |  in |   89|    ap_fifo   |     g2N_input_V    |    pointer   |
+|g2N_input_V_empty_n          |  in |    1|    ap_fifo   |     g2N_input_V    |    pointer   |
+|g2N_input_V_read             | out |    1|    ap_fifo   |     g2N_input_V    |    pointer   |
+|g2N_output_V_din             | out |   73|    ap_fifo   |    g2N_output_V    |    pointer   |
+|g2N_output_V_full_n          |  in |    1|    ap_fifo   |    g2N_output_V    |    pointer   |
+|g2N_output_V_write           | out |    1|    ap_fifo   |    g2N_output_V    |    pointer   |
+|buffer_storage_A_V_address0  | out |    9|   ap_memory  | buffer_storage_A_V |     array    |
+|buffer_storage_A_V_ce0       | out |    1|   ap_memory  | buffer_storage_A_V |     array    |
+|buffer_storage_A_V_d0        | out |   64|   ap_memory  | buffer_storage_A_V |     array    |
+|buffer_storage_A_V_q0        |  in |   64|   ap_memory  | buffer_storage_A_V |     array    |
+|buffer_storage_A_V_we0       | out |    1|   ap_memory  | buffer_storage_A_V |     array    |
+|buffer_storage_B_V_address0  | out |    9|   ap_memory  | buffer_storage_B_V |     array    |
+|buffer_storage_B_V_ce0       | out |    1|   ap_memory  | buffer_storage_B_V |     array    |
+|buffer_storage_B_V_d0        | out |   64|   ap_memory  | buffer_storage_B_V |     array    |
+|buffer_storage_B_V_q0        |  in |   64|   ap_memory  | buffer_storage_B_V |     array    |
+|buffer_storage_B_V_we0       | out |    1|   ap_memory  | buffer_storage_B_V |     array    |
+|n2G_input_V_dout             |  in |   73|    ap_fifo   |     n2G_input_V    |    pointer   |
+|n2G_input_V_empty_n          |  in |    1|    ap_fifo   |     n2G_input_V    |    pointer   |
+|n2G_input_V_read             | out |    1|    ap_fifo   |     n2G_input_V    |    pointer   |
+|n2G_output_V_din             | out |   89|    ap_fifo   |    n2G_output_V    |    pointer   |
+|n2G_output_V_full_n          |  in |    1|    ap_fifo   |    n2G_output_V    |    pointer   |
+|n2G_output_V_write           | out |    1|    ap_fifo   |    n2G_output_V    |    pointer   |
+|ap_clk                       |  in |    1| ap_ctrl_none |  galapagos_bridge  | return value |
+|ap_rst                       |  in |    1| ap_ctrl_none |  galapagos_bridge  | return value |
++-----------------------------+-----+-----+--------------+--------------------+--------------+
+

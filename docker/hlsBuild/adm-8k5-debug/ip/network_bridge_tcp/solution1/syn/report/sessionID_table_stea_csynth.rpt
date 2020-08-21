@@ -1,0 +1,209 @@
+
+
+================================================================
+== Vivado HLS Report for 'sessionID_table_stea'
+================================================================
+* Date:           Wed Aug 12 00:41:23 2020
+
+* Version:        2018.1 (Build 2188600 on Wed Apr 04 19:04:02 MDT 2018)
+* Project:        network_bridge_tcp
+* Solution:       solution1
+* Product family: kintexu
+* Target device:  xcku115-flva1517-2-e
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |   4.00|      1.77|        0.50|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+-----+-----+-----+----------+
+    |  Latency  |  Interval | Pipeline |
+    | min | max | min | max |   Type   |
+    +-----+-----+-----+-----+----------+
+    |    6|    6|    1|    1| function |
+    +-----+-----+-----+-----+----------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        N/A
+
+
+
+================================================================
+== Utilization Estimates
+================================================================
+* Summary: 
++---------------------+---------+-------+---------+--------+
+|         Name        | BRAM_18K| DSP48E|    FF   |   LUT  |
++---------------------+---------+-------+---------+--------+
+|DSP                  |        -|      -|        -|       -|
+|Expression           |        -|      -|        0|      28|
+|FIFO                 |        -|      -|        -|       -|
+|Instance             |        -|      -|        -|       -|
+|Memory               |        1|      -|        0|       0|
+|Multiplexer          |        -|      -|        -|     123|
+|Register             |        0|      -|      566|     224|
++---------------------+---------+-------+---------+--------+
+|Total                |        1|      0|      566|     375|
++---------------------+---------+-------+---------+--------+
+|Available SLR        |     2160|   2760|   663360|  331680|
++---------------------+---------+-------+---------+--------+
+|Utilization SLR (%)  |    ~0   |      0|    ~0   |   ~0   |
++---------------------+---------+-------+---------+--------+
+|Available            |     4320|   5520|  1326720|  663360|
++---------------------+---------+-------+---------+--------+
+|Utilization (%)      |    ~0   |      0|    ~0   |   ~0   |
++---------------------+---------+-------+---------+--------+
+
++ Detail: 
+    * Instance: 
+    N/A
+
+    * DSP48: 
+    N/A
+
+    * Memory: 
+    +---------------------+----------------------+---------+---+----+------+-----+------+-------------+
+    |        Memory       |        Module        | BRAM_18K| FF| LUT| Words| Bits| Banks| W*Bits*Banks|
+    +---------------------+----------------------+---------+---+----+------+-----+------+-------------+
+    |sessionID_table_V_U  |sessionID_table_sbkb  |        1|  0|   0|   256|   32|     1|         8192|
+    +---------------------+----------------------+---------+---+----+------+-----+------+-------------+
+    |Total                |                      |        1|  0|   0|   256|   32|     1|         8192|
+    +---------------------+----------------------+---------+---+----+------+-----+------+-------------+
+
+    * FIFO: 
+    N/A
+
+    * Expression: 
+    +----------------------------------+----------+-------+---+----+------------+------------+
+    |           Variable Name          | Operation| DSP48E| FF| LUT| Bitwidth P0| Bitwidth P1|
+    +----------------------------------+----------+-------+---+----+------------+------------+
+    |ap_block_state3_pp0_stage0_iter2  |    and   |      0|  0|   2|           1|           1|
+    |ap_condition_346                  |    and   |      0|  0|   2|           1|           1|
+    |ap_predicate_op15_read_state2     |    and   |      0|  0|   2|           1|           1|
+    |ap_block_pp0_stage0_01001         |    or    |      0|  0|   2|           1|           1|
+    |ap_block_state1_pp0_stage0_iter0  |    or    |      0|  0|   2|           1|           1|
+    |ap_block_state2_pp0_stage0_iter1  |    or    |      0|  0|   2|           1|           1|
+    |ap_block_state4_pp0_stage0_iter3  |    or    |      0|  0|   2|           1|           1|
+    |ap_block_state7_pp0_stage0_iter6  |    or    |      0|  0|   2|           1|           1|
+    |ap_condition_298                  |    or    |      0|  0|   2|           1|           1|
+    |ap_condition_337                  |    or    |      0|  0|   2|           1|           1|
+    |ap_predicate_op19_read_state3     |    or    |      0|  0|   2|           1|           1|
+    |ap_predicate_op24_read_state4     |    or    |      0|  0|   2|           1|           1|
+    |ap_predicate_op55_write_state7    |    or    |      0|  0|   2|           1|           1|
+    |ap_enable_pp0                     |    xor   |      0|  0|   2|           1|           2|
+    +----------------------------------+----------+-------+---+----+------------+------------+
+    |Total                             |          |      0|  0|  28|          14|          15|
+    +----------------------------------+----------+-------+---+----+------------+------------+
+
+    * Multiplexer: 
+    +----------------------------+----+-----------+-----+-----------+
+    |            Name            | LUT| Input Size| Bits| Total Bits|
+    +----------------------------+----+-----------+-----+-----------+
+    |ap_done                     |   9|          2|    1|          2|
+    |g2t_read_dest_V_V_blk_n     |   9|          2|    1|          2|
+    |g2t_read_sid_V_V_blk_n      |   9|          2|    1|          2|
+    |g2t_write_dest_V_V_blk_n    |   9|          2|    1|          2|
+    |g2t_write_sid_V_V_blk_n     |   9|          2|    1|          2|
+    |sessionID_table_V_address0  |  27|          5|    8|         40|
+    |sessionID_table_V_d0        |  15|          3|   32|         96|
+    |t2g_read_dest_V_V_blk_n     |   9|          2|    1|          2|
+    |t2g_read_sid_V_V_blk_n      |   9|          2|    1|          2|
+    |t2g_write_dest_V_V_blk_n    |   9|          2|    1|          2|
+    |t2g_write_sid_V_V_blk_n     |   9|          2|    1|          2|
+    +----------------------------+----+-----------+-----+-----------+
+    |Total                       | 123|         26|   49|        154|
+    +----------------------------+----+-----------+-----+-----------+
+
+    * Register: 
+    +-------------------------------+----+----+-----+-----------+
+    |              Name             | FF | LUT| Bits| Const Bits|
+    +-------------------------------+----+----+-----+-----------+
+    |ap_CS_fsm                      |   1|   0|    1|          0|
+    |ap_done_reg                    |   1|   0|    1|          0|
+    |ap_enable_reg_pp0_iter1        |   1|   0|    1|          0|
+    |ap_enable_reg_pp0_iter2        |   1|   0|    1|          0|
+    |ap_enable_reg_pp0_iter3        |   1|   0|    1|          0|
+    |ap_enable_reg_pp0_iter4        |   1|   0|    1|          0|
+    |ap_enable_reg_pp0_iter5        |   1|   0|    1|          0|
+    |ap_enable_reg_pp0_iter6        |   1|   0|    1|          0|
+    |tmp_4_reg_221                  |   1|   0|    1|          0|
+    |tmp_5_reg_225                  |   1|   0|    1|          0|
+    |tmp_6_reg_239                  |   1|   0|    1|          0|
+    |tmp_7_reg_248                  |   1|   0|    1|          0|
+    |tmp_8_reg_252                  |   1|   0|    1|          0|
+    |tmp_V_10_reg_256               |   8|   0|    8|          0|
+    |tmp_V_11_reg_261               |  16|   0|   16|          0|
+    |tmp_V_5_reg_281                |  16|   0|   16|          0|
+    |tmp_V_6_reg_229                |   8|   0|    8|          0|
+    |tmp_V_7_reg_234                |  16|   0|   16|          0|
+    |tmp_V_8_reg_243                |   8|   0|    8|          0|
+    |tmp_V_8_reg_243_pp0_iter3_reg  |   8|   0|    8|          0|
+    |tmp_V_9_reg_276                |  16|   0|   16|          0|
+    |tmp_V_reg_216                  |   8|   0|    8|          0|
+    |tmp_reg_212                    |   1|   0|    1|          0|
+    |tmp_4_reg_221                  |  64|  32|    1|          0|
+    |tmp_5_reg_225                  |  64|  32|    1|          0|
+    |tmp_6_reg_239                  |  64|  32|    1|          0|
+    |tmp_V_6_reg_229                |  64|  32|    8|          0|
+    |tmp_V_7_reg_234                |  64|  32|   16|          0|
+    |tmp_V_reg_216                  |  64|  32|    8|          0|
+    |tmp_reg_212                    |  64|  32|    1|          0|
+    +-------------------------------+----+----+-----+-----------+
+    |Total                          | 566| 224|  154|          0|
+    +-------------------------------+----+----+-----+-----------+
+
+
+
+================================================================
+== Interface
+================================================================
+* Summary: 
++----------------------------+-----+-----+------------+----------------------+--------------+
+|          RTL Ports         | Dir | Bits|  Protocol  |     Source Object    |    C Type    |
++----------------------------+-----+-----+------------+----------------------+--------------+
+|ap_clk                      |  in |    1| ap_ctrl_hs | sessionID_table_stea | return value |
+|ap_rst                      |  in |    1| ap_ctrl_hs | sessionID_table_stea | return value |
+|ap_start                    |  in |    1| ap_ctrl_hs | sessionID_table_stea | return value |
+|ap_done                     | out |    1| ap_ctrl_hs | sessionID_table_stea | return value |
+|ap_continue                 |  in |    1| ap_ctrl_hs | sessionID_table_stea | return value |
+|ap_idle                     | out |    1| ap_ctrl_hs | sessionID_table_stea | return value |
+|ap_ready                    | out |    1| ap_ctrl_hs | sessionID_table_stea | return value |
+|t2g_read_dest_V_V_dout      |  in |    8|   ap_fifo  |   t2g_read_dest_V_V  |    pointer   |
+|t2g_read_dest_V_V_empty_n   |  in |    1|   ap_fifo  |   t2g_read_dest_V_V  |    pointer   |
+|t2g_read_dest_V_V_read      | out |    1|   ap_fifo  |   t2g_read_dest_V_V  |    pointer   |
+|t2g_write_dest_V_V_dout     |  in |    8|   ap_fifo  |  t2g_write_dest_V_V  |    pointer   |
+|t2g_write_dest_V_V_empty_n  |  in |    1|   ap_fifo  |  t2g_write_dest_V_V  |    pointer   |
+|t2g_write_dest_V_V_read     | out |    1|   ap_fifo  |  t2g_write_dest_V_V  |    pointer   |
+|t2g_write_sid_V_V_dout      |  in |   16|   ap_fifo  |   t2g_write_sid_V_V  |    pointer   |
+|t2g_write_sid_V_V_empty_n   |  in |    1|   ap_fifo  |   t2g_write_sid_V_V  |    pointer   |
+|t2g_write_sid_V_V_read      | out |    1|   ap_fifo  |   t2g_write_sid_V_V  |    pointer   |
+|g2t_read_dest_V_V_dout      |  in |    8|   ap_fifo  |   g2t_read_dest_V_V  |    pointer   |
+|g2t_read_dest_V_V_empty_n   |  in |    1|   ap_fifo  |   g2t_read_dest_V_V  |    pointer   |
+|g2t_read_dest_V_V_read      | out |    1|   ap_fifo  |   g2t_read_dest_V_V  |    pointer   |
+|g2t_write_dest_V_V_dout     |  in |    8|   ap_fifo  |  g2t_write_dest_V_V  |    pointer   |
+|g2t_write_dest_V_V_empty_n  |  in |    1|   ap_fifo  |  g2t_write_dest_V_V  |    pointer   |
+|g2t_write_dest_V_V_read     | out |    1|   ap_fifo  |  g2t_write_dest_V_V  |    pointer   |
+|g2t_write_sid_V_V_dout      |  in |   16|   ap_fifo  |   g2t_write_sid_V_V  |    pointer   |
+|g2t_write_sid_V_V_empty_n   |  in |    1|   ap_fifo  |   g2t_write_sid_V_V  |    pointer   |
+|g2t_write_sid_V_V_read      | out |    1|   ap_fifo  |   g2t_write_sid_V_V  |    pointer   |
+|g2t_read_sid_V_V_din        | out |   16|   ap_fifo  |   g2t_read_sid_V_V   |    pointer   |
+|g2t_read_sid_V_V_full_n     |  in |    1|   ap_fifo  |   g2t_read_sid_V_V   |    pointer   |
+|g2t_read_sid_V_V_write      | out |    1|   ap_fifo  |   g2t_read_sid_V_V   |    pointer   |
+|t2g_read_sid_V_V_din        | out |   16|   ap_fifo  |   t2g_read_sid_V_V   |    pointer   |
+|t2g_read_sid_V_V_full_n     |  in |    1|   ap_fifo  |   t2g_read_sid_V_V   |    pointer   |
+|t2g_read_sid_V_V_write      | out |    1|   ap_fifo  |   t2g_read_sid_V_V   |    pointer   |
++----------------------------+-----+-----+------------+----------------------+--------------+
+

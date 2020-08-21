@@ -1,0 +1,159 @@
+
+
+================================================================
+== Vivado HLS Report for 'open_port'
+================================================================
+* Date:           Wed Aug 12 00:41:22 2020
+
+* Version:        2018.1 (Build 2188600 on Wed Apr 04 19:04:02 MDT 2018)
+* Project:        network_bridge_tcp
+* Solution:       solution1
+* Product family: kintexu
+* Target device:  xcku115-flva1517-2-e
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |   4.00|      1.10|        0.50|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+-----+-----+-----+----------+
+    |  Latency  |  Interval | Pipeline |
+    | min | max | min | max |   Type   |
+    +-----+-----+-----+-----+----------+
+    |    1|    1|    1|    1| function |
+    +-----+-----+-----+-----+----------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        N/A
+
+
+
+================================================================
+== Utilization Estimates
+================================================================
+* Summary: 
++---------------------+---------+-------+---------+--------+
+|         Name        | BRAM_18K| DSP48E|    FF   |   LUT  |
++---------------------+---------+-------+---------+--------+
+|DSP                  |        -|      -|        -|       -|
+|Expression           |        -|      -|        0|      29|
+|FIFO                 |        -|      -|        -|       -|
+|Instance             |        -|      -|        -|       -|
+|Memory               |        -|      -|        -|       -|
+|Multiplexer          |        -|      -|        -|      45|
+|Register             |        -|      -|       40|       -|
++---------------------+---------+-------+---------+--------+
+|Total                |        0|      0|       40|      74|
++---------------------+---------+-------+---------+--------+
+|Available SLR        |     2160|   2760|   663360|  331680|
++---------------------+---------+-------+---------+--------+
+|Utilization SLR (%)  |        0|      0|    ~0   |   ~0   |
++---------------------+---------+-------+---------+--------+
+|Available            |     4320|   5520|  1326720|  663360|
++---------------------+---------+-------+---------+--------+
+|Utilization (%)      |        0|      0|    ~0   |   ~0   |
++---------------------+---------+-------+---------+--------+
+
++ Detail: 
+    * Instance: 
+    N/A
+
+    * DSP48: 
+    N/A
+
+    * Memory: 
+    N/A
+
+    * FIFO: 
+    N/A
+
+    * Expression: 
+    +----------------------------------+----------+-------+---+----+------------+------------+
+    |           Variable Name          | Operation| DSP48E| FF| LUT| Bitwidth P0| Bitwidth P1|
+    +----------------------------------+----------+-------+---+----+------------+------------+
+    |ap_condition_96                   |    and   |      0|  0|   2|           1|           1|
+    |ap_predicate_op11_read_state1     |    and   |      0|  0|   2|           1|           1|
+    |ap_predicate_op34_write_state2    |    and   |      0|  0|   2|           1|           1|
+    |tmp_s_fu_151_p2                   |   icmp   |      0|  0|  13|          16|           1|
+    |ap_block_pp0_stage0_01001         |    or    |      0|  0|   2|           1|           1|
+    |ap_block_state1_pp0_stage0_iter0  |    or    |      0|  0|   2|           1|           1|
+    |ap_block_state2_pp0_stage0_iter1  |    or    |      0|  0|   2|           1|           1|
+    |brmerge_fu_117_p2                 |    or    |      0|  0|   2|           1|           1|
+    |ap_enable_pp0                     |    xor   |      0|  0|   2|           1|           2|
+    +----------------------------------+----------+-------+---+----+------------+------------+
+    |Total                             |          |      0|  0|  29|          24|          10|
+    +----------------------------------+----------+-------+---+----+------------+------------+
+
+    * Multiplexer: 
+    +--------------------------+----+-----------+-----+-----------+
+    |           Name           | LUT| Input Size| Bits| Total Bits|
+    +--------------------------+----+-----------+-----+-----------+
+    |ap_done                   |   9|          2|    1|          2|
+    |listenPortStatus_V_blk_n  |   9|          2|    1|          2|
+    |listenPort_V_V_blk_n      |   9|          2|    1|          2|
+    |notifications_V_blk_n     |   9|          2|    1|          2|
+    |readRequest_V_blk_n       |   9|          2|    1|          2|
+    +--------------------------+----+-----------+-----+-----------+
+    |Total                     |  45|         10|    5|         10|
+    +--------------------------+----+-----------+-----+-----------+
+
+    * Register: 
+    +-------------------------+----+----+-----+-----------+
+    |           Name          | FF | LUT| Bits| Const Bits|
+    +-------------------------+----+----+-----+-----------+
+    |ap_CS_fsm                |   1|   0|    1|          0|
+    |ap_done_reg              |   1|   0|    1|          0|
+    |ap_enable_reg_pp0_iter1  |   1|   0|    1|          0|
+    |brmerge_reg_165          |   1|   0|    1|          0|
+    |listenDone               |   1|   0|    1|          0|
+    |tmp_1_reg_181            |  32|   0|   32|          0|
+    |tmp_2_reg_173            |   1|   0|    1|          0|
+    |tmp_s_reg_177            |   1|   0|    1|          0|
+    |waitPortStatus           |   1|   0|    1|          0|
+    +-------------------------+----+----+-----+-----------+
+    |Total                    |  40|   0|   40|          0|
+    +-------------------------+----+----+-----+-----------+
+
+
+
+================================================================
+== Interface
+================================================================
+* Summary: 
++----------------------------+-----+-----+------------+--------------------+--------------+
+|          RTL Ports         | Dir | Bits|  Protocol  |    Source Object   |    C Type    |
++----------------------------+-----+-----+------------+--------------------+--------------+
+|ap_clk                      |  in |    1| ap_ctrl_hs |      open_port     | return value |
+|ap_rst                      |  in |    1| ap_ctrl_hs |      open_port     | return value |
+|ap_start                    |  in |    1| ap_ctrl_hs |      open_port     | return value |
+|ap_done                     | out |    1| ap_ctrl_hs |      open_port     | return value |
+|ap_continue                 |  in |    1| ap_ctrl_hs |      open_port     | return value |
+|ap_idle                     | out |    1| ap_ctrl_hs |      open_port     | return value |
+|ap_ready                    | out |    1| ap_ctrl_hs |      open_port     | return value |
+|listenPortStatus_V_dout     |  in |    1|   ap_fifo  | listenPortStatus_V |    pointer   |
+|listenPortStatus_V_empty_n  |  in |    1|   ap_fifo  | listenPortStatus_V |    pointer   |
+|listenPortStatus_V_read     | out |    1|   ap_fifo  | listenPortStatus_V |    pointer   |
+|notifications_V_dout        |  in |   81|   ap_fifo  |   notifications_V  |    pointer   |
+|notifications_V_empty_n     |  in |    1|   ap_fifo  |   notifications_V  |    pointer   |
+|notifications_V_read        | out |    1|   ap_fifo  |   notifications_V  |    pointer   |
+|listenPort_V_V_din          | out |   16|   ap_fifo  |   listenPort_V_V   |    pointer   |
+|listenPort_V_V_full_n       |  in |    1|   ap_fifo  |   listenPort_V_V   |    pointer   |
+|listenPort_V_V_write        | out |    1|   ap_fifo  |   listenPort_V_V   |    pointer   |
+|readRequest_V_din           | out |   32|   ap_fifo  |    readRequest_V   |    pointer   |
+|readRequest_V_full_n        |  in |    1|   ap_fifo  |    readRequest_V   |    pointer   |
+|readRequest_V_write         | out |    1|   ap_fifo  |    readRequest_V   |    pointer   |
++----------------------------+-----+-----+------------+--------------------+--------------+
+

@@ -1,0 +1,159 @@
+
+
+================================================================
+== Vivado HLS Report for 'open_connections'
+================================================================
+* Date:           Wed Aug 12 00:41:22 2020
+
+* Version:        2018.1 (Build 2188600 on Wed Apr 04 19:04:02 MDT 2018)
+* Project:        network_bridge_tcp
+* Solution:       solution1
+* Product family: kintexu
+* Target device:  xcku115-flva1517-2-e
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |   4.00|      1.75|        0.50|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+-----+-----+-----+----------+
+    |  Latency  |  Interval | Pipeline |
+    | min | max | min | max |   Type   |
+    +-----+-----+-----+-----+----------+
+    |    1|    1|    1|    1| function |
+    +-----+-----+-----+-----+----------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        N/A
+
+
+
+================================================================
+== Utilization Estimates
+================================================================
+* Summary: 
++---------------------+---------+-------+---------+--------+
+|         Name        | BRAM_18K| DSP48E|    FF   |   LUT  |
++---------------------+---------+-------+---------+--------+
+|DSP                  |        -|      -|        -|       -|
+|Expression           |        -|      -|        0|      18|
+|FIFO                 |        -|      -|        -|       -|
+|Instance             |        -|      -|        -|       -|
+|Memory               |        -|      -|        -|       -|
+|Multiplexer          |        -|      -|        -|      45|
+|Register             |        -|      -|       55|       -|
++---------------------+---------+-------+---------+--------+
+|Total                |        0|      0|       55|      63|
++---------------------+---------+-------+---------+--------+
+|Available SLR        |     2160|   2760|   663360|  331680|
++---------------------+---------+-------+---------+--------+
+|Utilization SLR (%)  |        0|      0|    ~0   |   ~0   |
++---------------------+---------+-------+---------+--------+
+|Available            |     4320|   5520|  1326720|  663360|
++---------------------+---------+-------+---------+--------+
+|Utilization (%)      |        0|      0|    ~0   |   ~0   |
++---------------------+---------+-------+---------+--------+
+
++ Detail: 
+    * Instance: 
+    N/A
+
+    * DSP48: 
+    N/A
+
+    * Memory: 
+    N/A
+
+    * FIFO: 
+    N/A
+
+    * Expression: 
+    +----------------------------------+----------+-------+---+----+------------+------------+
+    |           Variable Name          | Operation| DSP48E| FF| LUT| Bitwidth P0| Bitwidth P1|
+    +----------------------------------+----------+-------+---+----+------------+------------+
+    |ap_condition_97                   |    and   |      0|  0|   2|           1|           1|
+    |ap_predicate_op13_read_state1     |    and   |      0|  0|   2|           1|           1|
+    |ap_predicate_op26_write_state2    |    and   |      0|  0|   2|           1|           1|
+    |ap_block_pp0_stage0_01001         |    or    |      0|  0|   2|           1|           1|
+    |ap_block_state1_pp0_stage0_iter0  |    or    |      0|  0|   2|           1|           1|
+    |ap_block_state2_pp0_stage0_iter1  |    or    |      0|  0|   2|           1|           1|
+    |brmerge_i_fu_108_p2               |    or    |      0|  0|   2|           1|           1|
+    |ap_enable_pp0                     |    xor   |      0|  0|   2|           1|           2|
+    |tmp_not_i_fu_102_p2               |    xor   |      0|  0|   2|           1|           2|
+    +----------------------------------+----------+-------+---+----+------------+------------+
+    |Total                             |          |      0|  0|  18|           9|          11|
+    +----------------------------------+----------+-------+---+----+------------+------------+
+
+    * Multiplexer: 
+    +--------------------------+----+-----------+-----+-----------+
+    |           Name           | LUT| Input Size| Bits| Total Bits|
+    +--------------------------+----+-----------+-----+-----------+
+    |ap_done                   |   9|          2|    1|          2|
+    |ip_fifo_V_V_blk_n         |   9|          2|    1|          2|
+    |openConStatus_V_blk_n     |   9|          2|    1|          2|
+    |openConnection_V_blk_n    |   9|          2|    1|          2|
+    |sessionID_fifo_V_V_blk_n  |   9|          2|    1|          2|
+    +--------------------------+----+-----------+-----+-----------+
+    |Total                     |  45|         10|    5|         10|
+    +--------------------------+----+-----------+-----+-----------+
+
+    * Register: 
+    +-------------------------------+----+----+-----+-----------+
+    |              Name             | FF | LUT| Bits| Const Bits|
+    +-------------------------------+----+----+-----+-----------+
+    |ap_CS_fsm                      |   1|   0|    1|          0|
+    |ap_done_reg                    |   1|   0|    1|          0|
+    |ap_enable_reg_pp0_iter1        |   1|   0|    1|          0|
+    |brmerge_i_reg_142              |   1|   0|    1|          0|
+    |tmp_13_reg_151                 |   1|   0|    1|          0|
+    |tmp_V_12_reg_146               |  32|   0|   32|          0|
+    |tmp_V_reg_155                  |  16|   0|   16|          0|
+    |wait_for_connection            |   1|   0|    1|          0|
+    |wait_for_connection_s_reg_138  |   1|   0|    1|          0|
+    +-------------------------------+----+----+-----+-----------+
+    |Total                          |  55|   0|   55|          0|
+    +-------------------------------+----+----+-----+-----------+
+
+
+
+================================================================
+== Interface
+================================================================
+* Summary: 
++---------------------------+-----+-----+------------+--------------------+--------------+
+|         RTL Ports         | Dir | Bits|  Protocol  |    Source Object   |    C Type    |
++---------------------------+-----+-----+------------+--------------------+--------------+
+|ap_clk                     |  in |    1| ap_ctrl_hs |  open_connections  | return value |
+|ap_rst                     |  in |    1| ap_ctrl_hs |  open_connections  | return value |
+|ap_start                   |  in |    1| ap_ctrl_hs |  open_connections  | return value |
+|ap_done                    | out |    1| ap_ctrl_hs |  open_connections  | return value |
+|ap_continue                |  in |    1| ap_ctrl_hs |  open_connections  | return value |
+|ap_idle                    | out |    1| ap_ctrl_hs |  open_connections  | return value |
+|ap_ready                   | out |    1| ap_ctrl_hs |  open_connections  | return value |
+|ip_fifo_V_V_dout           |  in |   32|   ap_fifo  |     ip_fifo_V_V    |    pointer   |
+|ip_fifo_V_V_empty_n        |  in |    1|   ap_fifo  |     ip_fifo_V_V    |    pointer   |
+|ip_fifo_V_V_read           | out |    1|   ap_fifo  |     ip_fifo_V_V    |    pointer   |
+|openConStatus_V_dout       |  in |   17|   ap_fifo  |   openConStatus_V  |    pointer   |
+|openConStatus_V_empty_n    |  in |    1|   ap_fifo  |   openConStatus_V  |    pointer   |
+|openConStatus_V_read       | out |    1|   ap_fifo  |   openConStatus_V  |    pointer   |
+|openConnection_V_din       | out |   48|   ap_fifo  |  openConnection_V  |    pointer   |
+|openConnection_V_full_n    |  in |    1|   ap_fifo  |  openConnection_V  |    pointer   |
+|openConnection_V_write     | out |    1|   ap_fifo  |  openConnection_V  |    pointer   |
+|sessionID_fifo_V_V_din     | out |   16|   ap_fifo  | sessionID_fifo_V_V |    pointer   |
+|sessionID_fifo_V_V_full_n  |  in |    1|   ap_fifo  | sessionID_fifo_V_V |    pointer   |
+|sessionID_fifo_V_V_write   | out |    1|   ap_fifo  | sessionID_fifo_V_V |    pointer   |
++---------------------------+-----+-----+------------+--------------------+--------------+
+

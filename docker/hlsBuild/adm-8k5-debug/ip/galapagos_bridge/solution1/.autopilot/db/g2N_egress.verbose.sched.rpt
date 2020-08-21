@@ -1,0 +1,174 @@
+
+
+================================================================
+== Vivado HLS Report for 'g2N_egress'
+================================================================
+* Date:           Wed Aug 12 00:40:07 2020
+
+* Version:        2018.1 (Build 2188600 on Wed Apr 04 19:04:02 MDT 2018)
+* Project:        galapagos_bridge
+* Solution:       solution1
+* Product family: kintexu
+* Target device:  xcku115-flva1517-2-e
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |  10.00|      2.56|        1.25|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+-------+-----+-------+---------+
+    |   Latency   |   Interval  | Pipeline|
+    | min |  max  | min |  max  |   Type  |
+    +-----+-------+-----+-------+---------+
+    |    2|  65537|    2|  65537|   none  |
+    +-----+-------+-----+-------+---------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        +-------------+-----+-------+----------+-----------+-----------+-----------+----------+
+        |             |   Latency   | Iteration|  Initiation Interval  |    Trip   |          |
+        |  Loop Name  | min |  max  |  Latency |  achieved |   target  |   Count   | Pipelined|
+        +-------------+-----+-------+----------+-----------+-----------+-----------+----------+
+        |- read_loop  |    0|  65535|         2|          1|          1| 0 ~ 65535 |    yes   |
+        +-------------+-----+-------+----------+-----------+-----------+-----------+----------+
+
+============================================================
++ Verbose Summary: Synthesis Manager
+============================================================
+InlineROM: 1
+ExposeGlobal: 1
+============================================================
++ Verbose Summary: CDFG Model
+============================================================
+IsTopModel: 0
+ResetActiveHigh: 1
+IsCombinational: 2
+IsDatapathOnly: 0
+HasWiredReturn: 1
+HasMFsm: 0
+HasVarLatency: 1
+IsPipeline: 0
+IsRtlPipelined: 0
+IsInstanceOverlapped: 0
+IsDontTouch: 0
+HasImplIP: 0
+IsGatedGlobalClock: 0
+
++ Individual pipeline summary: 
+  * Pipeline-0: initiation interval (II) = 1, depth = 2
+
+
+============================================================
++ Verbose Summary: Schedule
+============================================================
+* Number of FSM states : 4
+* Pipeline : 1
+  Pipeline-0 : II = 1, D = 2, States = { 2 3 }
+* Dataflow Pipeline: 0
+
+* FSM state transitions: 
+1 --> 
+	2  / true
+2 --> 
+	4  / (!tmp_1)
+	3  / (tmp_1)
+3 --> 
+	2  / true
+4 --> 
+
+* FSM state operations: 
+
+ <State 1> : 0.83ns
+ST_1 : Operation 5 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([512 x i64]* %buffer_storage_V, [1 x i8]* @p_str1, [7 x i8]* @p_str10, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"
+ST_1 : Operation 6 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecIFCore(i73* %output_V, [1 x i8]* @p_str1, [11 x i8]* @p_str5, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [23 x i8]* @p_str6)"
+ST_1 : Operation 7 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i73* %output_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str97, i32 0, i32 0, [1 x i8]* @p_str98, [1 x i8]* @p_str99, [1 x i8]* @p_str100, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str101, [1 x i8]* @p_str102)"
+ST_1 : Operation 8 [1/1] (0.00ns)   --->   "%tmp_V = call i16 @_ssdm_op_Read.ap_auto.volatile.i16P(i16* %length_stream_V_V)" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:86]
+ST_1 : Operation 9 [1/1] (0.00ns)   --->   "%tmp_V_5 = call i8 @_ssdm_op_Read.ap_auto.volatile.i8P(i8* %dest_stream_V_V)" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:87]
+ST_1 : Operation 10 [1/1] (0.00ns)   --->   "%tmp_V_6 = call i8 @_ssdm_op_Read.ap_auto.volatile.i8P(i8* %src_stream_V_V)" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:88]
+ST_1 : Operation 11 [1/1] (0.00ns)   --->   "%tmp = trunc i16 %tmp_V to i13" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:86]
+ST_1 : Operation 12 [1/1] (0.00ns)   --->   "%tmp_5 = call i72 @_ssdm_op_BitConcatenate.i72.i40.i8.i8.i13.i3(i40 -4294967296, i8 %tmp_V_5, i8 %tmp_V_6, i13 %tmp, i3 0)" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:103]
+ST_1 : Operation 13 [1/1] (0.00ns)   --->   "%tmp_9 = call i73 @_ssdm_op_PartSet.i73.i73.i72.i32.i32(i73 undef, i72 %tmp_5, i32 0, i32 71)" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:103]
+ST_1 : Operation 14 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_fifo.volatile.i73P(i73* %output_V, i73 %tmp_9)" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:103]   --->   Core 5 'AXI4Stream' <Latency = 0> <II = 1> <Delay = 1.00> <Adapter> <Opcode : >
+ST_1 : Operation 15 [1/1] (0.83ns)   --->   "br label %0" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:108]
+
+ <State 2> : 2.56ns
+ST_2 : Operation 16 [1/1] (0.00ns)   --->   "%i = phi i32 [ 0, %_ZlsILi16ELb0EE11ap_int_baseIXT_EXT0_EXleT_Li64EEERKS1_i.exit ], [ %i_3, %1 ]"
+ST_2 : Operation 17 [1/1] (0.00ns)   --->   "%tmp_s = zext i16 %tmp_V to i32" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:108]
+ST_2 : Operation 18 [1/1] (1.14ns)   --->   "%tmp_1 = icmp slt i32 %i, %tmp_s" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:108]   --->   Core 25 'Cmp' <Latency = 0> <II = 1> <Delay = 1.14> <FuncUnit> <Opcode : 'icmp'> <InPorts = 2> <OutPorts = 1>
+ST_2 : Operation 19 [1/1] (1.48ns)   --->   "%i_3 = add nsw i32 %i, 1" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:108]   --->   Core 14 'AddSub' <Latency = 0> <II = 1> <Delay = 1.41> <FuncUnit> <Opcode : 'add' 'sub'> <InPorts = 2> <OutPorts = 1>
+ST_2 : Operation 20 [1/1] (0.00ns)   --->   "%empty = call i32 (...)* @_ssdm_op_SpecLoopTripCount(i64 0, i64 65535, i64 0)"
+ST_2 : Operation 21 [1/1] (0.00ns)   --->   "br i1 %tmp_1, label %1, label %2" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:108]
+ST_2 : Operation 22 [1/1] (0.00ns)   --->   "%tmp_2 = zext i32 %i to i64" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:110]
+ST_2 : Operation 23 [1/1] (0.00ns)   --->   "%buffer_storage_V_add = getelementptr [512 x i64]* %buffer_storage_V, i64 0, i64 %tmp_2" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:110]
+ST_2 : Operation 24 [2/2] (0.94ns)   --->   "%n_data_V = load i64* %buffer_storage_V_add, align 8" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:110]   --->   Core 42 'RAM_1P' <Latency = 1> <II = 1> <Delay = 0.94> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 64> <Depth = 512> <RAM>
+ST_2 : Operation 25 [1/1] (0.00ns)   --->   "%lhs_V_cast = zext i16 %tmp_V to i17" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:111]
+ST_2 : Operation 26 [1/1] (1.41ns)   --->   "%r_V = add i17 %lhs_V_cast, -1" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:111]   --->   Core 14 'AddSub' <Latency = 0> <II = 1> <Delay = 1.41> <FuncUnit> <Opcode : 'add' 'sub'> <InPorts = 2> <OutPorts = 1>
+ST_2 : Operation 27 [1/1] (0.00ns)   --->   "%tmp_3_cast = sext i17 %r_V to i32" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:111]
+ST_2 : Operation 28 [1/1] (1.14ns)   --->   "%tmp_last_V = icmp eq i32 %i, %tmp_3_cast" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:111]   --->   Core 25 'Cmp' <Latency = 0> <II = 1> <Delay = 1.14> <FuncUnit> <Opcode : 'icmp'> <InPorts = 2> <OutPorts = 1>
+
+ <State 3> : 0.94ns
+ST_3 : Operation 29 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecLoopName([10 x i8]* @p_str2) nounwind" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:108]
+ST_3 : Operation 30 [1/1] (0.00ns)   --->   "%tmp_7 = call i32 (...)* @_ssdm_op_SpecRegionBegin([10 x i8]* @p_str2)" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:108]
+ST_3 : Operation 31 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecPipeline(i32 1, i32 1, i32 1, i32 0, [1 x i8]* @p_str1) nounwind" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:109]
+ST_3 : Operation 32 [1/2] (0.94ns)   --->   "%n_data_V = load i64* %buffer_storage_V_add, align 8" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:110]   --->   Core 42 'RAM_1P' <Latency = 1> <II = 1> <Delay = 0.94> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 64> <Depth = 512> <RAM>
+ST_3 : Operation 33 [1/1] (0.00ns)   --->   "%tmp_16 = call i73 @_ssdm_op_BitConcatenate.i73.i1.i8.i64(i1 %tmp_last_V, i8 -1, i64 %n_data_V)" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:112]
+ST_3 : Operation 34 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_fifo.volatile.i73P(i73* %output_V, i73 %tmp_16)" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:112]   --->   Core 5 'AXI4Stream' <Latency = 0> <II = 1> <Delay = 1.00> <Adapter> <Opcode : >
+ST_3 : Operation 35 [1/1] (0.00ns)   --->   "%empty_14 = call i32 (...)* @_ssdm_op_SpecRegionEnd([10 x i8]* @p_str2, i32 %tmp_7)" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:116]
+ST_3 : Operation 36 [1/1] (0.00ns)   --->   "br label %0" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:108]
+
+ <State 4> : 0.00ns
+ST_4 : Operation 37 [1/1] (0.00ns)   --->   "ret void" [/home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:118]
+
+
+============================================================
++ Verbose Summary: Timing violations
+============================================================
+Target clock period: 10ns, clock uncertainty: 1.25ns.
+
+ <State 1>: 0.835ns
+The critical path consists of the following:
+	multiplexor before 'phi' operation ('i') with incoming values : ('i', /home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:108) [18]  (0.835 ns)
+
+ <State 2>: 2.56ns
+The critical path consists of the following:
+	'add' operation ('r.V', /home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:111) [32]  (1.42 ns)
+	'icmp' operation ('val', /home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:111) [34]  (1.14 ns)
+
+ <State 3>: 0.94ns
+The critical path consists of the following:
+	'load' operation ('n.data.V', /home/user/galapagos/middleware/hls/galapagos_bridge/src/galapagos_bridge.cpp:110) on array 'buffer_storage_V' [30]  (0.94 ns)
+
+ <State 4>: 0ns
+The critical path consists of the following:
+
+
+============================================================
++ Verbose Summary: Binding
+============================================================
+N/A
+* FSMD analyzer results:
+  - Output states:
+ - Input state : 
+  - Chain level:
+	State 1
+	State 2
+	State 3
+	State 4
+
+
+============================================================
++ Verbose Summary: Datapath Resource usage 
+============================================================
+N/A

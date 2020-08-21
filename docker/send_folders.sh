@@ -1,5 +1,7 @@
-echo "Please enter sender container id"
-read container_id
+#echo "Please enter sender container id"
+#read container_id
 
-docker cp projects $container_id:/home/user/galapagos  
-docker cp hlsBuild $container_id:/home/user/galapagos
+export CONTAINER_ID=$(cat sender_id.txt)
+docker cp projects $CONTAINER_ID:/home/user/galapagos  
+docker cp hlsBuild $CONTAINER_ID:/home/user/galapagos
+

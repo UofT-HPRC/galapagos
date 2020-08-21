@@ -1,0 +1,155 @@
+
+
+================================================================
+== Vivado HLS Report for 'g2N_ingress'
+================================================================
+* Date:           Wed Aug 12 00:40:07 2020
+
+* Version:        2018.1 (Build 2188600 on Wed Apr 04 19:04:02 MDT 2018)
+* Project:        galapagos_bridge
+* Solution:       solution1
+* Product family: kintexu
+* Target device:  xcku115-flva1517-2-e
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |  10.00|      1.32|        1.25|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+-----+-----+-----+---------+
+    |  Latency  |  Interval | Pipeline|
+    | min | max | min | max |   Type  |
+    +-----+-----+-----+-----+---------+
+    |    3|  514|    3|  514|   none  |
+    +-----+-----+-----+-----+---------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        +--------------+-----+-----+----------+-----------+-----------+---------+----------+
+        |              |  Latency  | Iteration|  Initiation Interval  |   Trip  |          |
+        |   Loop Name  | min | max |  Latency |  achieved |   target  |  Count  | Pipelined|
+        +--------------+-----+-----+----------+-----------+-----------+---------+----------+
+        |- write_loop  |    1|  512|         1|          1|          1| 1 ~ 512 |    yes   |
+        +--------------+-----+-----+----------+-----------+-----------+---------+----------+
+
+
+
+================================================================
+== Utilization Estimates
+================================================================
+* Summary: 
++---------------------+---------+-------+---------+--------+
+|         Name        | BRAM_18K| DSP48E|    FF   |   LUT  |
++---------------------+---------+-------+---------+--------+
+|DSP                  |        -|      -|        -|       -|
+|Expression           |        -|      -|        0|      21|
+|FIFO                 |        -|      -|        -|       -|
+|Instance             |        -|      -|        -|       -|
+|Memory               |        -|      -|        -|       -|
+|Multiplexer          |        -|      -|        -|      48|
+|Register             |        -|      -|      114|       -|
++---------------------+---------+-------+---------+--------+
+|Total                |        0|      0|      114|      69|
++---------------------+---------+-------+---------+--------+
+|Available SLR        |     2160|   2760|   663360|  331680|
++---------------------+---------+-------+---------+--------+
+|Utilization SLR (%)  |        0|      0|    ~0   |   ~0   |
++---------------------+---------+-------+---------+--------+
+|Available            |     4320|   5520|  1326720|  663360|
++---------------------+---------+-------+---------+--------+
+|Utilization (%)      |        0|      0|    ~0   |   ~0   |
++---------------------+---------+-------+---------+--------+
+
++ Detail: 
+    * Instance: 
+    N/A
+
+    * DSP48: 
+    N/A
+
+    * Memory: 
+    N/A
+
+    * FIFO: 
+    N/A
+
+    * Expression: 
+    +-------------------+----------+-------+---+----+------------+------------+
+    |   Variable Name   | Operation| DSP48E| FF| LUT| Bitwidth P0| Bitwidth P1|
+    +-------------------+----------+-------+---+----+------------+------------+
+    |tmp_V_4_fu_154_p2  |     +    |      0|  0|  17|          10|           1|
+    |ap_block_state2    |    and   |      0|  0|   2|           1|           1|
+    |ap_block_state1    |    or    |      0|  0|   2|           1|           1|
+    +-------------------+----------+-------+---+----+------------+------------+
+    |Total              |          |      0|  0|  21|          12|           3|
+    +-------------------+----------+-------+---+----+------------+------------+
+
+    * Multiplexer: 
+    +---------------+----+-----------+-----+-----------+
+    |      Name     | LUT| Input Size| Bits| Total Bits|
+    +---------------+----+-----------+-----+-----------+
+    |ap_NS_fsm      |  21|          4|    1|          4|
+    |ap_done        |   9|          2|    1|          2|
+    |i_reg_135      |   9|          2|   10|         20|
+    |input_V_blk_n  |   9|          2|    1|          2|
+    +---------------+----+-----------+-----+-----------+
+    |Total          |  48|         10|   13|         28|
+    +---------------+----+-----------+-----+-----------+
+
+    * Register: 
+    +-----------------+----+----+-----+-----------+
+    |       Name      | FF | LUT| Bits| Const Bits|
+    +-----------------+----+----+-----+-----------+
+    |ap_CS_fsm        |   3|   0|    3|          0|
+    |ap_done_reg      |   1|   0|    1|          0|
+    |i_reg_135        |  10|   0|   10|          0|
+    |tmp2_reg_212     |  89|   0|   89|          0|
+    |tmp_V_4_reg_206  |  10|   0|   10|          0|
+    |tmp_reg_202      |   1|   0|    1|          0|
+    +-----------------+----+----+-----+-----------+
+    |Total            | 114|   0|  114|          0|
+    +-----------------+----+----+-----+-----------+
+
+
+
+================================================================
+== Interface
+================================================================
+* Summary: 
++---------------------------+-----+-----+------------+-------------------+--------------+
+|         RTL Ports         | Dir | Bits|  Protocol  |   Source Object   |    C Type    |
++---------------------------+-----+-----+------------+-------------------+--------------+
+|ap_clk                     |  in |    1| ap_ctrl_hs |    g2N_ingress    | return value |
+|ap_rst                     |  in |    1| ap_ctrl_hs |    g2N_ingress    | return value |
+|ap_start                   |  in |    1| ap_ctrl_hs |    g2N_ingress    | return value |
+|ap_done                    | out |    1| ap_ctrl_hs |    g2N_ingress    | return value |
+|ap_continue                |  in |    1| ap_ctrl_hs |    g2N_ingress    | return value |
+|ap_idle                    | out |    1| ap_ctrl_hs |    g2N_ingress    | return value |
+|ap_ready                   | out |    1| ap_ctrl_hs |    g2N_ingress    | return value |
+|input_V_dout               |  in |   89|   ap_fifo  |      input_V      |    pointer   |
+|input_V_empty_n            |  in |    1|   ap_fifo  |      input_V      |    pointer   |
+|input_V_read               | out |    1|   ap_fifo  |      input_V      |    pointer   |
+|buffer_storage_V_address0  | out |    9|  ap_memory |  buffer_storage_V |     array    |
+|buffer_storage_V_ce0       | out |    1|  ap_memory |  buffer_storage_V |     array    |
+|buffer_storage_V_we0       | out |    1|  ap_memory |  buffer_storage_V |     array    |
+|buffer_storage_V_d0        | out |   64|  ap_memory |  buffer_storage_V |     array    |
+|length_stream_V_V          | out |   16|   ap_vld   | length_stream_V_V |    pointer   |
+|length_stream_V_V_ap_vld   | out |    1|   ap_vld   | length_stream_V_V |    pointer   |
+|dest_stream_V_V            | out |    8|   ap_vld   |  dest_stream_V_V  |    pointer   |
+|dest_stream_V_V_ap_vld     | out |    1|   ap_vld   |  dest_stream_V_V  |    pointer   |
+|src_stream_V_V             | out |    8|   ap_vld   |   src_stream_V_V  |    pointer   |
+|src_stream_V_V_ap_vld      | out |    1|   ap_vld   |   src_stream_V_V  |    pointer   |
++---------------------------+-----+-----+------------+-------------------+--------------+
+

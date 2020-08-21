@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xd:acceleratorMap xmlns:xd="http://www.xilinx.com/xidane" xd:functionName="router" xd:componentRef="width32router" xd:initiationInterval="1" xd:clockPeriod="4.000" xd:sequential="true" xd:hostMachine="64" xd:reset="control">
+  <xd:arg xd:name="network_table[]" xd:originalName="network_table" xd:direction="in" xd:interfaceRef="network_table_V_PORTA" xd:busTypeRef="bram" xd:arraySize="256" xd:dataWidth="32"/>
+  <xd:arg xd:name="network_addr" xd:originalName="network_addr" xd:direction="in" xd:interfaceRef="network_addr_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="32"/>
+  <xd:arg xd:name="stream_in.data" xd:originalName="stream_in" xd:direction="in" xd:interfaceRef="stream_in_V" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="63:0" xd:dataWidth="64"/>
+  <xd:arg xd:name="stream_in.dest" xd:originalName="stream_in" xd:direction="in" xd:interfaceRef="stream_in_V" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="71:64" xd:dataWidth="8"/>
+  <xd:arg xd:name="stream_in.last" xd:originalName="stream_in" xd:direction="in" xd:interfaceRef="stream_in_V" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="72:72" xd:dataWidth="1"/>
+  <xd:arg xd:name="stream_in.id" xd:originalName="stream_in" xd:direction="in" xd:interfaceRef="stream_in_V" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="80:73" xd:dataWidth="8"/>
+  <xd:arg xd:name="stream_in.keep" xd:originalName="stream_in" xd:direction="in" xd:interfaceRef="stream_in_V" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="88:81" xd:dataWidth="8"/>
+  <xd:arg xd:name="stream_out_switch.data" xd:originalName="stream_out_switch" xd:direction="out" xd:interfaceRef="stream_out_switch_V" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="63:0" xd:dataWidth="64"/>
+  <xd:arg xd:name="stream_out_switch.dest" xd:originalName="stream_out_switch" xd:direction="out" xd:interfaceRef="stream_out_switch_V" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="71:64" xd:dataWidth="8"/>
+  <xd:arg xd:name="stream_out_switch.last" xd:originalName="stream_out_switch" xd:direction="out" xd:interfaceRef="stream_out_switch_V" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="72:72" xd:dataWidth="1"/>
+  <xd:arg xd:name="stream_out_switch.id" xd:originalName="stream_out_switch" xd:direction="out" xd:interfaceRef="stream_out_switch_V" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="80:73" xd:dataWidth="8"/>
+  <xd:arg xd:name="stream_out_switch.keep" xd:originalName="stream_out_switch" xd:direction="out" xd:interfaceRef="stream_out_switch_V" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="88:81" xd:dataWidth="8"/>
+  <xd:arg xd:name="stream_out_network.data" xd:originalName="stream_out_network" xd:direction="out" xd:interfaceRef="stream_out_network_V" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="63:0" xd:dataWidth="64"/>
+  <xd:arg xd:name="stream_out_network.dest" xd:originalName="stream_out_network" xd:direction="out" xd:interfaceRef="stream_out_network_V" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="71:64" xd:dataWidth="8"/>
+  <xd:arg xd:name="stream_out_network.last" xd:originalName="stream_out_network" xd:direction="out" xd:interfaceRef="stream_out_network_V" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="72:72" xd:dataWidth="1"/>
+  <xd:arg xd:name="stream_out_network.id" xd:originalName="stream_out_network" xd:direction="out" xd:interfaceRef="stream_out_network_V" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="80:73" xd:dataWidth="8"/>
+  <xd:arg xd:name="stream_out_network.keep" xd:originalName="stream_out_network" xd:direction="out" xd:interfaceRef="stream_out_network_V" xd:busTypeRef="axis" xd:dataPack="true" xd:bitMapping="88:81" xd:dataWidth="8"/>
+  <xd:latencyEstimates xd:best-case="2" xd:worst-case="2" xd:average-case="2"/>
+  <xd:resourceEstimates xd:LUT="59" xd:FF="216" xd:BRAM="0" xd:DSP="0"/>
+</xd:acceleratorMap>

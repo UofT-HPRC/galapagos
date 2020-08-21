@@ -1,0 +1,250 @@
+
+
+================================================================
+== Vivado HLS Report for 'galapagos_to_tcp_int'
+================================================================
+* Date:           Wed Aug 12 00:41:20 2020
+
+* Version:        2018.1 (Build 2188600 on Wed Apr 04 19:04:02 MDT 2018)
+* Project:        network_bridge_tcp
+* Solution:       solution1
+* Product family: kintexu
+* Target device:  xcku115-flva1517-2-e
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |   4.00|      4.92|        0.50|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+-----+-----+-----+----------+
+    |  Latency  |  Interval | Pipeline |
+    | min | max | min | max |   Type   |
+    +-----+-----+-----+-----+----------+
+    |    2|    2|    1|    1| function |
+    +-----+-----+-----+-----+----------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        N/A
+
+============================================================
++ Verbose Summary: Synthesis Manager
+============================================================
+InlineROM: 1
+ExposeGlobal: 1
+============================================================
++ Verbose Summary: CDFG Model
+============================================================
+IsTopModel: 0
+ResetActiveHigh: 1
+IsCombinational: 2
+IsDatapathOnly: 0
+HasWiredReturn: 1
+HasMFsm: 2
+HasVarLatency: 0
+IsPipeline: 1
+IsRtlPipelined: 1
+IsInstanceOverlapped: 0
+IsDontTouch: 0
+HasImplIP: 0
+IsGatedGlobalClock: 0
+
++ Individual pipeline summary: 
+  * Pipeline-0: initiation interval (II) = 1, depth = 3
+
+
+============================================================
++ Verbose Summary: Schedule
+============================================================
+* Number of FSM states : 3
+* Pipeline : 1
+  Pipeline-0 : II = 1, D = 3, States = { 1 2 3 }
+* Dataflow Pipeline: 0
+
+* FSM state transitions: 
+1 --> 
+	2  / true
+2 --> 
+	3  / true
+3 --> 
+
+* FSM state operations: 
+
+ <State 1> : 4.92ns
+ST_1 : Operation 4 [1/1] (0.00ns)   --->   "%state_1_load = load i4* @state_1, align 1" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:341]
+ST_1 : Operation 5 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_auto.i4P(i4* %state_out_V, i4 %state_1_load)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:341]
+ST_1 : Operation 6 [1/1] (0.00ns)   --->   "%tmp_V_15 = load i8* @dest_V, align 1" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:367]
+ST_1 : Operation 7 [1/1] (0.87ns)   --->   "switch i4 %state_1_load, label %galapagos_to_tcp_interface.exit [
+    i4 0, label %0
+    i4 1, label %2
+    i4 2, label %5
+    i4 3, label %7
+    i4 4, label %8
+    i4 5, label %10
+    i4 6, label %11
+    i4 7, label %12
+    i4 -8, label %14
+  ]" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:350]
+ST_1 : Operation 8 [1/1] (0.00ns)   --->   "%tmp_22 = call i1 @_ssdm_op_NbReadReq.ap_fifo.i73P(i73* %rxGalapagosBridge_V, i32 1)"   --->   Core 5 'AXI4Stream' <Latency = 0> <II = 1> <Delay = 1.00> <Adapter> <Opcode : >
+ST_1 : Operation 9 [1/1] (0.00ns)   --->   "%tmp_4 = call i73 @_ssdm_op_Read.ap_fifo.volatile.i73P(i73* %rxGalapagosBridge_V)"   --->   Core 5 'AXI4Stream' <Latency = 0> <II = 1> <Delay = 1.00> <Adapter> <Opcode : >
+ST_1 : Operation 10 [1/1] (0.00ns)   --->   "%tmp_last_V_1 = call i1 @_ssdm_op_BitSelect.i1.i73.i32(i73 %tmp_4, i32 72)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/include/./toe.hpp:139->/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:440]
+ST_1 : Operation 11 [1/1] (0.00ns)   --->   "br i1 %tmp_last_V_1, label %16, label %._crit_edge29.i" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:442]
+ST_1 : Operation 12 [1/1] (1.23ns)   --->   "store i4 0, i4* @state_1, align 1" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:443]
+ST_1 : Operation 13 [1/1] (0.00ns)   --->   "%tmp_21 = call i1 @_ssdm_op_NbReadReq.ap_fifo.i17P(i17* %txStatus_V_V, i32 1)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:426]   --->   Core 5 'AXI4Stream' <Latency = 0> <II = 1> <Delay = 1.00> <Adapter> <Opcode : >
+ST_1 : Operation 14 [1/1] (0.00ns)   --->   "%tmp_V_17 = call i17 @_ssdm_op_Read.ap_fifo.volatile.i17P(i17* %txStatus_V_V)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:427]   --->   Core 5 'AXI4Stream' <Latency = 0> <II = 1> <Delay = 1.00> <Adapter> <Opcode : >
+ST_1 : Operation 15 [1/1] (0.00ns)   --->   "%tmp_25 = call i1 @_ssdm_op_BitSelect.i1.i17.i32(i17 %tmp_V_17, i32 16)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:428]
+ST_1 : Operation 16 [1/1] (0.30ns)   --->   "%storemerge_i = select i1 %tmp_25, i4 6, i4 -8" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:428]   --->   Core 26 'Sel' <Latency = 0> <II = 1> <Delay = 0.30> <FuncUnit> <Opcode : 'select'> <InPorts = 3> <OutPorts = 1>
+ST_1 : Operation 17 [1/1] (1.23ns)   --->   "store i4 %storemerge_i, i4* @state_1, align 1" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:429]
+ST_1 : Operation 18 [1/1] (1.23ns)   --->   "store i4 7, i4* @state_1, align 1" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:422]
+ST_1 : Operation 19 [1/1] (1.23ns)   --->   "store i4 6, i4* @state_1, align 1" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:410]
+ST_1 : Operation 20 [1/1] (0.00ns)   --->   "%tmp_19 = call i1 @_ssdm_op_NbReadReq.ap_fifo.i17P(i17* %txStatus_V_V, i32 1)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:398]   --->   Core 5 'AXI4Stream' <Latency = 0> <II = 1> <Delay = 1.00> <Adapter> <Opcode : >
+ST_1 : Operation 21 [1/1] (0.00ns)   --->   "%tmp_V_16 = call i17 @_ssdm_op_Read.ap_fifo.volatile.i17P(i17* %txStatus_V_V)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:399]   --->   Core 5 'AXI4Stream' <Latency = 0> <II = 1> <Delay = 1.00> <Adapter> <Opcode : >
+ST_1 : Operation 22 [1/1] (0.00ns)   --->   "%tmp_24 = call i1 @_ssdm_op_BitSelect.i1.i17.i32(i17 %tmp_V_16, i32 16)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:400]
+ST_1 : Operation 23 [1/1] (0.30ns)   --->   "%storemerge1_cast_i_c = select i1 %tmp_24, i4 3, i4 5" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:400]   --->   Core 26 'Sel' <Latency = 0> <II = 1> <Delay = 0.30> <FuncUnit> <Opcode : 'select'> <InPorts = 3> <OutPorts = 1>
+ST_1 : Operation 24 [1/1] (1.23ns)   --->   "store i4 %storemerge1_cast_i_c, i4* @state_1, align 1" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:401]
+ST_1 : Operation 25 [1/1] (1.23ns)   --->   "store i4 4, i4* @state_1, align 1" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:394]
+ST_1 : Operation 26 [1/1] (0.00ns)   --->   "%tmp_17 = call i1 @_ssdm_op_NbReadReq.ap_fifo.i16P(i16* @sessionID_fifo_V_V, i32 1)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:376]   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 2.26> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 8> <Depth = 2> <FIFO>
+ST_1 : Operation 27 [1/1] (0.00ns)   --->   "br i1 %tmp_17, label %6, label %._crit_edge25.i" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:376]
+ST_1 : Operation 28 [1/1] (1.75ns)   --->   "%tmp_V_14 = call i16 @_ssdm_op_Read.ap_fifo.volatile.i16P(i16* @sessionID_fifo_V_V)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:377]   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 2.26> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 8> <Depth = 2> <FIFO>
+ST_1 : Operation 29 [1/1] (1.23ns)   --->   "store i4 3, i4* @state_1, align 1" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:380]
+ST_1 : Operation 30 [1/1] (0.00ns)   --->   "%tmp_16 = call i1 @_ssdm_op_NbReadReq.ap_fifo.i16P(i16* @g2t_read_sid_V_V, i32 1)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:364]   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 2.26> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 8> <Depth = 2> <FIFO>
+ST_1 : Operation 31 [1/1] (0.00ns)   --->   "br i1 %tmp_16, label %3, label %._crit_edge23.i" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:364]
+ST_1 : Operation 32 [1/1] (1.75ns)   --->   "%tmp_V_13 = call i16 @_ssdm_op_Read.ap_fifo.volatile.i16P(i16* @g2t_read_sid_V_V)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:365]   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 2.26> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 8> <Depth = 2> <FIFO>
+ST_1 : Operation 33 [1/1] (1.09ns)   --->   "%tmp_i = icmp eq i16 %tmp_V_13, 1000" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:366]   --->   Core 25 'Cmp' <Latency = 0> <II = 1> <Delay = 1.09> <FuncUnit> <Opcode : 'icmp'> <InPorts = 2> <OutPorts = 1>
+ST_1 : Operation 34 [1/1] (0.83ns)   --->   "br i1 %tmp_i, label %4, label %._crit_edge24.i" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:366]
+ST_1 : Operation 35 [1/1] (0.00ns)   --->   "%tmp_21_i = zext i8 %tmp_V_15 to i64" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:367]
+ST_1 : Operation 36 [1/1] (0.00ns)   --->   "%ip_table_V_addr = getelementptr [256 x i32]* @ip_table_V, i64 0, i64 %tmp_21_i" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:367]
+ST_1 : Operation 37 [2/2] (1.77ns)   --->   "%tmp_V_18 = load i32* %ip_table_V_addr, align 4" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:367]   --->   Core 37 'RAM' <Latency = 1> <II = 1> <Delay = 1.77> <Storage> <Opcode : 'load' 'store'> <Ports = 2> <Width = 32> <Depth = 256> <RAM>
+ST_1 : Operation 38 [1/1] (0.83ns)   --->   "br label %._crit_edge24.i" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:369]
+ST_1 : Operation 39 [1/1] (0.00ns)   --->   "%storemerge2_i = phi i2 [ -2, %4 ], [ -1, %3 ]"
+ST_1 : Operation 40 [1/1] (0.00ns)   --->   "%storemerge2_cast_i = zext i2 %storemerge2_i to i4" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:368]
+ST_1 : Operation 41 [1/1] (1.23ns)   --->   "store i4 %storemerge2_cast_i, i4* @state_1, align 1" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:368]
+ST_1 : Operation 42 [1/1] (0.00ns)   --->   "%tmp = call i1 @_ssdm_op_NbReadReq.ap_fifo.i73P(i73* %rxGalapagosBridge_V, i32 1)"   --->   Core 5 'AXI4Stream' <Latency = 0> <II = 1> <Delay = 1.00> <Adapter> <Opcode : >
+ST_1 : Operation 43 [1/1] (0.00ns)   --->   "%tmp27 = call i73 @_ssdm_op_Read.ap_fifo.volatile.i73P(i73* %rxGalapagosBridge_V)"   --->   Core 5 'AXI4Stream' <Latency = 0> <II = 1> <Delay = 1.00> <Adapter> <Opcode : >
+ST_1 : Operation 44 [1/1] (0.00ns)   --->   "%p_Val2_1 = trunc i73 %tmp27 to i64" [/home/user/galapagos/middleware/hls/network_bridge_tcp/include/./toe.hpp:139->/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:355]
+ST_1 : Operation 45 [1/1] (0.00ns)   --->   "%tmp_keep_V_4_load_ne = call i8 @_ssdm_op_PartSelect.i8.i73.i32.i32(i73 %tmp27, i32 64, i32 71)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/include/./toe.hpp:139->/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:355]
+ST_1 : Operation 46 [1/1] (0.00ns)   --->   "%tmp_V = call i8 @_ssdm_op_PartSelect.i8.i73.i32.i32(i73 %tmp27, i32 24, i32 31)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:357]
+ST_1 : Operation 47 [1/1] (0.00ns)   --->   "store i8 %tmp_V, i8* @dest_V, align 1" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:357]
+ST_1 : Operation 48 [1/1] (1.23ns)   --->   "store i4 1, i4* @state_1, align 1" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:359]
+
+ <State 2> : 1.77ns
+ST_2 : Operation 49 [1/1] (0.00ns)   --->   "%txMetaDataWord_sessi = load i16* @sessionID_V, align 2" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:389]
+ST_2 : Operation 50 [1/1] (0.00ns)   --->   "br i1 %tmp_22, label %15, label %._crit_edge28.i" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:437]
+ST_2 : Operation 51 [1/1] (0.00ns)   --->   "br label %galapagos_to_tcp_interface.exit" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:445]
+ST_2 : Operation 52 [1/1] (0.00ns)   --->   "br i1 %tmp_21, label %13, label %._crit_edge27.i" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:426]
+ST_2 : Operation 53 [1/1] (0.00ns)   --->   "br label %galapagos_to_tcp_interface.exit" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:435]
+ST_2 : Operation 54 [1/1] (0.00ns)   --->   "br label %galapagos_to_tcp_interface.exit" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:424]
+ST_2 : Operation 55 [1/1] (0.00ns)   --->   "br label %galapagos_to_tcp_interface.exit" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:411]
+ST_2 : Operation 56 [1/1] (0.00ns)   --->   "br i1 %tmp_19, label %9, label %._crit_edge26.i" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:398]
+ST_2 : Operation 57 [1/1] (0.00ns)   --->   "br label %galapagos_to_tcp_interface.exit" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:407]
+ST_2 : Operation 58 [1/1] (0.00ns)   --->   "br label %galapagos_to_tcp_interface.exit" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:396]
+ST_2 : Operation 59 [1/1] (0.83ns)   --->   "store i16 %tmp_V_14, i16* @sessionID_V, align 2" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:377]
+ST_2 : Operation 60 [1/1] (1.75ns)   --->   "call void @_ssdm_op_Write.ap_fifo.volatile.i16P(i16* @g2t_write_sid_V_V, i16 %tmp_V_14)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:378]   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 2.26> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 8> <Depth = 2> <FIFO>
+ST_2 : Operation 61 [1/1] (1.75ns)   --->   "call void @_ssdm_op_Write.ap_fifo.volatile.i8P(i8* @g2t_write_dest_V_V, i8 %tmp_V_15)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:379]   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 2.26> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 8> <Depth = 2> <FIFO>
+ST_2 : Operation 62 [1/1] (0.00ns)   --->   "br label %galapagos_to_tcp_interface.exit" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:382]
+ST_2 : Operation 63 [1/1] (0.83ns)   --->   "store i16 %tmp_V_13, i16* @sessionID_V, align 2" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:365]
+ST_2 : Operation 64 [1/2] (1.77ns)   --->   "%tmp_V_18 = load i32* %ip_table_V_addr, align 4" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:367]   --->   Core 37 'RAM' <Latency = 1> <II = 1> <Delay = 1.77> <Storage> <Opcode : 'load' 'store'> <Ports = 2> <Width = 32> <Depth = 256> <RAM>
+ST_2 : Operation 65 [1/1] (0.00ns)   --->   "br label %galapagos_to_tcp_interface.exit" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:374]
+ST_2 : Operation 66 [1/1] (0.00ns)   --->   "br i1 %tmp, label %1, label %._crit_edge22.i" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:353]
+ST_2 : Operation 67 [1/1] (0.00ns)   --->   "store i8 %tmp_keep_V_4_load_ne, i8* @header_keep_V, align 8" [/home/user/galapagos/middleware/hls/network_bridge_tcp/include/./toe.hpp:139->/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:355]
+ST_2 : Operation 68 [1/1] (0.00ns)   --->   "store i1 true, i1* @header_last_V, align 1" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:356]
+ST_2 : Operation 69 [1/1] (1.75ns)   --->   "call void @_ssdm_op_Write.ap_fifo.volatile.i8P(i8* @g2t_read_dest_V_V, i8 %tmp_V)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:358]   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 2.26> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 8> <Depth = 2> <FIFO>
+ST_2 : Operation 70 [1/1] (0.00ns)   --->   "br label %galapagos_to_tcp_interface.exit" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:362]
+
+ <State 3> : 1.75ns
+ST_3 : Operation 71 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecIFCore(i17* %txStatus_V_V, [1 x i8]* @p_str, [5 x i8]* @p_str24, [1 x i8]* @p_str, i32 -1, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, [29 x i8]* @p_str37)"
+ST_3 : Operation 72 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecIFCore(i73* %txData_V, [1 x i8]* @p_str, [5 x i8]* @p_str24, [1 x i8]* @p_str, i32 -1, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, [27 x i8]* @p_str36)"
+ST_3 : Operation 73 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecIFCore(i32* %txMetaData_V, [1 x i8]* @p_str, [5 x i8]* @p_str24, [1 x i8]* @p_str, i32 -1, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, [31 x i8]* @p_str35)"
+ST_3 : Operation 74 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecIFCore(i73* %rxGalapagosBridge_V, [1 x i8]* @p_str, [5 x i8]* @p_str24, [1 x i8]* @p_str, i32 -1, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, [37 x i8]* @p_str25)"
+ST_3 : Operation 75 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i73* %rxGalapagosBridge_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str, i32 0, i32 0, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str, [1 x i8]* @p_str)"
+ST_3 : Operation 76 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i32* %txMetaData_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str, i32 0, i32 0, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str, [1 x i8]* @p_str)"
+ST_3 : Operation 77 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i73* %txData_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str, i32 0, i32 0, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str, [1 x i8]* @p_str)"
+ST_3 : Operation 78 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i17* %txStatus_V_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str, i32 0, i32 0, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str, [1 x i8]* @p_str)"
+ST_3 : Operation 79 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i8* @g2t_read_dest_V_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str, i32 0, i32 0, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str, [1 x i8]* @p_str)"
+ST_3 : Operation 80 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i16* @g2t_read_sid_V_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str, i32 0, i32 0, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str, [1 x i8]* @p_str)"
+ST_3 : Operation 81 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i8* @g2t_write_dest_V_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str, i32 0, i32 0, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str, [1 x i8]* @p_str)"
+ST_3 : Operation 82 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i16* @g2t_write_sid_V_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str, i32 0, i32 0, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str, [1 x i8]* @p_str)"
+ST_3 : Operation 83 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i32* @ip_fifo_V_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str, i32 0, i32 0, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str, [1 x i8]* @p_str)"
+ST_3 : Operation 84 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i16* @sessionID_fifo_V_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str, i32 0, i32 0, [1 x i8]* @p_str, [1 x i8]* @p_str, [1 x i8]* @p_str, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str, [1 x i8]* @p_str)"
+ST_3 : Operation 85 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecPipeline(i32 1, i32 1, i32 1, i32 0, [1 x i8]* @p_str) nounwind" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:308]
+ST_3 : Operation 86 [1/1] (0.00ns)   --->   "%p_Val2_s = load i64* @header_data_V, align 8" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:386]
+ST_3 : Operation 87 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_fifo.volatile.i73P(i73* %txData_V, i73 %tmp_4)"   --->   Core 5 'AXI4Stream' <Latency = 0> <II = 1> <Delay = 1.00> <Adapter> <Opcode : >
+ST_3 : Operation 88 [1/1] (0.00ns)   --->   "br label %._crit_edge29.i" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:443]
+ST_3 : Operation 89 [1/1] (0.00ns)   --->   "br label %._crit_edge28.i" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:444]
+ST_3 : Operation 90 [1/1] (0.00ns)   --->   "br label %._crit_edge27.i" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:434]
+ST_3 : Operation 91 [1/1] (0.00ns)   --->   "%size_V_3 = trunc i64 %p_Val2_s to i16" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:415]
+ST_3 : Operation 92 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_auto.i16P(i16* %size_out_V, i16 %size_V_3)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:416]
+ST_3 : Operation 93 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_auto.i16P(i16* %sessionID_out_V, i16 %txMetaDataWord_sessi)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:417]
+ST_3 : Operation 94 [1/1] (0.00ns)   --->   "%tmp_3 = call i32 @_ssdm_op_BitConcatenate.i32.i16.i16(i16 %size_V_3, i16 %txMetaDataWord_sessi)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:421]
+ST_3 : Operation 95 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_fifo.volatile.i32P(i32* %txMetaData_V, i32 %tmp_3)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:421]   --->   Core 5 'AXI4Stream' <Latency = 0> <II = 1> <Delay = 1.00> <Adapter> <Opcode : >
+ST_3 : Operation 96 [1/1] (0.00ns)   --->   "%tmp_keep_V = load i8* @header_keep_V, align 8" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:409]
+ST_3 : Operation 97 [1/1] (0.00ns)   --->   "%tmp_last_V = load i1* @header_last_V, align 1" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:409]
+ST_3 : Operation 98 [1/1] (0.00ns)   --->   "%tmp_2 = call i73 @_ssdm_op_BitConcatenate.i73.i1.i8.i64(i1 %tmp_last_V, i8 %tmp_keep_V, i64 %p_Val2_s)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:409]
+ST_3 : Operation 99 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_fifo.volatile.i73P(i73* %txData_V, i73 %tmp_2)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:409]   --->   Core 5 'AXI4Stream' <Latency = 0> <II = 1> <Delay = 1.00> <Adapter> <Opcode : >
+ST_3 : Operation 100 [1/1] (0.00ns)   --->   "br label %._crit_edge26.i" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:406]
+ST_3 : Operation 101 [1/1] (0.00ns)   --->   "%size_V = trunc i64 %p_Val2_s to i16" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:386]
+ST_3 : Operation 102 [1/1] (1.41ns)   --->   "%size_V_1 = add i16 8, %size_V" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:387]   --->   Core 14 'AddSub' <Latency = 0> <II = 1> <Delay = 1.41> <FuncUnit> <Opcode : 'add' 'sub'> <InPorts = 2> <OutPorts = 1>
+ST_3 : Operation 103 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_auto.i16P(i16* %size_out_V, i16 %size_V_1)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:388]
+ST_3 : Operation 104 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_auto.i16P(i16* %sessionID_out_V, i16 %txMetaDataWord_sessi)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:389]
+ST_3 : Operation 105 [1/1] (0.00ns)   --->   "%tmp_1 = call i32 @_ssdm_op_BitConcatenate.i32.i16.i16(i16 8, i16 %txMetaDataWord_sessi)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:393]
+ST_3 : Operation 106 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_fifo.volatile.i32P(i32* %txMetaData_V, i32 %tmp_1)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:393]   --->   Core 5 'AXI4Stream' <Latency = 0> <II = 1> <Delay = 1.00> <Adapter> <Opcode : >
+ST_3 : Operation 107 [1/1] (0.00ns)   --->   "br label %._crit_edge25.i" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:381]
+ST_3 : Operation 108 [1/1] (1.75ns)   --->   "call void @_ssdm_op_Write.ap_fifo.volatile.i32P(i32* @ip_fifo_V_V, i32 %tmp_V_18)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:367]   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 2.26> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 8> <Depth = 2> <FIFO>
+ST_3 : Operation 109 [1/1] (0.00ns)   --->   "br label %._crit_edge23.i" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:373]
+ST_3 : Operation 110 [1/1] (0.00ns)   --->   "store i64 %p_Val2_1, i64* @header_data_V, align 8" [/home/user/galapagos/middleware/hls/network_bridge_tcp/include/./toe.hpp:139->/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:355]
+ST_3 : Operation 111 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_auto.i64P(i64* %header_out_V, i64 %p_Val2_1)" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:360]
+ST_3 : Operation 112 [1/1] (0.00ns)   --->   "br label %._crit_edge22.i" [/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:361]
+ST_3 : Operation 113 [1/1] (0.00ns)   --->   "ret void"
+
+
+============================================================
++ Verbose Summary: Timing violations
+============================================================
+Target clock period: 4ns, clock uncertainty: 0.5ns.
+
+ <State 1>: 4.92ns
+The critical path consists of the following:
+	fifo read on port 'g2t_read_sid_V_V' (/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:365) [120]  (1.75 ns)
+	'icmp' operation ('tmp_i', /home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:366) [122]  (1.1 ns)
+	multiplexor before 'phi' operation ('storemerge2_i') [131]  (0.835 ns)
+	'phi' operation ('storemerge2_i') [131]  (0 ns)
+	'store' operation (/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:368) of variable 'storemerge2_cast_i', /home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:368 on static variable 'state_1' [133]  (1.24 ns)
+
+ <State 2>: 1.77ns
+The critical path consists of the following:
+	'load' operation ('tmp.V', /home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:367) on array 'ip_table_V' [127]  (1.77 ns)
+
+ <State 3>: 1.75ns
+The critical path consists of the following:
+	fifo write on port 'ip_fifo_V_V' (/home/user/galapagos/middleware/hls/network_bridge_tcp/src/network_bridge_tcp.cpp:367) [128]  (1.75 ns)
+
+
+============================================================
++ Verbose Summary: Binding
+============================================================
+N/A
+* FSMD analyzer results:
+  - Output states:
+ - Input state : 
+  - Chain level:
+	State 1
+	State 2
+	State 3
+
+
+============================================================
++ Verbose Summary: Datapath Resource usage 
+============================================================
+N/A

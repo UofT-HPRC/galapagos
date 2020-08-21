@@ -1,0 +1,182 @@
+
+
+================================================================
+== Vivado HLS Report for 'tcp_to_galapagos_int'
+================================================================
+* Date:           Wed Aug 12 00:41:22 2020
+
+* Version:        2018.1 (Build 2188600 on Wed Apr 04 19:04:02 MDT 2018)
+* Project:        network_bridge_tcp
+* Solution:       solution1
+* Product family: kintexu
+* Target device:  xcku115-flva1517-2-e
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |   4.00|      4.21|        0.50|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+-----+-----+-----+----------+
+    |  Latency  |  Interval | Pipeline |
+    | min | max | min | max |   Type   |
+    +-----+-----+-----+-----+----------+
+    |    1|    1|    1|    1| function |
+    +-----+-----+-----+-----+----------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        N/A
+
+
+
+================================================================
+== Utilization Estimates
+================================================================
+* Summary: 
++---------------------+---------+-------+---------+--------+
+|         Name        | BRAM_18K| DSP48E|    FF   |   LUT  |
++---------------------+---------+-------+---------+--------+
+|DSP                  |        -|      -|        -|       -|
+|Expression           |        -|      -|        0|      39|
+|FIFO                 |        -|      -|        -|       -|
+|Instance             |        -|      -|        -|       -|
+|Memory               |        -|      -|        -|       -|
+|Multiplexer          |        -|      -|        -|     120|
+|Register             |        -|      -|      189|       -|
++---------------------+---------+-------+---------+--------+
+|Total                |        0|      0|      189|     159|
++---------------------+---------+-------+---------+--------+
+|Available SLR        |     2160|   2760|   663360|  331680|
++---------------------+---------+-------+---------+--------+
+|Utilization SLR (%)  |        0|      0|    ~0   |   ~0   |
++---------------------+---------+-------+---------+--------+
+|Available            |     4320|   5520|  1326720|  663360|
++---------------------+---------+-------+---------+--------+
+|Utilization (%)      |        0|      0|    ~0   |   ~0   |
++---------------------+---------+-------+---------+--------+
+
++ Detail: 
+    * Instance: 
+    N/A
+
+    * DSP48: 
+    N/A
+
+    * Memory: 
+    N/A
+
+    * FIFO: 
+    N/A
+
+    * Expression: 
+    +----------------------------------+----------+-------+---+----+------------+------------+
+    |           Variable Name          | Operation| DSP48E| FF| LUT| Bitwidth P0| Bitwidth P1|
+    +----------------------------------+----------+-------+---+----+------------+------------+
+    |ap_condition_216                  |    and   |      0|  0|   2|           1|           1|
+    |ap_predicate_op12_read_state1     |    and   |      0|  0|   2|           1|           1|
+    |ap_predicate_op17_read_state1     |    and   |      0|  0|   2|           1|           1|
+    |ap_predicate_op29_read_state1     |    and   |      0|  0|   2|           1|           1|
+    |ap_predicate_op45_write_state2    |    and   |      0|  0|   2|           1|           1|
+    |ap_predicate_op64_write_state2    |    and   |      0|  0|   2|           1|           1|
+    |ap_predicate_op6_read_state1      |    and   |      0|  0|   2|           1|           1|
+    |tmp_i_fu_190_p2                   |   icmp   |      0|  0|  13|          16|          10|
+    |ap_block_pp0_stage0_01001         |    or    |      0|  0|   2|           1|           1|
+    |ap_block_state1_pp0_stage0_iter0  |    or    |      0|  0|   2|           1|           1|
+    |ap_block_state2_pp0_stage0_iter1  |    or    |      0|  0|   2|           1|           1|
+    |storemerge_i_fu_196_p3            |  select  |      0|  0|   4|           1|           2|
+    |ap_enable_pp0                     |    xor   |      0|  0|   2|           1|           2|
+    +----------------------------------+----------+-------+---+----+------------+------------+
+    |Total                             |          |      0|  0|  39|          28|          24|
+    +----------------------------------+----------+-------+---+----+------------+------------+
+
+    * Multiplexer: 
+    +---------------------------+----+-----------+-----+-----------+
+    |            Name           | LUT| Input Size| Bits| Total Bits|
+    +---------------------------+----+-----------+-----+-----------+
+    |ap_done                    |   9|          2|    1|          2|
+    |rxData_V_blk_n             |   9|          2|    1|          2|
+    |rxMetaData_V_V_blk_n       |   9|          2|    1|          2|
+    |state                      |  33|          6|    3|         18|
+    |t2g_read_dest_V_V_blk_n    |   9|          2|    1|          2|
+    |t2g_read_sid_V_V_blk_n     |   9|          2|    1|          2|
+    |t2g_write_dest_V_V_blk_n   |   9|          2|    1|          2|
+    |t2g_write_sid_V_V_blk_n    |   9|          2|    1|          2|
+    |txGalapagosBridge_V_blk_n  |   9|          2|    1|          2|
+    |txGalapagosBridge_V_din    |  15|          3|   73|        219|
+    +---------------------------+----+-----------+-----+-----------+
+    |Total                      | 120|         25|   84|        253|
+    +---------------------------+----+-----------+-----+-----------+
+
+    * Register: 
+    +-------------------------+----+----+-----+-----------+
+    |           Name          | FF | LUT| Bits| Const Bits|
+    +-------------------------+----+----+-----+-----------+
+    |ap_CS_fsm                |   1|   0|    1|          0|
+    |ap_done_reg              |   1|   0|    1|          0|
+    |ap_enable_reg_pp0_iter1  |   1|   0|    1|          0|
+    |currWord_data_V          |  64|   0|   64|          0|
+    |currWord_keep_V          |   8|   0|    8|          0|
+    |currWord_last_V          |   1|   0|    1|          0|
+    |sessionID_V_1            |  16|   0|   16|          0|
+    |src_V                    |   8|   0|    8|          0|
+    |state                    |   3|   0|    3|          0|
+    |state_load_reg_317       |   3|   0|    3|          0|
+    |tmp_1_reg_334            |   1|   0|    1|          0|
+    |tmp_227_reg_325          |  73|   0|   73|          0|
+    |tmp_3_reg_321            |   1|   0|    1|          0|
+    |tmp_V_3_reg_338          |   8|   0|    8|          0|
+    +-------------------------+----+----+-----+-----------+
+    |Total                    | 189|   0|  189|          0|
+    +-------------------------+----+----+-----+-----------+
+
+
+
+================================================================
+== Interface
+================================================================
+* Summary: 
++----------------------------+-----+-----+------------+----------------------+--------------+
+|          RTL Ports         | Dir | Bits|  Protocol  |     Source Object    |    C Type    |
++----------------------------+-----+-----+------------+----------------------+--------------+
+|ap_clk                      |  in |    1| ap_ctrl_hs | tcp_to_galapagos_int | return value |
+|ap_rst                      |  in |    1| ap_ctrl_hs | tcp_to_galapagos_int | return value |
+|ap_start                    |  in |    1| ap_ctrl_hs | tcp_to_galapagos_int | return value |
+|ap_done                     | out |    1| ap_ctrl_hs | tcp_to_galapagos_int | return value |
+|ap_continue                 |  in |    1| ap_ctrl_hs | tcp_to_galapagos_int | return value |
+|ap_idle                     | out |    1| ap_ctrl_hs | tcp_to_galapagos_int | return value |
+|ap_ready                    | out |    1| ap_ctrl_hs | tcp_to_galapagos_int | return value |
+|rxData_V_dout               |  in |   73|   ap_fifo  |       rxData_V       |    pointer   |
+|rxData_V_empty_n            |  in |    1|   ap_fifo  |       rxData_V       |    pointer   |
+|rxData_V_read               | out |    1|   ap_fifo  |       rxData_V       |    pointer   |
+|t2g_read_sid_V_V_dout       |  in |   16|   ap_fifo  |   t2g_read_sid_V_V   |    pointer   |
+|t2g_read_sid_V_V_empty_n    |  in |    1|   ap_fifo  |   t2g_read_sid_V_V   |    pointer   |
+|t2g_read_sid_V_V_read       | out |    1|   ap_fifo  |   t2g_read_sid_V_V   |    pointer   |
+|rxMetaData_V_V_dout         |  in |   16|   ap_fifo  |    rxMetaData_V_V    |    pointer   |
+|rxMetaData_V_V_empty_n      |  in |    1|   ap_fifo  |    rxMetaData_V_V    |    pointer   |
+|rxMetaData_V_V_read         | out |    1|   ap_fifo  |    rxMetaData_V_V    |    pointer   |
+|txGalapagosBridge_V_din     | out |   73|   ap_fifo  |  txGalapagosBridge_V |    pointer   |
+|txGalapagosBridge_V_full_n  |  in |    1|   ap_fifo  |  txGalapagosBridge_V |    pointer   |
+|txGalapagosBridge_V_write   | out |    1|   ap_fifo  |  txGalapagosBridge_V |    pointer   |
+|t2g_write_dest_V_V_din      | out |    8|   ap_fifo  |  t2g_write_dest_V_V  |    pointer   |
+|t2g_write_dest_V_V_full_n   |  in |    1|   ap_fifo  |  t2g_write_dest_V_V  |    pointer   |
+|t2g_write_dest_V_V_write    | out |    1|   ap_fifo  |  t2g_write_dest_V_V  |    pointer   |
+|t2g_write_sid_V_V_din       | out |   16|   ap_fifo  |   t2g_write_sid_V_V  |    pointer   |
+|t2g_write_sid_V_V_full_n    |  in |    1|   ap_fifo  |   t2g_write_sid_V_V  |    pointer   |
+|t2g_write_sid_V_V_write     | out |    1|   ap_fifo  |   t2g_write_sid_V_V  |    pointer   |
+|t2g_read_dest_V_V_din       | out |    8|   ap_fifo  |   t2g_read_dest_V_V  |    pointer   |
+|t2g_read_dest_V_V_full_n    |  in |    1|   ap_fifo  |   t2g_read_dest_V_V  |    pointer   |
+|t2g_read_dest_V_V_write     | out |    1|   ap_fifo  |   t2g_read_dest_V_V  |    pointer   |
++----------------------------+-----+-----+------------+----------------------+--------------+
+

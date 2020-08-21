@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Messages>
+	<Message prefix="[IMPL 213-8]" severity="INFO" keynum="IMPL_8_1776" content="Exporting RTL as a Vivado IP." tag=""/>
+	<Message prefix="[IMPL 213-200]" severity="INFO" keynum="IMPL_200_1804" content="Port &apos;listenPort_V_V&apos; is mapped to &apos;TDATA&apos; by default." tag=""/>
+	<Message prefix="[IMPL 213-402]" severity="WARNING" keynum="IMPL_402_1768" content="The data fields of packed port &apos;openConnection_V&apos; are mapped to TDATA by default. Please use the &apos;port_map&apos; option of the resource directive to specify mapping to individual AXI4-Stream ports." tag=""/>
+	<Message prefix="[IMPL 213-402]" severity="WARNING" keynum="IMPL_402_1768" content="The data fields of packed port &apos;readRequest_V&apos; are mapped to TDATA by default. Please use the &apos;port_map&apos; option of the resource directive to specify mapping to individual AXI4-Stream ports." tag=""/>
+	<Message prefix="[IMPL 213-200]" severity="INFO" keynum="IMPL_200_1804" content="Port &apos;txGalapagosBridge_V.data&apos; is mapped to &apos;TDATA&apos; by default." tag=""/>
+	<Message prefix="[IMPL 213-200]" severity="INFO" keynum="IMPL_200_1804" content="Port &apos;txGalapagosBridge_V.keep&apos; is mapped to &apos;TKEEP&apos; by default." tag=""/>
+	<Message prefix="[IMPL 213-200]" severity="INFO" keynum="IMPL_200_1804" content="Port &apos;txGalapagosBridge_V.last&apos; is mapped to &apos;TLAST&apos; by default." tag=""/>
+	<Message prefix="[IMPL 213-200]" severity="INFO" keynum="IMPL_200_1804" content="Port &apos;txData_V.data&apos; is mapped to &apos;TDATA&apos; by default." tag=""/>
+	<Message prefix="[IMPL 213-200]" severity="INFO" keynum="IMPL_200_1804" content="Port &apos;txData_V.keep&apos; is mapped to &apos;TKEEP&apos; by default." tag=""/>
+	<Message prefix="[IMPL 213-200]" severity="INFO" keynum="IMPL_200_1804" content="Port &apos;txData_V.last&apos; is mapped to &apos;TLAST&apos; by default." tag=""/>
+	<Message prefix="[IMPL 213-402]" severity="WARNING" keynum="IMPL_402_1768" content="The data fields of packed port &apos;txMetaData_V&apos; are mapped to TDATA by default. Please use the &apos;port_map&apos; option of the resource directive to specify mapping to individual AXI4-Stream ports." tag=""/>
+	<Message prefix="[IMPL 213-200]" severity="INFO" keynum="IMPL_200_1804" content="Port &apos;listenPortStatus_V&apos; is mapped to &apos;TDATA&apos; by default." tag=""/>
+	<Message prefix="[IMPL 213-401]" severity="WARNING" keynum="IMPL_401_1767" content="TDATA of AXI4-Stream interface &apos;s_axis_listen_port_status&apos; is not aligned to byte boundaries. It is padded to 8 bits." tag=""/>
+	<Message prefix="[IMPL 213-402]" severity="WARNING" keynum="IMPL_402_1768" content="The data fields of packed port &apos;notifications_V&apos; are mapped to TDATA by default. Please use the &apos;port_map&apos; option of the resource directive to specify mapping to individual AXI4-Stream ports." tag=""/>
+	<Message prefix="[IMPL 213-401]" severity="WARNING" keynum="IMPL_401_1767" content="TDATA of AXI4-Stream interface &apos;s_axis_notifications&apos; is not aligned to byte boundaries. It is padded to 88 bits." tag=""/>
+	<Message prefix="[IMPL 213-402]" severity="WARNING" keynum="IMPL_402_1768" content="The data fields of packed port &apos;openConStatus_V&apos; are mapped to TDATA by default. Please use the &apos;port_map&apos; option of the resource directive to specify mapping to individual AXI4-Stream ports." tag=""/>
+	<Message prefix="[IMPL 213-401]" severity="WARNING" keynum="IMPL_401_1767" content="TDATA of AXI4-Stream interface &apos;s_axis_open_status&apos; is not aligned to byte boundaries. It is padded to 24 bits." tag=""/>
+	<Message prefix="[IMPL 213-200]" severity="INFO" keynum="IMPL_200_1804" content="Port &apos;rxGalapagosBridge_V.data&apos; is mapped to &apos;TDATA&apos; by default." tag=""/>
+	<Message prefix="[IMPL 213-200]" severity="INFO" keynum="IMPL_200_1804" content="Port &apos;rxGalapagosBridge_V.keep&apos; is mapped to &apos;TKEEP&apos; by default." tag=""/>
+	<Message prefix="[IMPL 213-200]" severity="INFO" keynum="IMPL_200_1804" content="Port &apos;rxGalapagosBridge_V.last&apos; is mapped to &apos;TLAST&apos; by default." tag=""/>
+	<Message prefix="[IMPL 213-200]" severity="INFO" keynum="IMPL_200_1804" content="Port &apos;rxData_V.data&apos; is mapped to &apos;TDATA&apos; by default." tag=""/>
+	<Message prefix="[IMPL 213-200]" severity="INFO" keynum="IMPL_200_1804" content="Port &apos;rxData_V.keep&apos; is mapped to &apos;TKEEP&apos; by default." tag=""/>
+	<Message prefix="[IMPL 213-200]" severity="INFO" keynum="IMPL_200_1804" content="Port &apos;rxData_V.last&apos; is mapped to &apos;TLAST&apos; by default." tag=""/>
+	<Message prefix="[IMPL 213-200]" severity="INFO" keynum="IMPL_200_1804" content="Port &apos;rxMetaData_V_V&apos; is mapped to &apos;TDATA&apos; by default." tag=""/>
+	<Message prefix="[IMPL 213-200]" severity="INFO" keynum="IMPL_200_1804" content="Port &apos;txStatus_V_V&apos; is mapped to &apos;TDATA&apos; by default." tag=""/>
+	<Message prefix="[IMPL 213-401]" severity="WARNING" keynum="IMPL_401_1767" content="TDATA of AXI4-Stream interface &apos;s_axis_tx_status&apos; is not aligned to byte boundaries. It is padded to 24 bits." tag=""/>
+	<Message prefix="[HLS 200-112]" severity="INFO" keynum="472" content="Total elapsed time: 74.96 seconds; peak allocated memory: 371.620 MB." tag=""/>
+</Messages>
