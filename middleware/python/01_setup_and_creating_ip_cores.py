@@ -16,7 +16,7 @@
 # In[5]:
 
 
-galapagos_path=home/user/galapagos
+galapagos_path=/home/user/galapagos
 cd $galapagos_path
 
 vivado_version=2018.1
@@ -25,7 +25,6 @@ galapagos_board=adm-8k5-debug
 #might be /Vivado/$vivado_version
 vivado_path=/opt/Xilinx/Vivado
 hls_path=/opt/Xilinx/Vivado/$hls_version
-
 source init.sh $galapagos_path $vivado_path $hls_path $vivado_version $hls_version
 galapagos-update-board $galapagos_board
 export XILINX_VIVADO=$GALAPAGOS_VIVADO_PATH
@@ -123,8 +122,8 @@ ls
 # In[6]:
 
 
-cd /home/user/HCAL_HLS4ML
-make cpu_node.exe
+#cd /home/user/HCAL_HLS4ML
+#make cpu_node.exe
 
 
 # ## Example Galapagos Kernel
