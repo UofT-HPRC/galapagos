@@ -25,8 +25,8 @@ source $galapagos_path/init.sh $galapagos_path $vivado_path $hls_path $vivado_ve
 galapagos-update-board $galapagos_board
 
 
-cd $GALAPAGOS_PATH/projects/$project_name
-source createCluster.sh
+#cd $GALAPAGOS_PATH/projects/$project_name
+#source createCluster.sh
 
 
 # In[ ]:
