@@ -22,8 +22,9 @@ cd $galapagos_path
 vivado_version=2018.1
 hls_version=2018.1
 galapagos_board=adm-8k5-debug
+#might be /Vivado/$vivado_version
 vivado_path=/opt/Xilinx/Vivado
-hls_path=/opt/Xilinx/Vivado_HLS
+hls_path=/opt/Xilinx/Vivado/$hls_version
 
 source init.sh $galapagos_path $vivado_path $hls_path $vivado_version $hls_version
 galapagos-update-board $galapagos_board
