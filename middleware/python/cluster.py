@@ -307,7 +307,7 @@ class cluster(abstractDict):
         globalConfigFile = open(output_path + "/" + self.name + '/createCluster.sh', 'w')
         globalSimFile = open(output_path + "/" + self.name + '/simCluster.sh', 'w')
 
-        globalConfigFile.write("cd " + str(os.environ.get('GALAPAGOS_PATH')) + "\n")
+        #globalConfigFile.write("cd " + str(os.environ.get('GALAPAGOS_PATH')) + "\n")
         for node_idx, node_obj in enumerate(self.nodes):
             #only need vivado project for hw nodes
             if node_obj['type'] == 'hw':
@@ -320,8 +320,19 @@ class cluster(abstractDict):
                 os.makedirs(dirName, exist_ok=True)
                 
                 #currently only making flattened bitstreams
-                globalConfigFile.write("galapagos-update-board " + node_obj['board'] + "\n")
-                globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + self.name +  " --start_synth 1" + "\n")
+                globalConfigFile.write("cd ~/notebook/galapagos/docker" + "\n")
+                globalConfigFile.write("source setup.sh" + "\n")
+                globalConfigFile.write("export SENDER_ID=$(cat sender_id.txt)" + "\n")
+                globalConfigFile.write("echo 'cd /opt/Xilinx' > generate_bitstream.sh" + "\n")
+                globalConfigFile.write("echo 'source vivado_setup '2018.1'' >> generate_bitstream.sh" + "\n")
+                globalConfigFile.write("echo 'cd /home/user/galapagos' >> generate_bitstream.sh" + "\n")
+                globalConfigFile.write("echo '")                
+                #globalConfigFile.write("galapagos-update-board " + node_obj['board'] + "\n")
+                globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + self.name +  " --start_synth 1")
+                globalConfigFile.write(" ' >> generate_bitstream.sh" + "\n")
+                globalConfigFile.write("docker cp generate_bitstream.sh $SENDER_ID:/home/user")
+                globalConfigFile.write("docker exec -it $SENDER_ID bash inside_sender.sh")
+                globalConfigFile.write("docker exec -it $SENDER_ID bash send_to_reeiver.sh" + "\n")
 #                globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + output_path + '/' + self.name " & \n")
 #                globalSimFile.write("vivado -mode gui -source tclScripts/createSim.tcl -tclargs " + node_obj['board'] + " " + self.name + " " + str(node_idx) + "\n")
 
