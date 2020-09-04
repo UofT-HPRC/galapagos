@@ -321,7 +321,7 @@ class cluster(abstractDict):
                 
                 #currently only making flattened bitstreams
                 globalConfigFile.write("cd ~/notebook/galapagos/docker" + "\n")
-                globalConfigFile.write("source setup.sh" + "\n")
+                globalConfigFile.write("source part_2.sh" + "\n")
                 globalConfigFile.write("export SENDER_ID=$(cat sender_id.txt)" + "\n")
                 globalConfigFile.write("echo 'cd /opt/Xilinx' > generate_bitstream.sh" + "\n")
                 globalConfigFile.write("echo 'source vivado_setup '2018.1'' >> generate_bitstream.sh" + "\n")
