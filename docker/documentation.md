@@ -38,7 +38,7 @@
 
 ### __get_folders.sh (host)__
 * Retrieves the hlsBuild and projects folder from the project generating container onto the host
-* Copies the folders into the galapagos/docker directory of the host
+  * Copies the folders into the galapagos/docker directory of the host
 * File called: _container_id.txt_
 
 ### __get_receiver_ip.sh (host)__
@@ -53,7 +53,7 @@
 
 ### __inside_receiver.sh (receiver)__
 * Sets up netcat listening port on the FPGA programming container
-* This allows the transfer of the bitstream file from the bitstream generating container once it is done
+  * This allows the transfer of the bitstream file from the bitstream generating container once it is done
 * Programs FPGA once bitstream file is received
 * File called: _program_fpga.tcl_
 
@@ -91,19 +91,19 @@
 
 ### __part_1.sh (host)__
 * Executes the entire program generating process
-* Deploys a project generating container
-* Setups the license for Vivado for that container
-* Sets up Vivado inside the container
-* Runs the first 2 Jupyter Notebook inside the container
-* Gets the hlsBuild and projects folder generated inside the container onto the host machine
+  * Deploys a project generating container
+  * Setups the license for Vivado for that container
+  * Sets up Vivado inside the container
+  * Runs the first 2 Jupyter Notebook inside the container
+  * Gets the hlsBuild and projects folder generated inside the container onto the host machine
 * Files called: *deploy_container.sh, setup_license.sh, container_id.sh, inside_container.sh, get_folders.sh*
 
 
 ### __part_2.sh (host)__
 * Creates a pair of bitstream generating and FPGA programming container
-* deploys a sender and receiver container
+  * deploys a sender and receiver container
 * Sets up Netcat listening port on the FPGA programming container
-* This allows the transfer of the bitstream file from the bitstream generating container once it is done
+  * This allows the transfer of the bitstream file from the bitstream generating container once it is done
 * Generates the bitstream
 * Sends it over to the FPGA programming container
 * Files called: *deploy_receiver.sh, get_receiver_ip.sh, inside_receiver.sh, deploy_sender.sh. send_receiver_ip.sh, send_folders.sh*
