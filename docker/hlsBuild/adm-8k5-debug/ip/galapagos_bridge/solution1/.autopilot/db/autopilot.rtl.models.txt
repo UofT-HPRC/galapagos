@@ -1,7 +1,0 @@
-fifo_w16_d2_A
-fifo_w8_d2_A
-fifo_w8_d2_A
-g2N_ingress
-g2N_egress
-n2G
-galapagos_bridge

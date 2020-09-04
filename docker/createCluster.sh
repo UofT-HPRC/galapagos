@@ -1,4 +1,4 @@
-#first cluster
+fst cluster
 cd ~/notebook/galapagos/docker
 source setup.sh
 export SENDER_ID=$(cat sender_id.txt)
