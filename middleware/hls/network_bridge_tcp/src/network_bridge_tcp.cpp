@@ -146,6 +146,7 @@ void tcp_to_galapagos_interface(
 
     static enum dstate {
                         T2G_IDLE=0,
+                        T2G_INCOMPLETE,
                         T2G_READ_METADATA,
                         T2G_WAIT_FOR_HEADER,
                         T2G_WAIT_FOR_SESSION_ID,
@@ -164,12 +165,43 @@ void tcp_to_galapagos_interface(
     *incomplete_out = incomplete;
     *num_written_out = num_written;
 
+    static stream<appNotification> notifications_buffer;
+    #pragma HLS stream variable=notifications_buffer depth=64
+
 	switch (state)
 	{
         case T2G_IDLE:{
-	        if (!notifications.empty())
+            if(incomplete){
+                if (!notifications.empty()){
+                    notifications.read(notification);
+                    if(notification.sessionID == sessionID){
+                        if (notification.length != 0){
+                            to_read = notification.length + left_to_read;
+                            left_to_read = to_read & 7;
+                            readRequest.write(appReadRequest(notification.sessionID, to_read & 0xFFF8));
+                        }
+                        state = T2G_READ_METADATA;  
+                    } else {
+                        notifications_buffer.write(notification);
+                    }
+                }
+            } else {
+                if (!notifications.empty()){
+                    notifications.read(notification);
+                    notifications_buffer.write(notification);
+                    state = T2G_INCOMPLETE;
+                }
+                else if(!notifications_buffer.empty()){
+                    state = T2G_INCOMPLETE;
+                }
+            }
+            *state_out = state;
+            break;
+	    }
+        case T2G_INCOMPLETE:{
+            if (!notifications_buffer.empty())
 	        {
-		        notifications.read(notification);
+		        notifications_buffer.read(notification);
 		        std::cout << notification.ipAddress << "\t" << notification.dstPort << std::endl;
 		        if (notification.length != 0)
 		        {
@@ -180,8 +212,8 @@ void tcp_to_galapagos_interface(
                 state = T2G_READ_METADATA;       
                 *state_out = state;
 	        }
-    		break;
-	    }
+            break;
+        }
     	case T2G_READ_METADATA:{
     		
             if (!rxMetaData.empty()){
@@ -200,10 +232,10 @@ void tcp_to_galapagos_interface(
             
             if (!rxData.empty())
     		{
-    			currWord=rxData.read();
-                src = currWord.data(23,16);
-                //size = currWord.data(15,0) >> 3;
-                size = currWord.data(15,0);
+    			packet=rxData.read();
+                src = packet.data(23,16);
+                //size = packet.data(15,0) >> 3;
+                size = packet.data(15,0);
                 *size_out = size;
                 num_written = 0;
                 *num_written_out = num_written;
@@ -238,9 +270,15 @@ void tcp_to_galapagos_interface(
     	
         case T2G_WRITE_HEADER:{
     		
-            txGalapagosBridge.write(currWord);
-            packet.last = 0;
-    		state = T2G_WRITE_FLIT;
+            txGalapagosBridge.write(packet);
+            // packet.last = 0;
+            // if(packet.last){
+            //     incomplete = 1;
+            //     state = T2G_IDLE;
+            // } else {
+            //     state = T2G_WRITE_FLIT;
+            // }
+            state = T2G_WRITE_FLIT;
             *state_out = state;
             break; 
                                  
@@ -417,7 +455,7 @@ void galapagos_to_tcp_interface(
                         G2T_WRITE_SID,
                         G2T_WRITE_METADATA,
                         G2T_READ_TXSTATUS,
-                        G2T_WRITE_HEADER,
+                        // G2T_WRITE_HEADER,
                         G2T_STREAM
                         } state = G2T_IDLE;
 
