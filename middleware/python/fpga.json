@@ -1,0 +1,20 @@
+{
+"sidewinder":
+    {
+        "total":{
+            "dsp":1968,
+            "bram": 984,
+            "uram": 9,
+            "ff": 1045440,
+            "lut": 522720 
+        },
+        "shell":{
+            "dsp":0,
+            "bram": 2,
+            "uram": 0,
+            "ff": 0,
+            "lut": 6491 
+        },
+        "num": 100
+    }
+}
