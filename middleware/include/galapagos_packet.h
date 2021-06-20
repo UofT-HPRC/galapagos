@@ -39,6 +39,7 @@ namespace galapagos{
 
 typedef galapagos::stream_packet <ap_uint<PACKET_DATA_LENGTH> > galapagos_packet;
 
+
 #define BYTESPERCYCLE 8
 #define ID_LENGTH 8
 #define DEST_LENGTH 8
@@ -61,7 +62,9 @@ namespace galapagos{
         ap_uint <PACKET_DEST_LENGTH> id;
 #endif
 #ifdef PACKET_USER_LENGTH
+#if PACKET_USER_LENGTH > 0
         ap_uint <PACKET_USER_LENGTH> user;
+#endif
 #endif
 #ifdef PACKET_KEEP_LENGTH
         ap_uint <PACKET_KEEP_LENGTH> keep;
@@ -74,7 +77,8 @@ namespace galapagos{
 }
 
 typedef galapagos::stream_packet<ap_uint<PACKET_DATA_LENGTH> >  galapagos_packet;
-typedef hls::stream<galapagos::stream_packet<ap_uint<PACKET_DATA_LENGTH> > > galapagos_interface;
+
+typedef hls::stream<galapagos_packet> galapagos_interface;
 
 inline ap_uint<PACKET_DATA_LENGTH> get_header(ap_uint<PACKET_DEST_LENGTH> _id, ap_uint<PACKET_DEST_LENGTH> _dest, ap_uint<PACKET_USER_LENGTH> _size){
 #pragma HLS INLINE
@@ -85,13 +89,25 @@ inline ap_uint<PACKET_DATA_LENGTH> get_header(ap_uint<PACKET_DEST_LENGTH> _id, a
     retVal.range(PACKET_DEST_LENGTH+PACKET_DEST_LENGTH+PACKET_USER_LENGTH-1, PACKET_DEST_LENGTH+PACKET_USER_LENGTH) = _dest; //unused
     retVal.range(PACKET_DEST_LENGTH+PACKET_USER_LENGTH-1, PACKET_USER_LENGTH) = _id;
     //retVal.range(PACKET_USER_LENGTH - 1, 0) = _size << 3; //length in bytes
-    retVal.range(PACKET_USER_LENGTH - 1, 0) = _size; //length in bytes
+    retVal.range(PACKET_USER_LENGTH - 1, 0) = _size; //length in words
 
     return retVal;
 
 }
 
+//inline ap_uint<PACKET_DATA_LENGTH> get_header(ap_uint<PACKET_DEST_LENGTH> _id, ap_uint<PACKET_DEST_LENGTH> _dest){
+//#pragma HLS INLINE
+//
+//    ap_uint<PACKET_DATA_LENGTH> retVal;
+//
+//    retVal.range(PACKET_DATA_LENGTH - 1,PACKET_DEST_LENGTH+PACKET_DEST_LENGTH) = 0; //unused
+//    retVal.range(PACKET_DEST_LENGTH+PACKET_DEST_LENGTH-1, PACKET_DEST_LENGTH) = _dest; //unused
+//    retVal.range(PACKET_DEST_LENGTH-1, 0) = _id;
+//
+//    return retVal;
+//
+//}
+
+
 #endif // if not CPU
-
-
 #endif //GUARD
