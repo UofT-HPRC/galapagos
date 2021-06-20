@@ -45,8 +45,11 @@ void router(
         packetOut.keep = packetIn.keep;
         packetOut.dest = packetIn.dest;
         packetOut.id = packetIn.id;
+#ifdef PACKET_USER_LENGTH
+#if PACKET_USER_LENGTH > 0
         packetOut.user = packetIn.user;
-
+#endif
+#endif
         network_addr_in = network_table[packetIn.dest];
         *addr_out = network_addr_in;
         inFPGA = (network_addr == network_addr_in);
