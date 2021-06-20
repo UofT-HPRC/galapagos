@@ -16,7 +16,9 @@ void g2N(
    
     galapagos_packet gp = input->read();
     ap_uint<PACKET_USER_LENGTH> size;
+    
     ap_uint<PACKET_DATA_LENGTH> header = get_header(gp.id, gp.dest, gp.user);
+    //ap_uint<PACKET_DATA_LENGTH> header = get_header(gp.id, gp.dest);
     
     netStream np;
     //Write header
@@ -62,13 +64,15 @@ void n2G(
     ap_uint<PACKET_DEST_LENGTH> id = np.data.range(PACKET_DEST_LENGTH+PACKET_USER_LENGTH-1, PACKET_USER_LENGTH);
     ap_uint<PACKET_DEST_LENGTH> dest =  np.data.range(PACKET_DEST_LENGTH+PACKET_DEST_LENGTH+PACKET_USER_LENGTH-1, PACKET_DEST_LENGTH+PACKET_USER_LENGTH);
     ap_uint<PACKET_USER_LENGTH> size = np.data.range(PACKET_USER_LENGTH-1,0);
+    //ap_uint<PACKET_DEST_LENGTH> id = np.data.range(PACKET_DEST_LENGTH-1, 0);
+    //ap_uint<PACKET_DEST_LENGTH> dest =  np.data.range(PACKET_DEST_LENGTH+PACKET_DEST_LENGTH-1, PACKET_DEST_LENGTH);
     for(int i=0; i<size; i++){
 #pragma HLS PIPELINE II=1
         galapagos_packet gp;
         netStream np = input->read();
         gp.id = id;
         gp.dest = dest;
-        gp.user = size;
+        //gp.user = size;
         gp.data = np.data;
         gp.last = np.last;
         gp.keep = np.keep;
