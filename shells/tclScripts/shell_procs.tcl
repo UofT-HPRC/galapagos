@@ -553,8 +553,12 @@ proc create_hier_eth10G_zu { parentCell nameHier } {
   connect_bd_net -net util_vector_logic_1_Res [get_bd_pins util_vector_logic_1/Res] [get_bd_pins util_vector_logic_2/Op1]
   connect_bd_net -net util_vector_logic_2_Res [get_bd_pins ext_reset_n] [get_bd_pins util_vector_logic_2/Res]
   connect_bd_net -net xlconstant_0_dout [get_bd_pins CONST_5/dout] [get_bd_pins xxv_ethernet_0/rxoutclksel_in_0] [get_bd_pins xxv_ethernet_0/txoutclksel_in_0]
-  connect_bd_net -net xxv_ethernet_0_rx_clk_out_0 [get_bd_pins axis_clock_converter_0/s_axis_aclk] [get_bd_pins bit_synchronizer_0/sync_clk] [get_bd_pins xxv_ethernet_0/rx_clk_out_0]
-  connect_bd_net -net xxv_ethernet_0_tx_clk_out_1 [get_bd_pins tx_clk_out_0] [get_bd_pins axis_clock_converter_0/m_axis_aclk] [get_bd_pins axis_register_slice_0/aclk] [get_bd_pins axis_register_slice_1/aclk] [get_bd_pins xxv_ethernet_0/rx_core_clk_0] [get_bd_pins xxv_ethernet_0/tx_clk_out_0]
+  # <changes>
+  # MM Jan 28/2020: I don't know how this ever worked before, but this uses the wrong clock for rx_core_clk
+  connect_bd_net -net xxv_ethernet_0_rx_clk_out_0 [get_bd_pins axis_clock_converter_0/s_axis_aclk] [get_bd_pins bit_synchronizer_0/sync_clk] [get_bd_pins xxv_ethernet_0/rx_core_clk_0]  [get_bd_pins xxv_ethernet_0/rx_clk_out_0]
+  connect_bd_net -net xxv_ethernet_0_tx_clk_out_1 [get_bd_pins tx_clk_out_0] [get_bd_pins axis_clock_converter_0/m_axis_aclk] [get_bd_pins axis_register_slice_0/aclk] [get_bd_pins axis_register_slice_1/aclk] [get_bd_pins xxv_ethernet_0/tx_clk_out_0]
+  
+  # </changes>
   connect_bd_net -net xxv_ethernet_0_user_rx_reset_0 [get_bd_pins util_vector_logic_1/Op1] [get_bd_pins xxv_ethernet_0/user_rx_reset_0]
   connect_bd_net -net xxv_ethernet_0_user_tx_reset_0 [get_bd_pins util_vector_logic_1/Op2] [get_bd_pins xxv_ethernet_0/user_tx_reset_0]
 

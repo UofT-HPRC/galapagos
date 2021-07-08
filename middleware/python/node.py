@@ -13,6 +13,11 @@ class node(abstractDict):
     mandatory, but there are a whole bunch of optional ones too.
     """
 
+    # MM Mar 3 / 2020 Added a reference to the parent cluster into node, since
+    # I needed access to the packet description in tclFileGenerator.py. This was
+    # done in cluster.py after a node object is constructed by simply accessing
+    # node.parent_cluster
+        
     def __init__(self, address_space=32, **kwargs):
         """
         Fills underlying dict representation with kwargs. Since this uses the call

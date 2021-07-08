@@ -8,6 +8,8 @@ from node import node
 import os
 import socket, struct
 import glob
+# MM Mar 3 / 2020 Needed OrderedDict for compatibility with xmltodict output
+from collections import OrderedDict
 
 class cluster(abstractDict):
     """ This class is the top-level interface to the myriad other objects used 
@@ -107,6 +109,8 @@ class cluster(abstractDict):
         if(mode=='file'):
             logical_dict = self.getDict(kernel_file)['cluster']['kernel']
             map_dict = self.getDict(map_file)['cluster']['node']
+            if not isinstance(map_dict, list):
+                map_dict = [map_dict]
         else:
             logical_dict = kernel_file['cluster']['kernel']
             map_dict = map_file['cluster']['node']
@@ -119,6 +123,11 @@ class cluster(abstractDict):
             if 'rep' in kern_dict:
                 # Automatically gives sequential numbers
                 base_num = int(kern_dict['num'])
+                # MM Mar 3 / 2020 Added error message if user tries to use 
+                # number 0, which is reserved for the debug logic
+                if (base_num == 0):
+                    raise Exception("ERROR: Kernel number 0 is reserved for debug logic. Please renumber your kernels\n\n")
+                
                 for i in range(0, int(kern_dict['rep'])):
                     kern_dict_local = copy.deepcopy(kern_dict)
                     # Set number for this kernel instance
@@ -182,23 +191,68 @@ class cluster(abstractDict):
             else:
                 kern_dict_local['rep'] = 1
                 kern_dict_local['num'] = int(kern_dict_local['num'])
+                # MM Mar 3 / 2020 Added error message if user tries to use 
+                # number 0, which is reserved for the debug logic
+                if (kern_dict_local['num'] == 0):
+                    raise Exception("ERROR: Kernel number 0 is reserved for debug logic. Please renumber your kernels\n\n")
+                
                 self.kernels.append(kernel(**kern_dict_local))
-
+        
+        # At this point, self.kernels contains a list of dicts with properly
+        # converted info about each kernel
+        
         ## Dumps kernel info to the screen (printf debugging)
-        #for kern in self.kernels:
-        #    print("kernel object " + str(kern.data))
-
+        # print("KERNEL INFO")
+        # for kern in self.kernels:
+        #     print("kernel object " + str(kern.data))
+        
+        # MM Mar 3 / 2020 Add a placeholder kernel into each node. This causes
+        # the other Galapagos code to make the switches large enough and to 
+        # route all debug traffic to the right place. Later, we will remove the
+        # the placeholder and replace it with the correct debug interfaces
+        
+        placeholder_dbg_kernel = {
+            'name': 'dbg_guv',
+            'num': 0,
+            '#text': 'dbg_guv',
+            'rep': 1,
+            'clk': ['clk'],
+            'aresetn': [], # I hope that works...
+            'vendor': 'mmerlini',
+            'lib': 'yov',
+            'version': '1.0',
+            'id_port': None,
+            'm_axi': None,
+            's_axi': None,
+            's_axis': [OrderedDict([('scope', 'global'), ('name', 'cmd_in')])],
+            'm_axis': [OrderedDict([('scope', 'global'), ('name', 'log_catted')])],
+            'wire_master': None,
+            'wire_slave': None,
+            'ip': None, # TODO: Figure out what this should be
+            'mac': None, # ditto
+            'const': None,
+            'properties': None,
+            'board': None
+        }
+        
         # Now deal with nodes (i.e. a CPU or an FPGA)
         self.nodes = []
         for node_idx, node_dict in enumerate(map_dict):
+            
             # This basically copies the dictionary parsed from the <node> tags into another dictionary,
             # but it does also check the fields to make sure they're all valid and that no mandatory info
             # is missing
             node_inst = node(**node_dict)
             
+            # MM Mar 3 / 2020 Save a reference to the parent cluster in each node
+            node_inst.parent_cluster = self
+            
             # I'm fairly sure these next few lines of code are just converting
             # data formats
             node_inst['kernel'] = []
+            
+            # MM Mar 3 / 2020 Always put a placeholoder dbg_guv in each node
+            node_inst['kernel'].append(placeholder_dbg_kernel)
             
             # 
             for kmap_node in node_dict['kernel']:

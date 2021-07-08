@@ -23,7 +23,7 @@ style = style_from_dict({
 class directoryValidator(Validator):
   def validate(self, document):
         if not document.text=='':
-            if not os.path.isdir("/home/el"):
+            if not os.path.isdir(document.text):
                 raise ValidationError(
                         message='Please enter valid directory for galapagos path',
                         cursor_position=len(document.text)

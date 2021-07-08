@@ -1,0 +1,144 @@
+[*]
+[*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
+[*] Sat Feb 29 04:00:26 2020
+[*]
+[dumpfile] "/home/mahkoe/research/ye_olde_verilogge/axis_governor/better_axis_intf/dbg_guv.vcd"
+[dumpfile_mtime] "Sat Feb 29 04:00:19 2020"
+[dumpfile_size] 79345
+[savefile] "/home/mahkoe/research/ye_olde_verilogge/axis_governor/better_axis_intf/dbg_guv.gtkw"
+[timestart] 250300
+[size] 1916 1060
+[pos] -1 -1
+*-15.640755 549100 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] dbg_guv_tb.
+[treeopen] dbg_guv_tb.ctl1.
+[treeopen] dbg_guv_tb.ctl2.
+[treeopen] dbg_guv_tb.ctl2.ello_guvna.
+[sst_width] 279
+[signals_width] 237
+[sst_expanded] 1
+[sst_vpaned_height] 568
+@28
+dbg_guv_tb.clk
+dbg_guv_tb.rst
+@22
+dbg_guv_tb.cmd_in_TDATA[63:0]
+@28
+dbg_guv_tb.cmd_out_TVALID
+@800200
+-in1
+@24
+[color] 2
+dbg_guv_tb.in1_TDATA[63:0]
+@28
+[color] 2
+dbg_guv_tb.in1_TVALID
+[color] 2
+dbg_guv_tb.in1_TREADY
+@22
+[color] 2
+dbg_guv_tb.in1_TKEEP[7:0]
+@28
+[color] 2
+dbg_guv_tb.in1_TLAST
+@22
+[color] 2
+dbg_guv_tb.in1_TDEST[15:0]
+[color] 2
+dbg_guv_tb.in1_TID[15:0]
+@1000200
+-in1
+@800200
+-out1
+@24
+dbg_guv_tb.out1_TDATA[63:0]
+@28
+dbg_guv_tb.out1_TVALID
+dbg_guv_tb.out1_TREADY
+@22
+dbg_guv_tb.out1_TKEEP[7:0]
+@28
+dbg_guv_tb.out1_TLAST
+@22
+dbg_guv_tb.out1_TDEST[15:0]
+dbg_guv_tb.out1_TID[15:0]
+@1000200
+-out1
+@800200
+-log1
+@22
+[color] 3
+dbg_guv_tb.log_catted1_TDATA[71:0]
+@28
+[color] 3
+dbg_guv_tb.log_catted1_TVALID
+[color] 3
+dbg_guv_tb.log_catted1_TREADY
+[color] 3
+dbg_guv_tb.log_catted1_TLAST
+@1000200
+-log1
+@800200
+-dbg_guv1
+@28
+[color] 7
+dbg_guv_tb.ctl1.pause
+[color] 7
+dbg_guv_tb.ctl1.drop
+[color] 7
+dbg_guv_tb.ctl1.keep_dropping
+[color] 7
+dbg_guv_tb.ctl1.log_en
+[color] 7
+dbg_guv_tb.ctl1.keep_logging
+@1000200
+-dbg_guv1
+@29
+dbg_guv_tb.ctl2.latch_sig
+@28
+dbg_guv_tb.ctl2.ello_guvna.inj_TVALID
+@800200
+-in2
+@24
+[color] 2
+dbg_guv_tb.in2_TDATA[63:0]
+@28
+[color] 2
+dbg_guv_tb.in2_TVALID
+[color] 2
+dbg_guv_tb.in2_TREADY
+[color] 2
+dbg_guv_tb.in2_TLAST
+@22
+[color] 2
+dbg_guv_tb.in2_TKEEP[7:0]
+[color] 2
+dbg_guv_tb.in2_TDEST[15:0]
+[color] 2
+dbg_guv_tb.in2_TID[15:0]
+@1000200
+-in2
+@800200
+-out2
+@22
+dbg_guv_tb.out2_TDATA[63:0]
+@28
+dbg_guv_tb.out2_TVALID
+dbg_guv_tb.out2_TREADY
+@22
+dbg_guv_tb.out2_TKEEP[7:0]
+@28
+dbg_guv_tb.out2_TLAST
+@22
+dbg_guv_tb.out2_TDEST[15:0]
+dbg_guv_tb.out2_TID[15:0]
+@1000200
+-out2
+@22
+dbg_guv_tb.log_catted2_TDATA[71:0]
+@28
+dbg_guv_tb.log_catted2_TVALID
+dbg_guv_tb.log_catted2_TREADY
+dbg_guv_tb.log_catted2_TLAST
+[pattern_trace] 1
+[pattern_trace] 0

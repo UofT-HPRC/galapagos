@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cluster>
+	<node>
+		<!-- node details -->
+		<type> hw </type> <!-- Request FPGA -->
+		<comm> raw </comm> <!-- not that it matters... -->
+		<board> sidewinder </board>
+		<mac> 01:23:45:67:89:AB </mac>
+		<ip> 10.10.84.234 </ip>
+
+		<!-- Place both kernels on this board -->
+		<kernel> 1 </kernel>
+		<kernel> 2 </kernel>
+	
+	</node>
+
+</cluster>

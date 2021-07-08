@@ -1,0 +1,376 @@
+===================================================
+HOW DOES THE ARBITRATION WORK IN THE AXIS GOVERNOR?
+===================================================
+
+Suppose I have an AXI Stream between two points:
+
+  +-----------+                                     +-----------+
+  |        vld|------------------------------------>|vld        |
+  |           |                                     |           |
+  | Alex      |                                     |  Brittany |
+  |           |                                     |           |
+  |        rdy|<------------------------------------|rdy        |
+  +-----------+                                     +-----------+
+  
+
+(Note: "Alice and Bob" have been used so often that I have named my two parties 
+differently)
+
+We will consider how we can add some logic to allow:
+    - Pausing transmission
+    - Forcing flits to be dropped
+    - Injecting flits
+    - Logging flits
+
+Our technique will be to do each of features separately, then to combine them. 
+After that, I will present the technique I used to verify that we (probably) 
+didn't miss any corner cases.
+
+=======
+PAUSING
+=======
+
+We will add an input signal which stops transmission if it is high, and has no 
+effect if it is low:
+
+                             pause
+                               +
+                               |   __
+  +-----------+                +-o|  \              +-----------+
+  |        vld|----------------|--|__/------------->|vld        |
+  |           |                |                    |           |
+  | Alex      |           __   |                    |  Brittany |
+  |           |          /  |o-+                    |           |
+  |        rdy|<---------\__|-----------------------|rdy        |
+  +-----------+                                     +-----------+
+
+(These are AND gates)
+
+If pause is low, Brittany.vld = Alex.vld and Alex.rdy = Brittany.rdy. However, 
+if pause is high, Alex.rdy is low and Brittany.vld is low, meaning that neither 
+will ever see a flit go by.
+
+
+========
+DROPPING
+========
+
+Now we will add an input which causes Alex to think Brittany is always ready, 
+but Brittany thinks Alex is never valid (in other words, flits from Alex will 
+be dropped):
+
+
+                              drop
+                               +
+                               |   __
+  +-----------+                +-o|  \              +-----------+
+  |        vld|----------------|--|__/------------->|vld        |
+  |           |                |                    |           |
+  | Alex      |            ___ |                    |  Brittany |
+  |           |           /  /-+                    |           |
+  |        rdy|<----------\__\----------------------|rdy        |
+  +-----------+                                     +-----------+
+
+(The top gate is an AND and the bottom is an OR)
+
+
+=========
+INJECTING
+=========
+
+This is a little more complicated. We'll add an injection input (as an AXI 
+Stream master). If there is an injected flit we need to backpressure Alex, but 
+we still want transmissions to continue otherwise:
+
+                                ___
+  +-----------+               +-\  \                +-----------+
+  |        vld|---------------|-/__/--------------->|vld        |
+  |           |               |                     |           |
+  | Alex      |          __   |                     |  Brittany |
+  |           |         /  |o-+                     |           |
+  |        rdy|<--------\__|--|------+--------------|rdy        |
+  +-----------+               |      |              +-----------+
+                              |      |
+                              |      v
+                           +------------+
+                           | vld    rdy |
+                           |            |
+                           |   Inject   |
+                           |            |
+                           +------------+
+
+Suppose Inject.vld is low; then (Brittany.vld = Alex.vld) and (Alex.rdy = 
+Brittany.rdy). This means that transmissions can continue if we're not 
+injecting anything.
+
+Suppose Inject.vld is high; then Alex.rdy is low (thus causing backpressure) 
+and Brittany.vld is high (which is correct, since Inject.vld is high and is the 
+source of flits for Brittany).
+
+
+=======
+LOGGING 
+=======
+
+NAÏVE METHOD
+------------
+
+This is the most complicated task. We will add a log output (as an AXI Stream 
+slave). Alex must be backpressured if either Brittany or the logging output is 
+not ready:
+
+  +-----------+                                     +-----------+
+  |        vld|---------------+-------------------->|vld        |
+  |           |               |                     |           |
+  | Alex      |               |  __                 |  Brittany |
+  |           |               | /  |-+              |           |
+  |        rdy|<----------------\__|-|--------------|rdy        |
+  +-----------+               |      |              +-----------+
+                              |      |
+                              v      |
+                           +------------+
+                           | vld    rdy |
+                           |            |
+                           |     Log    |
+                           |            |
+                           +------------+
+
+However, we run into trouble if we do this: if Alex is valid, then the logger 
+or Brittany will record a flit whenever they are ready. However, they must both 
+be ready before Alex will consider a flit to have been read.
+
+In other words, flits are copied if exactly one of Brittany or the logging 
+output is ready!
+
+
+ELIMINATING INCORRECT FLIT COPIES
+---------------------------------
+
+To fix this, we should make sure that Brittany.vld and Log.vld are only high 
+when a flit is read from master:
+
+
+                     __
+  +-----------+   +-|  \                            +-----------+
+  |        vld|---|-|__/------+-------------------->|vld        |
+  |           |   |           |                     |           |
+  | Alex      |   |           |  __                 |  Brittany |
+  |           |   |           | /  |-+              |           |
+  |        rdy|<--+-------------\__|-|--------------|rdy        |
+  +-----------+               |      |              +-----------+
+                              |      |
+                              v      |
+                           +------------+
+                           | vld    rdy |
+                           |            |
+                           |     Log    |
+                           |            |
+                           +------------+
+
+This does techninically solve the problem, but we have now violated the AXI 
+Stream specification! In the spec, it is legal for a slave to have a 
+combinational path from its "valid" input to its "ready" output. By letting 
+Brittany.vld = (Alex.vld && Alex.rdy) = (Alex.vld && Brittany.rdy && Log.rdy) 
+we might make a combinational loop involving Brittany.vld and Brittany.rdy!
+
+And by the way, this same problem also exists for the Log output.
+
+
+FIXING COMBINATIONAL LOOPS
+--------------------------
+
+The idea is this: Log is only valid if Alex is valid and Brittany is ready. 
+Likewise, Brittany is only valid if Alex is valid and the Log is ready. It's 
+actually easier to understand this reasoning if we had, say, five slaves. The 
+master should never send unless all five are ready, but each slave should never
+receive unless the master is valid AND all the other slaves are ready.
+
+The final circuit is as follows:
+                                        __
+  +-----------+                      +-|  \         +-----------+
+  |        vld|--------------+-------|-|__/-------->|vld        |
+  |           |              | /--+  |              |           |
+  | Alex      |              ---  |  |              |  Brittany |
+  |           |        __    \_/  |  |              |           |
+  |        rdy|<------/  |----|---+--|--------------|rdy        |
+  +-----------+       \__|----|------+              +-----------+
+                              |      |
+                              v      |
+                           +------------+      +------------------+
+                           | vld    rdy |      |  a b             |
+                           |            |      |  | |             |
+                           |     Log    |      |  ---             |
+                           |            |      |  \_/  f = a AND b|
+                           +------------+      |   |              |
+                                               |   f              |
+                                               +------------------+
+
+This is much more subtle. If Log.rdy is low, then Alex.rdy is low and 
+Brittany.vld is low; this backpressures Alex and makes sure Brittany doesn't 
+read anything.
+
+If Log.rdy is high, then Alex.rdy = Brittany.rdy and Brittany.vld = Alex.vld, 
+which guarantees correct transmissions from Alex to Brittany. Furthermore, 
+Log.vld = (Alex.vld && Alex.rdy), which ensures that the logger only logs flits 
+that Alex transmitted (this is similar to a snooping interface).
+
+If you're like me, at this point you're thinking "well, I guess that makes 
+sense, but how do I know I didn't miss anything?". As far as I know, the only 
+way to be sure is to do a truth table and inspect every single circumstance 
+manually. See the section at the end of this document.
+
+
+===================
+PUTTING IT TOGETHER
+===================
+
+This section presents how I chose to combine all these techniques. There are 
+actually several options, which could all be considered correct, though they 
+have different "precedence"; for example, if "drop" has higher precedence than 
+"pause", it means that flits from Alex will be dropped if both these signals 
+are asserted. On the other hand, if "pause" has higher precence, Alex will be 
+forcibly backpressured when both signals are asserted.
+
+Here is a high-level view of the AXI Stream governor:
+
+                pause       log        drop
+                  |          |          |
+                  v          v          v
+  +-----------+ +---+ +-------------+ +---+ +-------------+ +-----------+
+  |        vld|-| P |-|             |-| D |-|             |-|vld        |
+  |           | | A | |   Logging   | | R | |  Injection  | |           |
+  | Alex      | | U | | arbitration | | O | | arbitration | |  Brittany |
+  |           | | S | |    logic    | | P | |    logic    | |           |
+  |        rdy|-| E |-|             |-|   |-|             |-|rdy        |
+  +-----------+ +---+ +-------------+ +---+ +-------------+ +-----------+
+                         |      |              |       |
+                         |      |              |       |
+                      +------------+         +------------+
+                      | vld    rdy |         | vld    rdy |
+                      |            |         |            |
+                      |     Log    |         |   Inject   |
+                      |            |         |            |
+                      +------------+         +------------+
+
+The trick is to notice that each individual technique still looks like an AXI 
+Stream after it has been applied, so we can literally chain them together. My 
+choice was to let pause have highest precedence, and that injections should 
+still be honoured even when drop is high. Furthermore, logs can still occur 
+even if drop is high (and in fact, if drop is high, logs are not stopped even 
+if Brittany.rdy is low).
+
+The final circuit diagram is obtained by substituting in the individual 
+circuits. For completeness, I have drawn it up; please see governor.png in this 
+folder. It was generated by the excellent Logisim program using governor.circ.
+
+Finally, I went in by hand and wrote down the logic expressions for each 
+output, and I also simplified them slightly. Here are my results (copied 
+straight out of my Verilog implementation):
+    
+    //(~inj_vld && out_rdy) means the slave is ready to receive a flit from the
+    //master. OR'ing this with drop means the slave (and injector) cannot 
+    //backpressure the master if drop is high.
+    //
+    //(log_rdy || ~log_en) means that the logger is not backpressuring the
+    //master
+    //
+    //Finally, in_rd is forced low if we are paused
+    assign in_rdy = ~pause && (log_rdy || ~log_en) && (drop || (~inj_vld && out_rdy));
+    
+    //If the injector has valid data, it takes precedence
+    //The other condition means that the master is trying to send something to
+    //the slave, and that the logger is not backpressuring the master
+    assign out_vld = inj_vld || (in_vld && ~drop && ~pause && (~log_en || log_rdy));
+    
+    //Note: this next line is written this way to let Vivado synthesize the logic
+    //in simple LUTs. However, it is better understood as
+    //
+    //assign log_vld = log_en && in_vld && m_rdy;
+    //
+    //Also note that log_vld depends on log_rdy. Technically, this violates the
+    //AXI Stream specification. In order for this to work, you need to connect
+    //the log AXI Stream channel to a core which does not have a combinational
+    //path from ready to valid (a register slice, for example)
+    assign log_vld = log_en && ~pause && in_vld && (drop || (~inj_vld && out_rdy));
+    
+    //At least this is simple...
+    assign inj_rdy = out_rdy;
+
+The next section talks about how I verified this circuit (informally) and that 
+my logic expressions correctly matched my diagram.
+
+===========================
+HOW DO WE KNOW IF IT WORKS?
+===========================
+
+Once I drew up the circuit in Logisim, I asked Logisim to produce a truth table 
+for the circuit (Project -> Analyze Circuit). I then pasted this table directly 
+into a spreadsheet.
+
+Then, I came up with a list of errors. If any of these errors occur on any line 
+of the truth table, the circuit would have to be reviewed:
+
+-> badeat: Alex thinks a flit was consumed, but the governor was paused
+
+-> missdrop: Governor was dropping, but Brittany received a flit (and nothing 
+   was injected)
+
+-> wrongdrop: Alex thinks a flit was consumed, but Brittany did not receive 
+   anything, and the governor was not dropping
+
+-> badlog: The Logger read something, but (logging was off OR Alex did not send 
+   anything)
+
+-> logcopy (special case of badlog): The Logger read something, but Alex did 
+   not send anything.
+
+-> slvcopy: Brittany read something, but neither Alex nor the injector sent 
+   anything
+
+-> misslog: Alex sent something, logging was on, but the logger did not read 
+   anything
+
+-> missout: Brittany did not read anything, but ((Alex sent something AND we 
+   weren't paused AND we're not dropping) OR (the injector sent something))
+
+-> missinject (special case of missout): the injector send something but 
+   Brittany didn't read anything
+
+-> injectclobber: Alex sent something, we're not paused, we're not dropping, 
+   AND the injector sent something.
+
+-> badpause: Alex sent something, but we're paused
+
+-> wronginject: This turned out to be identical to missinject. I've just left 
+   the description in here to better explain the attached spreadsheets
+   
+I have no formal proof that these are all the errors that could happen, but I 
+can't think of any more, so that's good enough for me.
+
+By the way, the size of the truth table outputs is 128 by 4, or 512 cells. In 
+theory, for me to formally prove correctness, I would have to come up with a 
+formal specification for each of the output cells (either 1, 0, or Don't Care). 
+I decided not to do that. Who knows, maybe the above method is a more efficient 
+way of doing just that?
+
+EXPLANATION OF THE ATTACHED FILES AND SPREADSHEETS
+--------------------------------------------------
+
+First of all, notice that there is a gov.circ, gov2.circ, and gov3.circ in 
+early_attempts/. These were the attempts I did by just trying to draw the 
+circuit without really thinking about it in a structured way. In other words, 
+this whole discussion about combining the pause, drop, log, and inject 
+primitives (taking care of precedence) didn't occur to me until I had tried to 
+make the circuit twice and found errors.
+
+The first three sheets in the spreadsheet show the truth tables for my first 
+three attempts. The fourth one shows the final circuit that passed all my tests.
+
+The fifth spreadsheet was how I confirmed to myself that I had correctly 
+transcribed the logical formulas from the diagram. The truth table is the same 
+one from the correct circuit.
+
+In all the spreadsheets, immediately to the right of the (nicely coloured) 
+truth table, are little helper signals for each of the four AXI Streams. They 
+are simply the AND of valid and ready, indicating (perceived) flit 
+transmission.

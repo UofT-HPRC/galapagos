@@ -1,0 +1,66 @@
+cmd_in_TDATA    cmd_in_TVALID   Comments
+0000            0               
+0000            0               
+0000            0               
+
+0008            1               Select dbg_core[0]::keep_pausing
+0000            0               
+0001            1               Enable keep_pausing
+000F            1               Latch
+0000            0               
+0000            0               
+0000            0               
+
+0008            1               Select dbg_core[0]::keep_pausing
+0000            0               
+0000            1               Enable keep_pausing
+0000            0               
+000F            1               Latch
+0000            0               
+0000            0               
+
+
+0018            1               Select dbg_core[1]::log_cnt
+0001            1               Set to 1
+0011            1               Select dbg_core[1]::keep_pausing
+0001            1               Enable keep_pausing
+0000            0               
+001F            1               Latch (performs single step)
+0000            0               
+0000            0               
+0000            0               
+001F            1               Latch (performs single step if STICKY_MODE == 1, otherwise, disables keep_pausing)
+0000            0               
+0000            0               
+0000            0               
+001F            1               Latch (performs single step if STICKY_MODE == 1, otherwise, disables keep_pausing)
+0000            0               
+0000            0               
+0000            0               
+
+
+
+
+0012            1               Select dbg_core[1]::inj_TDATA
+0055            1               Set to 0x55
+0013            1               Select dbg_core[1]::inj_TVALID
+0001            1               Set to 1
+0011            1               Select dbg_core[1]::keep_pausing
+0001            1               Disable keep_pausing
+0000            0               
+001F            1               Latch (performs single injection)
+001F            0               Latch (but command not valid!!!!)
+001F            0               Latch (but command not valid!!!!)
+001F            0               Latch (but command not valid!!!!)
+001F            0               Latch (but command not valid!!!!)
+001F            0               Latch (but command not valid!!!!)
+001F            0               Latch (but command not valid!!!!)
+001F            0               Latch (but command not valid!!!!)
+001F            0               Latch (but command not valid!!!!)
+001F            0               Latch (but command not valid!!!!)
+001F            0               Latch (but command not valid!!!!)
+0000            0               
+0000            0               
+0000            0               
+        
+0000            0       

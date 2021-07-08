@@ -1,0 +1,51 @@
+<cluster>
+
+	<!-- Describe the packet format. I doubt this does anything, since the
+	values are "hardcoded" in middleware/include/packet_size.h-->
+	<packet>
+		<data> 64 </data>
+		<keep> 1  </keep> <!-- Why is this 1? -->
+		<last> 1  </last>
+		<dest> 16 </dest>
+		<!-- What about id? -->
+	</packet>
+
+	<!-- Describe the hello_world kernel -->
+	<kernel> hello_world
+		<!-- Use the vendor and library that get applied when HLS exports your
+		ip -->
+		<vendor> xilinx.com </vendor>
+		<lib> hls </lib>
+		<version> 1.0 </version>
+		<num> 1 </num> <!-- Use kernel number 1 -->
+		<rep> 1 </rep> <!-- Only one copy -->
+
+		<!-- Tell Galapagos what our ports are called -->
+		<clk> ap_clk </clk>
+		<aresetn> ap_rst_n </aresetn>
+		<m_axis>
+			<scope> global </scope>
+			<name> out_r </name>
+		</m_axis>
+	</kernel>
+
+	<!-- Describe the world kernel -->
+	<kernel> world
+		<!-- Use the vendor and library that get applied when HLS exports your
+		ip -->
+		<vendor> xilinx.com </vendor>
+		<lib> hls </lib>
+		<version> 1.0 </version>
+		<num> 2 </num> <!-- Use kernel number 2 -->
+		<rep> 1 </rep> <!-- Only one copy -->
+
+		<!-- Tell Galapagos what our ports are called -->
+		<clk> ap_clk </clk>
+		<aresetn> ap_rst_n </aresetn>
+		<s_axis>
+			<scope> global </scope>
+			<name> in_r </name>
+		</s_axis>
+	</kernel>
+
+</cluster>
