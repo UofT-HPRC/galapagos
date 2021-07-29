@@ -2,6 +2,7 @@
 
 # Given the Xilinx FPGA part number, this finds the appropriate FPGA family,
 # which is appended to the provided configFile
+
 find_family () {
   configFile=$1
   part=$2
@@ -105,7 +106,7 @@ if [[ $hlsVersion == "2017.2" ]]; then
 elif [[ $hlsVersion == "2017.4" ]]; then
   hlsPath_append=$hlsPath/$hlsVersion
 elif [[ $hlsVersion == "2018.1" ]]; then
-  hlsPath_append=$hlsPath/$hlsVersion  
+  hlsPath_append=$hlsPath/$hlsVersion
 elif [[ $hlsVersion == "2018.2" ]]; then
   hlsPath_append=$hlsPath/$hlsVersion
 elif [[ $hlsVersion == "2018.3" ]]; then
@@ -130,6 +131,12 @@ fi
 
 vivadoPath_append=$vivadoPath/$vivadoVersion
 
+if [ "$board_name" == "sidewinder"  ]; then
+    interfaceBandwidth="100G"
+else
+    interfaceBandwidth="10G"
+fi
+
 {
   echo "export GALAPAGOS_PATH=$repoPath"
   echo "export GALAPAGOS_VIVADO_PATH=$vivadoPath_append"
@@ -141,6 +148,7 @@ vivadoPath_append=$vivadoPath/$vivadoVersion
 if [[ "$#" > 5 ]]; then
   echo "export GALAPAGOS_PART=$part" >> $configFile
   echo "export GALAPAGOS_BOARD_NAME=$board_name" >> $configFile
+  echo "export GALAPAGOS_BANDWIDTH=$interfaceBandwidth" >> $configFile
 fi
 if [[ "$#" == 8 ]]; then
   echo "export GALAPAGOS_BOARD=$board" >> $configFile
@@ -154,12 +162,12 @@ galapagos-update-board() {
     echo "Usage: galapagos-update-board board"
     return 1
   fi
-  
+
   if [[ \$1 == "pynq-z2" ]]; then
     partName=xc7z020clg400-1
     board=tul.com.tw:pynq-z2:part0:1.0
   elif [[ \$1 == "zedboard" ]]; then
-    partName=xc7z020clg484-1    
+    partName=xc7z020clg484-1
     board=em.avnet.com:zed:part0:1.3
   elif [[ \$1 == "sidewinder" ]]; then
     partName=xczu19eg-ffvc1760-2-i
@@ -174,8 +182,9 @@ galapagos-update-board() {
     echo "Unknown board \$1 specified. No changes made to galapagos"
     return 1
   fi
-  
+
   boardName=\$1
+
 
   if [[ \$board != "NULL" ]]; then
     source \$GALAPAGOS_PATH/init.sh \\
@@ -221,7 +230,7 @@ source $configFile
 export PATH=$vivadoPath_append/bin:$PATH
 
 # if it doesn't exist in the .bashrc, add it. Otherwise, uncomment it in case
-if ! grep -Fq "# added by galapagos" ~/.bashrc; then 
+if ! grep -Fq "# added by galapagos" ~/.bashrc; then
   echo "source $configFile # added by galapagos" >> ~/.bashrc
 else
   sed -i '/# added by galapagos/s/^#//' ~/.bashrc

@@ -1,3 +1,4 @@
+import threading
 import warnings
 import shutil
 import copy
@@ -63,6 +64,7 @@ class cluster(abstractDict):
         self.packet_id = 0
         self.packet_user = 0
 
+
         if(mode=='file'):
             top_dict = self.getDict(kernel_file)['cluster']
         else:
@@ -88,23 +90,23 @@ class cluster(abstractDict):
 
             galapagos_path = str(os.environ.get('GALAPAGOS_PATH'))
 
-            f = open(galapagos_path + '/middleware/include/packet_size.h', 'w')
-            f.write("#ifndef PACKET_SIZE_H\n#define PACKET_SIZE_H\n")
-            f.write("# define PACKET_DATA_LENGTH " + str(self.packet_data) + '\n')
-            if self.packet_keep:
-                self.packet_keep = int(self.packet_data)/8
-                f.write("# define PACKET_KEEP_LENGTH " + str(int(self.packet_keep)) + '\n')
-            if self.packet_last:
-                f.write("# define PACKET_LAST\n")
-            if self.packet_id:
-                f.write("# define PACKET_ID_LENGTH " + str(self.packet_id) + '\n')
-            if self.packet_user:
-                f.write("# define PACKET_USER_LENGTH " + str(self.packet_user) + '\n')
-            else:
-                f.write("# define PACKET_USER_LENGTH 16\n")
-            if self.packet_dest:
-                f.write("# define PACKET_DEST_LENGTH " + str(self.packet_dest) + '\n')
-            f.write("#endif\n")
+            #f = open(galapagos_path + '/middleware/include/packet_size.h', 'w')
+            #f.write("#ifndef PACKET_SIZE_H\n#define PACKET_SIZE_H\n")
+            #f.write("# define PACKET_DATA_LENGTH " + str(self.packet_data) + '\n')
+            #if self.packet_keep:
+            #    self.packet_keep = int(self.packet_data)/8
+            #    f.write("# define PACKET_KEEP_LENGTH " + str(int(self.packet_keep)) + '\n')
+            #if self.packet_last:
+            #    f.write("# define PACKET_LAST\n")
+            #if self.packet_id:
+            #    f.write("# define PACKET_ID_LENGTH " + str(self.packet_id) + '\n')
+            #if self.packet_user:
+            #    f.write("# define PACKET_USER_LENGTH " + str(self.packet_user) + '\n')
+            #else:
+            #    f.write("# define PACKET_USER_LENGTH 16\n")
+            #if self.packet_dest:
+            #    f.write("# define PACKET_DEST_LENGTH " + str(self.packet_dest) + '\n')
+            #f.write("#endif\n")
 
         if(mode=='file'):
             logical_dict = self.getDict(kernel_file)['cluster']['kernel']
@@ -148,37 +150,40 @@ class cluster(abstractDict):
                                 #print("updating master port to " +  str( int(kern_dict_local['s_axi']['master']['num'])))
 
 
+
                     #print('kern_dict_local ' + str(kern_dict_local))
                     # (This is a guess) Naif mentioned that you can hook up local
                     # AXI stream connections between your kernels (unrelated to
                     # Galapagos's router, network bridge, etc.). This must be the
                     # code that handles it
                     if 's_axis' in kern_dict_local:
-                        #print('S_AXIS in kern dict')
                         if type(kern_dict_local['s_axis']) == type([]):
                             for s_axis_idx, s_axis in enumerate(kern_dict_local['s_axis']):
                                 if s_axis['scope'] == 'local':
-                                    kern_dict_local['s_axis'][s_axis_idx]['master']['num'] = str(i + int(s_axis['master']['num']))
+                                    kern_dict_local['s_axis'][s_axis_idx]['master']['node'] = str(i + int(s_axis['master']['node']))
                         else:
                             if kern_dict_local['s_axis']['scope'] == 'local':
-                                kern_dict_local['s_axis']['master']['num'] = str( i + int(kern_dict_local['s_axis']['master']['num']))
+                                kern_dict_local['s_axis']['master']['node'] = str( i + int(kern_dict_local['s_axis']['master']['node']))
 
-                    # I have no idea what this is for
                     if 'wire_slave' in kern_dict_local:
                         if type(kern_dict_local['wire_slave']) == type([]):
                             for slave_idx, slave in enumerate(kern_dict_local['wire_slave']):
-                                kern_dict_local['wire_slave'][slave_idx]['master']['num'] = str(i + int(slave['master']['num']))
+                                kern_dict_local['wire_slave'][slave_idx]['master']['node'] = str(i + int(slave['master']['node']))
                         else:
-                            kern_dict_local['wire_slave']['master']['num'] = str(i + int(slave['master']['num']))
+                            kern_dict_local['wire_slave']['master']['node'] = str(i + int(kern_dict_local['wire_slave']['master']['node']))
 
 
 
-                    #print("kern dicT " + str(kern_dict_local))
+
+
+
                     # This basically copies the dictionary parsed from the <kernel> tags into another dictionary,
                     # but it does also check the fields to make sure they're all valid and that no mandatory info
                     # is missing
-                    self.kernels.append(kernel(**kern_dict_local))
                     #print("kernelONE object " + str(self.kernels[len(self.kernels) - 1].data))
+                    #print("Appending " + str(kern_dict_local['inst']))
+                    self.kernels.append(kernel(**kern_dict_local))
+                    print("Finished appending")
 
 
             else:
@@ -201,7 +206,7 @@ class cluster(abstractDict):
             # I'm fairly sure these next few lines of code are just converting
             # data formats
             node_inst['kernel'] = []
-
+            node_inst['kernel_map'] = {}
             #
             for kmap_node in node_dict['kernel']:
                 for kern_idx, kern in enumerate(self.kernels):
@@ -211,6 +216,7 @@ class cluster(abstractDict):
                     if int(kern['num']) == int(kmap_node):
                         # Instead of having numbers in node_inst['kernel'], have
                         # pointers to our properly parsed kernel objects
+                        node_inst['kernel_map'][kern['num']] = len(node_inst['kernel'])
                         node_inst['kernel'].append(kern)
                         # At the same time, append mac and ip information to each
                         # kernel object? Not sure why we have to do this. By the
@@ -226,10 +232,16 @@ class cluster(abstractDict):
 
     def writeClusterTCL(self, output_path, sim):
 
+        #tclFileThreads = []
         for node_idx, node in enumerate(self.nodes):
+            #tclFileThreads.append(threading.Thread(target=tclFileGenerator.makeTCLFiles, args=(node,self.name, output_path, sim)))
             if node['type'] == 'hw':
+                #tclFileThreads.append(threading.Thread(target=tclFileGenerator.makeTCLFiles, args=(node,self.name, output_path, sim)))
+                #tclFileThreads[len(tclFileThreads)-1].start()
                 tclFileGenerator.makeTCLFiles(node, self.name, output_path, sim)
 
+#        for thread in tclFileThreads:
+#            thread.join()
 
 
 
@@ -265,9 +277,9 @@ class cluster(abstractDict):
                         writeStr = str(struct.unpack("!L", socket.inet_aton(kern['ip']))[0])
 
                     if currIndex != (len(self.kernels) - 1):
-                        bramFile.write(writeStr + ',')
+                        bramFile.write(writeStr + ',0, 0, 0,')
                     else:
-                        bramFile.write(writeStr + ';')
+                        bramFile.write(writeStr + ',0, 0, 0;')
                     break
             if found==0:
                 if addr_type == 'mac':
@@ -276,9 +288,9 @@ class cluster(abstractDict):
                     defaultStr = str(struct.unpack("!L", socket.inet_aton('1.1.1.1'))[0])
 
                 if currIndex != (len(self.kernels) - 1):
-                    bramFile.write(defaultStr + ',')
+                    bramFile.write(defaultStr + ',0, 0, 0,')
                 else:
-                    bramFile.write(defaultStr + ';')
+                    bramFile.write(defaultStr + ',0, 0, 0;')
                 break
 
             if addr_type == "ip":
@@ -287,9 +299,9 @@ class cluster(abstractDict):
                         if currIndex == int(kern["num"]):
                             writeStr = str(node["num"])
                             if currIndex != (len(self.kernels) - 1):
-                                nodeFile.write(writeStr + ',')
+                                nodeFile.write(writeStr + ',0, 0, 0,')
                             else:
-                                nodeFile.write(writeStr + ';')
+                                nodeFile.write(writeStr + ',0, 0, 0;')
         if addr_type == "ip":
             nodeFile.close()
         bramFile.close()
@@ -349,10 +361,12 @@ if __name__=='__main__':
 
     #logical_file = 'hwMiddleware/packetSwitch/tests/conf0/logical.xml'
     #map_file = 'hwMiddleware/packetSwitch/tests/conf0/map.xml'
-    logical_file = 'telepathy/middlewareInput/conf0/mpiLogical.xml'
-    map_file = 'telepathy/middlewareInput/conf0/mpiMap.xml'
+    path = '/home/tarafdar/workDir/galapagos/projects'
+    logical_file = '/home/tarafdar/workDir/aegean/examples/resnet50/logical_aegean.json'
+    map_file = '/home/tarafdar/workDir/aegean/examples/resnet50/map_aegean.json'
     cluster_inst = cluster('naif', logical_file, map_file)
-    cluster_inst.makeProjectClusterScript()
-    cluster_inst.writeClusterTCL()
-    cluster_inst.writeBRAMFile('mac')
-    cluster_inst.writeBRAMFile('ip')
+    cluster_inst.makeProjectClusterScript(path)
+    cluster_inst.writeClusterTCL(path, 0)
+    cluster_inst.writeBRAMFile(path, 'mac')
+    cluster_inst.writeBRAMFile(path, 'ip')
+
