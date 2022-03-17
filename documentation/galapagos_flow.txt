@@ -1,0 +1,122 @@
+===========================
+DEFINITIONS AND ASSUMPTIONS
+===========================
+
+In this file, $GALAPDIR will refer to the root directory of the Galapagos 
+repository. (Note: this is not an environment variable used by Galapagos; it is 
+a placeholder for you to replace yourself)
+
+$BOARD will refer to the name of the currently targeted board. 
+
+All commands are assumed to be run from inside $GALAPDIR (unless otherwise 
+stated).
+
+A "kernel" means a single user module in the Galapagos cluster, analogous to a 
+Rank in MPI.
+
+
+========
+OVERVIEW
+========
+
+The following numbered list explains the brief details of using Galapagos. More 
+details are provided in the later sections of this document. There is also a 
+quick blurb on writing kernels in HLS.
+
+When first installing Galapagos, 
+
+    1) Run `$GALAPDIR/build.sh` and answer all its questions
+
+For each board you wish to use,
+
+    2) Use `galapagos_update_board <your board name>` to select the board, and 
+    
+    3) Run `make hlsmiddleware` from inside $GALAPDIR
+
+To create a Galapagos project,
+
+    4) Package kernels as IPs and place them in $GALAPDIR/hlsBuild/$BOARD/ip, 
+       where $BOARD is the board that the IP is targeted for. 
+       -> Use this directory even if your kernel is not written in HLS
+    
+    5) Write a logical file and a mapping file (details provided below)
+    
+    6) Set the LOGICALFILE and MAPFILE environment variables to be the full 
+       path of your logical file and mapping file (repsectively). Also set the 
+       PROJECTNAME environment variable to be the desired project name
+    
+    7) Run `make middleware` from inside $GALAPDIR
+
+    8) If there were no errors, Galapagos will have created a directory called 
+       $GALAPDIR/projects/$PROJECTNAME which contains a number of TCL scripts 
+       and a bash script called createCluster.sh. Simply run this shell script 
+       and wait for Vivado to produce your bitstream(s).
+       
+
+===============================
+WHEN FIRST INSTALLING GALAPAGOS
+===============================
+
+For the time being, Galapagos works by reading a number of environment 
+variables. Run
+
+    $ cd $GALAPDIR
+    $ source build.sh
+
+This will bring up a snazzy menu. Answer its questions. Don't worry about 
+making a mistake; you can always try this again if it doesn't work.
+
+Once you have finished answering the questions, Galapgos will have created a 
+new file in your home folder. You can take a look at it:
+
+    $ less ~/.galapagos
+
+This file simply sets Galapagos's environment variables using the answers you 
+provided earlier. It also defines two bash shell functions: 
+galapagos-update-board and galapagos-update-version. The first function allows 
+you ask Galapagos to target a different board without re-running build.sh, and 
+the second lets you select a different Vivado version.
+
+Finally, note that build.sh adds a line to your .bashrc:
+
+    $ less ~/.bashrc
+
+This ensures that .galapagos is called whenever you open a new bash shell. 
+
+
+==============================
+FOR EACH BOARD YOU PLAN TO USE
+==============================
+    
+Galapagos uses a number of custom IP cores written in HLS. These must be 
+synthesized and packaged as IPs before you can start making your own projects.
+
+Run the following from inside $GALAPDIR:
+
+    $ galapagos-update-board <your board name>
+    $ make hlsmiddleware
+
+Currently, Galapagos supports the following choices for <your board name>:
+
+    - zynq-p2
+    - zedboard
+    - sidewinder
+    - adm-8k5
+    - adm-8k5-debug
+
+
+======================
+WRITING KERNELS IN HLS
+======================
+
+Include the header file in $GALAPDIR/middleware/include/galapagos_packet.h
+
+The following is a skeleton of an HLS Galapagos kernel:
+
+    (TODO)
+
+
+=====================
+CREATING YOUR PROJECT
+=====================
+

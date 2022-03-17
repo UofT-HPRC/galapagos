@@ -868,6 +868,8 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
     Now that the kernels, Galapagos router, and memory controllers are instantiated,
     it's time to connect them all together.
     
+    MM Feb 29/2020: All AXI Stream wires to kernels are now highlighted
+    
     Args:
         tcl_user_app: a tclMe object (which contains references to the FPGA's
                       node object and a handle to the output file)
@@ -909,7 +911,7 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
             # Connect it to the correct port on the AXI switch (NOT directly into
             # the Galapagos router; there is an AXI stream switch IP between
             # the router and the kernel(s) )
-            tcl_user_app.makeConnection(
+            tcl_user_app.makeMarkedConnection(
                     'intf',
                     {
                     'name':'applicationRegion/input_switch',
@@ -938,10 +940,11 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
                         'port_name':'S01_AXIS'
                         }
                         )
-
+    
+    # Special case where there is only one kernel slave
     elif len(s_axis_array) == 1:
         if (sim == 1):
-            tcl_user_app.makeConnection(
+            tcl_user_app.makeMarkedConnection(
                     'intf',
                     {
                     'name':'applicationRegion/arbiter',
@@ -970,7 +973,7 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
             # there's no input switch in this case
             if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
                 if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
-                    tcl_user_app.makeConnection(
+                    tcl_user_app.makeMarkedConnection(
                         'intf',
                         {
                         'name':'applicationRegion/input_switch',
@@ -1006,7 +1009,7 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
         if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
             instName = m_axis_array[0]['kernel_inst']['inst']
             if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
-                tcl_user_app.makeConnection(
+                tcl_user_app.makeMarkedConnection(
                         'intf',
                         {
                         'name': instName,
@@ -1023,7 +1026,7 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
         for idx, m_axis in enumerate(m_axis_array):
             instName = m_axis['kernel_inst']['inst']
             idx_str = "%02d"%idx
-            tcl_user_app.makeConnection(
+            tcl_user_app.makeMarkedConnection(
                     'intf',
                     {
                     'name': instName ,
@@ -1540,7 +1543,7 @@ def userApplicationRegion(outDir, fpga, sim):
     userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim)
     userApplicationRegionAssignAddresses(tcl_user_app, tcl_user_app.fpga['comm'] !='tcp' and tcl_user_app.fpga.address_space == 64)
     userApplicationLocalConnections(tcl_user_app)
-
+    
     tcl_user_app.close()
     #return num_debug_interfaces
 
@@ -1762,7 +1765,7 @@ def bridgeConnections(outDir, fpga, sim):
             else:
                 instName = s_axis_array[0]['kernel_inst']['inst']
                 if tcl_bridge_connections.fpga['comm'] != 'none':
-                    tcl_bridge_connections.makeConnection(
+                    tcl_bridge_connections.makeMarkedConnection(
                                 'intf',
                                 {
                                 'name':'network/network_bridge_inst',
@@ -1800,7 +1803,7 @@ def bridgeConnections(outDir, fpga, sim):
             else:
                 instName = m_axis_array[0]['kernel_inst']['inst'] 
                 if tcl_bridge_connections.fpga['comm'] != 'none':
-                    tcl_bridge_connections.makeConnection(
+                    tcl_bridge_connections.makeMarkedConnection(
                             'intf',
                             {
                             'name': instName,
@@ -1980,6 +1983,38 @@ def bridgeConnections(outDir, fpga, sim):
                     )
     if tcl_bridge_connections.fpga['comm'] == 'none':
         tcl_custom.close()
+    
+    # MM Mar 2 / 2020 Added this call to one of my TCL scripts to wire up the
+    # custom debug cores
+    
+    galapagos_path = str(os.environ.get('GALAPAGOS_PATH'))
+    tcl_bridge_connections.addSource(galapagos_path + '/middleware/tclScripts/add_dbg_cores.tcl')
+    # Get the packet sizes. To avoid Verilog syntax errors, I intentionally make each width 1 if it was 0
+    # (It's something I eventually want to fix, but Vivado's Verilog optimizer will remove the
+    # extra wires anyway)
+    c = fpga.parent_cluster
+    tdata_w = str(c.packet_data)
+    
+    tdest_w = c.packet_dest
+    if tdest_w == 0:
+        tdest_w = "1"
+    else:
+        tdest_w = str(tdest_w)
+    
+    tid_w = c.packet_id
+    if tid_w == 0:
+        tid_w = "1"
+    else:
+        tid_w = str(tid_w)
+    
+    # The last three positional arguments to this TCL function are the TDATA, TDEST, and TID widths
+    tcl_bridge_connections.tprint_raw('set g [add_dbg_core_to_list $marcos_list_of_dbg_nets 0 ' + tdata_w + ' ' + tdest_w + ' ' + tid_w + ']')
+    tcl_bridge_connections.tprint_raw('set first_cmd_in [lindex $g 0]')
+    tcl_bridge_connections.tprint_raw('set tree_out [lindex $g 1]')
+    
+    tcl_bridge_connections.addSource(galapagos_path + '/middleware/tclScripts/replace_dbg_placeholder.tcl')
+    tcl_bridge_connections.tprint_raw('replace_dbg_placeholder $first_cmd_in $tree_out')
+    
     tcl_bridge_connections.close()
 
 
@@ -2029,6 +2064,7 @@ if { ! [info exists default_dir] } {\n\
     if 'custom' in fpga:
         tclMain.addSource(outDir + '/' + str(fpga['num']) + '_custom.tcl')
         tclMain.addSource(galapagos_path + '/middleware/tclScripts/custom/' + fpga['custom'] + '.tcl')
-
+    
     tclMain.tprint('validate_bd_design')
+    tclMain.tprint('save_bd_design')
     tclMain.close()

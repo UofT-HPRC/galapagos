@@ -1,0 +1,52 @@
+[*]
+[*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
+[*] Sat Feb 22 21:16:16 2020
+[*]
+[dumpfile] "/home/mahkoe/research/ye_olde_verilogge/axis_headerizer/axis_headerizer.vcd"
+[dumpfile_mtime] "Sat Feb 22 21:15:30 2020"
+[dumpfile_size] 45706
+[savefile] "/home/mahkoe/research/ye_olde_verilogge/axis_headerizer/axis_headerizer.gtkw"
+[timestart] 0
+[size] 1916 1060
+[pos] -1 -1
+*-14.040150 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] axis_headerizer_tb.
+[sst_width] 214
+[signals_width] 166
+[sst_expanded] 1
+[sst_vpaned_height] 314
+@28
+axis_headerizer_tb.clk
+@800200
+-sides
+@22
+[color] 2
+axis_headerizer_tb.sides_TDATA[63:0]
+[color] 2
+axis_headerizer_tb.sides_TVALID
+[color] 2
+axis_headerizer_tb.sides_TREADY
+[color] 2
+axis_headerizer_tb.sides_TKEEP[7:0]
+[color] 2
+axis_headerizer_tb.sides_TLAST
+[color] 2
+axis_headerizer_tb.sides_TDEST[15:0]
+[color] 2
+axis_headerizer_tb.sides_TID[15:0]
+[color] 2
+axis_headerizer_tb.sides_TUSER[7:0]
+@1000200
+-sides
+@800200
+-hdr
+@22
+axis_headerizer_tb.hdr_TDATA[63:0]
+axis_headerizer_tb.hdr_TVALID
+axis_headerizer_tb.hdr_TREADY
+axis_headerizer_tb.hdr_TKEEP[7:0]
+axis_headerizer_tb.hdr_TLAST
+@1000200
+-hdr
+[pattern_trace] 1
+[pattern_trace] 0

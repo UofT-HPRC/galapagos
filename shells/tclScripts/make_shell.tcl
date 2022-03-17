@@ -126,7 +126,7 @@ if {! [catch {glob $shell_path/srcs/*} yikes] } {
 }
 
 create_bd_design "shell"
-# open_bd_design $project_path/$project_name.srcs/sources_1/bd/shell/shell.bd
+open_bd_design $project_path/$project_name.srcs/sources_1/bd/shell/shell.bd
 set ret_val [source $shell_path/tclScripts/shell_bd.tcl]
 if { $ret_val != 0 } {
   puts "Error in shell_bd script"
