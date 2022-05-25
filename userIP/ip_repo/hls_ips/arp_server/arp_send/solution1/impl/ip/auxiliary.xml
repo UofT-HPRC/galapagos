@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xd:acceleratorMap xmlns:xd="http://www.xilinx.com/xidane" xd:functionName="arp_send" xd:componentRef="arp_send" xd:initiationInterval="1" xd:clockPeriod="3.103" xd:sequential="true" xd:hostMachine="64" xd:reset="all">
+  <xd:arg xd:name="myMac" xd:originalName="myMac" xd:direction="in" xd:interfaceRef="myMac_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="48"/>
+  <xd:arg xd:name="myIP" xd:originalName="myIP" xd:direction="in" xd:interfaceRef="myIP_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="32"/>
+  <xd:arg xd:name="gateway" xd:originalName="gateway" xd:direction="in" xd:interfaceRef="gateway_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="32"/>
+  <xd:arg xd:name="netmask" xd:originalName="netmask" xd:direction="in" xd:interfaceRef="netmask_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="32"/>
+  <xd:arg xd:name="arptable_addr" xd:originalName="arptable_addr" xd:direction="out" xd:interfaceRef="arptable_addr_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="8" xd:firstOut="0"/>
+  <xd:arg xd:name="arptable_data" xd:originalName="arptable_data" xd:direction="in" xd:interfaceRef="arptable_data_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="80" xd:firstOut="0"/>
+  <xd:arg xd:name="call_for_responce.Mac_IP" xd:originalName="call_for_responce" xd:direction="in" xd:interfaceRef="call_for_responce_Mac_IP_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="80" xd:firstOut="0"/>
+  <xd:arg xd:name="call_for_responce.valid" xd:originalName="call_for_responce" xd:direction="in" xd:interfaceRef="call_for_responce_valid_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:arg xd:name="lookup_req" xd:originalName="lookup_req" xd:direction="in" xd:interfaceRef="lookup_req_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="32" xd:firstOut="0"/>
+  <xd:arg xd:name="lookup_result" xd:originalName="lookup_result" xd:direction="out" xd:interfaceRef="lookup_result_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="48" xd:firstOut="0"/>
+  <xd:arg xd:name="arp_status" xd:originalName="arp_status" xd:direction="out" xd:interfaceRef="arp_status_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="2" xd:firstOut="0"/>
+  <xd:arg xd:name="arp_out.data" xd:originalName="arp_out" xd:direction="out" xd:interfaceRef="arp_out_data_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="512" xd:firstOut="0"/>
+  <xd:arg xd:name="arp_out.keep" xd:originalName="arp_out" xd:direction="out" xd:interfaceRef="arp_out_keep_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="64" xd:firstOut="0"/>
+  <xd:arg xd:name="arp_out.last" xd:originalName="arp_out" xd:direction="out" xd:interfaceRef="arp_out_last_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:arg xd:name="arp_out.valid" xd:originalName="arp_out" xd:direction="out" xd:interfaceRef="arp_out_valid_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:arg xd:name="arp_out.ready" xd:originalName="arp_out" xd:direction="in" xd:interfaceRef="arp_out_ready_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:latencyEstimates xd:best-case="0" xd:worst-case="0" xd:average-case="0"/>
+  <xd:resourceEstimates xd:LUT="1750" xd:FF="1071" xd:BRAM="0" xd:DSP="0"/>
+</xd:acceleratorMap>

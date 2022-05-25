@@ -1,0 +1,117 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/yugao/Research/Galapagos/galapagos/middleware/hls'
+if [ "/home/yugao/Research/Galapagos/galapagos" = "" ]; then \
+	echo "Variable GALAPAGOS_PATH not set"; \
+	exit 1; \
+fi
+if [ "/mnt/shares/tools/Xilinx/Vivado/2018.3" = "" ]; then \
+	echo "Variable GALAPAGOS_HLS_PATH not set"; \
+	exit 1; \
+fi
+if [ "sidewinder" = "" ]; then \
+	echo "Variable GALAPAGOS_BOARD_NAME not set"; \
+	exit 1; \
+fi
+for dir in network_bridge_udp_100g/. galapagos_bridge/. router/. network_bridge_tcp/. network_bridge_raw/. network_bridge_ethernet/.; do \
+	make -C $dir -f Makefile all; \
+done
+make[1]: Entering directory '/home/yugao/Research/Galapagos/galapagos/middleware/hls/network_bridge_udp_100g'
+mkdir -p /home/yugao/Research/Galapagos/galapagos/hlsBuild/sidewinder/ip/network_bridge_udp_100g
+vivado_hls /home/yugao/Research/Galapagos/galapagos/middleware/hls/network_bridge_udp_100g/generate_hls.tcl
+if [ "/home/yugao/Research/Galapagos/galapagos" = "" ]; then \
+	echo "Variable GALAPAGOS_PATH not set"; \
+	exit 1; \
+fi
+if [ "/mnt/shares/tools/Xilinx/Vivado/2018.3" = "" ]; then \
+	echo "Variable GALAPAGOS_HLS_PATH not set"; \
+	exit 1; \
+fi
+if [ "sidewinder" = "" ]; then \
+	echo "Variable GALAPAGOS_BOARD_NAME not set"; \
+	exit 1; \
+fi
+make[1]: Leaving directory '/home/yugao/Research/Galapagos/galapagos/middleware/hls/network_bridge_udp_100g'
+make[1]: Entering directory '/home/yugao/Research/Galapagos/galapagos/middleware/hls/galapagos_bridge'
+mkdir -p /home/yugao/Research/Galapagos/galapagos/hlsBuild/sidewinder/ip/galapagos_bridge
+vivado_hls /home/yugao/Research/Galapagos/galapagos/middleware/hls/galapagos_bridge/generate_hls.tcl
+if [ "/home/yugao/Research/Galapagos/galapagos" = "" ]; then \
+	echo "Variable GALAPAGOS_PATH not set"; \
+	exit 1; \
+fi
+if [ "/mnt/shares/tools/Xilinx/Vivado/2018.3" = "" ]; then \
+	echo "Variable GALAPAGOS_HLS_PATH not set"; \
+	exit 1; \
+fi
+if [ "sidewinder" = "" ]; then \
+	echo "Variable GALAPAGOS_BOARD_NAME not set"; \
+	exit 1; \
+fi
+make[1]: Leaving directory '/home/yugao/Research/Galapagos/galapagos/middleware/hls/galapagos_bridge'
+make[1]: Entering directory '/home/yugao/Research/Galapagos/galapagos/middleware/hls/router'
+mkdir -p /home/yugao/Research/Galapagos/galapagos/hlsBuild/sidewinder/ip/width48/router
+mkdir -p /home/yugao/Research/Galapagos/galapagos/hlsBuild/sidewinder/ip/width32/router
+vivado_hls /home/yugao/Research/Galapagos/galapagos/middleware/hls/router/generate_hls.tcl -tclargs 32
+if [ "/home/yugao/Research/Galapagos/galapagos" = "" ]; then \
+	echo "Variable GALAPAGOS_PATH not set"; \
+	exit 1; \
+fi
+if [ "/mnt/shares/tools/Xilinx/Vivado/2018.3" = "" ]; then \
+	echo "Variable GALAPAGOS_HLS_PATH not set"; \
+	exit 1; \
+fi
+if [ "sidewinder" = "" ]; then \
+	echo "Variable GALAPAGOS_BOARD_NAME not set"; \
+	exit 1; \
+fi
+make[1]: Leaving directory '/home/yugao/Research/Galapagos/galapagos/middleware/hls/router'
+ 
+make[1]: Entering directory '/home/yugao/Research/Galapagos/galapagos/middleware/hls/network_bridge_tcp'
+mkdir -p /home/yugao/Research/Galapagos/galapagos/hlsBuild/sidewinder/ip/network_bridge_tcp
+vivado_hls /home/yugao/Research/Galapagos/galapagos/middleware/hls/network_bridge_tcp/generate_hls.tcl
+if [ "/home/yugao/Research/Galapagos/galapagos" = "" ]; then \
+	echo "Variable GALAPAGOS_PATH not set"; \
+	exit 1; \
+fi
+if [ "/mnt/shares/tools/Xilinx/Vivado/2018.3" = "" ]; then \
+	echo "Variable GALAPAGOS_HLS_PATH not set"; \
+	exit 1; \
+fi
+if [ "sidewinder" = "" ]; then \
+	echo "Variable GALAPAGOS_BOARD_NAME not set"; \
+	exit 1; \
+fi
+make[1]: Leaving directory '/home/yugao/Research/Galapagos/galapagos/middleware/hls/network_bridge_tcp'
+make[1]: Entering directory '/home/yugao/Research/Galapagos/galapagos/middleware/hls/network_bridge_raw'
+mkdir -p /home/yugao/Research/Galapagos/galapagos/hlsBuild/sidewinder/ip/network_bridge_raw
+vivado_hls /home/yugao/Research/Galapagos/galapagos/middleware/hls/network_bridge_raw/generate_hls.tcl
+if [ "/home/yugao/Research/Galapagos/galapagos" = "" ]; then \
+	echo "Variable GALAPAGOS_PATH not set"; \
+	exit 1; \
+fi
+if [ "/mnt/shares/tools/Xilinx/Vivado/2018.3" = "" ]; then \
+	echo "Variable GALAPAGOS_HLS_PATH not set"; \
+	exit 1; \
+fi
+if [ "sidewinder" = "" ]; then \
+	echo "Variable GALAPAGOS_BOARD_NAME not set"; \
+	exit 1; \
+fi
+make[1]: Leaving directory '/home/yugao/Research/Galapagos/galapagos/middleware/hls/network_bridge_raw'
+make[1]: Entering directory '/home/yugao/Research/Galapagos/galapagos/middleware/hls/network_bridge_ethernet'
+mkdir -p /home/yugao/Research/Galapagos/galapagos/hlsBuild/sidewinder/ip/network_bridge_ethernet
+vivado_hls /home/yugao/Research/Galapagos/galapagos/middleware/hls/network_bridge_ethernet/generate_hls.tcl
+if [ "/home/yugao/Research/Galapagos/galapagos" = "" ]; then \
+	echo "Variable GALAPAGOS_PATH not set"; \
+	exit 1; \
+fi
+if [ "/mnt/shares/tools/Xilinx/Vivado/2018.3" = "" ]; then \
+	echo "Variable GALAPAGOS_HLS_PATH not set"; \
+	exit 1; \
+fi
+if [ "sidewinder" = "" ]; then \
+	echo "Variable GALAPAGOS_BOARD_NAME not set"; \
+	exit 1; \
+fi
+make[1]: Leaving directory '/home/yugao/Research/Galapagos/galapagos/middleware/hls/network_bridge_ethernet'
+make: Leaving directory '/home/yugao/Research/Galapagos/galapagos/middleware/hls'
+ 

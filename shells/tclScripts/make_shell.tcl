@@ -16,6 +16,7 @@ proc help {} {
   exit 0
 }
 
+
 if { $::argc > 0 } {
   for {set i 0} {$i < $::argc} {incr i} {
     set option [string trim [lindex $::argv $i]]
@@ -63,12 +64,12 @@ if { [info exists ::env(GALAPAGOS_PATH)] } {
 set shell_path $top_shells/$top_board
 
 # assert that the board part exists
-if { [info exists top_board_part] } {
-  if { [lsearch [get_board_parts] $top_board_part] == -1 } {
-    puts "Board part $top_board_part not found in this version of Vivado"
-    return 1
-  }
-}
+#if { [info exists top_board_part] } {
+#  if { [lsearch [get_board_parts] $top_board_part] == -1 } {
+#    puts "Board part $top_board_part not found in this version of Vivado"
+#    return 1
+#  }
+#}
 
 if { ! [info exists start_synth] } {
   set start_synth 0
@@ -90,9 +91,9 @@ set_msg_config  -ruleid {8}  -id {[BD 41-1271]}  -suppress  -source 2
 # Set project properties
 set obj [current_project]
 set_property "part" $top_part $obj
-if { [info exists top_board_part] } {
-    set_property board_part $top_board_part -objects $obj
-}
+#if { [info exists top_board_part] } {
+#    set_property board_part $top_board_part -objects $obj
+#}
 if { [file exists $shell_path/tclScripts/shell_prologue.tcl] } {
   set ret_val [source $shell_path/tclScripts/shell_prologue.tcl]
   if { $ret_val != 0 } {
@@ -214,7 +215,7 @@ if {! [catch {glob shells/$top_board/constraints/*.xdc} yikes] } {
     set_property "scoped_to_ref" "" $file_obj
     set_property "used_in" "synthesis implementation" $file_obj
   }
-  #add_files -norecurse -fileset $obj $constFiles
+  add_files -norecurse -fileset $obj $constFiles
 }
 
 # Set 'constrs_1' fileset properties
@@ -292,8 +293,8 @@ if { $start_synth != 0 } {
     wait_on_run synth_1
     launch_runs impl_1 -to_step write_bitstream -jobs 8
     wait_on_run impl_1
-    #file mkdir $project_path/$project_name.sdk
-    #file copy -force $project_path/$project_name.runs/impl_1/shellTop.sysdef $project_path/$project_name.sdk/shellTop.hdf
+    file mkdir $project_path/$project_name.sdk
+    file copy -force $project_path/$project_name.runs/impl_1/shellTop.sysdef $project_path/$project_name.sdk/shellTop.hdf
 }
 #source ./tclScripts/synth_impl.tcl
 #close_project

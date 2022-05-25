@@ -3,6 +3,7 @@
 using namespace hls;
 
 ap_uint<32> ip_table[256];
+ap_uint<32> node_table[256];
 /**
  * Streams sessionIDs from table that stores open sessionIDs indexed by dest 
  *
@@ -54,9 +55,10 @@ void sessionID_table_steaming(stream<ap_uint<8> >& t2g_read_dest,
  */
 
 void open_port(	stream<ap_uint<16> >& listenPort,
-				stream<bool>& listenPortStatus,
-				stream<appNotification>& notifications,
-				stream<appReadRequest>& readRequest)
+				stream<bool>& listenPortStatus//,
+				//stream<appNotification>& notifications,
+				//stream<appReadRequest>& readRequest
+                )
 {
 #pragma HLS PIPELINE II=1
 
@@ -84,16 +86,15 @@ void open_port(	stream<ap_uint<16> >& listenPort,
 	}
 
 	// Receive notifications, about new data which is available
-	if (!notifications.empty())
-	{
-		notifications.read(notification);
-		std::cout << notification.ipAddress << "\t" << notification.dstPort << std::endl;
-		if (notification.length != 0)
-		{
-			readRequest.write(appReadRequest(notification.sessionID, notification.length));
-			//lenghtFifo.write(notification.length);
-		}
-	}
+	//if (!notifications.empty())
+	//{
+	//	notifications.read(notification);
+	//	std::cout << notification.ipAddress << "\t" << notification.dstPort << std::endl;
+	//	if (notification.length != 0)
+	//	{
+	//		readRequest.write(appReadRequest(notification.sessionID, notification.length));
+	//	}
+	//}
 }
 
 
@@ -117,7 +118,14 @@ void tcp_to_galapagos_interface(
                 stream<ap_uint<8> >& read_dest,
 				stream<ap_uint<16> >& read_sid,
 				stream<ap_uint<8> >& write_dest,
-				stream<ap_uint<16> >& write_sid
+				stream<ap_uint<16> >& write_sid,
+				stream<appNotification>& notifications,
+				stream<appReadRequest>& readRequest,
+                int * state_out,
+                int * num_written_out,
+                int * size_out,
+                ap_uint<1> * incomplete_out
+
 			)
 {
 #pragma HLS PIPELINE II=1
@@ -132,11 +140,13 @@ void tcp_to_galapagos_interface(
 	static axiWord currWord;
 	static ap_uint<8> dest;
 	static ap_uint<8> src;
-	axiWord packet;
+	static axiWord packet;
+
 
 
     static enum dstate {
                         T2G_IDLE=0,
+                        T2G_READ_METADATA,
                         T2G_WAIT_FOR_HEADER,
                         T2G_WAIT_FOR_SESSION_ID,
                         T2G_WRITE_DEST,
@@ -144,15 +154,39 @@ void tcp_to_galapagos_interface(
                         T2G_WRITE_FLIT
                         } state = T2G_IDLE;
 
+    static ap_uint<16> size = 0;
+    static ap_uint<16> num_written = 0;
+    static ap_uint<1> incomplete = 0;
+
+    *state_out = state;
+    *incomplete_out = incomplete;
+    *num_written_out = num_written;
 
 	switch (state)
 	{
-    
-    	case T2G_IDLE:{
+        case T2G_IDLE:{
+	        if (!notifications.empty())
+	        {
+		        notifications.read(notification);
+		        std::cout << notification.ipAddress << "\t" << notification.dstPort << std::endl;
+		        if (notification.length != 0)
+		        {
+			        readRequest.write(appReadRequest(notification.sessionID, notification.length));
+		        }
+                state = T2G_READ_METADATA;       
+                *state_out = state;
+	        }
+    		break;
+	    }
+    	case T2G_READ_METADATA:{
     		
             if (!rxMetaData.empty()){
     			rxMetaData.read(sessionID);
-    			state = T2G_WAIT_FOR_HEADER;
+                if(!incomplete)
+    			    state = T2G_WAIT_FOR_HEADER;
+                else
+                    state = T2G_WRITE_FLIT;
+                *state_out = state;
     		}
     		break;
         }
@@ -162,9 +196,15 @@ void tcp_to_galapagos_interface(
     		{
     			currWord=rxData.read();
                 src = currWord.data(23,16);
+                //size = currWord.data(15,0) >> 3;
+                size = currWord.data(15,0);
+                *size_out = size;
+                num_written = 0;
+                *num_written_out = num_written;
     			read_dest.write(src);
     			state = T2G_WAIT_FOR_SESSION_ID;
-                rxMetaData.read();
+                *state_out = state;
+                //rxMetaData.read();
             }
             break;
 
@@ -176,6 +216,7 @@ void tcp_to_galapagos_interface(
     				state = T2G_WRITE_DEST;
     			else
     				state = T2G_WRITE_HEADER;
+                *state_out = state;
     		}
     		break;
         }
@@ -185,6 +226,7 @@ void tcp_to_galapagos_interface(
             write_sid.write(sessionID);
             
             state = T2G_WRITE_HEADER;
+            *state_out = state;
     		break;
         }
     	
@@ -193,19 +235,58 @@ void tcp_to_galapagos_interface(
             txGalapagosBridge.write(currWord);
             packet.last = 0;
     		state = T2G_WRITE_FLIT;
+            *state_out = state;
             break; 
                                  
         }
                                  
     	case T2G_WRITE_FLIT:{
-            if (packet.last){
-    	        state = T2G_IDLE;
+            if (packet.last){ 
+                state = T2G_IDLE;
+                *state_out = state;
+                if(num_written == size)
+    	            incomplete = 0;
+                else{
+                    incomplete = 1; //more of packet to go, on next metadata go straight to writing flit
+                    if(!rxData.empty()){
+    	                packet = rxData.read();
+                        txGalapagosBridge.write(packet);
+                        num_written++;
+                        *num_written_out = num_written;
+                
+                    }
+                }
+                *incomplete_out = incomplete;
             }
-            else if(!rxData.empty()){
-    	        packet = rxData.read();
-                txGalapagosBridge.write(packet);
-            }
+            else{
+                if(num_written == size) // more flits to go in session but from different packet
+                    state = T2G_WAIT_FOR_HEADER;
+                else{
+                    state = T2G_WRITE_FLIT;
+                    if(!rxData.empty()){
+    	                packet = rxData.read();
+                        txGalapagosBridge.write(packet);
+                        num_written++;
+                        *num_written_out = num_written;
+
+                    }
+
+                }
+                *state_out = state;
+            } 
     		break;
+
+
+
+            ////if (packet.last){
+            //if(num_written == size){
+            //}
+            //if(!rxData.empty()){
+    	    //    packet = rxData.read();
+            //    txGalapagosBridge.write(packet);
+            //    num_written++;
+            //    
+            //}
         }
     }
 }
@@ -299,6 +380,7 @@ void galapagos_to_tcp_interface(
 				stream<ap_uint<16> >& read_sid,
 				stream<ap_uint<8> >& write_dest,
 				stream<ap_uint<16> >& write_sid,
+                ap_uint<8> node_id,
                 ap_uint<4> * state_out,
                 ap_uint<64> * header_out,
                 ap_uint<16>  * size_out,
@@ -327,11 +409,9 @@ void galapagos_to_tcp_interface(
                         G2T_IDLE=0,
                         G2T_READ_SID,
                         G2T_WRITE_SID,
-                        G2T_WRITE_METADATA_HEADER,
-                        G2T_READ_TXSTATUS_HEADER,
-                        G2T_WRITE_HEADER,
                         G2T_WRITE_METADATA,
                         G2T_READ_TXSTATUS,
+                        G2T_WRITE_HEADER,
                         G2T_STREAM
                         } state = G2T_IDLE;
 
@@ -344,6 +424,7 @@ void galapagos_to_tcp_interface(
     static ap_uint<8> dest;
     static axiWord header;
     ap_uint<16> check_empty = 0x03e8;
+    axiWord header_raw;
 
 
 
@@ -352,10 +433,11 @@ void galapagos_to_tcp_interface(
         case G2T_IDLE:
             if(!rxGalapagosBridge.empty())
             {
-                header = rxGalapagosBridge.read();
-                header.last = 1;
+                header_raw = rxGalapagosBridge.read();
+                header_raw.data.range(23,16) = node_id;
+                header = header_raw;
                 dest = header.data.range(31,24);
-                read_dest.write(dest);
+                read_dest.write(node_table[dest]);
                 state = G2T_READ_SID;
                 *header_out = header.data;
             }
@@ -368,7 +450,7 @@ void galapagos_to_tcp_interface(
                     state = G2T_WRITE_SID;
                 }
                 else{
-                    state = G2T_WRITE_METADATA_HEADER;
+                    state = G2T_WRITE_METADATA;
                 }
             }
             break;
@@ -376,48 +458,20 @@ void galapagos_to_tcp_interface(
 			if(!sessionID_fifo.empty()){
                 sessionID = sessionID_fifo.read();
                 write_sid.write(sessionID);
-                write_dest.write(dest);
-                state = G2T_WRITE_METADATA_HEADER;
+                write_dest.write(node_table[dest]);
+                state = G2T_WRITE_METADATA;
             }
-            break;
-        case G2T_WRITE_METADATA_HEADER:{
-	            ap_uint<16> size;
-                appTxMeta txMetaDataWord;
-                size = header.data(15,0);
-                size += 8;
-                *size_out = size;
-                *sessionID_out = sessionID;
-                txMetaDataWord.sessionID = sessionID;
-                //txMetaDataWord.length = size;
-                txMetaDataWord.length = 8;
-			    txMetaData.write(txMetaDataWord);
-                state = G2T_READ_TXSTATUS_HEADER;
-            }
-            break;
-        case G2T_READ_TXSTATUS_HEADER:
-			if(!txStatus.empty()){
-				ap_int<17> tx_not_busy = txStatus.read();
-				if(tx_not_busy < 0){
-                    state = G2T_WRITE_METADATA_HEADER;
-                }
-                else{
-                    state = G2T_WRITE_HEADER;
-                }
-            }
-            break;
-        case G2T_WRITE_HEADER:
-            txData.write(header);
-            state = G2T_WRITE_METADATA;
             break;
         case G2T_WRITE_METADATA:{
 	            ap_uint<16> size;
                 appTxMeta txMetaDataWord;
-                size = header.data(15,0);
-                *size_out = size;
+                //size = header.data(15,0);
+                size = header.data(15,0) + 1;
                 *sessionID_out = sessionID;
                 txMetaDataWord.sessionID = sessionID;
                 //txMetaDataWord.length = size;
-                txMetaDataWord.length = size;
+                txMetaDataWord.length = size << 3;
+                *size_out = size << 3;
 			    txMetaData.write(txMetaDataWord);
                 state = G2T_READ_TXSTATUS;
             }
@@ -429,10 +483,16 @@ void galapagos_to_tcp_interface(
                     state = G2T_WRITE_METADATA;
                 }
                 else{
+                    //state = G2T_WRITE_HEADER;
                     state = G2T_STREAM;
+                    txData.write(header);
                 }
             }
             break;
+        //case G2T_WRITE_HEADER:
+        //    txData.write(header);
+        //    state = G2T_STREAM;
+        //    break;
         case G2T_STREAM:
             if(!rxGalapagosBridge.empty())
             {
@@ -463,16 +523,22 @@ void network_bridge_tcp(
 		stream<ap_uint<16> >& rxMetaData,
 		stream<axiWord>& rxData,
 		stream<axiWord>& txGalapagosBridge,
+        ap_uint <8> node_id,
         ap_uint <4> * state_out,
         ap_uint <64> * header_out,
         ap_uint<16> * size_out,
-        ap_uint<16> * sessionID_out
+        ap_uint<16> * sessionID_out,
+        int * t2g_state_out,
+        int * t2g_num_written_out,
+        int * t2g_size_out,
+        ap_uint<1> * t2g_incomplete_out
 
 )
 {
 
 #pragma HLS INTERFACE ap_ctrl_none port=return
 #pragma HLS DATAFLOW
+#pragma HLS INTERFACE ap_stable port=node_id
 #pragma HLS resource core=AXIS variable=rxGalapagosBridge      metadata="-bus_bundle s_axis_rxGalapagosBridge"
 #pragma HLS resource core=AXIS variable=txGalapagosBridge      metadata="-bus_bundle m_axis_txGalapagosBridge"
 #pragma HLS resource core=AXIS variable=listenPort       metadata="-bus_bundle m_axis_listen_port"
@@ -667,6 +733,7 @@ void network_bridge_tcp(
                               g2t_read_sid,
                               g2t_write_dest,
                               g2t_write_sid,
+                              node_id,
                               state_out,
                               header_out,
                               size_out,
@@ -682,9 +749,9 @@ void network_bridge_tcp(
                      );
 
 	open_port(listenPort, 
-              listenPortStatus,
-              notifications, 
-              readRequest
+              listenPortStatus//,
+              //notifications, 
+              //readRequest
               );
 
 	tcp_to_galapagos_interface(rxMetaData, 
@@ -693,7 +760,13 @@ void network_bridge_tcp(
                               t2g_read_dest,
                               t2g_read_sid,
                               t2g_write_dest,
-                              t2g_write_sid
+                              t2g_write_sid,
+                              notifications, 
+                              readRequest,
+                              t2g_state_out,
+                              t2g_num_written_out,
+                              t2g_size_out,
+                              t2g_incomplete_out
                               );
 
 	sessionID_table_steaming(t2g_read_dest,
