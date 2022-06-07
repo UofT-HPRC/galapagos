@@ -16,6 +16,7 @@ proc get_script_folder {} {
 variable script_folder
 set script_folder [_tcl::get_script_folder]
 
+
 namespace eval 2017.2 {
   set ip_list "\ 
     xilinx.com:ip:axi_bram_ctrl:4.0\
@@ -401,6 +402,33 @@ proc create_root_design { parentCell } {
   # Set parent object as current
   current_bd_instance $parentObj
 
+set freq $::env(GALAPAGOS_SET_FREQUENCY)
+puts "clock wizard frequency:  $freq"
+
+  # Create instance: clk_wiz_0, and set properties
+  set clk_wiz_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz clk_wiz_0 ]
+  set_property -dict [ list \
+   CONFIG.CLKOUT1_DRIVES {Buffer} \
+   #CONFIG.CLKOUT1_JITTER {89.514} \
+   #CONFIG.CLKOUT1_PHASE_ERROR {78.520} \
+   CONFIG.CLKOUT1_REQUESTED_OUT_FREQ "$freq" \
+   CONFIG.CLKOUT2_DRIVES {Buffer} \
+   CONFIG.CLKOUT3_DRIVES {Buffer} \
+   CONFIG.CLKOUT4_DRIVES {Buffer} \
+   CONFIG.CLKOUT5_DRIVES {Buffer} \
+   CONFIG.CLKOUT6_DRIVES {Buffer} \
+   CONFIG.CLKOUT7_DRIVES {Buffer} \
+   #CONFIG.MMCM_CLKFBOUT_MULT_F {13} \
+   #CONFIG.MMCM_CLKOUT0_DIVIDE_F {7} \
+   CONFIG.MMCM_COMPENSATION {AUTO} \
+   #CONFIG.MMCM_DIVCLK_DIVIDE {3} \
+   CONFIG.PRIMITIVE {PLL} \
+   CONFIG.RESET_PORT {resetn} \
+   CONFIG.RESET_TYPE {ACTIVE_LOW} \
+ ] $clk_wiz_0
+
+set actual_freq [ expr int($::env(GALAPAGOS_ACTUAL_FREQUENCY) * 1000000) ]
+puts "actual pr frequency:  $actual_freq"
 
   # Create interface ports
   set M_AXIS [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 M_AXIS ]
@@ -424,7 +452,8 @@ proc create_root_design { parentCell } {
   set_property -dict [ list \
    CONFIG.ADDR_WIDTH {32} \
    CONFIG.DATA_WIDTH {32} \
-   CONFIG.FREQ_HZ {199498000} \
+   #CONFIG.FREQ_HZ {199498000} \
+   CONFIG.FREQ_HZ "$actual_freq" \
    CONFIG.HAS_QOS {0} \
    CONFIG.HAS_REGION {0} \
    CONFIG.NUM_READ_OUTSTANDING {2} \
@@ -438,7 +467,8 @@ proc create_root_design { parentCell } {
    CONFIG.AWUSER_WIDTH {0} \
    CONFIG.BUSER_WIDTH {0} \
    CONFIG.DATA_WIDTH {512} \
-   CONFIG.FREQ_HZ {199498000} \
+   #CONFIG.FREQ_HZ {199498000} \
+   CONFIG.FREQ_HZ "$actual_freq" \
    CONFIG.HAS_BRESP {1} \
    CONFIG.HAS_BURST {1} \
    CONFIG.HAS_CACHE {1} \
@@ -469,7 +499,8 @@ proc create_root_design { parentCell } {
    CONFIG.AWUSER_WIDTH {0} \
    CONFIG.BUSER_WIDTH {0} \
    CONFIG.DATA_WIDTH {512} \
-   CONFIG.FREQ_HZ {199498000} \
+   #CONFIG.FREQ_HZ {199498000} \
+   CONFIG.FREQ_HZ "$actual_freq" \
    CONFIG.HAS_BRESP {1} \
    CONFIG.HAS_BURST {1} \
    CONFIG.HAS_CACHE {1} \
@@ -506,7 +537,8 @@ proc create_root_design { parentCell } {
   set ARESETN [ create_bd_port -dir O -from 0 -to 0 -type rst ARESETN ]
   set CLK [ create_bd_port -dir O -type clk CLK ]
   set_property -dict [ list \
-   CONFIG.FREQ_HZ {199498000} \
+   #CONFIG.FREQ_HZ {199498000} \
+   CONFIG.FREQ_HZ "$actual_freq" \
  ] $CLK
   set CLK_300 [ create_bd_port -dir O -type clk CLK_300 ]
   set_property -dict [ list \
@@ -543,27 +575,8 @@ proc create_root_design { parentCell } {
    CONFIG.Use_RSTB_Pin {true} \
  ] $blk_mem_gen_0
 
-  # Create instance: clk_wiz_0, and set properties
-  set clk_wiz_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz clk_wiz_0 ]
-  set_property -dict [ list \
-   CONFIG.CLKOUT1_DRIVES {Buffer} \
-   CONFIG.CLKOUT1_JITTER {89.514} \
-   CONFIG.CLKOUT1_PHASE_ERROR {78.520} \
-   CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {200.000} \
-   CONFIG.CLKOUT2_DRIVES {Buffer} \
-   CONFIG.CLKOUT3_DRIVES {Buffer} \
-   CONFIG.CLKOUT4_DRIVES {Buffer} \
-   CONFIG.CLKOUT5_DRIVES {Buffer} \
-   CONFIG.CLKOUT6_DRIVES {Buffer} \
-   CONFIG.CLKOUT7_DRIVES {Buffer} \
-   CONFIG.MMCM_CLKFBOUT_MULT_F {13} \
-   CONFIG.MMCM_CLKOUT0_DIVIDE_F {7} \
-   CONFIG.MMCM_COMPENSATION {AUTO} \
-   CONFIG.MMCM_DIVCLK_DIVIDE {3} \
-   CONFIG.PRIMITIVE {PLL} \
-   CONFIG.RESET_PORT {resetn} \
-   CONFIG.RESET_TYPE {ACTIVE_LOW} \
- ] $clk_wiz_0
+
+
 
   # Create instance: debug_bridge_0, and set properties
   set debug_bridge_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:debug_bridge debug_bridge_0 ]
@@ -1170,3 +1183,4 @@ proc create_root_design { parentCell } {
 
 create_root_design ""
 return 0
+

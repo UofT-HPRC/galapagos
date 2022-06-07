@@ -2,6 +2,7 @@
 
 # Given the Xilinx FPGA part number, this finds the appropriate FPGA family,
 # which is appended to the provided configFile
+
 find_family () {
   configFile=$1
   part=$2
@@ -52,9 +53,9 @@ find_family () {
   return 0
 }
 
-if [[ "$#" != 1 && "$#" != 5 && "$#" != 7 && "$#" != 8 ]]; then
+if [[ "$#" != 1 && "$#" != 5 && "$#" != 7 && "$#" != 9 && "$#" != 10 ]]; then
   echo "5,7 or 8 arguments expected, got $#"
-  echo "Usage: init.sh /abs/path/to/galapagos/repository /abs/path/to/vivado /abs/path/to/vivado_hls vivado_version vivado_hls_version [part name] [board] [board name]"
+  echo "Usage: init.sh /abs/path/to/galapagos/repository /abs/path/to/vivado /abs/path/to/vivado_hls vivado_version vivado_hls_version [pr freq] [ac_freq] [part name] [board name] [board] "
   echo "Usage: source init.sh OPERATION"
   return 1
 fi
@@ -66,12 +67,16 @@ if [[ "$#" != 1 ]]; then
   vivadoVersion=$4
   hlsVersion=$5
   if [[ "$#" > 5 ]]; then
-    part=$6
-    board_name=$7
+    freq=$6
+    ac_freq=$7
   fi
   if [[ "$#" > 7 ]]; then
-    board=$8
+    part=$8
+    board_name=$9
   fi
+  if [[ "$#" > 9 ]]; then
+    board=$10
+  fi  
 else
   operation=$1
 fi
@@ -105,7 +110,7 @@ if [[ $hlsVersion == "2017.2" ]]; then
 elif [[ $hlsVersion == "2017.4" ]]; then
   hlsPath_append=$hlsPath/$hlsVersion
 elif [[ $hlsVersion == "2018.1" ]]; then
-  hlsPath_append=$hlsPath/$hlsVersion  
+  hlsPath_append=$hlsPath/$hlsVersion
 elif [[ $hlsVersion == "2018.2" ]]; then
   hlsPath_append=$hlsPath/$hlsVersion
 elif [[ $hlsVersion == "2018.3" ]]; then
@@ -117,7 +122,7 @@ else
   return 1
 fi
 
-if [[ "$#" > 5 ]]; then
+if [[ "$#" > 7 ]]; then
   # https://stackoverflow.com/a/2264537
   part=$(echo "$part" | tr '[:upper:]' '[:lower:]') # convert to lower-case
 
@@ -130,6 +135,12 @@ fi
 
 vivadoPath_append=$vivadoPath/$vivadoVersion
 
+if [ "$board_name" == "sidewinder"  ]; then
+    interfaceBandwidth="100G"
+else
+    interfaceBandwidth="10G"
+fi
+
 {
   echo "export GALAPAGOS_PATH=$repoPath"
   echo "export GALAPAGOS_VIVADO_PATH=$vivadoPath_append"
@@ -139,26 +150,39 @@ vivadoPath_append=$vivadoPath/$vivadoVersion
 } >> $configFile
 
 if [[ "$#" > 5 ]]; then
+  echo "export GALAPAGOS_SET_FREQUENCY=$freq" >> $configFile
+  echo "export GALAPAGOS_ACTUAL_FREQUENCY=$ac_freq" >> $configFile
+fi
+if [[ "$#" > 7 ]]; then
   echo "export GALAPAGOS_PART=$part" >> $configFile
   echo "export GALAPAGOS_BOARD_NAME=$board_name" >> $configFile
+  echo "export GALAPAGOS_BANDWIDTH=$interfaceBandwidth" >> $configFile
 fi
-if [[ "$#" == 8 ]]; then
+if [[ "$#" == 10 ]]; then
   echo "export GALAPAGOS_BOARD=$board" >> $configFile
 fi
 
+{
+  echo "export LOGICALFILE=$repoPath/logical.xml"
+  echo "export MAPFILE=$repoPath/map.xml"
+} >> $configFile
+
+
+
 # TODO print supported boards as help
 cat >> $configFile <<EOF
+
 galapagos-update-board() {
   if [[ "\$#" != 1 || \$1 == '--h' || \$1 == '-help' ]]; then
     echo "Usage: galapagos-update-board board"
     return 1
   fi
-  
+
   if [[ \$1 == "pynq-z2" ]]; then
     partName=xc7z020clg400-1
     board=tul.com.tw:pynq-z2:part0:1.0
   elif [[ \$1 == "zedboard" ]]; then
-    partName=xc7z020clg484-1    
+    partName=xc7z020clg484-1
     board=em.avnet.com:zed:part0:1.3
   elif [[ \$1 == "sidewinder" ]]; then
     partName=xczu19eg-ffvc1760-2-i
@@ -173,8 +197,10 @@ galapagos-update-board() {
     echo "Unknown board \$1 specified. No changes made to galapagos"
     return 1
   fi
-  
+
   boardName=\$1
+
+
   if [[ \$board != "NULL" ]]; then
     source \$GALAPAGOS_PATH/init.sh \\
       \$GALAPAGOS_PATH \\
@@ -182,6 +208,8 @@ galapagos-update-board() {
       $hlsPath \\
       \$GALAPAGOS_VIVADO_VERSION \\
       \$GALAPAGOS_HLS_VERSION \\
+      \$GALAPAGOS_SET_FREQUENCY \\
+      \$GALAPAGOS_ACTUAL_FREQUENCY \\
       \$partName \\
       \$boardName \\
       \$board
@@ -192,20 +220,26 @@ galapagos-update-board() {
       $hlsPath \\
       \$GALAPAGOS_VIVADO_VERSION \\
       \$GALAPAGOS_HLS_VERSION \\
+      \$GALAPAGOS_SET_FREQUENCY \\
+      \$GALAPAGOS_ACTUAL_FREQUENCY \\
       \$partName \\
       \$boardName
   fi
 }
+
 galapagos-update-versions() {
   if [[ "\$#" != 2 || \$1 == '--h' || \$1 == '-help' ]]; then
     echo "Usage: galapagos-update-versions vivado_version vivado_hls_version"
     return 1
   fi
+
   configFile=$configFile
   vivadoPath=$vivadoPath
+
   # replace only lines starting with GALAPAGOS_*
   sed -i "/^export GALAPAGOS_VIVADO_VERSION=/ s/export GALAPAGOS_VIVADO_VERSION=.*/export GALAPAGOS_VIVADO_VERSION=\$1/" \$configFile
   sed -i "/^export GALAPAGOS_HLS_VERSION=/ s/export GALAPAGOS_HLS_VERSION=.*/export GALAPAGOS_HLS_VERSION=\$2/" \$configFile
+
   source \$configFile
   export PATH=$vivadoPath_append/bin:$PATH
 }
@@ -215,7 +249,7 @@ source $configFile
 export PATH=$vivadoPath_append/bin:$PATH
 
 # if it doesn't exist in the .bashrc, add it. Otherwise, uncomment it in case
-if ! grep -Fq "# added by galapagos" ~/.bashrc; then 
+if ! grep -Fq "# added by galapagos" ~/.bashrc; then
   echo "source $configFile # added by galapagos" >> ~/.bashrc
 else
   sed -i '/# added by galapagos/s/^#//' ~/.bashrc
