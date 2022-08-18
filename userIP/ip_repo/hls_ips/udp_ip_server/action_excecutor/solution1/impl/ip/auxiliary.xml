@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xd:acceleratorMap xmlns:xd="http://www.xilinx.com/xidane" xd:functionName="action_excecutor" xd:componentRef="action_excecutor" xd:initiationInterval="1" xd:clockPeriod="3.103" xd:sequential="true" xd:hostMachine="64" xd:reset="all">
+  <xd:arg xd:name="action.src_ip" xd:originalName="action" xd:direction="in" xd:interfaceRef="action" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="32" xd:dataPack="true" xd:bitMapping="31:0"/>
+  <xd:arg xd:name="action.src_port" xd:originalName="action" xd:direction="in" xd:interfaceRef="action" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="16" xd:dataPack="true" xd:bitMapping="47:32"/>
+  <xd:arg xd:name="action.dst_port" xd:originalName="action" xd:direction="in" xd:interfaceRef="action" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="16" xd:dataPack="true" xd:bitMapping="63:48"/>
+  <xd:arg xd:name="action.action" xd:originalName="action" xd:direction="in" xd:interfaceRef="action" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:dataPack="true" xd:bitMapping="64:64"/>
+  <xd:arg xd:name="action_valid" xd:originalName="action_valid" xd:direction="in" xd:interfaceRef="action_valid_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1"/>
+  <xd:arg xd:name="action_empty" xd:originalName="action_empty" xd:direction="in" xd:interfaceRef="action_empty_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1"/>
+  <xd:arg xd:name="action_re" xd:originalName="action_re" xd:direction="out" xd:interfaceRef="action_re_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:arg xd:name="payload_in.data" xd:originalName="payload_in" xd:direction="in" xd:interfaceRef="payload_in_data_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="512" xd:firstOut="0"/>
+  <xd:arg xd:name="payload_in.keep" xd:originalName="payload_in" xd:direction="in" xd:interfaceRef="payload_in_keep_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="64" xd:firstOut="0"/>
+  <xd:arg xd:name="payload_in.valid" xd:originalName="payload_in" xd:direction="in" xd:interfaceRef="payload_in_valid_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:arg xd:name="payload_in.last" xd:originalName="payload_in" xd:direction="in" xd:interfaceRef="payload_in_last_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:arg xd:name="payload_ready" xd:originalName="payload_ready" xd:direction="out" xd:interfaceRef="payload_ready_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:arg xd:name="payload_out.data" xd:originalName="payload_out" xd:direction="out" xd:interfaceRef="payload_out_data_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="512" xd:firstOut="0"/>
+  <xd:arg xd:name="payload_out.keep" xd:originalName="payload_out" xd:direction="out" xd:interfaceRef="payload_out_keep_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="64" xd:firstOut="0"/>
+  <xd:arg xd:name="payload_out.valid" xd:originalName="payload_out" xd:direction="out" xd:interfaceRef="payload_out_valid_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:arg xd:name="payload_out.last" xd:originalName="payload_out" xd:direction="out" xd:interfaceRef="payload_out_last_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:arg xd:name="src_ip" xd:originalName="src_ip" xd:direction="out" xd:interfaceRef="src_ip_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="32" xd:firstOut="0"/>
+  <xd:arg xd:name="src_port" xd:originalName="src_port" xd:direction="out" xd:interfaceRef="src_port_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="16" xd:firstOut="0"/>
+  <xd:arg xd:name="dst_port" xd:originalName="dst_port" xd:direction="out" xd:interfaceRef="dst_port_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="16" xd:firstOut="0"/>
+  <xd:latencyEstimates xd:best-case="0" xd:worst-case="0" xd:average-case="0"/>
+  <xd:resourceEstimates xd:LUT="614" xd:FF="643" xd:BRAM="0" xd:DSP="0"/>
+</xd:acceleratorMap>

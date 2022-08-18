@@ -13,47 +13,110 @@
 
 
 
+// void router(
+	
+//         const ap_uint<NETWORK_HEADER_LENGTH> network_table[256],
+//         const ap_uint <NETWORK_HEADER_LENGTH> network_addr,
+//         galapagos_interface & stream_in,
+// 	galapagos_interface  & stream_out_switch,
+// 	galapagos_interface  & stream_out_network,
+//         volatile ap_uint<NETWORK_HEADER_LENGTH> * addr_out,
+//         volatile int * state_out
+
+// ){
+// #pragma HLS INTERFACE ap_ctrl_none port=return
+// #pragma HLS INTERFACE axis register both port=stream_in
+// #pragma HLS INTERFACE axis register both port=stream_out_switch
+// #pragma HLS INTERFACE axis register both port=stream_out_network
+// #pragma HLS INTERFACE bram port=network_table
+// #pragma HLS PIPELINE II=1
+
+
+// 	galapagos_packet packetIn;
+// 	galapagos_packet packetOut;
+
+// 	//bool inFPGA = false;
+	
+//         static enum sState {TX_IDLE = 0, TX_WRITE_SWITCH, TX_WRITE_NETWORK} sinkState;
+        
+//         switch(sinkState){
+//             case TX_IDLE: 
+//                 if(!stream_in.empty()){
+//                     packetIn = stream_in.read();
+//                     int index = packetIn.dest;
+//                     ap_uint <NETWORK_HEADER_LENGTH> network_addr_in = network_table[index * 4];
+//                     *addr_out = network_addr_in;
+//                     if(network_addr_in == network_addr){
+//                         sinkState = TX_WRITE_SWITCH;
+//                         stream_out_switch.write(packetIn); 
+//                     }
+//                     else{
+//                         sinkState = TX_WRITE_NETWORK;
+//                         stream_out_network.write(packetIn); 
+//                     }
+//                 }
+//                 break;
+//             case TX_WRITE_SWITCH:
+//                 if(!stream_in.empty()){
+//                     packetIn = stream_in.read();
+//                     if(packetIn.last)
+//                         sinkState = TX_IDLE;
+//                     stream_out_switch.write(packetIn);
+//                 }
+//                 break;
+//             case TX_WRITE_NETWORK:
+//                 if(!stream_in.empty()){
+//                     packetIn = stream_in.read();
+//                     if(packetIn.last)
+//                         sinkState = TX_IDLE;
+//                     stream_out_network.write(packetIn);
+//                 }
+//                 break;
+//             default:
+//                 sinkState = TX_IDLE;
+//                 break;
+//         }
+
+//         *state_out = (int)sinkState;
+
+// }
+
 void router(
 	
         const ap_uint<NETWORK_HEADER_LENGTH> network_table[256],
         const ap_uint <NETWORK_HEADER_LENGTH> network_addr,
-        hls::stream <galapagos_packet> * stream_in,
-		hls::stream <galapagos_packet>  * stream_out_switch,
-		hls::stream <galapagos_packet>  * stream_out_network
+        galapagos_interface & stream_in,
+	    galapagos_interface  & stream_out_switch,
+	    galapagos_interface  & stream_out_network
 
 ){
-#pragma HLS resource core=AXI4Stream variable=stream_in
-#pragma HLS resource core=AXI4Stream variable=stream_out_switch
-#pragma HLS resource core=AXI4Stream variable=stream_out_network
-
-#pragma HLS DATA_PACK variable=stream_in
-#pragma HLS DATA_PACK variable=stream_out_switch
-#pragma HLS DATA_PACK variable=stream_out_network
-
-#pragma HLS PIPELINE
-
-#ifndef SIM
 #pragma HLS INTERFACE ap_ctrl_none port=return
-#endif
+#pragma HLS INTERFACE axis register both port=stream_in
+#pragma HLS INTERFACE axis register both port=stream_out_switch
+#pragma HLS INTERFACE axis register both port=stream_out_network
+#pragma HLS INTERFACE bram port=network_table
 
 	galapagos_packet packetIn;
 	galapagos_packet packetOut;
+    int pkt_len;
 
-	bool inFPGA = false;
-    ap_uint <NETWORK_HEADER_LENGTH> network_addr_in;
+	packetIn = stream_in.read();
+    int index = packetIn.dest;
+    ap_uint <NETWORK_HEADER_LENGTH> network_addr_in = network_table[index * 4];
+    pkt_len = packetIn.user;
 
-	if(!stream_in->empty()){
-		packetIn = stream_in->read();
-        network_addr_in = network_table[packetIn.dest];
-        inFPGA = (network_addr == network_addr_in);
-
-        if(inFPGA){
-        	stream_out_switch->write(packetIn);
+    for (int i=0; i < pkt_len; i++) {
+#pragma HLS PIPELINE II=1
+        if (i != 0)  {
+            packetIn = stream_in.read();
         }
-        else{
-        	stream_out_network->write(packetIn);
-        }
-	}
 
+        if(network_addr_in == network_addr){
+            stream_out_switch.write(packetIn); 
+        }
+        else {
+            stream_out_network.write(packetIn); 
+        }
+    }
 
 }

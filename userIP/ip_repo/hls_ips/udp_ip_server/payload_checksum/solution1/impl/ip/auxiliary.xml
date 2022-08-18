@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xd:acceleratorMap xmlns:xd="http://www.xilinx.com/xidane" xd:functionName="payload_checksum" xd:componentRef="payload_checksum" xd:initiationInterval="1" xd:clockPeriod="3.103" xd:sequential="true" xd:hostMachine="64" xd:reset="all">
+  <xd:arg xd:name="payload_in.data" xd:originalName="payload_in" xd:direction="in" xd:interfaceRef="payload_in_data_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="512"/>
+  <xd:arg xd:name="payload_in.valid" xd:originalName="payload_in" xd:direction="in" xd:interfaceRef="payload_in_valid_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1"/>
+  <xd:arg xd:name="payload_in.last" xd:originalName="payload_in" xd:direction="in" xd:interfaceRef="payload_in_last_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1"/>
+  <xd:arg xd:name="payload_length.data" xd:originalName="payload_length" xd:direction="in" xd:interfaceRef="payload_length_data_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="16"/>
+  <xd:arg xd:name="payload_length.valid" xd:originalName="payload_length" xd:direction="in" xd:interfaceRef="payload_length_valid_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1"/>
+  <xd:arg xd:name="payload_out.data" xd:originalName="payload_out" xd:direction="out" xd:interfaceRef="payload_out_data_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="512" xd:firstOut="0"/>
+  <xd:arg xd:name="payload_out.keep" xd:originalName="payload_out" xd:direction="out" xd:interfaceRef="payload_out_keep_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="64" xd:firstOut="0"/>
+  <xd:arg xd:name="payload_out.valid" xd:originalName="payload_out" xd:direction="out" xd:interfaceRef="payload_out_valid_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:arg xd:name="payload_out.last" xd:originalName="payload_out" xd:direction="out" xd:interfaceRef="payload_out_last_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:arg xd:name="checksum.data" xd:originalName="checksum" xd:direction="out" xd:interfaceRef="checksum_data_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="32" xd:firstOut="0"/>
+  <xd:arg xd:name="checksum.valid" xd:originalName="checksum" xd:direction="out" xd:interfaceRef="checksum_valid_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:latencyEstimates xd:best-case="0" xd:worst-case="0" xd:average-case="0"/>
+  <xd:resourceEstimates xd:LUT="2659" xd:FF="2510" xd:BRAM="0" xd:DSP="0"/>
+</xd:acceleratorMap>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xd:acceleratorMap xmlns:xd="http://www.xilinx.com/xidane" xd:functionName="action_generator" xd:componentRef="action_generator" xd:initiationInterval="1" xd:clockPeriod="3.103" xd:sequential="true" xd:hostMachine="64" xd:reset="all">
+  <xd:arg xd:name="meta_in.src_ip" xd:originalName="meta_in" xd:direction="in" xd:interfaceRef="meta_in_src_ip_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="32"/>
+  <xd:arg xd:name="meta_in.protocol_header" xd:originalName="meta_in" xd:direction="in" xd:interfaceRef="meta_in_protocol_header_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="64"/>
+  <xd:arg xd:name="meta_in.checksum" xd:originalName="meta_in" xd:direction="in" xd:interfaceRef="meta_in_checksum_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="32"/>
+  <xd:arg xd:name="meta_in.action" xd:originalName="meta_in" xd:direction="in" xd:interfaceRef="meta_in_action_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="2"/>
+  <xd:arg xd:name="payload_cksum.data" xd:originalName="payload_cksum" xd:direction="in" xd:interfaceRef="payload_cksum_data_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="32"/>
+  <xd:arg xd:name="payload_cksum.valid" xd:originalName="payload_cksum" xd:direction="in" xd:interfaceRef="payload_cksum_valid_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1"/>
+  <xd:arg xd:name="action_out.src_ip" xd:originalName="action_out" xd:direction="out" xd:interfaceRef="action_out" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="32" xd:firstOut="0" xd:dataPack="true" xd:bitMapping="31:0"/>
+  <xd:arg xd:name="action_out.src_port" xd:originalName="action_out" xd:direction="out" xd:interfaceRef="action_out" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="16" xd:firstOut="0" xd:dataPack="true" xd:bitMapping="47:32"/>
+  <xd:arg xd:name="action_out.dst_port" xd:originalName="action_out" xd:direction="out" xd:interfaceRef="action_out" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="16" xd:firstOut="0" xd:dataPack="true" xd:bitMapping="63:48"/>
+  <xd:arg xd:name="action_out.action" xd:originalName="action_out" xd:direction="out" xd:interfaceRef="action_out" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0" xd:dataPack="true" xd:bitMapping="64:64"/>
+  <xd:arg xd:name="action_out_valid" xd:originalName="action_out_valid" xd:direction="out" xd:interfaceRef="action_out_valid_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:latencyEstimates xd:best-case="0" xd:worst-case="0" xd:average-case="0"/>
+  <xd:resourceEstimates xd:LUT="86" xd:FF="441" xd:BRAM="0" xd:DSP="0"/>
+</xd:acceleratorMap>
