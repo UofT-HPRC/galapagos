@@ -1,0 +1,108 @@
+{
+  "wait_conditions": [], 
+  "modules": [
+    {
+      "name": "DUT", 
+      "ports": [
+        {
+          "period": "6.25ns", 
+          "direction": "input", 
+          "type": "clock", 
+          "name": "clk", 
+          "size": 1
+        }, 
+        {
+          "period": "3ns", 
+          "direction": "input", 
+          "type": "clock", 
+          "name": "mem_sys_clk_p", 
+          "size": 1
+        }, 
+        {
+          "direction": "input", 
+          "type": "reset", 
+          "name": "sys_resetn", 
+          "size": 1
+        }, 
+        {
+          "channels": [
+            {
+              "type": "tdata", 
+              "name": "TDATA", 
+              "size": 64
+            }, 
+            {
+              "type": "tvalid", 
+              "name": "TVALID", 
+              "size": 1
+            }, 
+            {
+              "type": "tready", 
+              "name": "TREADY", 
+              "size": 1
+            }, 
+            {
+              "type": "tlast", 
+              "name": "TLAST", 
+              "size": 1
+            }
+          ], 
+          "direction": "slave", 
+          "type": "axis", 
+          "name": "stream_in", 
+          "clock": "clk"
+        }, 
+        {
+          "channels": [
+            {
+              "type": "tdata", 
+              "name": "TDATA", 
+              "size": 64
+            }, 
+            {
+              "type": "tvalid", 
+              "name": "TVALID", 
+              "size": 1
+            }, 
+            {
+              "type": "tready", 
+              "name": "TREADY", 
+              "size": 1
+            }, 
+            {
+              "type": "tlast", 
+              "name": "TLAST", 
+              "size": 1
+            }
+          ], 
+          "direction": "master", 
+          "type": "axis", 
+          "name": "stream_out", 
+          "clock": "clk"
+        }, 
+        {
+          "direction": "output", 
+          "name": "mem_ready", 
+          "size": 1
+        }
+      ]
+    }
+  ], 
+  "vectors": [], 
+  "metadata": {
+    "Flag_Count": 1, 
+    "Project_Name": null, 
+    "Time_Format": {
+      "precision": 3, 
+      "unit": "1us"
+    }, 
+    "Tool_Versions": null, 
+    "Description": null, 
+    "Timescale": "1ns / 1ps", 
+    "Target_Devices": null, 
+    "Company": null, 
+    "Dependencies": null, 
+    "Module_Name": "top_sim", 
+    "Engineer": null
+  }
+}

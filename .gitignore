@@ -1,0 +1,9 @@
+.Xil/*
+vivado.*
+hlsBuild/*
+projects/*
+my_init.sh
+vivado_*
+vivado.log
+vivado.jou
+
