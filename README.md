@@ -22,7 +22,7 @@ Second you need to compile the Vivado_HLS source code and generate a Vivado proj
 `make PROJECTNAME=${project_name}`
 
 Third you need to build the Vivado project.
-`source projects/${project_name}/create_cluster.sh`
+`source projects/${project_name}/createCluster.sh`
 
 The layers of the stack that we introduce are as follows:
 
