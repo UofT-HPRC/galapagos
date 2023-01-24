@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xd:acceleratorMap xmlns:xd="http://www.xilinx.com/xidane" xd:functionName="udp_ip_receive" xd:componentRef="udp_ip_receive" xd:initiationInterval="1" xd:clockPeriod="3.103" xd:sequential="true" xd:hostMachine="64" xd:reset="all">
+  <xd:arg xd:name="myIP" xd:originalName="myIP" xd:direction="in" xd:interfaceRef="myIP_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="32"/>
+  <xd:arg xd:name="ip_in.data" xd:originalName="ip_in" xd:direction="in" xd:interfaceRef="ip_in_data_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="336"/>
+  <xd:arg xd:name="ip_in.valid" xd:originalName="ip_in" xd:direction="in" xd:interfaceRef="ip_in_valid_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1"/>
+  <xd:arg xd:name="meta_out.src_ip" xd:originalName="meta_out" xd:direction="out" xd:interfaceRef="meta_out_src_ip_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="32" xd:firstOut="0"/>
+  <xd:arg xd:name="meta_out.protocol_header" xd:originalName="meta_out" xd:direction="out" xd:interfaceRef="meta_out_protocol_header_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="64" xd:firstOut="0"/>
+  <xd:arg xd:name="meta_out.checksum" xd:originalName="meta_out" xd:direction="out" xd:interfaceRef="meta_out_checksum_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="32" xd:firstOut="0"/>
+  <xd:arg xd:name="meta_out.action" xd:originalName="meta_out" xd:direction="out" xd:interfaceRef="meta_out_action_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="2" xd:firstOut="0"/>
+  <xd:arg xd:name="arp_internal_resp.Mac_IP" xd:originalName="arp_internal_resp" xd:direction="out" xd:interfaceRef="arp_internal_resp_Mac_IP_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="80" xd:firstOut="0"/>
+  <xd:arg xd:name="arp_internal_resp.valid" xd:originalName="arp_internal_resp" xd:direction="out" xd:interfaceRef="arp_internal_resp_valid_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:latencyEstimates xd:best-case="0" xd:worst-case="0" xd:average-case="0"/>
+  <xd:resourceEstimates xd:LUT="649" xd:FF="2159" xd:BRAM="0" xd:DSP="0"/>
+</xd:acceleratorMap>

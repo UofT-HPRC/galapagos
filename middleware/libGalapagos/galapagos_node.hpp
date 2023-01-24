@@ -85,6 +85,10 @@ my_router(_kern_info_table, _my_address, &my_router_dc, &mutex_packets_in_flight
 template<class T>
 void galapagos::node<T>::add_kernel(short id, void (*func)(short , interface <T> *, interface <T> *)){
 
+#if LOG_LEVEL > 0    
+    logger->info("add_kernel {0} {}", id);
+#endif    
+
      int index = dest_to_kern_ind[id];
      kernels[index] = std::make_unique<kernel<T> >(id, logger);
      kernels[index]->set_func(func);

@@ -1,6 +1,6 @@
-set TCP_bridge_name network_bridge_tcp 
+set TCP_bridge_name network_bridge_tcp
 set TCP_ip_name tcp_ip_wrapper
-set netBridge_from_app s_axis_rxGalapagosBridge 
+set netBridge_from_app s_axis_rxGalapagosBridge
 set netBridge_to_app m_axis_txGalapagosBridge
 
 create_bd_cell -type ip -vlnv xilinx.com:hls:${TCP_bridge_name}:1.0 network/network_bridge_inst
@@ -35,6 +35,13 @@ set_property -dict [list CONFIG.Memory_Type {Dual_Port_ROM} CONFIG.Enable_32bit_
 #BRAM Ports
 connect_bd_intf_net [get_bd_intf_pins network/network_bridge_inst/ip_table_V_PORTA] [get_bd_intf_pins network/blk_mem_bridge_rom/BRAM_PORTA]
 connect_bd_intf_net [get_bd_intf_pins network/network_bridge_inst/ip_table_V_PORTB] [get_bd_intf_pins network/blk_mem_bridge_rom/BRAM_PORTB]
+
+create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen network/blk_mem_node_id
+set_property -dict [list CONFIG.Memory_Type {Dual_Port_ROM} CONFIG.Enable_32bit_Address {true} CONFIG.Use_Byte_Write_Enable {false} CONFIG.Byte_Size {8} CONFIG.Write_Depth_A {256} CONFIG.Enable_B {Use_ENB_Pin} CONFIG.Register_PortA_Output_of_Memory_Primitives {false} CONFIG.Register_PortB_Output_of_Memory_Primitives {false} CONFIG.Use_RSTA_Pin {true} CONFIG.Use_RSTB_Pin {true} CONFIG.Port_A_Write_Rate {0} CONFIG.Port_B_Clock {100} CONFIG.Port_B_Enable_Rate {100} CONFIG.use_bram_block {BRAM_Controller} CONFIG.EN_SAFETY_CKT {true} CONFIG.Load_Init_File {true} CONFIG.Coe_File {../../../../../../../node.coe}] [get_bd_cells network/blk_mem_node_id]
+
+# BRAM Ports
+connect_bd_intf_net [get_bd_intf_pins network/network_bridge_inst/node_table_V_PORTA] [get_bd_intf_pins network/blk_mem_node_id/BRAM_PORTA]
+connect_bd_intf_net [get_bd_intf_pins network/network_bridge_inst/node_table_V_PORTB] [get_bd_intf_pins network/blk_mem_node_id/BRAM_PORTB]
 
 connect_bd_intf_net [get_bd_intf_pins network/network_bridge_inst/m_axis_listen_port] [get_bd_intf_pins network/tcp_ip_inst/s_axis_listen_port]
 connect_bd_intf_net [get_bd_intf_pins network/network_bridge_inst/m_axis_open_connection] [get_bd_intf_pins network/tcp_ip_inst/s_axis_open_connection]

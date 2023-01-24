@@ -48,6 +48,7 @@ struct ap_axis_net{
 	ap_uint <D> data;
     ap_uint<D/8> keep;
 	ap_uint<1> last;
+	ap_uint<16> user;
 
 };
 //
@@ -57,7 +58,8 @@ struct ap_axis_net{
 //
 
 //typedef ap_axis_net<8*BYTESPERCYCLE,1,8,8> netStream;
-typedef ap_axis_net<8*BYTESPERCYCLE> netStream;
+//typedef ap_axis_net<8*BYTESPERCYCLE> netStream;
+typedef ap_axis_net<PACKET_DATA_LENGTH> netStream;
 
 void galapagos_bridge(
           galapagos_interface *g2N_input,

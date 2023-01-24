@@ -7,19 +7,8 @@
         <ip> 10.1.2.101 </ip>
     </node>
     <node>
-        <app_bridge> 
-            <clk> aclk </clk>
-            <aresetn> aresetn </aresetn>
-            <lib> hls </lib>
-            <vendor> xilinx.com </vendor>
-            <name> communication_bridge_eth_mpi </name> 
-            <to_app> to_app_V </to_app>
-            <from_app> from_app_V </from_app>
-            <to_net> to_net_V </to_net>
-            <from_net> from_net_V </from_net>
-        </app_bridge>
         <board> adm-8k5-debug </board>
-        <comm> eth </comm>
+        <comm> tcp </comm>
         <type> hw </type>
         <kernel> 0 </kernel>
         <kernel> 1 </kernel>
