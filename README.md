@@ -4,7 +4,7 @@ Welcome to the Galapagos Hardware Stack.
 
 ## Prerequisites
 
-Both the Docker Container and native install requires Xilinx Vivado to be installed. Current versions supported are 2017.4, 2018.1, 2018.2, 2018.3
+Both the Docker Container and native install requires Xilinx Vivado to be installed. Current versions supported are 2018.1, 2018.2, 2018.3, 2019.1
 
 
 ## Docker Jupyter Tutorial
@@ -16,7 +16,16 @@ To run tutorial refer to instructions in [this README](https://github.com/UofT-H
 
 
 First you need to initialize all environment variables. This is done with a build script.
+
 `source build.sh`
+
+Second you need to compile the Vivado_HLS source code and generate a Vivado project.
+
+`make PROJECTNAME=${project_name}`
+
+Third you need to build the Vivado project.
+
+`source projects/${project_name}/createCluster.sh`
 
 The layers of the stack that we introduce are as follows:
 
