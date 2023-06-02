@@ -70,6 +70,7 @@ class cluster(abstractDict):
         else:
             top_dict = kernel_file['cluster']
 
+        print(top_dict)
 
         # The user may optionally specify a packet description in <packet> tags
         # Note: it would be nice if Python had some notion of strong typing,
@@ -108,6 +109,8 @@ class cluster(abstractDict):
             #    f.write("# define PACKET_DEST_LENGTH " + str(self.packet_dest) + '\n')
             #f.write("#endif\n")
 
+       
+       
         if(mode=='file'):
             logical_dict = self.getDict(kernel_file)['cluster']['kernel']
             map_dict = self.getDict(map_file)['cluster']['node']

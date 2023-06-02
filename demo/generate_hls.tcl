@@ -11,7 +11,7 @@ set_top kern_middle
 open_solution "solution1"
 set_part ${part_name}
 #csynth path
-add_files $src_path_root/kernel.cpp -cflags "-I $galapagos_path/middleware/include -I $galapagos_path/middleware/CPP_lib/Galapagos_lib"
+add_files $src_path_root/kernel.cpp -cflags "-I $galapagos_path/middleware/include "
 create_clock -period 250MHz -name default
 config_interface -expose_global
 csynth_design

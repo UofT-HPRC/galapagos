@@ -30,15 +30,20 @@
 #define NUM_INTERMEDIATE_HOPS 1
 #define NUM_FLITS 10
 
+#ifdef CPU
 #include "galapagos_stream.hpp"
-void kern_send(galapagos_stream * in, galapagos_stream  * out)
+#else
+#include "galapagos_packet.h"
+#endif
+
+void kern_send(galapagos_interface * in, galapagos_interface  * out)
 {
 #pragma HLS INTERFACE axis register both port=out
 #pragma HLS INTERFACE axis register both port=in
 
     int num_flits = NUM_FLITS;
     
-    galapagos_stream_packet gp;
+    galapagos_packet gp;
 
 
     for(int j=0; j<num_flits; j++){
@@ -53,12 +58,12 @@ void kern_send(galapagos_stream * in, galapagos_stream  * out)
 }
 
 //FINAL RECV RUNNING IN SOFTWARE
-void kern_recv(galapagos_stream * in, galapagos_stream  * out)
+void kern_recv(galapagos_interface * in, galapagos_interface  * out)
 {
 #pragma HLS INTERFACE axis register both port=out
 #pragma HLS INTERFACE axis register both port=in
     
-    galapagos_stream_packet gp;
+    galapagos_packet gp;
     short dest;
     
     dest = gp.dest + 1;
@@ -77,12 +82,12 @@ void kern_recv(galapagos_stream * in, galapagos_stream  * out)
 
 
 
-void kern_middle(galapagos_stream * in, galapagos_stream  * out)
+void kern_middle(galapagos_interface * in, galapagos_interface  * out)
 {
 #pragma HLS INTERFACE axis register both port=out
 #pragma HLS INTERFACE axis register both port=in
     
-    galapagos_stream_packet gp;
+    galapagos_packet gp;
 
     ap_uint <1> last = 0;
     
