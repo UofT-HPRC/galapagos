@@ -1,0 +1,65 @@
+{"cluster" : {
+  "packet": {
+    "data": "64",
+    "keep": "1",
+    "last": "1",
+    "dest": "16"
+  },
+  "kernel": [
+    {
+      "#text": "kern_send",
+      "vendor": "xilinx.com",
+      "version": "1.0",
+      "lib": "hls",
+      "num": "0",
+      "rep": "1",
+      "clk": "ap_clk",
+      "aresetn": "ap_rst_n",
+      "s_axis": {
+        "scope": "global",
+        "name": "in_r"
+      },
+      "m_axis": {
+        "scope": "global",
+        "name": "out_r"
+      }
+    },
+    {
+      "#text": "kern_recv",
+      "vendor": "xilinx.com",
+      "version": "1.0",
+      "lib": "hls",
+      "num": "2",
+      "rep": "1",
+      "clk": "ap_clk",
+      "aresetn": "ap_rst_n",
+      "s_axis": {
+        "scope": "global",
+        "name": "in_r"
+      },
+      "m_axis": {
+        "scope": "global",
+        "name": "out_r"
+      }
+    },
+    {
+      "#text": "kern_middle",
+      "vendor": "xilinx.com",
+      "version": "1.0",
+      "lib": "hls",
+      "num": "1",
+      "rep": "1",
+      "clk": "ap_clk",
+      "aresetn": "ap_rst_n",
+      "s_axis": {
+        "scope": "global",
+        "name": "in_r"
+      },
+      "m_axis": {
+        "scope": "global",
+        "name": "out_r"
+      }
+    }
+  ]
+}
+}
