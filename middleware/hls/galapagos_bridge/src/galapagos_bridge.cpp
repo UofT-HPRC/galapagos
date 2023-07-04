@@ -46,12 +46,6 @@ void g2N(
 
 
     }
-
-
-
-
-
-
 }
 
 
@@ -67,7 +61,30 @@ void n2G(
     //ap_uint<PACKET_DEST_LENGTH> id = np.data.range(PACKET_DEST_LENGTH-1, 0);
     //ap_uint<PACKET_DEST_LENGTH> dest =  np.data.range(PACKET_DEST_LENGTH+PACKET_DEST_LENGTH-1, PACKET_DEST_LENGTH);
 
-//     while(!np.last){
+
+    // gp
+    galapagos_packet gp;
+    gp.id = id;
+    gp.dest = dest;
+    gp.user = size;
+    gp.data = np.data;
+    gp.last = np.last;
+    gp.keep = np.keep;
+
+    while(!gp.last){
+#pragma HLS PIPELINE II=1
+        
+        netStream np = input->read();
+        gp.id = id;
+        gp.dest = dest;
+        gp.user = size;
+        gp.data = np.data;
+        gp.last = np.last;
+        gp.keep = np.keep;
+        output->write(gp);
+    }
+
+//     for(int i=0; i<size; i++){
 // #pragma HLS PIPELINE II=1
 //         galapagos_packet gp;
 //         netStream np = input->read();
@@ -79,19 +96,6 @@ void n2G(
 //         gp.keep = np.keep;
 //         output->write(gp);
 //     }
-
-    for(int i=0; i<size; i++){
-#pragma HLS PIPELINE II=1
-        galapagos_packet gp;
-        netStream np = input->read();
-        gp.id = id;
-        gp.dest = dest;
-        gp.user = size;
-        gp.data = np.data;
-        gp.last = np.last;
-        gp.keep = np.keep;
-        output->write(gp);
-    }
     
 
 }

@@ -1,0 +1,201 @@
+
+
+================================================================
+== Vivado HLS Report for 'MatMul'
+================================================================
+* Date:           Mon Feb 27 15:56:56 2023
+
+* Version:        2019.1 (Build 2552052 on Fri May 24 15:28:33 MDT 2019)
+* Project:        hls_project
+* Solution:       kernel_1
+* Product family: zynquplus
+* Target device:  xczu19eg-ffvc1760-2-i
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |   5.00|     4.367|        0.62|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+---------+-----+---------+----------+
+    |    Latency    |    Interval   | Pipeline |
+    | min |   max   | min |   max   |   Type   |
+    +-----+---------+-----+---------+----------+
+    |  787|  3145747|  775|  3145735| dataflow |
+    +-----+---------+-----+---------+----------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        N/A
+
+============================================================
++ Verbose Summary: Synthesis Manager
+============================================================
+InlineROM: 1
+ExposeGlobal: 0
+============================================================
++ Verbose Summary: CDFG Model
+============================================================
+IsTopModel: 0
+ResetActiveHigh: 1
+IsCombinational: 2
+IsDatapathOnly: 0
+HasWiredReturn: 1
+HasMFsm: 0
+HasVarLatency: 1
+IsPipeline: 0
+IsRtlPipelined: 0
+IsInstanceOverlapped: 0
+IsDontTouch: 0
+HasImplIP: 0
+IsGatedGlobalClock: 0
+
+
+============================================================
++ Verbose Summary: Schedule
+============================================================
+* Number of FSM states : 9
+* Pipeline : 0
+* Dataflow Pipeline: 1
+  DF-Pipeline-0: Size = 9, States = { 1 2 3 4 5 6 7 8 9 }
+
+* FSM state transitions: 
+1 --> 2 
+2 --> 3 
+3 --> 4 
+4 --> 5 
+5 --> 6 
+6 --> 7 
+7 --> 8 
+8 --> 9 
+9 --> 
+
+* FSM state operations: 
+
+State 1 <SV = 0> <Delay = 0.00>
+ST_1 : Operation 10 [1/1] (0.00ns)   --->   "%b_pipes_1_0_V_V = alloca i256, align 8" [src/modules.hpp:464]   --->   Operation 10 'alloca' 'b_pipes_1_0_V_V' <Predicate = true> <Delay = 0.00> <Core = "FIFO">   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 1.83> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 32> <Depth = 2> <FIFO>
+ST_1 : Operation 11 [1/1] (0.00ns)   --->   "%b_pipes_2_0_V_V = alloca i256, align 8" [src/modules.hpp:465]   --->   Operation 11 'alloca' 'b_pipes_2_0_V_V' <Predicate = true> <Delay = 0.00> <Core = "FIFO">   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 1.83> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 32> <Depth = 2> <FIFO>
+ST_1 : Operation 12 [1/1] (0.00ns)   --->   "%c_pipes_0_0_V_V = alloca i32, align 4" [src/modules.hpp:466]   --->   Operation 12 'alloca' 'c_pipes_0_0_V_V' <Predicate = true> <Delay = 0.00> <Core = "FIFO">   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 1.83> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 32> <Depth = 2> <FIFO>
+ST_1 : Operation 13 [1/1] (0.00ns)   --->   "%c_pipes_0_1_V_V = alloca i32, align 4" [src/modules.hpp:466]   --->   Operation 13 'alloca' 'c_pipes_0_1_V_V' <Predicate = true> <Delay = 0.00> <Core = "FIFO">   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 1.83> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 32> <Depth = 2> <FIFO>
+ST_1 : Operation 14 [1/1] (0.00ns)   --->   "%conv_pipe_V_V = alloca i64, align 8" [src/modules.hpp:467]   --->   Operation 14 'alloca' 'conv_pipe_V_V' <Predicate = true> <Delay = 0.00> <Core = "FIFO">   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 1.83> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 32> <Depth = 2> <FIFO>
+ST_1 : Operation 15 [1/1] (0.00ns)   --->   "%N_pipes_0_V_V = alloca i32, align 4" [src/modules.hpp:468]   --->   Operation 15 'alloca' 'N_pipes_0_V_V' <Predicate = true> <Delay = 0.00> <Core = "FIFO">   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 1.83> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 32> <Depth = 2> <FIFO>
+ST_1 : Operation 16 [1/1] (0.00ns)   --->   "%N_pipes_1_V_V = alloca i32, align 4" [src/modules.hpp:468]   --->   Operation 16 'alloca' 'N_pipes_1_V_V' <Predicate = true> <Delay = 0.00> <Core = "FIFO">   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 1.83> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 32> <Depth = 2> <FIFO>
+ST_1 : Operation 17 [1/1] (0.00ns)   --->   "%N_pipes_2_V_V = alloca i32, align 4" [src/modules.hpp:468]   --->   Operation 17 'alloca' 'N_pipes_2_V_V' <Predicate = true> <Delay = 0.00> <Core = "FIFO">   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 1.83> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 32> <Depth = 2> <FIFO>
+
+State 2 <SV = 1> <Delay = 0.00>
+ST_2 : Operation 18 [2/2] (0.00ns)   --->   "call fastcc void @ReadB(i512* %b_V_data_V, i8* %b_V_id_V, i8* %b_V_dest_V, i16* %b_V_user_V, i1* %b_V_last_V, i256* %b_pipes_1_0_V_V, i256* %b_pipes_2_0_V_V, i32* %N_pipes_0_V_V, i32* %N_pipes_1_V_V, i32* %N_pipes_2_V_V)" [src/modules.hpp:483]   --->   Operation 18 'call' <Predicate = true> <Delay = 0.00> <CoreType = "Generic">   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+State 3 <SV = 2> <Delay = 0.00>
+ST_3 : Operation 19 [1/2] (0.00ns)   --->   "call fastcc void @ReadB(i512* %b_V_data_V, i8* %b_V_id_V, i8* %b_V_dest_V, i16* %b_V_user_V, i1* %b_V_last_V, i256* %b_pipes_1_0_V_V, i256* %b_pipes_2_0_V_V, i32* %N_pipes_0_V_V, i32* %N_pipes_1_V_V, i32* %N_pipes_2_V_V)" [src/modules.hpp:483]   --->   Operation 19 'call' <Predicate = true> <Delay = 0.00> <CoreType = "Generic">   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+State 4 <SV = 3> <Delay = 0.00>
+ST_4 : Operation 20 [2/2] (0.00ns)   --->   "call fastcc void @TILE125(i32* %N_pipes_2_V_V, i256* %b_pipes_1_0_V_V, i256* %b_pipes_2_0_V_V, i32* %c_pipes_0_0_V_V, i32* %c_pipes_0_1_V_V)" [src/modules.hpp:488]   --->   Operation 20 'call' <Predicate = true> <Delay = 0.00> <CoreType = "Generic">   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+State 5 <SV = 4> <Delay = 0.00>
+ST_5 : Operation 21 [1/2] (0.00ns)   --->   "call fastcc void @TILE125(i32* %N_pipes_2_V_V, i256* %b_pipes_1_0_V_V, i256* %b_pipes_2_0_V_V, i32* %c_pipes_0_0_V_V, i32* %c_pipes_0_1_V_V)" [src/modules.hpp:488]   --->   Operation 21 'call' <Predicate = true> <Delay = 0.00> <CoreType = "Generic">   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+State 6 <SV = 5> <Delay = 0.00>
+ST_6 : Operation 22 [2/2] (0.00ns)   --->   "call fastcc void @ConvertWidthC(i32* %N_pipes_0_V_V, i32* %c_pipes_0_0_V_V, i32* %c_pipes_0_1_V_V, i64* %conv_pipe_V_V)" [src/modules.hpp:495]   --->   Operation 22 'call' <Predicate = true> <Delay = 0.00> <CoreType = "Generic">   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+State 7 <SV = 6> <Delay = 0.00>
+ST_7 : Operation 23 [1/2] (0.00ns)   --->   "call fastcc void @ConvertWidthC(i32* %N_pipes_0_V_V, i32* %c_pipes_0_0_V_V, i32* %c_pipes_0_1_V_V, i64* %conv_pipe_V_V)" [src/modules.hpp:495]   --->   Operation 23 'call' <Predicate = true> <Delay = 0.00> <CoreType = "Generic">   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+State 8 <SV = 7> <Delay = 0.00>
+ST_8 : Operation 24 [2/2] (0.00ns)   --->   "call fastcc void @WriteC126(i32* %N_pipes_1_V_V, i64* %conv_pipe_V_V, i512* %c_V_data_V, i8* %c_V_id_V, i8* %c_V_dest_V, i16* %c_V_user_V, i1* %c_V_last_V)" [src/modules.hpp:496]   --->   Operation 24 'call' <Predicate = true> <Delay = 0.00> <CoreType = "Generic">   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+State 9 <SV = 8> <Delay = 0.00>
+ST_9 : Operation 25 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i1* %c_V_last_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str713, i32 0, i32 0, [1 x i8]* @p_str714, [1 x i8]* @p_str715, [1 x i8]* @p_str716, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str717, [1 x i8]* @p_str718)"   --->   Operation 25 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_9 : Operation 26 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i16* %c_V_user_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str706, i32 0, i32 0, [1 x i8]* @p_str707, [1 x i8]* @p_str708, [1 x i8]* @p_str709, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str710, [1 x i8]* @p_str711)"   --->   Operation 26 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_9 : Operation 27 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i8* %c_V_dest_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str699, i32 0, i32 0, [1 x i8]* @p_str700, [1 x i8]* @p_str701, [1 x i8]* @p_str702, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str703, [1 x i8]* @p_str704)"   --->   Operation 27 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_9 : Operation 28 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i8* %c_V_id_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str692, i32 0, i32 0, [1 x i8]* @p_str693, [1 x i8]* @p_str694, [1 x i8]* @p_str695, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str696, [1 x i8]* @p_str697)"   --->   Operation 28 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_9 : Operation 29 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i512* %c_V_data_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str685, i32 0, i32 0, [1 x i8]* @p_str686, [1 x i8]* @p_str687, [1 x i8]* @p_str688, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str689, [1 x i8]* @p_str690)"   --->   Operation 29 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_9 : Operation 30 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecDataflowPipeline(i32 -1, i32 0, [1 x i8]* @p_str1) nounwind" [src/modules.hpp:481]   --->   Operation 30 'specdataflowpipeline' <Predicate = true> <Delay = 0.00>
+ST_9 : Operation 31 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i512* %b_V_data_V, i8* %b_V_id_V, i8* %b_V_dest_V, i16* %b_V_user_V, i1* %b_V_last_V, [5 x i8]* @p_str2, i32 1, i32 1, [5 x i8]* @p_str3, i32 0, i32 0, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, i32 0, i32 0, i32 0, i32 0, [1 x i8]* @p_str1, [1 x i8]* @p_str1) nounwind"   --->   Operation 31 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_9 : Operation 32 [1/1] (0.00ns)   --->   "%empty = call i32 (...)* @_ssdm_op_SpecChannel([17 x i8]* @b_pipes_1_LF_0_NF_O, i32 1, [1 x i8]* @p_str628, [1 x i8]* @p_str628, i32 2, i32 2, i256* %b_pipes_1_0_V_V, i256* %b_pipes_1_0_V_V)"   --->   Operation 32 'specchannel' 'empty' <Predicate = true> <Delay = 0.00>
+ST_9 : Operation 33 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i256* %b_pipes_1_0_V_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str629, i32 0, i32 0, [1 x i8]* @p_str630, [1 x i8]* @p_str631, [1 x i8]* @p_str632, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str633, [1 x i8]* @p_str634)"   --->   Operation 33 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_9 : Operation 34 [1/1] (0.00ns)   --->   "%empty_305 = call i32 (...)* @_ssdm_op_SpecChannel([17 x i8]* @b_pipes_2_LF_0_NF_O, i32 1, [1 x i8]* @p_str635, [1 x i8]* @p_str635, i32 2, i32 2, i256* %b_pipes_2_0_V_V, i256* %b_pipes_2_0_V_V)"   --->   Operation 34 'specchannel' 'empty_305' <Predicate = true> <Delay = 0.00>
+ST_9 : Operation 35 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i256* %b_pipes_2_0_V_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str636, i32 0, i32 0, [1 x i8]* @p_str637, [1 x i8]* @p_str638, [1 x i8]* @p_str639, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str640, [1 x i8]* @p_str641)"   --->   Operation 35 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_9 : Operation 36 [1/1] (0.00ns)   --->   "%empty_306 = call i32 (...)* @_ssdm_op_SpecChannel([18 x i8]* @c_pipes_LF_0_NF_LF_1, i32 1, [1 x i8]* @p_str642, [1 x i8]* @p_str642, i32 2, i32 2, i32* %c_pipes_0_0_V_V, i32* %c_pipes_0_0_V_V)"   --->   Operation 36 'specchannel' 'empty_306' <Predicate = true> <Delay = 0.00>
+ST_9 : Operation 37 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i32* %c_pipes_0_0_V_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str643, i32 0, i32 0, [1 x i8]* @p_str644, [1 x i8]* @p_str645, [1 x i8]* @p_str646, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str647, [1 x i8]* @p_str648)"   --->   Operation 37 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_9 : Operation 38 [1/1] (0.00ns)   --->   "%empty_307 = call i32 (...)* @_ssdm_op_SpecChannel([18 x i8]* @c_pipes_LF_0_NF_LF_s, i32 1, [1 x i8]* @p_str649, [1 x i8]* @p_str649, i32 2, i32 2, i32* %c_pipes_0_1_V_V, i32* %c_pipes_0_1_V_V)"   --->   Operation 38 'specchannel' 'empty_307' <Predicate = true> <Delay = 0.00>
+ST_9 : Operation 39 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i32* %c_pipes_0_1_V_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str650, i32 0, i32 0, [1 x i8]* @p_str651, [1 x i8]* @p_str652, [1 x i8]* @p_str653, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str654, [1 x i8]* @p_str655)"   --->   Operation 39 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_9 : Operation 40 [1/1] (0.00ns)   --->   "%empty_308 = call i32 (...)* @_ssdm_op_SpecChannel([14 x i8]* @conv_pipe_OC_V_OC_V_s, i32 1, [1 x i8]* @p_str656, [1 x i8]* @p_str656, i32 2, i32 2, i64* %conv_pipe_V_V, i64* %conv_pipe_V_V)"   --->   Operation 40 'specchannel' 'empty_308' <Predicate = true> <Delay = 0.00>
+ST_9 : Operation 41 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i64* %conv_pipe_V_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str657, i32 0, i32 0, [1 x i8]* @p_str658, [1 x i8]* @p_str659, [1 x i8]* @p_str660, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str661, [1 x i8]* @p_str662)"   --->   Operation 41 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_9 : Operation 42 [1/1] (0.00ns)   --->   "%empty_309 = call i32 (...)* @_ssdm_op_SpecChannel([15 x i8]* @N_pipes_LF_0_NF_OC_s, i32 1, [1 x i8]* @p_str663, [1 x i8]* @p_str663, i32 2, i32 2, i32* %N_pipes_0_V_V, i32* %N_pipes_0_V_V)"   --->   Operation 42 'specchannel' 'empty_309' <Predicate = true> <Delay = 0.00>
+ST_9 : Operation 43 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i32* %N_pipes_0_V_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str664, i32 0, i32 0, [1 x i8]* @p_str665, [1 x i8]* @p_str666, [1 x i8]* @p_str667, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str668, [1 x i8]* @p_str669)"   --->   Operation 43 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_9 : Operation 44 [1/1] (0.00ns)   --->   "%empty_310 = call i32 (...)* @_ssdm_op_SpecChannel([15 x i8]* @N_pipes_LF_1_NF_OC_s, i32 1, [1 x i8]* @p_str670, [1 x i8]* @p_str670, i32 2, i32 2, i32* %N_pipes_1_V_V, i32* %N_pipes_1_V_V)"   --->   Operation 44 'specchannel' 'empty_310' <Predicate = true> <Delay = 0.00>
+ST_9 : Operation 45 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i32* %N_pipes_1_V_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str671, i32 0, i32 0, [1 x i8]* @p_str672, [1 x i8]* @p_str673, [1 x i8]* @p_str674, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str675, [1 x i8]* @p_str676)"   --->   Operation 45 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_9 : Operation 46 [1/1] (0.00ns)   --->   "%empty_311 = call i32 (...)* @_ssdm_op_SpecChannel([15 x i8]* @N_pipes_LF_2_NF_OC_s, i32 1, [1 x i8]* @p_str677, [1 x i8]* @p_str677, i32 2, i32 2, i32* %N_pipes_2_V_V, i32* %N_pipes_2_V_V)"   --->   Operation 46 'specchannel' 'empty_311' <Predicate = true> <Delay = 0.00>
+ST_9 : Operation 47 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i32* %N_pipes_2_V_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str678, i32 0, i32 0, [1 x i8]* @p_str679, [1 x i8]* @p_str680, [1 x i8]* @p_str681, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str682, [1 x i8]* @p_str683)"   --->   Operation 47 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_9 : Operation 48 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_0_0, [768 x i32]* @weights_0_0_1, [768 x i32]* @weights_0_0_2, [768 x i32]* @weights_0_0_3, [768 x i32]* @weights_0_0_4, [768 x i32]* @weights_0_0_5, [768 x i32]* @weights_0_0_6, [768 x i32]* @weights_0_0_7, [768 x i32]* @weights_0_0_8, [768 x i32]* @weights_0_0_9, [768 x i32]* @weights_0_0_10, [768 x i32]* @weights_0_0_11, [768 x i32]* @weights_0_0_12, [768 x i32]* @weights_0_0_13, [768 x i32]* @weights_0_0_14, [768 x i32]* @weights_0_0_15, [768 x i32]* @weights_0_0_16, [768 x i32]* @weights_0_0_17, [768 x i32]* @weights_0_0_18, [768 x i32]* @weights_0_0_19, [768 x i32]* @weights_0_0_20, [768 x i32]* @weights_0_0_21, [768 x i32]* @weights_0_0_22, [768 x i32]* @weights_0_0_23, [768 x i32]* @weights_0_0_24, [768 x i32]* @weights_0_0_25, [768 x i32]* @weights_0_0_26, [768 x i32]* @weights_0_0_27, [768 x i32]* @weights_0_0_28, [768 x i32]* @weights_0_0_29, [768 x i32]* @weights_0_0_30, [768 x i32]* @weights_0_0_31, [768 x i32]* @weights_0_1_0, [768 x i32]* @weights_0_1_1, [768 x i32]* @weights_0_1_2, [768 x i32]* @weights_0_1_3, [768 x i32]* @weights_0_1_4, [768 x i32]* @weights_0_1_5, [768 x i32]* @weights_0_1_6, [768 x i32]* @weights_0_1_7, [768 x i32]* @weights_0_1_8, [768 x i32]* @weights_0_1_9, [768 x i32]* @weights_0_1_10, [768 x i32]* @weights_0_1_11, [768 x i32]* @weights_0_1_12, [768 x i32]* @weights_0_1_13, [768 x i32]* @weights_0_1_14, [768 x i32]* @weights_0_1_15, [768 x i32]* @weights_0_1_16, [768 x i32]* @weights_0_1_17, [768 x i32]* @weights_0_1_18, [768 x i32]* @weights_0_1_19, [768 x i32]* @weights_0_1_20, [768 x i32]* @weights_0_1_21, [768 x i32]* @weights_0_1_22, [768 x i32]* @weights_0_1_23, [768 x i32]* @weights_0_1_24, [768 x i32]* @weights_0_1_25, [768 x i32]* @weights_0_1_26, [768 x i32]* @weights_0_1_27, [768 x i32]* @weights_0_1_28, [768 x i32]* @weights_0_1_29, [768 x i32]* @weights_0_1_30, [768 x i32]* @weights_0_1_31, [768 x i32]* @weights_0_2_0, [768 x i32]* @weights_0_2_1, [768 x i32]* @weights_0_2_2, [768 x i32]* @weights_0_2_3, [768 x i32]* @weights_0_2_4, [768 x i32]* @weights_0_2_5, [768 x i32]* @weights_0_2_6, [768 x i32]* @weights_0_2_7, [768 x i32]* @weights_0_2_8, [768 x i32]* @weights_0_2_9, [768 x i32]* @weights_0_2_10, [768 x i32]* @weights_0_2_11, [768 x i32]* @weights_0_2_12, [768 x i32]* @weights_0_2_13, [768 x i32]* @weights_0_2_14, [768 x i32]* @weights_0_2_15, [768 x i32]* @weights_0_2_16, [768 x i32]* @weights_0_2_17, [768 x i32]* @weights_0_2_18, [768 x i32]* @weights_0_2_19, [768 x i32]* @weights_0_2_20, [768 x i32]* @weights_0_2_21, [768 x i32]* @weights_0_2_22, [768 x i32]* @weights_0_2_23, [768 x i32]* @weights_0_2_24, [768 x i32]* @weights_0_2_25, [768 x i32]* @weights_0_2_26, [768 x i32]* @weights_0_2_27, [768 x i32]* @weights_0_2_28, [768 x i32]* @weights_0_2_29, [768 x i32]* @weights_0_2_30, [768 x i32]* @weights_0_2_31, [768 x i32]* @weights_0_3_0, [768 x i32]* @weights_0_3_1, [768 x i32]* @weights_0_3_2, [768 x i32]* @weights_0_3_3, [768 x i32]* @weights_0_3_4, [768 x i32]* @weights_0_3_5, [768 x i32]* @weights_0_3_6, [768 x i32]* @weights_0_3_7, [768 x i32]* @weights_0_3_8, [768 x i32]* @weights_0_3_9, [768 x i32]* @weights_0_3_10, [768 x i32]* @weights_0_3_11, [768 x i32]* @weights_0_3_12, [768 x i32]* @weights_0_3_13, [768 x i32]* @weights_0_3_14, [768 x i32]* @weights_0_3_15, [768 x i32]* @weights_0_3_16, [768 x i32]* @weights_0_3_17, [768 x i32]* @weights_0_3_18, [768 x i32]* @weights_0_3_19, [768 x i32]* @weights_0_3_20, [768 x i32]* @weights_0_3_21, [768 x i32]* @weights_0_3_22, [768 x i32]* @weights_0_3_23, [768 x i32]* @weights_0_3_24, [768 x i32]* @weights_0_3_25, [768 x i32]* @weights_0_3_26, [768 x i32]* @weights_0_3_27, [768 x i32]* @weights_0_3_28, [768 x i32]* @weights_0_3_29, [768 x i32]* @weights_0_3_30, [768 x i32]* @weights_0_3_31, [768 x i32]* @weights_0_4_0, [768 x i32]* @weights_0_4_1, [768 x i32]* @weights_0_4_2, [768 x i32]* @weights_0_4_3, [768 x i32]* @weights_0_4_4, [768 x i32]* @weights_0_4_5, [768 x i32]* @weights_0_4_6, [768 x i32]* @weights_0_4_7, [768 x i32]* @weights_0_4_8, [768 x i32]* @weights_0_4_9, [768 x i32]* @weights_0_4_10, [768 x i32]* @weights_0_4_11, [768 x i32]* @weights_0_4_12, [768 x i32]* @weights_0_4_13, [768 x i32]* @weights_0_4_14, [768 x i32]* @weights_0_4_15, [768 x i32]* @weights_0_4_16, [768 x i32]* @weights_0_4_17, [768 x i32]* @weights_0_4_18, [768 x i32]* @weights_0_4_19, [768 x i32]* @weights_0_4_20, [768 x i32]* @weights_0_4_21, [768 x i32]* @weights_0_4_22, [768 x i32]* @weights_0_4_23, [768 x i32]* @weights_0_4_24, [768 x i32]* @weights_0_4_25, [768 x i32]* @weights_0_4_26, [768 x i32]* @weights_0_4_27, [768 x i32]* @weights_0_4_28, [768 x i32]* @weights_0_4_29, [768 x i32]* @weights_0_4_30, [768 x i32]* @weights_0_4_31, [768 x i32]* @weights_0_5_0, [768 x i32]* @weights_0_5_1, [768 x i32]* @weights_0_5_2, [768 x i32]* @weights_0_5_3, [768 x i32]* @weights_0_5_4, [768 x i32]* @weights_0_5_5, [768 x i32]* @weights_0_5_6, [768 x i32]* @weights_0_5_7, [768 x i32]* @weights_0_5_8, [768 x i32]* @weights_0_5_9, [768 x i32]* @weights_0_5_10, [768 x i32]* @weights_0_5_11, [768 x i32]* @weights_0_5_12, [768 x i32]* @weights_0_5_13, [768 x i32]* @weights_0_5_14, [768 x i32]* @weights_0_5_15, [768 x i32]* @weights_0_5_16, [768 x i32]* @weights_0_5_17, [768 x i32]* @weights_0_5_18, [768 x i32]* @weights_0_5_19, [768 x i32]* @weights_0_5_20, [768 x i32]* @weights_0_5_21, [768 x i32]* @weights_0_5_22, [768 x i32]* @weights_0_5_23, [768 x i32]* @weights_0_5_24, [768 x i32]* @weights_0_5_25, [768 x i32]* @weights_0_5_26, [768 x i32]* @weights_0_5_27, [768 x i32]* @weights_0_5_28, [768 x i32]* @weights_0_5_29, [768 x i32]* @weights_0_5_30, [768 x i32]* @weights_0_5_31, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)" [src/modules.hpp:471]   --->   Operation 48 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_9 : Operation 49 [1/2] (0.00ns)   --->   "call fastcc void @WriteC126(i32* %N_pipes_1_V_V, i64* %conv_pipe_V_V, i512* %c_V_data_V, i8* %c_V_id_V, i8* %c_V_dest_V, i16* %c_V_user_V, i1* %c_V_last_V)" [src/modules.hpp:496]   --->   Operation 49 'call' <Predicate = true> <Delay = 0.00> <CoreType = "Generic">   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+ST_9 : Operation 50 [1/1] (0.00ns)   --->   "ret void" [src/modules.hpp:498]   --->   Operation 50 'ret' <Predicate = true> <Delay = 0.00>
+
+
+============================================================
++ Verbose Summary: Timing violations
+============================================================
+Target clock period: 5ns, clock uncertainty: 0.625ns.
+
+ <State 1>: 0ns
+The critical path consists of the following:
+
+ <State 2>: 0ns
+The critical path consists of the following:
+
+ <State 3>: 0ns
+The critical path consists of the following:
+
+ <State 4>: 0ns
+The critical path consists of the following:
+
+ <State 5>: 0ns
+The critical path consists of the following:
+
+ <State 6>: 0ns
+The critical path consists of the following:
+
+ <State 7>: 0ns
+The critical path consists of the following:
+
+ <State 8>: 0ns
+The critical path consists of the following:
+
+ <State 9>: 0ns
+The critical path consists of the following:
+
+
+============================================================
++ Verbose Summary: Binding
+============================================================
+N/A
+* FSMD analyzer results:
+  - Output states:
+ - Input state : 
+  - Chain level:
+	State 1
+	State 2
+	State 3
+	State 4
+	State 5
+	State 6
+	State 7
+	State 8
+	State 9
+
+
+============================================================
++ Verbose Summary: Datapath Resource usage 
+============================================================
+N/A

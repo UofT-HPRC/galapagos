@@ -52,77 +52,122 @@ void rxPath(stream<axiWord512>&       lbRxDataIn,
     }
 
 }
+// void txPath(
+//             stream<axiWord512>& rxGalapagosBridge,
+//     		stream<axiWord512> 	   &lbTxDataOut,
+//             ap_uint  <32> * remote_ip_tx,
+//             const ap_uint<32> ip_table[256]
+//             ) {
+// #pragma HLS PIPELINE II=1
+// 	static enum sState {TX_IDLE = 0, TX_WRITE_HEADER, TX_STREAM} sinkState;
+    
+//     static ap_uint<32> dest_ip_addr;
+//     static axiWord512 header;
+
+
+//     *remote_ip_tx = dest_ip_addr;
+
+    
+//     switch(sinkState){
+//         case TX_IDLE:
+//             if(!rxGalapagosBridge.empty()){
+
+//                 header = rxGalapagosBridge.read();
+//                 int dest = header.data.range(31,24);
+//                 dest_ip_addr = ip_table[dest * 4];
+//                 sinkState = TX_WRITE_HEADER;
+//             }
+//             break;
+//         case TX_WRITE_HEADER:
+//             {
+//                 lbTxDataOut.write(header);
+//                 sinkState = TX_STREAM;
+//             }
+//             break;
+//         case TX_STREAM:
+//             if(!rxGalapagosBridge.empty()){
+//                 axiWord512 currWord;
+//                 currWord = rxGalapagosBridge.read();
+//                 lbTxDataOut.write(currWord);
+//                 if(currWord.last)
+//                     sinkState = TX_IDLE;
+//                 else
+//                     sinkState = TX_STREAM;
+//             }
+//             break;
+//         default:
+//             sinkState = TX_IDLE;
+//             break;
+//     }
+// }
+
+// void network_bridge_udp_100g(
+//                  stream<axiWord512>& rxGalapagosBridge,
+//                  stream<axiWord512>&       lbRxDataIn,
+// 				 stream<axiWord512> 		&lbTxDataOut,
+//                  stream<axiWord512>& txGalapagosBridge,
+//                  ap_uint<32> * remote_ip_tx,
+//                  const ap_uint<32> ip_table[256]
+//                  ) {
+// 	#pragma HLS INTERFACE ap_ctrl_none port=return
+// 	#pragma HLS INTERFACE ap_none port=remote_ip_tx
+// 	#pragma HLS DATAFLOW
+
+
+//     #pragma HLS INTERFACE AXIS port=lbRxDataIn
+//     #pragma HLS INTERFACE AXIS port=lbTxDataOut
+//     #pragma HLS INTERFACE AXIS port=rxGalapagosBridge
+//     #pragma HLS INTERFACE AXIS port=txGalapagosBridge
+//     #pragma HLS INTERFACE bram port=ip_table
+
+//     rxPath(lbRxDataIn, txGalapagosBridge);
+//     txPath(rxGalapagosBridge, lbTxDataOut, remote_ip_tx, ip_table);
+// }
+
+
+
+
+
+
+
+
+
+
 void txPath(
             stream<axiWord512>& rxGalapagosBridge,
-    		stream<axiWord512> 	   &lbTxDataOut,
-            ap_uint  <32> * remote_ip_tx,
+    		stream<axiWord512>& lbTxDataOut,
+            ap_uint<32> * remote_ip_tx,
             const ap_uint<32> ip_table[256]
             ) {
-#pragma HLS PIPELINE II=1
-	static enum sState {TX_IDLE = 0, TX_WRITE_HEADER, TX_STREAM} sinkState;
+    #pragma HLS INTERFACE bram port=ip_table
     
+    static int dest;
     static ap_uint<32> dest_ip_addr;
-    static axiWord512 header;
+    static axiWord512 currWord;
 
 
+    // read header
+    currWord = rxGalapagosBridge.read();
+    dest = currWord.data.range(31,24);
+    dest_ip_addr = ip_table[dest*4];
     *remote_ip_tx = dest_ip_addr;
 
-    
-    switch(sinkState){
-        case TX_IDLE:
-            if(!rxGalapagosBridge.empty()){
+    // write header
+    lbTxDataOut.write(currWord);
 
-                header = rxGalapagosBridge.read();
-                int dest = header.data.range(31,24);
-                dest_ip_addr = ip_table[dest * 4];
-                sinkState = TX_WRITE_HEADER;
-            }
-            break;
-        case TX_WRITE_HEADER:
-            {
-                lbTxDataOut.write(header);
-                sinkState = TX_STREAM;
-            }
-            break;
-        case TX_STREAM:
-            if(!rxGalapagosBridge.empty()){
-                axiWord512 currWord;
-                currWord = rxGalapagosBridge.read();
-                lbTxDataOut.write(currWord);
-                if(currWord.last)
-                    sinkState = TX_IDLE;
-                else
-                    sinkState = TX_STREAM;
-            }
-            break;
-        default:
-            sinkState = TX_IDLE;
-            break;
+    // write rest
+    while(!currWord.last)  {
+#pragma HLS PIPELINE II=1
+        axiWord512 outWord = rxGalapagosBridge.read();
+        currWord = outWord;
+        lbTxDataOut.write(currWord);
     }
 }
 
-void network_bridge_udp_100g(
-                 stream<axiWord512>& rxGalapagosBridge,
-                 stream<axiWord512>&       lbRxDataIn,
-				 stream<axiWord512> 		&lbTxDataOut,
-                 stream<axiWord512>& txGalapagosBridge,
-                 ap_uint<32> * remote_ip_tx,
-                 const ap_uint<32> ip_table[256]
-                 ) {
-	#pragma HLS INTERFACE ap_ctrl_none port=return
-	#pragma HLS INTERFACE ap_none port=remote_ip_tx
-	#pragma HLS DATAFLOW
 
 
-    #pragma HLS INTERFACE AXIS port=lbRxDataIn
-    #pragma HLS INTERFACE AXIS port=lbTxDataOut
-    #pragma HLS INTERFACE AXIS port=rxGalapagosBridge
-    #pragma HLS INTERFACE AXIS port=txGalapagosBridge
-    #pragma HLS INTERFACE bram port=ip_table
 
-    rxPath(lbRxDataIn, txGalapagosBridge);
-    txPath(rxGalapagosBridge, lbTxDataOut, remote_ip_tx, ip_table);
-}
+
 
 // void txPath(
 //             stream<axiWord512>& rxGalapagosBridge,
@@ -130,6 +175,8 @@ void network_bridge_udp_100g(
 //             ap_uint<32> * remote_ip_tx,
 //             const ap_uint<32> ip_table[256]
 //             ) {
+//     #pragma HLS INTERFACE bram port=ip_table
+    
 //     static int dest;
 //     static ap_uint<32> dest_ip_addr;
 //     static axiWord512 header;
@@ -154,27 +201,27 @@ void network_bridge_udp_100g(
 // }
 
 
-// void network_bridge_udp_100g(
-//                  stream<axiWord512>& rxGalapagosBridge,
-//                  stream<axiWord512>&       lbRxDataIn,
-// 				 stream<axiWord512> 		&lbTxDataOut,
-//                  stream<axiWord512>& txGalapagosBridge,
-//                  ap_uint<32> * remote_ip_tx,
-//                  const ap_uint<32> ip_table[256]
-// 				//ap_uint<2> arp_status,
-//                  ) {
-// 	#pragma HLS INTERFACE ap_ctrl_none port=return
-// 	#pragma HLS INTERFACE ap_none port=remote_ip_tx
-// 	#pragma HLS DATAFLOW
+void network_bridge_udp_100g(
+                 stream<axiWord512>& rxGalapagosBridge,
+                 stream<axiWord512>&       lbRxDataIn,
+				 stream<axiWord512> 		&lbTxDataOut,
+                 stream<axiWord512>& txGalapagosBridge,
+                 ap_uint<32> * remote_ip_tx,
+                 const ap_uint<32> ip_table[256]
+				//ap_uint<2> arp_status,
+                 ) {
+	#pragma HLS INTERFACE ap_ctrl_none port=return
+	#pragma HLS INTERFACE ap_none port=remote_ip_tx
+	#pragma HLS DATAFLOW
 
 
-//     #pragma HLS INTERFACE AXIS port=lbRxDataIn
-//     #pragma HLS INTERFACE AXIS port=lbTxDataOut
-//     #pragma HLS INTERFACE AXIS port=rxGalapagosBridge
-//     #pragma HLS INTERFACE AXIS port=txGalapagosBridge
-//     #pragma HLS INTERFACE bram port=ip_table
+    #pragma HLS INTERFACE AXIS port=lbRxDataIn
+    #pragma HLS INTERFACE AXIS port=lbTxDataOut
+    #pragma HLS INTERFACE AXIS port=rxGalapagosBridge
+    #pragma HLS INTERFACE AXIS port=txGalapagosBridge
+    #pragma HLS INTERFACE bram port=ip_table
 
-//     rxPath(lbRxDataIn, txGalapagosBridge);
-//     txPath(rxGalapagosBridge, lbTxDataOut, remote_ip_tx, ip_table);
-// }
+    rxPath(lbRxDataIn, txGalapagosBridge);
+    txPath(rxGalapagosBridge, lbTxDataOut, remote_ip_tx, ip_table);
+}
 

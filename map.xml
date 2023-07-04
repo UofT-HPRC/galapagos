@@ -2,7 +2,7 @@
 <cluster>
     <node>
         <type> sw </type>
-        <kernel> 4 </kernel>
+        <kernel> 1 </kernel>
         <mac> 0c:c4:7a:88:bd:83  </mac>
         <ip> 10.1.2.110 </ip>
     </node>
@@ -11,17 +11,7 @@
         <comm> udp </comm>
         <type> hw </type>
         <kernel> 0 </kernel>
-        <kernel> 1 </kernel>
         <mac>  fa:16:3e:55:ca:08 </mac>
         <ip> 10.1.7.8 </ip>
-    </node>
-    <node>
-        <board> sidewinder </board>
-        <comm> udp </comm>
-        <type> hw </type>
-        <kernel> 2 </kernel>
-        <kernel> 3 </kernel>
-        <mac>  fa:16:3e:55:ca:01 </mac>
-        <ip> 10.1.7.1 </ip>
     </node>
 </cluster>

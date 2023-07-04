@@ -1,0 +1,141 @@
+
+
+================================================================
+== Vivado HLS Report for 'ReadN127'
+================================================================
+* Date:           Mon Feb 27 15:57:31 2023
+
+* Version:        2019.1 (Build 2552052 on Fri May 24 15:28:33 MDT 2019)
+* Project:        hls_project
+* Solution:       kernel_1
+* Product family: zynquplus
+* Target device:  xczu19eg-ffvc1760-2-i
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |   5.00|     3.676|        0.62|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+-----+-----+-----+---------+
+    |  Latency  |  Interval | Pipeline|
+    | min | max | min | max |   Type  |
+    +-----+-----+-----+-----+---------+
+    |    0|    0|    0|    0|   none  |
+    +-----+-----+-----+-----+---------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        N/A
+
+
+
+================================================================
+== Utilization Estimates
+================================================================
+* Summary: 
++-----------------+---------+-------+---------+--------+-----+
+|       Name      | BRAM_18K| DSP48E|    FF   |   LUT  | URAM|
++-----------------+---------+-------+---------+--------+-----+
+|DSP              |        -|      -|        -|       -|    -|
+|Expression       |        -|      -|        0|       2|    -|
+|FIFO             |        -|      -|        -|       -|    -|
+|Instance         |        -|      -|        -|       -|    -|
+|Memory           |        -|      -|        -|       -|    -|
+|Multiplexer      |        -|      -|        -|      45|    -|
+|Register         |        -|      -|        3|       -|    -|
++-----------------+---------+-------+---------+--------+-----+
+|Total            |        0|      0|        3|      47|    0|
++-----------------+---------+-------+---------+--------+-----+
+|Available        |     1968|   1968|  1045440|  522720|  128|
++-----------------+---------+-------+---------+--------+-----+
+|Utilization (%)  |        0|      0|    ~0   |   ~0   |    0|
++-----------------+---------+-------+---------+--------+-----+
+
++ Detail: 
+    * Instance: 
+    N/A
+
+    * DSP48E: 
+    N/A
+
+    * Memory: 
+    N/A
+
+    * FIFO: 
+    N/A
+
+    * Expression: 
+    +-----------------+----------+-------+---+----+------------+------------+
+    |  Variable Name  | Operation| DSP48E| FF| LUT| Bitwidth P0| Bitwidth P1|
+    +-----------------+----------+-------+---+----+------------+------------+
+    |ap_block_state1  |    or    |      0|  0|   2|           1|           1|
+    +-----------------+----------+-------+---+----+------------+------------+
+    |Total            |          |      0|  0|   2|           1|           1|
+    +-----------------+----------+-------+---+----+------------+------------+
+
+    * Multiplexer: 
+    +--------------------+----+-----------+-----+-----------+
+    |        Name        | LUT| Input Size| Bits| Total Bits|
+    +--------------------+----+-----------+-----+-----------+
+    |N_in_V_V2_blk_n     |   9|          2|    1|          2|
+    |N_pipe_1_V_V_blk_n  |   9|          2|    1|          2|
+    |N_pipe_2_V_V_blk_n  |   9|          2|    1|          2|
+    |ap_done             |   9|          2|    1|          2|
+    |real_start          |   9|          2|    1|          2|
+    +--------------------+----+-----------+-----+-----------+
+    |Total               |  45|         10|    5|         10|
+    +--------------------+----+-----------+-----+-----------+
+
+    * Register: 
+    +----------------+---+----+-----+-----------+
+    |      Name      | FF| LUT| Bits| Const Bits|
+    +----------------+---+----+-----+-----------+
+    |ap_CS_fsm       |  1|   0|    1|          0|
+    |ap_done_reg     |  1|   0|    1|          0|
+    |start_once_reg  |  1|   0|    1|          0|
+    +----------------+---+----+-----+-----------+
+    |Total           |  3|   0|    3|          0|
+    +----------------+---+----+-----+-----------+
+
+
+
+================================================================
+== Interface
+================================================================
+* Summary: 
++---------------------+-----+-----+------------+--------------+--------------+
+|      RTL Ports      | Dir | Bits|  Protocol  | Source Object|    C Type    |
++---------------------+-----+-----+------------+--------------+--------------+
+|ap_clk               |  in |    1| ap_ctrl_hs |   ReadN127   | return value |
+|ap_rst               |  in |    1| ap_ctrl_hs |   ReadN127   | return value |
+|ap_start             |  in |    1| ap_ctrl_hs |   ReadN127   | return value |
+|start_full_n         |  in |    1| ap_ctrl_hs |   ReadN127   | return value |
+|ap_done              | out |    1| ap_ctrl_hs |   ReadN127   | return value |
+|ap_continue          |  in |    1| ap_ctrl_hs |   ReadN127   | return value |
+|ap_idle              | out |    1| ap_ctrl_hs |   ReadN127   | return value |
+|ap_ready             | out |    1| ap_ctrl_hs |   ReadN127   | return value |
+|start_out            | out |    1| ap_ctrl_hs |   ReadN127   | return value |
+|start_write          | out |    1| ap_ctrl_hs |   ReadN127   | return value |
+|N_in_V_V2_dout       |  in |   32|   ap_fifo  |   N_in_V_V2  |    pointer   |
+|N_in_V_V2_empty_n    |  in |    1|   ap_fifo  |   N_in_V_V2  |    pointer   |
+|N_in_V_V2_read       | out |    1|   ap_fifo  |   N_in_V_V2  |    pointer   |
+|N_pipe_1_V_V_din     | out |   32|   ap_fifo  | N_pipe_1_V_V |    pointer   |
+|N_pipe_1_V_V_full_n  |  in |    1|   ap_fifo  | N_pipe_1_V_V |    pointer   |
+|N_pipe_1_V_V_write   | out |    1|   ap_fifo  | N_pipe_1_V_V |    pointer   |
+|N_pipe_2_V_V_din     | out |   32|   ap_fifo  | N_pipe_2_V_V |    pointer   |
+|N_pipe_2_V_V_full_n  |  in |    1|   ap_fifo  | N_pipe_2_V_V |    pointer   |
+|N_pipe_2_V_V_write   | out |    1|   ap_fifo  | N_pipe_2_V_V |    pointer   |
++---------------------+-----+-----+------------+--------------+--------------+
+

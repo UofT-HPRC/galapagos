@@ -1,0 +1,215 @@
+
+
+================================================================
+== Vivado HLS Report for 'ReadA119134'
+================================================================
+* Date:           Mon Feb 27 15:58:20 2023
+
+* Version:        2019.1 (Build 2552052 on Fri May 24 15:28:33 MDT 2019)
+* Project:        hls_project
+* Solution:       kernel_1
+* Product family: zynquplus
+* Target device:  xczu19eg-ffvc1760-2-i
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |   5.00|     3.676|        0.62|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+---------+-----+---------+---------+
+    |    Latency    |    Interval   | Pipeline|
+    | min |   max   | min |   max   |   Type  |
+    +-----+---------+-----+---------+---------+
+    |  770|  3145730|  770|  3145730|   none  |
+    +-----+---------+-----+---------+---------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        +----------+-----+---------+----------+-----------+-----------+---------------+----------+
+        |          |    Latency    | Iteration|  Initiation Interval  |      Trip     |          |
+        | Loop Name| min |   max   |  Latency |  achieved |   target  |     Count     | Pipelined|
+        +----------+-----+---------+----------+-----------+-----------+---------------+----------+
+        |- Loop 1  |  768|  3145728|         2|          1|          1| 768 ~ 3145728 |    yes   |
+        +----------+-----+---------+----------+-----------+-----------+---------------+----------+
+
+
+
+================================================================
+== Utilization Estimates
+================================================================
+* Summary: 
++-----------------+---------+-------+---------+--------+-----+
+|       Name      | BRAM_18K| DSP48E|    FF   |   LUT  | URAM|
++-----------------+---------+-------+---------+--------+-----+
+|DSP              |        -|      -|        -|       -|    -|
+|Expression       |        -|      -|        0|     172|    -|
+|FIFO             |        -|      -|        -|       -|    -|
+|Instance         |        -|      -|        -|       -|    -|
+|Memory           |        0|      -|        0|       0|   32|
+|Multiplexer      |        -|      -|        -|     126|    -|
+|Register         |        -|      -|       94|       -|    -|
++-----------------+---------+-------+---------+--------+-----+
+|Total            |        0|      0|       94|     298|   32|
++-----------------+---------+-------+---------+--------+-----+
+|Available        |     1968|   1968|  1045440|  522720|  128|
++-----------------+---------+-------+---------+--------+-----+
+|Utilization (%)  |        0|      0|    ~0   |   ~0   |   25|
++-----------------+---------+-------+---------+--------+-----+
+
++ Detail: 
+    * Instance: 
+    N/A
+
+    * DSP48E: 
+    N/A
+
+    * Memory: 
+    +------------------+----------------------------+---------+---+----+-----+------+-----+------+-------------+
+    |      Memory      |           Module           | BRAM_18K| FF| LUT| URAM| Words| Bits| Banks| W*Bits*Banks|
+    +------------------+----------------------------+---------+---+----+-----+------+-----+------+-------------+
+    |weights_0_3_0_U   |ReadA119134_weights_0_3_0   |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_1_U   |ReadA119134_weights_0_3_1   |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_10_U  |ReadA119134_weights_0_3_10  |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_11_U  |ReadA119134_weights_0_3_11  |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_12_U  |ReadA119134_weights_0_3_12  |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_13_U  |ReadA119134_weights_0_3_13  |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_14_U  |ReadA119134_weights_0_3_14  |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_15_U  |ReadA119134_weights_0_3_15  |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_16_U  |ReadA119134_weights_0_3_16  |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_17_U  |ReadA119134_weights_0_3_17  |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_18_U  |ReadA119134_weights_0_3_18  |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_19_U  |ReadA119134_weights_0_3_19  |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_2_U   |ReadA119134_weights_0_3_2   |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_20_U  |ReadA119134_weights_0_3_20  |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_21_U  |ReadA119134_weights_0_3_21  |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_22_U  |ReadA119134_weights_0_3_22  |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_23_U  |ReadA119134_weights_0_3_23  |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_24_U  |ReadA119134_weights_0_3_24  |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_25_U  |ReadA119134_weights_0_3_25  |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_26_U  |ReadA119134_weights_0_3_26  |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_27_U  |ReadA119134_weights_0_3_27  |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_28_U  |ReadA119134_weights_0_3_28  |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_29_U  |ReadA119134_weights_0_3_29  |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_3_U   |ReadA119134_weights_0_3_3   |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_30_U  |ReadA119134_weights_0_3_30  |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_31_U  |ReadA119134_weights_0_3_31  |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_4_U   |ReadA119134_weights_0_3_4   |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_5_U   |ReadA119134_weights_0_3_5   |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_6_U   |ReadA119134_weights_0_3_6   |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_7_U   |ReadA119134_weights_0_3_7   |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_8_U   |ReadA119134_weights_0_3_8   |        0|  0|   0|    1|   768|   32|     1|        24576|
+    |weights_0_3_9_U   |ReadA119134_weights_0_3_9   |        0|  0|   0|    1|   768|   32|     1|        24576|
+    +------------------+----------------------------+---------+---+----+-----+------+-----+------+-------------+
+    |Total             |                            |        0|  0|   0|   32| 24576| 1024|    32|       786432|
+    +------------------+----------------------------+---------+---+----+-----+------+-----+------+-------------+
+
+    * FIFO: 
+    N/A
+
+    * Expression: 
+    +----------------------------------+----------+-------+---+----+------------+------------+
+    |           Variable Name          | Operation| DSP48E| FF| LUT| Bitwidth P0| Bitwidth P1|
+    +----------------------------------+----------+-------+---+----+------------+------------+
+    |add_ln25_fu_721_p2                |     +    |      0|  0|  49|          42|           1|
+    |n_fu_777_p2                       |     +    |      0|  0|  17|          10|           1|
+    |bound_fu_710_p2                   |     -    |      0|  0|  49|          42|          42|
+    |ap_block_pp0_stage0_01001         |    and   |      0|  0|   2|           1|           1|
+    |icmp_ln25_fu_716_p2               |   icmp   |      0|  0|  24|          42|          42|
+    |icmp_ln27_fu_727_p2               |   icmp   |      0|  0|  13|          10|          10|
+    |ap_block_state1                   |    or    |      0|  0|   2|           1|           1|
+    |ap_block_state3_pp0_stage0_iter1  |    or    |      0|  0|   2|           1|           1|
+    |select_ln27_fu_733_p3             |  select  |      0|  0|  10|           1|           1|
+    |ap_enable_pp0                     |    xor   |      0|  0|   2|           1|           2|
+    |ap_enable_reg_pp0_iter1           |    xor   |      0|  0|   2|           2|           1|
+    +----------------------------------+----------+-------+---+----+------------+------------+
+    |Total                             |          |      0|  0| 172|         153|         103|
+    +----------------------------------+----------+-------+---+----+------------+------------+
+
+    * Multiplexer: 
+    +-------------------------+----+-----------+-----+-----------+
+    |           Name          | LUT| Input Size| Bits| Total Bits|
+    +-------------------------+----+-----------+-----+-----------+
+    |N_pipe_in_V_V3_blk_n     |   9|          2|    1|          2|
+    |N_pipe_out_V_V10_blk_n   |   9|          2|    1|          2|
+    |a_pipes_1_V_V15_blk_n    |   9|          2|    1|          2|
+    |a_pipes_2_V_V20_blk_n    |   9|          2|    1|          2|
+    |a_pipes_3_V_V25_blk_n    |   9|          2|    1|          2|
+    |a_pipes_4_V_V30_blk_n    |   9|          2|    1|          2|
+    |ap_NS_fsm                |  21|          4|    1|          4|
+    |ap_done                  |   9|          2|    1|          2|
+    |ap_enable_reg_pp0_iter1  |  15|          3|    1|          3|
+    |indvar_flatten_reg_668   |   9|          2|   42|         84|
+    |n_0_reg_679              |   9|          2|   10|         20|
+    |real_start               |   9|          2|    1|          2|
+    +-------------------------+----+-----------+-----+-----------+
+    |Total                    | 126|         27|   62|        127|
+    +-------------------------+----+-----------+-----+-----------+
+
+    * Register: 
+    +-------------------------+----+----+-----+-----------+
+    |           Name          | FF | LUT| Bits| Const Bits|
+    +-------------------------+----+----+-----+-----------+
+    |ap_CS_fsm                |   3|   0|    3|          0|
+    |ap_done_reg              |   1|   0|    1|          0|
+    |ap_enable_reg_pp0_iter0  |   1|   0|    1|          0|
+    |ap_enable_reg_pp0_iter1  |   1|   0|    1|          0|
+    |bound_reg_867            |  34|   0|   42|          8|
+    |icmp_ln25_reg_872        |   1|   0|    1|          0|
+    |indvar_flatten_reg_668   |  42|   0|   42|          0|
+    |n_0_reg_679              |  10|   0|   10|          0|
+    |start_once_reg           |   1|   0|    1|          0|
+    +-------------------------+----+----+-----+-----------+
+    |Total                    |  94|   0|  102|          8|
+    +-------------------------+----+----+-----+-----------+
+
+
+
+================================================================
+== Interface
+================================================================
+* Summary: 
++-------------------------+-----+-----+------------+------------------+--------------+
+|        RTL Ports        | Dir | Bits|  Protocol  |   Source Object  |    C Type    |
++-------------------------+-----+-----+------------+------------------+--------------+
+|ap_clk                   |  in |    1| ap_ctrl_hs |    ReadA119134   | return value |
+|ap_rst                   |  in |    1| ap_ctrl_hs |    ReadA119134   | return value |
+|ap_start                 |  in |    1| ap_ctrl_hs |    ReadA119134   | return value |
+|start_full_n             |  in |    1| ap_ctrl_hs |    ReadA119134   | return value |
+|ap_done                  | out |    1| ap_ctrl_hs |    ReadA119134   | return value |
+|ap_continue              |  in |    1| ap_ctrl_hs |    ReadA119134   | return value |
+|ap_idle                  | out |    1| ap_ctrl_hs |    ReadA119134   | return value |
+|ap_ready                 | out |    1| ap_ctrl_hs |    ReadA119134   | return value |
+|start_out                | out |    1| ap_ctrl_hs |    ReadA119134   | return value |
+|start_write              | out |    1| ap_ctrl_hs |    ReadA119134   | return value |
+|N_pipe_in_V_V3_dout      |  in |   32|   ap_fifo  |  N_pipe_in_V_V3  |    pointer   |
+|N_pipe_in_V_V3_empty_n   |  in |    1|   ap_fifo  |  N_pipe_in_V_V3  |    pointer   |
+|N_pipe_in_V_V3_read      | out |    1|   ap_fifo  |  N_pipe_in_V_V3  |    pointer   |
+|N_pipe_out_V_V10_din     | out |   32|   ap_fifo  | N_pipe_out_V_V10 |    pointer   |
+|N_pipe_out_V_V10_full_n  |  in |    1|   ap_fifo  | N_pipe_out_V_V10 |    pointer   |
+|N_pipe_out_V_V10_write   | out |    1|   ap_fifo  | N_pipe_out_V_V10 |    pointer   |
+|a_pipes_1_V_V15_din      | out |  256|   ap_fifo  |  a_pipes_1_V_V15 |    pointer   |
+|a_pipes_1_V_V15_full_n   |  in |    1|   ap_fifo  |  a_pipes_1_V_V15 |    pointer   |
+|a_pipes_1_V_V15_write    | out |    1|   ap_fifo  |  a_pipes_1_V_V15 |    pointer   |
+|a_pipes_2_V_V20_din      | out |  256|   ap_fifo  |  a_pipes_2_V_V20 |    pointer   |
+|a_pipes_2_V_V20_full_n   |  in |    1|   ap_fifo  |  a_pipes_2_V_V20 |    pointer   |
+|a_pipes_2_V_V20_write    | out |    1|   ap_fifo  |  a_pipes_2_V_V20 |    pointer   |
+|a_pipes_3_V_V25_din      | out |  256|   ap_fifo  |  a_pipes_3_V_V25 |    pointer   |
+|a_pipes_3_V_V25_full_n   |  in |    1|   ap_fifo  |  a_pipes_3_V_V25 |    pointer   |
+|a_pipes_3_V_V25_write    | out |    1|   ap_fifo  |  a_pipes_3_V_V25 |    pointer   |
+|a_pipes_4_V_V30_din      | out |  256|   ap_fifo  |  a_pipes_4_V_V30 |    pointer   |
+|a_pipes_4_V_V30_full_n   |  in |    1|   ap_fifo  |  a_pipes_4_V_V30 |    pointer   |
+|a_pipes_4_V_V30_write    | out |    1|   ap_fifo  |  a_pipes_4_V_V30 |    pointer   |
++-------------------------+-----+-----+------------+------------------+--------------+
+

@@ -1,0 +1,160 @@
+
+
+================================================================
+== Vivado HLS Report for 'Linear'
+================================================================
+* Date:           Mon Feb 27 15:57:07 2023
+
+* Version:        2019.1 (Build 2552052 on Fri May 24 15:28:33 MDT 2019)
+* Project:        hls_project
+* Solution:       kernel_1
+* Product family: zynquplus
+* Target device:  xczu19eg-ffvc1760-2-i
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |   5.00|     4.367|        0.62|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+---------+-----+---------+----------+
+    |    Latency    |    Interval   | Pipeline |
+    | min |   max   | min |   max   |   Type   |
+    +-----+---------+-----+---------+----------+
+    |  787|  3145747|  775|  3145735| dataflow |
+    +-----+---------+-----+---------+----------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        N/A
+
+============================================================
++ Verbose Summary: Synthesis Manager
+============================================================
+InlineROM: 1
+ExposeGlobal: 0
+============================================================
++ Verbose Summary: CDFG Model
+============================================================
+IsTopModel: 0
+ResetActiveHigh: 1
+IsCombinational: 2
+IsDatapathOnly: 0
+HasWiredReturn: 1
+HasMFsm: 0
+HasVarLatency: 1
+IsPipeline: 0
+IsRtlPipelined: 0
+IsInstanceOverlapped: 0
+IsDontTouch: 0
+HasImplIP: 0
+IsGatedGlobalClock: 0
+
+
+============================================================
++ Verbose Summary: Schedule
+============================================================
+* Number of FSM states : 5
+* Pipeline : 0
+* Dataflow Pipeline: 1
+  DF-Pipeline-0: Size = 5, States = { 1 2 3 4 5 }
+
+* FSM state transitions: 
+1 --> 2 
+2 --> 3 
+3 --> 4 
+4 --> 5 
+5 --> 
+
+* FSM state operations: 
+
+State 1 <SV = 0> <Delay = 0.00>
+ST_1 : Operation 6 [1/1] (0.00ns)   --->   "%pipe_V_data_V = alloca i512, align 8" [src/modules.hpp:560]   --->   Operation 6 'alloca' 'pipe_V_data_V' <Predicate = true> <Delay = 0.00> <Core = "FIFO">   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 1.83> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 512> <Depth = 2> <FIFO>
+ST_1 : Operation 7 [1/1] (0.00ns)   --->   "%pipe_V_id_V = alloca i8, align 1" [src/modules.hpp:560]   --->   Operation 7 'alloca' 'pipe_V_id_V' <Predicate = true> <Delay = 0.00> <Core = "FIFO">   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 1.83> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 512> <Depth = 2> <FIFO>
+ST_1 : Operation 8 [1/1] (0.00ns)   --->   "%pipe_V_dest_V = alloca i8, align 1" [src/modules.hpp:560]   --->   Operation 8 'alloca' 'pipe_V_dest_V' <Predicate = true> <Delay = 0.00> <Core = "FIFO">   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 1.83> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 512> <Depth = 2> <FIFO>
+ST_1 : Operation 9 [1/1] (0.00ns)   --->   "%pipe_V_user_V = alloca i16, align 2" [src/modules.hpp:560]   --->   Operation 9 'alloca' 'pipe_V_user_V' <Predicate = true> <Delay = 0.00> <Core = "FIFO">   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 1.83> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 512> <Depth = 2> <FIFO>
+ST_1 : Operation 10 [1/1] (0.00ns)   --->   "%pipe_V_last_V = alloca i1, align 1" [src/modules.hpp:560]   --->   Operation 10 'alloca' 'pipe_V_last_V' <Predicate = true> <Delay = 0.00> <Core = "FIFO">   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 1.83> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 512> <Depth = 2> <FIFO>
+
+State 2 <SV = 1> <Delay = 0.00>
+ST_2 : Operation 11 [2/2] (0.00ns)   --->   "call fastcc void @MatMul(i512* %in_V_data_V, i8* %in_V_id_V, i8* %in_V_dest_V, i16* %in_V_user_V, i1* %in_V_last_V, i512* %pipe_V_data_V, i8* %pipe_V_id_V, i8* %pipe_V_dest_V, i16* %pipe_V_user_V, i1* %pipe_V_last_V)" [src/modules.hpp:562]   --->   Operation 11 'call' <Predicate = true> <Delay = 0.00> <CoreType = "Generic">   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+State 3 <SV = 2> <Delay = 0.00>
+ST_3 : Operation 12 [1/2] (0.00ns)   --->   "call fastcc void @MatMul(i512* %in_V_data_V, i8* %in_V_id_V, i8* %in_V_dest_V, i16* %in_V_user_V, i1* %in_V_last_V, i512* %pipe_V_data_V, i8* %pipe_V_id_V, i8* %pipe_V_dest_V, i16* %pipe_V_user_V, i1* %pipe_V_last_V)" [src/modules.hpp:562]   --->   Operation 12 'call' <Predicate = true> <Delay = 0.00> <CoreType = "Generic">   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+State 4 <SV = 3> <Delay = 0.00>
+ST_4 : Operation 13 [2/2] (0.00ns)   --->   "call fastcc void @AddBias(i512* %pipe_V_data_V, i8* %pipe_V_id_V, i8* %pipe_V_dest_V, i16* %pipe_V_user_V, i1* %pipe_V_last_V, i512* %out_V_data_V, i8* %out_V_id_V, i8* %out_V_dest_V, i16* %out_V_user_V, i1* %out_V_last_V)" [src/modules.hpp:563]   --->   Operation 13 'call' <Predicate = true> <Delay = 0.00> <CoreType = "Generic">   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+
+State 5 <SV = 4> <Delay = 0.00>
+ST_5 : Operation 14 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i1* %out_V_last_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str230, i32 0, i32 0, [1 x i8]* @p_str231, [1 x i8]* @p_str232, [1 x i8]* @p_str233, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str234, [1 x i8]* @p_str235)"   --->   Operation 14 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_5 : Operation 15 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i16* %out_V_user_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str223, i32 0, i32 0, [1 x i8]* @p_str224, [1 x i8]* @p_str225, [1 x i8]* @p_str226, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str227, [1 x i8]* @p_str228)"   --->   Operation 15 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_5 : Operation 16 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i8* %out_V_dest_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str216, i32 0, i32 0, [1 x i8]* @p_str217, [1 x i8]* @p_str218, [1 x i8]* @p_str219, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str220, [1 x i8]* @p_str221)"   --->   Operation 16 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_5 : Operation 17 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i8* %out_V_id_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str209, i32 0, i32 0, [1 x i8]* @p_str210, [1 x i8]* @p_str211, [1 x i8]* @p_str212, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str213, [1 x i8]* @p_str214)"   --->   Operation 17 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_5 : Operation 18 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i512* %out_V_data_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str202, i32 0, i32 0, [1 x i8]* @p_str203, [1 x i8]* @p_str204, [1 x i8]* @p_str205, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str206, [1 x i8]* @p_str207)"   --->   Operation 18 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_5 : Operation 19 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecDataflowPipeline(i32 -1, i32 0, [1 x i8]* @p_str1) nounwind" [src/modules.hpp:557]   --->   Operation 19 'specdataflowpipeline' <Predicate = true> <Delay = 0.00>
+ST_5 : Operation 20 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_0_0, [768 x i32]* @weights_0_0_1, [768 x i32]* @weights_0_0_2, [768 x i32]* @weights_0_0_3, [768 x i32]* @weights_0_0_4, [768 x i32]* @weights_0_0_5, [768 x i32]* @weights_0_0_6, [768 x i32]* @weights_0_0_7, [768 x i32]* @weights_0_0_8, [768 x i32]* @weights_0_0_9, [768 x i32]* @weights_0_0_10, [768 x i32]* @weights_0_0_11, [768 x i32]* @weights_0_0_12, [768 x i32]* @weights_0_0_13, [768 x i32]* @weights_0_0_14, [768 x i32]* @weights_0_0_15, [768 x i32]* @weights_0_0_16, [768 x i32]* @weights_0_0_17, [768 x i32]* @weights_0_0_18, [768 x i32]* @weights_0_0_19, [768 x i32]* @weights_0_0_20, [768 x i32]* @weights_0_0_21, [768 x i32]* @weights_0_0_22, [768 x i32]* @weights_0_0_23, [768 x i32]* @weights_0_0_24, [768 x i32]* @weights_0_0_25, [768 x i32]* @weights_0_0_26, [768 x i32]* @weights_0_0_27, [768 x i32]* @weights_0_0_28, [768 x i32]* @weights_0_0_29, [768 x i32]* @weights_0_0_30, [768 x i32]* @weights_0_0_31, [768 x i32]* @weights_0_1_0, [768 x i32]* @weights_0_1_1, [768 x i32]* @weights_0_1_2, [768 x i32]* @weights_0_1_3, [768 x i32]* @weights_0_1_4, [768 x i32]* @weights_0_1_5, [768 x i32]* @weights_0_1_6, [768 x i32]* @weights_0_1_7, [768 x i32]* @weights_0_1_8, [768 x i32]* @weights_0_1_9, [768 x i32]* @weights_0_1_10, [768 x i32]* @weights_0_1_11, [768 x i32]* @weights_0_1_12, [768 x i32]* @weights_0_1_13, [768 x i32]* @weights_0_1_14, [768 x i32]* @weights_0_1_15, [768 x i32]* @weights_0_1_16, [768 x i32]* @weights_0_1_17, [768 x i32]* @weights_0_1_18, [768 x i32]* @weights_0_1_19, [768 x i32]* @weights_0_1_20, [768 x i32]* @weights_0_1_21, [768 x i32]* @weights_0_1_22, [768 x i32]* @weights_0_1_23, [768 x i32]* @weights_0_1_24, [768 x i32]* @weights_0_1_25, [768 x i32]* @weights_0_1_26, [768 x i32]* @weights_0_1_27, [768 x i32]* @weights_0_1_28, [768 x i32]* @weights_0_1_29, [768 x i32]* @weights_0_1_30, [768 x i32]* @weights_0_1_31, [768 x i32]* @weights_0_2_0, [768 x i32]* @weights_0_2_1, [768 x i32]* @weights_0_2_2, [768 x i32]* @weights_0_2_3, [768 x i32]* @weights_0_2_4, [768 x i32]* @weights_0_2_5, [768 x i32]* @weights_0_2_6, [768 x i32]* @weights_0_2_7, [768 x i32]* @weights_0_2_8, [768 x i32]* @weights_0_2_9, [768 x i32]* @weights_0_2_10, [768 x i32]* @weights_0_2_11, [768 x i32]* @weights_0_2_12, [768 x i32]* @weights_0_2_13, [768 x i32]* @weights_0_2_14, [768 x i32]* @weights_0_2_15, [768 x i32]* @weights_0_2_16, [768 x i32]* @weights_0_2_17, [768 x i32]* @weights_0_2_18, [768 x i32]* @weights_0_2_19, [768 x i32]* @weights_0_2_20, [768 x i32]* @weights_0_2_21, [768 x i32]* @weights_0_2_22, [768 x i32]* @weights_0_2_23, [768 x i32]* @weights_0_2_24, [768 x i32]* @weights_0_2_25, [768 x i32]* @weights_0_2_26, [768 x i32]* @weights_0_2_27, [768 x i32]* @weights_0_2_28, [768 x i32]* @weights_0_2_29, [768 x i32]* @weights_0_2_30, [768 x i32]* @weights_0_2_31, [768 x i32]* @weights_0_3_0, [768 x i32]* @weights_0_3_1, [768 x i32]* @weights_0_3_2, [768 x i32]* @weights_0_3_3, [768 x i32]* @weights_0_3_4, [768 x i32]* @weights_0_3_5, [768 x i32]* @weights_0_3_6, [768 x i32]* @weights_0_3_7, [768 x i32]* @weights_0_3_8, [768 x i32]* @weights_0_3_9, [768 x i32]* @weights_0_3_10, [768 x i32]* @weights_0_3_11, [768 x i32]* @weights_0_3_12, [768 x i32]* @weights_0_3_13, [768 x i32]* @weights_0_3_14, [768 x i32]* @weights_0_3_15, [768 x i32]* @weights_0_3_16, [768 x i32]* @weights_0_3_17, [768 x i32]* @weights_0_3_18, [768 x i32]* @weights_0_3_19, [768 x i32]* @weights_0_3_20, [768 x i32]* @weights_0_3_21, [768 x i32]* @weights_0_3_22, [768 x i32]* @weights_0_3_23, [768 x i32]* @weights_0_3_24, [768 x i32]* @weights_0_3_25, [768 x i32]* @weights_0_3_26, [768 x i32]* @weights_0_3_27, [768 x i32]* @weights_0_3_28, [768 x i32]* @weights_0_3_29, [768 x i32]* @weights_0_3_30, [768 x i32]* @weights_0_3_31, [768 x i32]* @weights_0_4_0, [768 x i32]* @weights_0_4_1, [768 x i32]* @weights_0_4_2, [768 x i32]* @weights_0_4_3, [768 x i32]* @weights_0_4_4, [768 x i32]* @weights_0_4_5, [768 x i32]* @weights_0_4_6, [768 x i32]* @weights_0_4_7, [768 x i32]* @weights_0_4_8, [768 x i32]* @weights_0_4_9, [768 x i32]* @weights_0_4_10, [768 x i32]* @weights_0_4_11, [768 x i32]* @weights_0_4_12, [768 x i32]* @weights_0_4_13, [768 x i32]* @weights_0_4_14, [768 x i32]* @weights_0_4_15, [768 x i32]* @weights_0_4_16, [768 x i32]* @weights_0_4_17, [768 x i32]* @weights_0_4_18, [768 x i32]* @weights_0_4_19, [768 x i32]* @weights_0_4_20, [768 x i32]* @weights_0_4_21, [768 x i32]* @weights_0_4_22, [768 x i32]* @weights_0_4_23, [768 x i32]* @weights_0_4_24, [768 x i32]* @weights_0_4_25, [768 x i32]* @weights_0_4_26, [768 x i32]* @weights_0_4_27, [768 x i32]* @weights_0_4_28, [768 x i32]* @weights_0_4_29, [768 x i32]* @weights_0_4_30, [768 x i32]* @weights_0_4_31, [768 x i32]* @weights_0_5_0, [768 x i32]* @weights_0_5_1, [768 x i32]* @weights_0_5_2, [768 x i32]* @weights_0_5_3, [768 x i32]* @weights_0_5_4, [768 x i32]* @weights_0_5_5, [768 x i32]* @weights_0_5_6, [768 x i32]* @weights_0_5_7, [768 x i32]* @weights_0_5_8, [768 x i32]* @weights_0_5_9, [768 x i32]* @weights_0_5_10, [768 x i32]* @weights_0_5_11, [768 x i32]* @weights_0_5_12, [768 x i32]* @weights_0_5_13, [768 x i32]* @weights_0_5_14, [768 x i32]* @weights_0_5_15, [768 x i32]* @weights_0_5_16, [768 x i32]* @weights_0_5_17, [768 x i32]* @weights_0_5_18, [768 x i32]* @weights_0_5_19, [768 x i32]* @weights_0_5_20, [768 x i32]* @weights_0_5_21, [768 x i32]* @weights_0_5_22, [768 x i32]* @weights_0_5_23, [768 x i32]* @weights_0_5_24, [768 x i32]* @weights_0_5_25, [768 x i32]* @weights_0_5_26, [768 x i32]* @weights_0_5_27, [768 x i32]* @weights_0_5_28, [768 x i32]* @weights_0_5_29, [768 x i32]* @weights_0_5_30, [768 x i32]* @weights_0_5_31, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 20 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_5 : Operation 21 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i512* %in_V_data_V, i8* %in_V_id_V, i8* %in_V_dest_V, i16* %in_V_user_V, i1* %in_V_last_V, [5 x i8]* @p_str2, i32 1, i32 1, [5 x i8]* @p_str3, i32 0, i32 0, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, i32 0, i32 0, i32 0, i32 0, [1 x i8]* @p_str1, [1 x i8]* @p_str1) nounwind"   --->   Operation 21 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_5 : Operation 22 [1/1] (0.00ns)   --->   "%empty = call i32 (...)* @_ssdm_op_SpecChannel([14 x i8]* @pipe_OC_V_OC_data_OC, i32 1, [1 x i8]* @p_str684, [1 x i8]* @p_str684, i32 2, i32 2, i512* %pipe_V_data_V, i512* %pipe_V_data_V)"   --->   Operation 22 'specchannel' 'empty' <Predicate = true> <Delay = 0.00>
+ST_5 : Operation 23 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i512* %pipe_V_data_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str685, i32 0, i32 0, [1 x i8]* @p_str686, [1 x i8]* @p_str687, [1 x i8]* @p_str688, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str689, [1 x i8]* @p_str690)"   --->   Operation 23 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_5 : Operation 24 [1/1] (0.00ns)   --->   "%empty_312 = call i32 (...)* @_ssdm_op_SpecChannel([12 x i8]* @pipe_OC_V_OC_id_OC_V, i32 1, [1 x i8]* @p_str691, [1 x i8]* @p_str691, i32 2, i32 2, i8* %pipe_V_id_V, i8* %pipe_V_id_V)"   --->   Operation 24 'specchannel' 'empty_312' <Predicate = true> <Delay = 0.00>
+ST_5 : Operation 25 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i8* %pipe_V_id_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str692, i32 0, i32 0, [1 x i8]* @p_str693, [1 x i8]* @p_str694, [1 x i8]* @p_str695, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str696, [1 x i8]* @p_str697)"   --->   Operation 25 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_5 : Operation 26 [1/1] (0.00ns)   --->   "%empty_313 = call i32 (...)* @_ssdm_op_SpecChannel([14 x i8]* @pipe_OC_V_OC_dest_OC, i32 1, [1 x i8]* @p_str698, [1 x i8]* @p_str698, i32 2, i32 2, i8* %pipe_V_dest_V, i8* %pipe_V_dest_V)"   --->   Operation 26 'specchannel' 'empty_313' <Predicate = true> <Delay = 0.00>
+ST_5 : Operation 27 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i8* %pipe_V_dest_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str699, i32 0, i32 0, [1 x i8]* @p_str700, [1 x i8]* @p_str701, [1 x i8]* @p_str702, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str703, [1 x i8]* @p_str704)"   --->   Operation 27 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_5 : Operation 28 [1/1] (0.00ns)   --->   "%empty_314 = call i32 (...)* @_ssdm_op_SpecChannel([14 x i8]* @pipe_OC_V_OC_user_OC, i32 1, [1 x i8]* @p_str705, [1 x i8]* @p_str705, i32 2, i32 2, i16* %pipe_V_user_V, i16* %pipe_V_user_V)"   --->   Operation 28 'specchannel' 'empty_314' <Predicate = true> <Delay = 0.00>
+ST_5 : Operation 29 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i16* %pipe_V_user_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str706, i32 0, i32 0, [1 x i8]* @p_str707, [1 x i8]* @p_str708, [1 x i8]* @p_str709, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str710, [1 x i8]* @p_str711)"   --->   Operation 29 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_5 : Operation 30 [1/1] (0.00ns)   --->   "%empty_315 = call i32 (...)* @_ssdm_op_SpecChannel([14 x i8]* @pipe_OC_V_OC_last_OC, i32 1, [1 x i8]* @p_str712, [1 x i8]* @p_str712, i32 2, i32 2, i1* %pipe_V_last_V, i1* %pipe_V_last_V)"   --->   Operation 30 'specchannel' 'empty_315' <Predicate = true> <Delay = 0.00>
+ST_5 : Operation 31 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i1* %pipe_V_last_V, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str713, i32 0, i32 0, [1 x i8]* @p_str714, [1 x i8]* @p_str715, [1 x i8]* @p_str716, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str717, [1 x i8]* @p_str718)"   --->   Operation 31 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_5 : Operation 32 [1/2] (0.00ns)   --->   "call fastcc void @AddBias(i512* %pipe_V_data_V, i8* %pipe_V_id_V, i8* %pipe_V_dest_V, i16* %pipe_V_user_V, i1* %pipe_V_last_V, i512* %out_V_data_V, i8* %out_V_id_V, i8* %out_V_dest_V, i16* %out_V_user_V, i1* %out_V_last_V)" [src/modules.hpp:563]   --->   Operation 32 'call' <Predicate = true> <Delay = 0.00> <CoreType = "Generic">   --->   Core 0 '' <Latency = 0> <II = 1> <Delay = 1.00> <Generic> <Opcode : >
+ST_5 : Operation 33 [1/1] (0.00ns)   --->   "ret void" [src/modules.hpp:564]   --->   Operation 33 'ret' <Predicate = true> <Delay = 0.00>
+
+
+============================================================
++ Verbose Summary: Timing violations
+============================================================
+Target clock period: 5ns, clock uncertainty: 0.625ns.
+
+ <State 1>: 0ns
+The critical path consists of the following:
+
+ <State 2>: 0ns
+The critical path consists of the following:
+
+ <State 3>: 0ns
+The critical path consists of the following:
+
+ <State 4>: 0ns
+The critical path consists of the following:
+
+ <State 5>: 0ns
+The critical path consists of the following:
+
+
+============================================================
++ Verbose Summary: Binding
+============================================================
+N/A
+* FSMD analyzer results:
+  - Output states:
+ - Input state : 
+  - Chain level:
+	State 1
+	State 2
+	State 3
+	State 4
+	State 5
+
+
+============================================================
++ Verbose Summary: Datapath Resource usage 
+============================================================
+N/A
