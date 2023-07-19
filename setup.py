@@ -72,7 +72,7 @@ viv_ver_q = {
           'type': 'list',
           'name': 'vivado_ver',
           'message': 'What is the vivado version you want to use?',
-          'choices': ['2018.1', '2018.2', '2018.3', '2019.1'],
+          'choices': ['2018.1', '2018.2', '2018.3', '2019.1','2023.1'],
           'filter': lambda val: val.lower()
           }
 
@@ -80,7 +80,7 @@ hls_ver_q = {
           'type': 'list',
           'name': 'hls_ver',
           'message': 'What is the vivado_hls version you want to use?',
-          'choices': ['2018.1', '2018.2', '2018.3', '2019.1'],
+          'choices': ['2018.1', '2018.2', '2018.3', '2019.1','2023.1'],
           'filter': lambda val: val.lower()
           }
 

@@ -16,12 +16,12 @@ synth = 0
 pr_tcl = ./hlsTest/dma_example/tclScripts/pr_bd.tcl
 
 dma_example:
-	vivado_hls ./hlsTest/dma_example/generate_hls.tcl
+	vitis_hls ./hlsTest/dma_example/generate_hls.tcl
 	vivado -mode gui -source ./tclScripts/make_shell.tcl -tclargs --project_name dma_example --pr_tcl ${pr_tcl} --start_synth ${synth}
 
 hlsExample:
 	mkdir -p hlsBuild
-	vivado_hls ./hlsTest/generate_hls.tcl 
+	vitis_hls ./hlsTest/generate_hls.tcl 
 	./hlsTest/generate.sh dma_example
 
 example: hlsExample

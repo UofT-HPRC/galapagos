@@ -184,6 +184,34 @@ namespace eval 2019.1 {
   "
 }
 
+namespace eval 2023.1 {
+  set ip_list "\ 
+    xilinx.com:ip:axi_bram_ctrl:4.1\
+    xilinx.com:ip:axi_gpio:2.0\
+    xilinx.com:ip:blk_mem_gen:8.4\
+    xilinx.com:ip:clk_wiz:6.0\
+    xilinx.com:ip:xlconstant:1.1\
+    xilinx.com:ip:system_ila:1.1\
+    xilinx.com:ip:util_vector_logic:2.0\
+    xilinx.com:ip:vio:3.0\
+    xilinx.com:ip:util_ds_buf:2.1\
+    xilinx.com:ip:xdma:4.1\
+    xilinx.com:ip:mdm:3.2\
+    xilinx.com:ip:ethernet_1_10_25g:2.3\
+    xilinx.com:ip:cmac_usplus:2.6\
+    xilinx.com:ip:proc_sys_reset:5.0\
+    xilinx.com:ip:ddr4:2.2\
+    xilinx.com:ip:axis_register_slice:1.1\
+    xilinx.com:ip:lmb_bram_if_cntlr:4.0\
+    xilinx.com:ip:lmb_v10:3.0\
+    xilinx.com:ip:fifo_generator:13.2\
+    xilinx.com:ip:zynq_ultra_ps_e:3.3\
+    xilinx.com:ip:xxv_ethernet:3.0\
+    xilinx.com:ip:debug_bridge:3.0\
+    clarkshen.com:user:lbus_axis_converter:1.0
+  "
+}
+
 # defines get_design_name
 if { [info exists ::env(GALAPAGOS_PATH)] } {
     source ${::env(GALAPAGOS_PATH)}/shells/tclScripts/utilities.tcl
@@ -210,6 +238,8 @@ if { [string first 2017.2 $current_vivado_version] != -1 } {
   set version 2018.3
 } elseif { [string first 2019.1 $current_vivado_version] != -1 } {
   set version 2019.1
+} elseif { [string first 2023.1 $current_vivado_version] != -1 } {
+  set version 2023.1
 } else {
   puts ""
   catch {common::send_msg_id "BD_TCL-109" "ERROR" "Unsupported Vivado version:\
@@ -296,7 +326,7 @@ proc create_hier_cell_eth_100g { parentCell nameHier } {
    CONFIG.LANE7_GT_LOC {NA} \
    CONFIG.LANE8_GT_LOC {NA} \
    CONFIG.LANE9_GT_LOC {NA} \
-   CONFIG.NUM_LANES {4} \
+   CONFIG.NUM_LANES {4x25} \
    CONFIG.RX_CHECK_PREAMBLE {1} \
    CONFIG.RX_CHECK_SFD {1} \
    CONFIG.RX_FLOW_CONTROL {0} \

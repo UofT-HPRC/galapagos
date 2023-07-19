@@ -25,8 +25,8 @@ connect_bd_net [get_bd_ports CLK_300] [get_bd_pins network/axis_endianness_conv_
 connect_bd_net [get_bd_ports CLK_300] [get_bd_pins network/axis_endianness_conv_1/clk]
 
 
-connect_bd_net [get_bd_pins network/network_bridge_udp_1_0/remote_ip_tx_V] [get_bd_pins network/GULF_Stream_0/remote_ip_tx]
-#connect_bd_net [get_bd_pins network/network_bridge_udp_1_0/arp_status_V] [get_bd_pins network/GULF_Stream_0/arp_status]
+connect_bd_net [get_bd_pins network/network_bridge_udp_1_0/remote_ip_tx] [get_bd_pins network/GULF_Stream_0/remote_ip_tx]
+#connect_bd_net [get_bd_pins network/network_bridge_udp_1_0/arp_status] [get_bd_pins network/GULF_Stream_0/arp_status]
 connect_bd_net [get_bd_ports CLK_300] [get_bd_pins network/GULF_Stream_0/clk]
 connect_bd_net [get_bd_ports CLK_300] [get_bd_pins network/network_bridge_udp_1_0/ap_clk]
 
@@ -63,8 +63,8 @@ set_property -dict [list CONFIG.Memory_Type {Single_Port_ROM} CONFIG.Enable_32bi
 
                    
 
-connect_bd_intf_net [get_bd_intf_pins network/blk_mem_bridge_rom/BRAM_PORTA] [get_bd_intf_pins network/network_bridge_udp_1_0/ip_table_V_PORTA]
-#connect_bd_intf_net [get_bd_intf_pins network/blk_mem_bridge_rom/BRAM_PORTB] [get_bd_intf_pins network/network_bridge_udp_1_0/ip_table_V_PORTB]
+connect_bd_intf_net [get_bd_intf_pins network/blk_mem_bridge_rom/BRAM_PORTA] [get_bd_intf_pins network/network_bridge_udp_1_0/ip_table_PORTA]
+#connect_bd_intf_net [get_bd_intf_pins network/blk_mem_bridge_rom/BRAM_PORTB] [get_bd_intf_pins network/network_bridge_udp_1_0/ip_table_PORTB]
 
 connect_bd_intf_net [get_bd_intf_ports S_AXIS] [get_bd_intf_pins network/GULF_Stream_0/s_axis]
 connect_bd_intf_net [get_bd_intf_ports M_AXIS] [get_bd_intf_pins network/GULF_Stream_0/m_axis]
