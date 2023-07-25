@@ -13,7 +13,7 @@ set_part ${part_name}
 #csynth path
 add_files $src_path_root/kernel.cpp -cflags "-I $galapagos_path/middleware/include -I $galapagos_path/middleware/CPP_lib/Galapagos_lib"
 create_clock -period 250MHz -name default
-config_interface -expose_global
+#config_interface -expose_global
 csynth_design
 export_design -format ip_catalog
 close_project

@@ -64,7 +64,7 @@ viv_path_q = {
 hls_path_q = {
           'type': 'input',
           'name': 'hls_dir',
-          'message': 'What is the directory vivado_hls is located? (default=/mnt/shares/tools/Xilinx/Vivado)',
+          'message': 'What is the directory vivado_hls is located? (default=/mnt/shares/tools/Xilinx/Vivado for 2018.1)',
           'validate': directoryValidator
           }
 
@@ -145,18 +145,20 @@ answers = prompt(questions, style=style)
 if answers['galapagos_dir'] == '':
     answers['galapagos_dir']=os.getcwd()
 
-if answers['vivado_dir'] == '':
-    answers['vivado_dir'] = '/mnt/shares/tools/Xilinx/Vivado'
-
-if answers['hls_dir'] == '':
-    answers['hls_dir'] = '/mnt/shares/tools/Xilinx/Vivado'
-
-
 if answers['vivado_ver'] == '':
     answers['vivado_ver'] = '2018.1'
 
 if answers['hls_ver'] == '':
     answers['hls_ver'] = '2018.1'
+
+if answers['vivado_dir'] == '':
+    answers['vivado_dir'] = '/mnt/shares/tools/Xilinx/Vivado'
+
+if answers['hls_dir'] == '':
+    if answers['hls_ver'] == '2023.1':
+        answers['hls_dir'] = '/mnt/shares/tools/Xilinx/Vitis'
+    else:
+        answers['hls_dir'] = '/mnt/shares/tools/Xilinx/Vivado'
 
 if answers['par_name'] == '':
     answers['par_name'] = 'xczu19eg-ffvc1760-2-i'
@@ -178,8 +180,5 @@ env_var = {'GALAPAGOS_PATH': answers['galapagos_dir'],
 pprint(env_var)
 
 out_file = open("my_init.sh", "w") 
-
 out_file.write("source init.sh " + answers['galapagos_dir'] + ' ' + answers['vivado_dir'] + ' ' + answers['hls_dir'] + ' ' + answers['vivado_ver'] + ' ' + answers['hls_ver'] + ' ' + answers['par_name'] + ' ' + answers['boa_name'] )
-
-
-
+out_file.close()
