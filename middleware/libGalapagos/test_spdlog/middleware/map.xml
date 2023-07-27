@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cluster>
+    <node>
+        <type> sw </type>
+        <kernel> 6 </kernel>
+        <mac>  0c:c4:7a:88:c0:47 </mac>
+        <ip> 10.1.7.102 </ip>
+    </node>
+    <node>
+        <board> sidewinder </board>
+        <comm> udp </comm>
+        <type> hw </type>
+        <kernel> 0 </kernel>
+        <kernel> 1 </kernel>
+        <kernel> 2 </kernel>
+        <kernel> 3 </kernel>
+        <kernel> 4 </kernel>
+        <kernel> 5 </kernel>
+        <mac>  fa:16:3e:55:ca:02 </mac>
+        <ip> 10.1.7.213 </ip>
+    </node>
+</cluster>

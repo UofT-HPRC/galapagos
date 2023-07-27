@@ -5,8 +5,13 @@
 TEST_CASE( "ROUTER:KERNEL:PERF:1" ) {
 
     
+    #if LOG_LEVEL > 0
     galapagos::kernel<ap_uint<64> > kern0(0, my_logger);
     galapagos::kernel<ap_uint<64> > kern1(0, my_logger);
+    #else
+    galapagos::kernel<ap_uint<64> > kern0(0);
+    galapagos::kernel<ap_uint<64> > kern1(0);
+    #endif
    
     kern0.set_func(kern_generate_flit); 
     kern1.set_func(kern_output_flit_perf); 
@@ -24,15 +29,29 @@ TEST_CASE( "ROUTER:KERNEL:PERF:1" ) {
     kern_info_table.push_back(std::string("10.1.2.155")); //kern 0 node address is 10.1.2.155
     kern_info_table.push_back(std::string("10.1.2.155")); //kern 1 node address is 10.1.2.155
     
+    #if LOG_LEVEL > 0
     galapagos::done_clean dc(&done, &mutex_done, my_logger);
+    #else
+    galapagos::done_clean dc(&done, &mutex_done);
+    #endif
 
+    #if LOG_LEVEL > 0
     galapagos::local_router <ap_uint<64> > router(kern_info_table, 
-                				 std::string("10.1.2.155"), 
-                				 &dc, 
+                				 std::string("10.1.2.155"),
+                                 &dc,
                 				 &mutex_packets_in_flight,
                 				 &packets_in_flight,
                 				 my_logger
                 				);
+    #else
+    galapagos::local_router <ap_uint<64> > router(
+        kern_info_table, 
+        std::string("10.1.2.155"),
+        &dc,
+        &mutex_packets_in_flight,
+        &packets_in_flight
+    );
+    #endif
 
  
     router.add_interface_pair(kern0.get_s_axis(), kern0.get_m_axis()); //!< adds a pair of axis interfaces to the router
@@ -53,7 +72,7 @@ TEST_CASE( "ROUTER:KERNEL:PERF:1" ) {
     std::chrono::duration<double> diff = end-start;
     std::cout << std::endl << " ......................." << Catch::getResultCapture().getCurrentTestName() << "......................." << std::endl;
     std::cout << "RUNTIME:"  <<  diff.count() << " s" << std::endl;
-    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1024*1024)) << " MB/s" << std::endl;
+    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1000*1000/8)) << " Mb/s" << std::endl;
 
 }
 
@@ -62,8 +81,13 @@ TEST_CASE( "ROUTER:KERNEL:PERF:1" ) {
 TEST_CASE( "ROUTER:KERNEL:PERF:2" ) {
 
     
+    #if LOG_LEVEL > 0
     galapagos::kernel<ap_uint<64> > kern0(0, my_logger);
     galapagos::kernel<ap_uint<64> > kern1(0, my_logger);
+    #else
+    galapagos::kernel<ap_uint<64> > kern0(0);
+    galapagos::kernel<ap_uint<64> > kern1(0);
+    #endif
    
     kern0.set_func(kern_generate_packet); 
     kern1.set_func(kern_output_flit_perf); 
@@ -81,15 +105,29 @@ TEST_CASE( "ROUTER:KERNEL:PERF:2" ) {
     kern_info_table.push_back(std::string("10.1.2.155")); //kern 0 node address is 10.1.2.155
     kern_info_table.push_back(std::string("10.1.2.155")); //kern 1 node address is 10.1.2.155
     
+    #if LOG_LEVEL > 0
     galapagos::done_clean dc(&done, &mutex_done, my_logger);
+    #else
+    galapagos::done_clean dc(&done, &mutex_done);
+    #endif
 
+    #if LOG_LEVEL > 0
     galapagos::local_router <ap_uint<64> > router(kern_info_table, 
-                				 std::string("10.1.2.155"), 
-                				 &dc, 
+                				 std::string("10.1.2.155"),
+                                 &dc,
                 				 &mutex_packets_in_flight,
                 				 &packets_in_flight,
                 				 my_logger
                 				);
+    #else
+    galapagos::local_router <ap_uint<64> > router(
+        kern_info_table, 
+        std::string("10.1.2.155"),
+        &dc,
+        &mutex_packets_in_flight,
+        &packets_in_flight
+    );
+    #endif
 
  
     router.add_interface_pair(kern0.get_s_axis(), kern0.get_m_axis()); //!< adds a pair of axis interfaces to the router
@@ -110,7 +148,7 @@ TEST_CASE( "ROUTER:KERNEL:PERF:2" ) {
     std::chrono::duration<double> diff = end-start;
     std::cout << std::endl << " ......................." << Catch::getResultCapture().getCurrentTestName() << "......................." << std::endl;
     std::cout << "RUNTIME:"  <<  diff.count() << " s" << std::endl;
-    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1024*1024)) << " MB/s" << std::endl;
+    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1000*1000/8)) << " Mb/s" << std::endl;
 
 }
 
@@ -118,8 +156,13 @@ TEST_CASE( "ROUTER:KERNEL:PERF:2" ) {
 TEST_CASE( "ROUTER:KERNEL:PERF:3" ) {
 
     
+    #if LOG_LEVEL > 0
     galapagos::kernel<ap_uint<64> > kern0(0, my_logger);
     galapagos::kernel<ap_uint<64> > kern1(0, my_logger);
+    #else
+    galapagos::kernel<ap_uint<64> > kern0(0);
+    galapagos::kernel<ap_uint<64> > kern1(0);
+    #endif
    
     kern0.set_func(kern_generate_flit); 
     kern1.set_func(kern_output_packet_perf); 
@@ -137,15 +180,29 @@ TEST_CASE( "ROUTER:KERNEL:PERF:3" ) {
     kern_info_table.push_back(std::string("10.1.2.155")); //kern 0 node address is 10.1.2.155
     kern_info_table.push_back(std::string("10.1.2.155")); //kern 1 node address is 10.1.2.155
     
+    #if LOG_LEVEL > 0
     galapagos::done_clean dc(&done, &mutex_done, my_logger);
+    #else
+    galapagos::done_clean dc(&done, &mutex_done);
+    #endif
 
+    #if LOG_LEVEL > 0
     galapagos::local_router <ap_uint<64> > router(kern_info_table, 
-                				 std::string("10.1.2.155"), 
-                				 &dc, 
+                				 std::string("10.1.2.155"),
+                                 &dc,
                 				 &mutex_packets_in_flight,
                 				 &packets_in_flight,
                 				 my_logger
                 				);
+    #else
+    galapagos::local_router <ap_uint<64> > router(
+        kern_info_table, 
+        std::string("10.1.2.155"),
+        &dc,
+        &mutex_packets_in_flight,
+        &packets_in_flight
+    );
+    #endif
 
  
     router.add_interface_pair(kern0.get_s_axis(), kern0.get_m_axis()); //!< adds a pair of axis interfaces to the router
@@ -166,7 +223,7 @@ TEST_CASE( "ROUTER:KERNEL:PERF:3" ) {
     std::chrono::duration<double> diff = end-start;
     std::cout << std::endl << " ......................." << Catch::getResultCapture().getCurrentTestName() << "......................." << std::endl;
     std::cout << "RUNTIME:"  <<  diff.count() << " s" << std::endl;
-    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1024*1024)) << " MB/s" << std::endl;
+    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1000*1000/8)) << " Mb/s" << std::endl;
 
 }
 
@@ -175,8 +232,13 @@ TEST_CASE( "ROUTER:KERNEL:PERF:3" ) {
 TEST_CASE( "ROUTER:KERNEL:PERF:4" ) {
 
     
+    #if LOG_LEVEL > 0
     galapagos::kernel<ap_uint<64> > kern0(0, my_logger);
     galapagos::kernel<ap_uint<64> > kern1(0, my_logger);
+    #else
+    galapagos::kernel<ap_uint<64> > kern0(0);
+    galapagos::kernel<ap_uint<64> > kern1(0);
+    #endif
    
     kern0.set_func(kern_generate_packet); 
     kern1.set_func(kern_output_packet_perf); 
@@ -194,15 +256,29 @@ TEST_CASE( "ROUTER:KERNEL:PERF:4" ) {
     kern_info_table.push_back(std::string("10.1.2.155")); //kern 0 node address is 10.1.2.155
     kern_info_table.push_back(std::string("10.1.2.155")); //kern 1 node address is 10.1.2.155
     
+    #if LOG_LEVEL > 0
     galapagos::done_clean dc(&done, &mutex_done, my_logger);
+    #else
+    galapagos::done_clean dc(&done, &mutex_done);
+    #endif
 
+    #if LOG_LEVEL > 0
     galapagos::local_router <ap_uint<64> > router(kern_info_table, 
-                				 std::string("10.1.2.155"), 
-                				 &dc, 
+                				 std::string("10.1.2.155"),
+                                 &dc,
                 				 &mutex_packets_in_flight,
                 				 &packets_in_flight,
                 				 my_logger
                 				);
+    #else
+    galapagos::local_router <ap_uint<64> > router(
+        kern_info_table, 
+        std::string("10.1.2.155"),
+        &dc,
+        &mutex_packets_in_flight,
+        &packets_in_flight
+    );
+    #endif
 
  
     router.add_interface_pair(kern0.get_s_axis(), kern0.get_m_axis()); //!< adds a pair of axis interfaces to the router
@@ -223,7 +299,7 @@ TEST_CASE( "ROUTER:KERNEL:PERF:4" ) {
     std::chrono::duration<double> diff = end-start;
     std::cout << std::endl << " ......................." << Catch::getResultCapture().getCurrentTestName() << "......................." << std::endl;
     std::cout << "RUNTIME:"  <<  diff.count() << " s" << std::endl;
-    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1024*1024)) << " MB/s" << std::endl;
+    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1000*1000/8)) << " Mb/s" << std::endl;
 
 }
 

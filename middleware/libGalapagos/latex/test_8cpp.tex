@@ -1,0 +1,395 @@
+\hypertarget{test_8cpp}{}\section{test.\+cpp File Reference}
+\label{test_8cpp}\index{test.\+cpp@{test.\+cpp}}
+{\ttfamily \#include \char`\"{}catch.\+hpp\char`\"{}}\\*
+{\ttfamily \#include $<$string$>$}\\*
+{\ttfamily \#include $<$math.\+h$>$}\\*
+{\ttfamily \#include $<$thread$>$}\\*
+{\ttfamily \#include $<$chrono$>$}\\*
+{\ttfamily \#include \char`\"{}galapagos\+\_\+interface.\+hpp\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}galapagos\+\_\+kernel.\+hpp\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}galapagos\+\_\+local\+\_\+router.\+hpp\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}galapagos\+\_\+external\+\_\+driver.\+hpp\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}galapagos\+\_\+net\+\_\+tcp.\+hpp\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}galapagos\+\_\+node.\+hpp\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}unit\+\_\+tests/kernel.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}unit\+\_\+tests/interface\+\_\+func.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}unit\+\_\+tests/interface\+\_\+perf.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}unit\+\_\+tests/interface\+\_\+splice\+\_\+func.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}unit\+\_\+tests/interface\+\_\+splice\+\_\+perf.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}unit\+\_\+tests/interface\+\_\+trace.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}unit\+\_\+tests/kernel\+\_\+func.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}unit\+\_\+tests/kernel\+\_\+perf.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}unit\+\_\+tests/router\+\_\+kernel\+\_\+func.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}unit\+\_\+tests/router\+\_\+kernel\+\_\+perf.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}unit\+\_\+tests/node\+\_\+func.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}unit\+\_\+tests/node\+\_\+perf.\+h\char`\"{}}\\*
+Include dependency graph for test.\+cpp\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{test_8cpp__incl}
+\end{center}
+\end{figure}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{test_8cpp_a34b4c3eca7342fbc4cba090d02139902}{C\+A\+T\+C\+H\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+R\+U\+N\+N\+ER}
+\item 
+\#define \hyperlink{test_8cpp_ab3be0641eb76161a48ed528e6eea2ac3}{N\+U\+M\+\_\+\+I\+T\+E\+R\+A\+T\+I\+O\+NS}~100000
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef ap\+\_\+uint$<$ 64 $>$ \hyperlink{test_8cpp_a0658ceffa730c765d449bb3d21871b5f}{T}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+std\+::string \hyperlink{test_8cpp_ad6c70ba8571527f1543822ce71b9a109}{my\+\_\+address} (\char`\"{}10.\+0.\+0.\+1\char`\"{})
+\item 
+std\+::string \hyperlink{test_8cpp_a26080a439da4e3dd098bb6146f946bce}{remote\+\_\+address} (\char`\"{}10.\+0.\+0.\+2\char`\"{})
+\item 
+void \hyperlink{test_8cpp_a952c103146dc9b79782931ba3fa131f1}{generate\+\_\+flit} (int iterations, int size, int id, int dest, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$out)
+\item 
+void \hyperlink{test_8cpp_a54f037e7a8d79a8557a33713c97c3ed8}{generate\+\_\+packet} (int iterations, int size, int id, int dest, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$out)
+\item 
+void \hyperlink{test_8cpp_a79daffd29405a76f0c0676b577e2843d}{generate\+\_\+packet} (char $\ast$mem, int iterations, int size, int id, int dest, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$out)
+\item 
+void \hyperlink{test_8cpp_a83fe9f71488e293cfe12208b9a4b082a}{generate\+\_\+packet} (std\+::vector$<$ ap\+\_\+uint$<$ 64 $>$ $>$ $\ast$vec, int iterations, int size, int id, int dest, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$out)
+\item 
+void \hyperlink{test_8cpp_ab58f1ce436d790a26a5c52969cb832aa}{receive\+\_\+flit\+\_\+perf} (int iterations, int size, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$in)
+\item 
+void \hyperlink{test_8cpp_affc065c5706e3d2766ff79d86064eba6}{receive\+\_\+packet\+\_\+perf} (int iterations, int size, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$in)
+\item 
+void \hyperlink{test_8cpp_a9333d960ef4e8263bada8171199335c9}{kern\+\_\+generate\+\_\+flit} (short id, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$in, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$out)
+\item 
+void \hyperlink{test_8cpp_a91143d0f19f313fe8660e05907e37536}{kern\+\_\+generate\+\_\+packet} (short id, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$in, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$out)
+\item 
+void \hyperlink{test_8cpp_a80c90cf9b607ea4fc6e2512983b491ea}{kern\+\_\+output\+\_\+flit\+\_\+verify} (short id, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$in, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$out)
+\item 
+void \hyperlink{test_8cpp_a1a08eeff3ffa31aa5194be1e6a89c0ab}{kern\+\_\+output\+\_\+packet\+\_\+verify} (short id, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$in, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$out)
+\item 
+void \hyperlink{test_8cpp_a4aba7a81f4edf73f72b47c1764d2366d}{kern\+\_\+output\+\_\+flit\+\_\+perf} (short id, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$in, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$out)
+\item 
+void \hyperlink{test_8cpp_aadf5d569e1e0feb11bb6b6b4d04336c0}{kern\+\_\+output\+\_\+packet\+\_\+perf} (short id, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$in, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$out)
+\item 
+void \hyperlink{test_8cpp_a11e7c13bf1c721efd6473e2d16b0b264}{axis\+\_\+fifo} (\hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$s\+\_\+axis, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$m\+\_\+axis, int count)
+\item 
+void \hyperlink{test_8cpp_a3a6c4d524ee19ccec113ae38b192d84d}{send\+\_\+single\+\_\+flit} (short id, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$in, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$out)
+\item 
+void \hyperlink{test_8cpp_ac861395ca6cdcc55f4d3958f4747a5e6}{send\+\_\+single\+\_\+packet} (short id, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$in, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$out)
+\item 
+void \hyperlink{test_8cpp_a6104170a04da9a4d3a02507f626a87db}{recv\+\_\+single\+\_\+flit} (short id, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$in, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$out)
+\item 
+void \hyperlink{test_8cpp_a881e8d624ad60d92bd851d0edd13115c}{recv\+\_\+single\+\_\+packet} (short id, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$in, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$out)
+\item 
+void \hyperlink{test_8cpp_a8ca88d3e17110eb3b7d601ccd1ad1b83}{kern\+\_\+flit\+\_\+loopback\+\_\+perf} (short id, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$in, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$out)
+\item 
+void \hyperlink{test_8cpp_a19d34c353699396428b4f5b55e39d803}{kern\+\_\+flit\+\_\+loopback\+\_\+verify} (short id, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$in, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$out)
+\item 
+void \hyperlink{test_8cpp_a7eac1551dbf19f63635523f230364dd2}{kern\+\_\+packet\+\_\+loopback\+\_\+perf} (short id, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$in, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$out)
+\item 
+void \hyperlink{test_8cpp_a06f045135a0ee0b574120cab307693c8}{kern\+\_\+packet\+\_\+loopback\+\_\+verify} (short id, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$in, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$out)
+\item 
+void \hyperlink{test_8cpp_af5cc631d8fae454651ecb0c5fbf23047}{kern\+\_\+generate\+\_\+output\+\_\+flit\+\_\+verify} (short id, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$in, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$out)
+\item 
+void \hyperlink{test_8cpp_a2199bc9b3b277f26da99d4c55124be01}{kern\+\_\+generate\+\_\+output\+\_\+packet\+\_\+verify} (short id, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$in, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$out)
+\item 
+void \hyperlink{test_8cpp_a2218d858bef70dd73ec06bd5e6963406}{kern\+\_\+generate\+\_\+output\+\_\+flit\+\_\+perf} (short id, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$in, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$out)
+\item 
+void \hyperlink{test_8cpp_addbaf4f92b1d1dd46e7df9875ac997d2}{kern\+\_\+generate\+\_\+output\+\_\+packet\+\_\+perf} (short id, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$in, \hyperlink{galapagos__interface_8hpp_af5070d0f7a016a7cd5677cdf2e30ac63}{galapagos\+\_\+interface} $\ast$out)
+\item 
+int \hyperlink{test_8cpp_a0ddf1224851353fc92bfbff6f499fa97}{main} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]})
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+std\+::chrono\+::time\+\_\+point$<$ std\+::chrono\+::high\+\_\+resolution\+\_\+clock $>$ \hyperlink{test_8cpp_a46dea58f2d527f376090214bd5c3233d}{start}
+\item 
+std\+::chrono\+::time\+\_\+point$<$ std\+::chrono\+::high\+\_\+resolution\+\_\+clock $>$ \hyperlink{test_8cpp_ace54cb99b52f35f3a98f99e2a75dd5ad}{end}
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\index{test.\+cpp@{test.\+cpp}!C\+A\+T\+C\+H\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+R\+U\+N\+N\+ER@{C\+A\+T\+C\+H\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+R\+U\+N\+N\+ER}}
+\index{C\+A\+T\+C\+H\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+R\+U\+N\+N\+ER@{C\+A\+T\+C\+H\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+R\+U\+N\+N\+ER}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{C\+A\+T\+C\+H\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+R\+U\+N\+N\+ER}{CATCH_CONFIG_RUNNER}}]{\setlength{\rightskip}{0pt plus 5cm}\#define C\+A\+T\+C\+H\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+R\+U\+N\+N\+ER}\hypertarget{test_8cpp_a34b4c3eca7342fbc4cba090d02139902}{}\label{test_8cpp_a34b4c3eca7342fbc4cba090d02139902}
+\index{test.\+cpp@{test.\+cpp}!N\+U\+M\+\_\+\+I\+T\+E\+R\+A\+T\+I\+O\+NS@{N\+U\+M\+\_\+\+I\+T\+E\+R\+A\+T\+I\+O\+NS}}
+\index{N\+U\+M\+\_\+\+I\+T\+E\+R\+A\+T\+I\+O\+NS@{N\+U\+M\+\_\+\+I\+T\+E\+R\+A\+T\+I\+O\+NS}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{N\+U\+M\+\_\+\+I\+T\+E\+R\+A\+T\+I\+O\+NS}{NUM_ITERATIONS}}]{\setlength{\rightskip}{0pt plus 5cm}\#define N\+U\+M\+\_\+\+I\+T\+E\+R\+A\+T\+I\+O\+NS~100000}\hypertarget{test_8cpp_ab3be0641eb76161a48ed528e6eea2ac3}{}\label{test_8cpp_ab3be0641eb76161a48ed528e6eea2ac3}
+
+
+\subsection{Typedef Documentation}
+\index{test.\+cpp@{test.\+cpp}!T@{T}}
+\index{T@{T}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{T}{T}}]{\setlength{\rightskip}{0pt plus 5cm}typedef ap\+\_\+uint$<$64$>$ {\bf T}}\hypertarget{test_8cpp_a0658ceffa730c765d449bb3d21871b5f}{}\label{test_8cpp_a0658ceffa730c765d449bb3d21871b5f}
+
+
+\subsection{Function Documentation}
+\index{test.\+cpp@{test.\+cpp}!axis\+\_\+fifo@{axis\+\_\+fifo}}
+\index{axis\+\_\+fifo@{axis\+\_\+fifo}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{axis\+\_\+fifo(galapagos\+\_\+interface $\ast$s\+\_\+axis, galapagos\+\_\+interface $\ast$m\+\_\+axis, int count)}{axis_fifo(galapagos_interface *s_axis, galapagos_interface *m_axis, int count)}}]{\setlength{\rightskip}{0pt plus 5cm}void axis\+\_\+fifo (
+\begin{DoxyParamCaption}
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{s\+\_\+axis, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{m\+\_\+axis, }
+\item[{int}]{count}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_a11e7c13bf1c721efd6473e2d16b0b264}{}\label{test_8cpp_a11e7c13bf1c721efd6473e2d16b0b264}
+\index{test.\+cpp@{test.\+cpp}!generate\+\_\+flit@{generate\+\_\+flit}}
+\index{generate\+\_\+flit@{generate\+\_\+flit}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{generate\+\_\+flit(int iterations, int size, int id, int dest, galapagos\+\_\+interface $\ast$out)}{generate_flit(int iterations, int size, int id, int dest, galapagos_interface *out)}}]{\setlength{\rightskip}{0pt plus 5cm}void generate\+\_\+flit (
+\begin{DoxyParamCaption}
+\item[{int}]{iterations, }
+\item[{int}]{size, }
+\item[{int}]{id, }
+\item[{int}]{dest, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{out}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_a952c103146dc9b79782931ba3fa131f1}{}\label{test_8cpp_a952c103146dc9b79782931ba3fa131f1}
+\index{test.\+cpp@{test.\+cpp}!generate\+\_\+packet@{generate\+\_\+packet}}
+\index{generate\+\_\+packet@{generate\+\_\+packet}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{generate\+\_\+packet(int iterations, int size, int id, int dest, galapagos\+\_\+interface $\ast$out)}{generate_packet(int iterations, int size, int id, int dest, galapagos_interface *out)}}]{\setlength{\rightskip}{0pt plus 5cm}void generate\+\_\+packet (
+\begin{DoxyParamCaption}
+\item[{int}]{iterations, }
+\item[{int}]{size, }
+\item[{int}]{id, }
+\item[{int}]{dest, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{out}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_a54f037e7a8d79a8557a33713c97c3ed8}{}\label{test_8cpp_a54f037e7a8d79a8557a33713c97c3ed8}
+\index{test.\+cpp@{test.\+cpp}!generate\+\_\+packet@{generate\+\_\+packet}}
+\index{generate\+\_\+packet@{generate\+\_\+packet}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{generate\+\_\+packet(char $\ast$mem, int iterations, int size, int id, int dest, galapagos\+\_\+interface $\ast$out)}{generate_packet(char *mem, int iterations, int size, int id, int dest, galapagos_interface *out)}}]{\setlength{\rightskip}{0pt plus 5cm}void generate\+\_\+packet (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{mem, }
+\item[{int}]{iterations, }
+\item[{int}]{size, }
+\item[{int}]{id, }
+\item[{int}]{dest, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{out}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_a79daffd29405a76f0c0676b577e2843d}{}\label{test_8cpp_a79daffd29405a76f0c0676b577e2843d}
+\index{test.\+cpp@{test.\+cpp}!generate\+\_\+packet@{generate\+\_\+packet}}
+\index{generate\+\_\+packet@{generate\+\_\+packet}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{generate\+\_\+packet(std\+::vector$<$ ap\+\_\+uint$<$ 64 $>$ $>$ $\ast$vec, int iterations, int size, int id, int dest, galapagos\+\_\+interface $\ast$out)}{generate_packet(std::vector< ap_uint< 64 > > *vec, int iterations, int size, int id, int dest, galapagos_interface *out)}}]{\setlength{\rightskip}{0pt plus 5cm}void generate\+\_\+packet (
+\begin{DoxyParamCaption}
+\item[{std\+::vector$<$ ap\+\_\+uint$<$ 64 $>$ $>$ $\ast$}]{vec, }
+\item[{int}]{iterations, }
+\item[{int}]{size, }
+\item[{int}]{id, }
+\item[{int}]{dest, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{out}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_a83fe9f71488e293cfe12208b9a4b082a}{}\label{test_8cpp_a83fe9f71488e293cfe12208b9a4b082a}
+\index{test.\+cpp@{test.\+cpp}!kern\+\_\+flit\+\_\+loopback\+\_\+perf@{kern\+\_\+flit\+\_\+loopback\+\_\+perf}}
+\index{kern\+\_\+flit\+\_\+loopback\+\_\+perf@{kern\+\_\+flit\+\_\+loopback\+\_\+perf}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{kern\+\_\+flit\+\_\+loopback\+\_\+perf(short id, galapagos\+\_\+interface $\ast$in, galapagos\+\_\+interface $\ast$out)}{kern_flit_loopback_perf(short id, galapagos_interface *in, galapagos_interface *out)}}]{\setlength{\rightskip}{0pt plus 5cm}void kern\+\_\+flit\+\_\+loopback\+\_\+perf (
+\begin{DoxyParamCaption}
+\item[{short}]{id, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{in, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{out}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_a8ca88d3e17110eb3b7d601ccd1ad1b83}{}\label{test_8cpp_a8ca88d3e17110eb3b7d601ccd1ad1b83}
+\index{test.\+cpp@{test.\+cpp}!kern\+\_\+flit\+\_\+loopback\+\_\+verify@{kern\+\_\+flit\+\_\+loopback\+\_\+verify}}
+\index{kern\+\_\+flit\+\_\+loopback\+\_\+verify@{kern\+\_\+flit\+\_\+loopback\+\_\+verify}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{kern\+\_\+flit\+\_\+loopback\+\_\+verify(short id, galapagos\+\_\+interface $\ast$in, galapagos\+\_\+interface $\ast$out)}{kern_flit_loopback_verify(short id, galapagos_interface *in, galapagos_interface *out)}}]{\setlength{\rightskip}{0pt plus 5cm}void kern\+\_\+flit\+\_\+loopback\+\_\+verify (
+\begin{DoxyParamCaption}
+\item[{short}]{id, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{in, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{out}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_a19d34c353699396428b4f5b55e39d803}{}\label{test_8cpp_a19d34c353699396428b4f5b55e39d803}
+\index{test.\+cpp@{test.\+cpp}!kern\+\_\+generate\+\_\+flit@{kern\+\_\+generate\+\_\+flit}}
+\index{kern\+\_\+generate\+\_\+flit@{kern\+\_\+generate\+\_\+flit}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{kern\+\_\+generate\+\_\+flit(short id, galapagos\+\_\+interface $\ast$in, galapagos\+\_\+interface $\ast$out)}{kern_generate_flit(short id, galapagos_interface *in, galapagos_interface *out)}}]{\setlength{\rightskip}{0pt plus 5cm}void kern\+\_\+generate\+\_\+flit (
+\begin{DoxyParamCaption}
+\item[{short}]{id, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{in, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{out}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_a9333d960ef4e8263bada8171199335c9}{}\label{test_8cpp_a9333d960ef4e8263bada8171199335c9}
+\index{test.\+cpp@{test.\+cpp}!kern\+\_\+generate\+\_\+output\+\_\+flit\+\_\+perf@{kern\+\_\+generate\+\_\+output\+\_\+flit\+\_\+perf}}
+\index{kern\+\_\+generate\+\_\+output\+\_\+flit\+\_\+perf@{kern\+\_\+generate\+\_\+output\+\_\+flit\+\_\+perf}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{kern\+\_\+generate\+\_\+output\+\_\+flit\+\_\+perf(short id, galapagos\+\_\+interface $\ast$in, galapagos\+\_\+interface $\ast$out)}{kern_generate_output_flit_perf(short id, galapagos_interface *in, galapagos_interface *out)}}]{\setlength{\rightskip}{0pt plus 5cm}void kern\+\_\+generate\+\_\+output\+\_\+flit\+\_\+perf (
+\begin{DoxyParamCaption}
+\item[{short}]{id, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{in, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{out}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_a2218d858bef70dd73ec06bd5e6963406}{}\label{test_8cpp_a2218d858bef70dd73ec06bd5e6963406}
+\index{test.\+cpp@{test.\+cpp}!kern\+\_\+generate\+\_\+output\+\_\+flit\+\_\+verify@{kern\+\_\+generate\+\_\+output\+\_\+flit\+\_\+verify}}
+\index{kern\+\_\+generate\+\_\+output\+\_\+flit\+\_\+verify@{kern\+\_\+generate\+\_\+output\+\_\+flit\+\_\+verify}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{kern\+\_\+generate\+\_\+output\+\_\+flit\+\_\+verify(short id, galapagos\+\_\+interface $\ast$in, galapagos\+\_\+interface $\ast$out)}{kern_generate_output_flit_verify(short id, galapagos_interface *in, galapagos_interface *out)}}]{\setlength{\rightskip}{0pt plus 5cm}void kern\+\_\+generate\+\_\+output\+\_\+flit\+\_\+verify (
+\begin{DoxyParamCaption}
+\item[{short}]{id, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{in, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{out}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_af5cc631d8fae454651ecb0c5fbf23047}{}\label{test_8cpp_af5cc631d8fae454651ecb0c5fbf23047}
+\index{test.\+cpp@{test.\+cpp}!kern\+\_\+generate\+\_\+output\+\_\+packet\+\_\+perf@{kern\+\_\+generate\+\_\+output\+\_\+packet\+\_\+perf}}
+\index{kern\+\_\+generate\+\_\+output\+\_\+packet\+\_\+perf@{kern\+\_\+generate\+\_\+output\+\_\+packet\+\_\+perf}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{kern\+\_\+generate\+\_\+output\+\_\+packet\+\_\+perf(short id, galapagos\+\_\+interface $\ast$in, galapagos\+\_\+interface $\ast$out)}{kern_generate_output_packet_perf(short id, galapagos_interface *in, galapagos_interface *out)}}]{\setlength{\rightskip}{0pt plus 5cm}void kern\+\_\+generate\+\_\+output\+\_\+packet\+\_\+perf (
+\begin{DoxyParamCaption}
+\item[{short}]{id, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{in, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{out}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_addbaf4f92b1d1dd46e7df9875ac997d2}{}\label{test_8cpp_addbaf4f92b1d1dd46e7df9875ac997d2}
+\index{test.\+cpp@{test.\+cpp}!kern\+\_\+generate\+\_\+output\+\_\+packet\+\_\+verify@{kern\+\_\+generate\+\_\+output\+\_\+packet\+\_\+verify}}
+\index{kern\+\_\+generate\+\_\+output\+\_\+packet\+\_\+verify@{kern\+\_\+generate\+\_\+output\+\_\+packet\+\_\+verify}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{kern\+\_\+generate\+\_\+output\+\_\+packet\+\_\+verify(short id, galapagos\+\_\+interface $\ast$in, galapagos\+\_\+interface $\ast$out)}{kern_generate_output_packet_verify(short id, galapagos_interface *in, galapagos_interface *out)}}]{\setlength{\rightskip}{0pt plus 5cm}void kern\+\_\+generate\+\_\+output\+\_\+packet\+\_\+verify (
+\begin{DoxyParamCaption}
+\item[{short}]{id, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{in, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{out}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_a2199bc9b3b277f26da99d4c55124be01}{}\label{test_8cpp_a2199bc9b3b277f26da99d4c55124be01}
+\index{test.\+cpp@{test.\+cpp}!kern\+\_\+generate\+\_\+packet@{kern\+\_\+generate\+\_\+packet}}
+\index{kern\+\_\+generate\+\_\+packet@{kern\+\_\+generate\+\_\+packet}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{kern\+\_\+generate\+\_\+packet(short id, galapagos\+\_\+interface $\ast$in, galapagos\+\_\+interface $\ast$out)}{kern_generate_packet(short id, galapagos_interface *in, galapagos_interface *out)}}]{\setlength{\rightskip}{0pt plus 5cm}void kern\+\_\+generate\+\_\+packet (
+\begin{DoxyParamCaption}
+\item[{short}]{id, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{in, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{out}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_a91143d0f19f313fe8660e05907e37536}{}\label{test_8cpp_a91143d0f19f313fe8660e05907e37536}
+\index{test.\+cpp@{test.\+cpp}!kern\+\_\+output\+\_\+flit\+\_\+perf@{kern\+\_\+output\+\_\+flit\+\_\+perf}}
+\index{kern\+\_\+output\+\_\+flit\+\_\+perf@{kern\+\_\+output\+\_\+flit\+\_\+perf}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{kern\+\_\+output\+\_\+flit\+\_\+perf(short id, galapagos\+\_\+interface $\ast$in, galapagos\+\_\+interface $\ast$out)}{kern_output_flit_perf(short id, galapagos_interface *in, galapagos_interface *out)}}]{\setlength{\rightskip}{0pt plus 5cm}void kern\+\_\+output\+\_\+flit\+\_\+perf (
+\begin{DoxyParamCaption}
+\item[{short}]{id, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{in, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{out}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_a4aba7a81f4edf73f72b47c1764d2366d}{}\label{test_8cpp_a4aba7a81f4edf73f72b47c1764d2366d}
+\index{test.\+cpp@{test.\+cpp}!kern\+\_\+output\+\_\+flit\+\_\+verify@{kern\+\_\+output\+\_\+flit\+\_\+verify}}
+\index{kern\+\_\+output\+\_\+flit\+\_\+verify@{kern\+\_\+output\+\_\+flit\+\_\+verify}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{kern\+\_\+output\+\_\+flit\+\_\+verify(short id, galapagos\+\_\+interface $\ast$in, galapagos\+\_\+interface $\ast$out)}{kern_output_flit_verify(short id, galapagos_interface *in, galapagos_interface *out)}}]{\setlength{\rightskip}{0pt plus 5cm}void kern\+\_\+output\+\_\+flit\+\_\+verify (
+\begin{DoxyParamCaption}
+\item[{short}]{id, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{in, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{out}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_a80c90cf9b607ea4fc6e2512983b491ea}{}\label{test_8cpp_a80c90cf9b607ea4fc6e2512983b491ea}
+\index{test.\+cpp@{test.\+cpp}!kern\+\_\+output\+\_\+packet\+\_\+perf@{kern\+\_\+output\+\_\+packet\+\_\+perf}}
+\index{kern\+\_\+output\+\_\+packet\+\_\+perf@{kern\+\_\+output\+\_\+packet\+\_\+perf}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{kern\+\_\+output\+\_\+packet\+\_\+perf(short id, galapagos\+\_\+interface $\ast$in, galapagos\+\_\+interface $\ast$out)}{kern_output_packet_perf(short id, galapagos_interface *in, galapagos_interface *out)}}]{\setlength{\rightskip}{0pt plus 5cm}void kern\+\_\+output\+\_\+packet\+\_\+perf (
+\begin{DoxyParamCaption}
+\item[{short}]{id, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{in, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{out}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_aadf5d569e1e0feb11bb6b6b4d04336c0}{}\label{test_8cpp_aadf5d569e1e0feb11bb6b6b4d04336c0}
+\index{test.\+cpp@{test.\+cpp}!kern\+\_\+output\+\_\+packet\+\_\+verify@{kern\+\_\+output\+\_\+packet\+\_\+verify}}
+\index{kern\+\_\+output\+\_\+packet\+\_\+verify@{kern\+\_\+output\+\_\+packet\+\_\+verify}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{kern\+\_\+output\+\_\+packet\+\_\+verify(short id, galapagos\+\_\+interface $\ast$in, galapagos\+\_\+interface $\ast$out)}{kern_output_packet_verify(short id, galapagos_interface *in, galapagos_interface *out)}}]{\setlength{\rightskip}{0pt plus 5cm}void kern\+\_\+output\+\_\+packet\+\_\+verify (
+\begin{DoxyParamCaption}
+\item[{short}]{id, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{in, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{out}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_a1a08eeff3ffa31aa5194be1e6a89c0ab}{}\label{test_8cpp_a1a08eeff3ffa31aa5194be1e6a89c0ab}
+\index{test.\+cpp@{test.\+cpp}!kern\+\_\+packet\+\_\+loopback\+\_\+perf@{kern\+\_\+packet\+\_\+loopback\+\_\+perf}}
+\index{kern\+\_\+packet\+\_\+loopback\+\_\+perf@{kern\+\_\+packet\+\_\+loopback\+\_\+perf}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{kern\+\_\+packet\+\_\+loopback\+\_\+perf(short id, galapagos\+\_\+interface $\ast$in, galapagos\+\_\+interface $\ast$out)}{kern_packet_loopback_perf(short id, galapagos_interface *in, galapagos_interface *out)}}]{\setlength{\rightskip}{0pt plus 5cm}void kern\+\_\+packet\+\_\+loopback\+\_\+perf (
+\begin{DoxyParamCaption}
+\item[{short}]{id, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{in, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{out}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_a7eac1551dbf19f63635523f230364dd2}{}\label{test_8cpp_a7eac1551dbf19f63635523f230364dd2}
+\index{test.\+cpp@{test.\+cpp}!kern\+\_\+packet\+\_\+loopback\+\_\+verify@{kern\+\_\+packet\+\_\+loopback\+\_\+verify}}
+\index{kern\+\_\+packet\+\_\+loopback\+\_\+verify@{kern\+\_\+packet\+\_\+loopback\+\_\+verify}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{kern\+\_\+packet\+\_\+loopback\+\_\+verify(short id, galapagos\+\_\+interface $\ast$in, galapagos\+\_\+interface $\ast$out)}{kern_packet_loopback_verify(short id, galapagos_interface *in, galapagos_interface *out)}}]{\setlength{\rightskip}{0pt plus 5cm}void kern\+\_\+packet\+\_\+loopback\+\_\+verify (
+\begin{DoxyParamCaption}
+\item[{short}]{id, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{in, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{out}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_a06f045135a0ee0b574120cab307693c8}{}\label{test_8cpp_a06f045135a0ee0b574120cab307693c8}
+\index{test.\+cpp@{test.\+cpp}!main@{main}}
+\index{main@{main}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{main(int argc, char $\ast$argv[])}{main(int argc, char *argv[])}}]{\setlength{\rightskip}{0pt plus 5cm}int main (
+\begin{DoxyParamCaption}
+\item[{int}]{argc, }
+\item[{char $\ast$}]{argv\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_a0ddf1224851353fc92bfbff6f499fa97}{}\label{test_8cpp_a0ddf1224851353fc92bfbff6f499fa97}
+\index{test.\+cpp@{test.\+cpp}!my\+\_\+address@{my\+\_\+address}}
+\index{my\+\_\+address@{my\+\_\+address}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{my\+\_\+address(""10.\+0.\+0.\+1"")}{my_address("10.0.0.1")}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::string my\+\_\+address (
+\begin{DoxyParamCaption}
+\item[{\char`\"{}10.\+0.\+0.\+1\char`\"{}}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_ad6c70ba8571527f1543822ce71b9a109}{}\label{test_8cpp_ad6c70ba8571527f1543822ce71b9a109}
+\index{test.\+cpp@{test.\+cpp}!receive\+\_\+flit\+\_\+perf@{receive\+\_\+flit\+\_\+perf}}
+\index{receive\+\_\+flit\+\_\+perf@{receive\+\_\+flit\+\_\+perf}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{receive\+\_\+flit\+\_\+perf(int iterations, int size, galapagos\+\_\+interface $\ast$in)}{receive_flit_perf(int iterations, int size, galapagos_interface *in)}}]{\setlength{\rightskip}{0pt plus 5cm}void receive\+\_\+flit\+\_\+perf (
+\begin{DoxyParamCaption}
+\item[{int}]{iterations, }
+\item[{int}]{size, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{in}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_ab58f1ce436d790a26a5c52969cb832aa}{}\label{test_8cpp_ab58f1ce436d790a26a5c52969cb832aa}
+\index{test.\+cpp@{test.\+cpp}!receive\+\_\+packet\+\_\+perf@{receive\+\_\+packet\+\_\+perf}}
+\index{receive\+\_\+packet\+\_\+perf@{receive\+\_\+packet\+\_\+perf}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{receive\+\_\+packet\+\_\+perf(int iterations, int size, galapagos\+\_\+interface $\ast$in)}{receive_packet_perf(int iterations, int size, galapagos_interface *in)}}]{\setlength{\rightskip}{0pt plus 5cm}void receive\+\_\+packet\+\_\+perf (
+\begin{DoxyParamCaption}
+\item[{int}]{iterations, }
+\item[{int}]{size, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{in}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_affc065c5706e3d2766ff79d86064eba6}{}\label{test_8cpp_affc065c5706e3d2766ff79d86064eba6}
+\index{test.\+cpp@{test.\+cpp}!recv\+\_\+single\+\_\+flit@{recv\+\_\+single\+\_\+flit}}
+\index{recv\+\_\+single\+\_\+flit@{recv\+\_\+single\+\_\+flit}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{recv\+\_\+single\+\_\+flit(short id, galapagos\+\_\+interface $\ast$in, galapagos\+\_\+interface $\ast$out)}{recv_single_flit(short id, galapagos_interface *in, galapagos_interface *out)}}]{\setlength{\rightskip}{0pt plus 5cm}void recv\+\_\+single\+\_\+flit (
+\begin{DoxyParamCaption}
+\item[{short}]{id, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{in, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{out}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_a6104170a04da9a4d3a02507f626a87db}{}\label{test_8cpp_a6104170a04da9a4d3a02507f626a87db}
+\index{test.\+cpp@{test.\+cpp}!recv\+\_\+single\+\_\+packet@{recv\+\_\+single\+\_\+packet}}
+\index{recv\+\_\+single\+\_\+packet@{recv\+\_\+single\+\_\+packet}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{recv\+\_\+single\+\_\+packet(short id, galapagos\+\_\+interface $\ast$in, galapagos\+\_\+interface $\ast$out)}{recv_single_packet(short id, galapagos_interface *in, galapagos_interface *out)}}]{\setlength{\rightskip}{0pt plus 5cm}void recv\+\_\+single\+\_\+packet (
+\begin{DoxyParamCaption}
+\item[{short}]{id, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{in, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{out}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_a881e8d624ad60d92bd851d0edd13115c}{}\label{test_8cpp_a881e8d624ad60d92bd851d0edd13115c}
+\index{test.\+cpp@{test.\+cpp}!remote\+\_\+address@{remote\+\_\+address}}
+\index{remote\+\_\+address@{remote\+\_\+address}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{remote\+\_\+address(""10.\+0.\+0.\+2"")}{remote_address("10.0.0.2")}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::string remote\+\_\+address (
+\begin{DoxyParamCaption}
+\item[{\char`\"{}10.\+0.\+0.\+2\char`\"{}}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_a26080a439da4e3dd098bb6146f946bce}{}\label{test_8cpp_a26080a439da4e3dd098bb6146f946bce}
+\index{test.\+cpp@{test.\+cpp}!send\+\_\+single\+\_\+flit@{send\+\_\+single\+\_\+flit}}
+\index{send\+\_\+single\+\_\+flit@{send\+\_\+single\+\_\+flit}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{send\+\_\+single\+\_\+flit(short id, galapagos\+\_\+interface $\ast$in, galapagos\+\_\+interface $\ast$out)}{send_single_flit(short id, galapagos_interface *in, galapagos_interface *out)}}]{\setlength{\rightskip}{0pt plus 5cm}void send\+\_\+single\+\_\+flit (
+\begin{DoxyParamCaption}
+\item[{short}]{id, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{in, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{out}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_a3a6c4d524ee19ccec113ae38b192d84d}{}\label{test_8cpp_a3a6c4d524ee19ccec113ae38b192d84d}
+\index{test.\+cpp@{test.\+cpp}!send\+\_\+single\+\_\+packet@{send\+\_\+single\+\_\+packet}}
+\index{send\+\_\+single\+\_\+packet@{send\+\_\+single\+\_\+packet}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{send\+\_\+single\+\_\+packet(short id, galapagos\+\_\+interface $\ast$in, galapagos\+\_\+interface $\ast$out)}{send_single_packet(short id, galapagos_interface *in, galapagos_interface *out)}}]{\setlength{\rightskip}{0pt plus 5cm}void send\+\_\+single\+\_\+packet (
+\begin{DoxyParamCaption}
+\item[{short}]{id, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{in, }
+\item[{{\bf galapagos\+\_\+interface} $\ast$}]{out}
+\end{DoxyParamCaption}
+)}\hypertarget{test_8cpp_ac861395ca6cdcc55f4d3958f4747a5e6}{}\label{test_8cpp_ac861395ca6cdcc55f4d3958f4747a5e6}
+
+
+\subsection{Variable Documentation}
+\index{test.\+cpp@{test.\+cpp}!end@{end}}
+\index{end@{end}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{end}{end}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::chrono\+::time\+\_\+point$<$std\+::chrono\+::high\+\_\+resolution\+\_\+clock$>$ end}\hypertarget{test_8cpp_ace54cb99b52f35f3a98f99e2a75dd5ad}{}\label{test_8cpp_ace54cb99b52f35f3a98f99e2a75dd5ad}
+\index{test.\+cpp@{test.\+cpp}!start@{start}}
+\index{start@{start}!test.\+cpp@{test.\+cpp}}
+\subsubsection[{\texorpdfstring{start}{start}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::chrono\+::time\+\_\+point$<$std\+::chrono\+::high\+\_\+resolution\+\_\+clock$>$ start}\hypertarget{test_8cpp_a46dea58f2d527f376090214bd5c3233d}{}\label{test_8cpp_a46dea58f2d527f376090214bd5c3233d}

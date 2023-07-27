@@ -5,8 +5,13 @@
 TEST_CASE( "KERNEL:PERF:1" ) {
 
     
+    #if LOG_LEVEL > 0
     galapagos::kernel<ap_uint<64> > kern0(0, my_logger);
     galapagos::kernel<ap_uint<64> > kern1(0, my_logger);
+    #else
+    galapagos::kernel<ap_uint<64> > kern0(0);
+    galapagos::kernel<ap_uint<64> > kern1(0);
+    #endif
    
     kern0.set_func(kern_generate_flit); 
     kern1.set_func(kern_output_flit_perf); 
@@ -22,7 +27,7 @@ TEST_CASE( "KERNEL:PERF:1" ) {
     std::chrono::duration<double> diff = end-start;
     std::cout << std::endl << " ......................." << Catch::getResultCapture().getCurrentTestName() << "......................." << std::endl;
     std::cout << "RUNTIME:"  <<  diff.count() << " s" << std::endl;
-    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1024*1024)) << " MB/s" << std::endl;
+    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1000*1000/8)) << " Mb/s" << std::endl;
 
 }
 
@@ -30,8 +35,13 @@ TEST_CASE( "KERNEL:PERF:1" ) {
 TEST_CASE( "KERNEL:PERF:2" ) {
 
 
+    #if LOG_LEVEL > 0
     galapagos::kernel<ap_uint<64> > kern0(0, my_logger);
     galapagos::kernel<ap_uint<64> > kern1(0, my_logger);
+    #else
+    galapagos::kernel<ap_uint<64> > kern0(0);
+    galapagos::kernel<ap_uint<64> > kern1(0);
+    #endif
    
     kern0.set_func(kern_generate_packet); 
     kern1.set_func(kern_output_flit_perf); 
@@ -47,7 +57,7 @@ TEST_CASE( "KERNEL:PERF:2" ) {
     std::chrono::duration<double> diff = end-start;
     std::cout << std::endl << " ......................." << Catch::getResultCapture().getCurrentTestName() << "......................." << std::endl;
     std::cout << "RUNTIME:"  <<  diff.count() << " s" << std::endl;
-    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1024*1024)) << " MB/s" << std::endl;
+    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1000*1000/8)) << " Mb/s" << std::endl;
 
 
 }
@@ -55,8 +65,13 @@ TEST_CASE( "KERNEL:PERF:2" ) {
 //Test from flit to packet
 TEST_CASE( "KERNEL:PERF:3" ) {
 
+    #if LOG_LEVEL > 0
     galapagos::kernel<ap_uint<64> > kern0(0, my_logger);
     galapagos::kernel<ap_uint<64> > kern1(0, my_logger);
+    #else
+    galapagos::kernel<ap_uint<64> > kern0(0);
+    galapagos::kernel<ap_uint<64> > kern1(0);
+    #endif
    
     kern0.set_func(kern_generate_flit); 
     kern1.set_func(kern_output_packet_perf); 
@@ -72,15 +87,20 @@ TEST_CASE( "KERNEL:PERF:3" ) {
     std::chrono::duration<double> diff = end-start;
     std::cout << std::endl << " ......................." << Catch::getResultCapture().getCurrentTestName() << "......................." << std::endl;
     std::cout << "RUNTIME:"  <<  diff.count() << " s" << std::endl;
-    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1024*1024)) << " MB/s" << std::endl;
+    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1000*1000/8)) << " Mb/s" << std::endl;
     
 }
 
 //Test from packet to packet
 TEST_CASE( "KERNEL:PERF:4" ) {
     
+    #if LOG_LEVEL > 0
     galapagos::kernel<ap_uint<64> > kern0(0, my_logger);
     galapagos::kernel<ap_uint<64> > kern1(0, my_logger);
+    #else
+    galapagos::kernel<ap_uint<64> > kern0(0);
+    galapagos::kernel<ap_uint<64> > kern1(0);
+    #endif
    
     kern0.set_func(kern_generate_packet); 
     kern1.set_func(kern_output_packet_perf); 
@@ -96,7 +116,7 @@ TEST_CASE( "KERNEL:PERF:4" ) {
     std::chrono::duration<double> diff = end-start;
     std::cout << std::endl << " ......................." << Catch::getResultCapture().getCurrentTestName() << "......................." << std::endl;
     std::cout << "RUNTIME:"  <<  diff.count() << " s" << std::endl;
-    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1024*1024)) << " MB/s" << std::endl;
+    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1000*1000/8)) << " Mb/s" << std::endl;
     
 }
 

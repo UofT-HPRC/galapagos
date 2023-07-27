@@ -15,9 +15,11 @@
 #include "galapagos_n_to_one_router.hpp"
 #include "galapagos_net_tcp_session.hpp"
 
+#if LOG_LEVEL > 0
 #include "galapagos_packet.h"
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h"
+#endif
 
 namespace galapagos{
     namespace net{
@@ -25,16 +27,30 @@ namespace galapagos{
         template<class T>
         class tcp_accept_server{
             public:
+#if LOG_LEVEL > 0
                 tcp_accept_server(boost::asio::io_context * io_context, 
                               std::string my_address,
-            		      short port,  
+            		          short port,  
                               tcp_session_container <T> * _sessions,
 		    	      std::shared_ptr <spdlog::logger> _logger
+                              );
+#endif
+                tcp_accept_server(boost::asio::io_context * io_context, 
+                              std::string my_address,
+            		          short port,  
+                              tcp_session_container <T> * _sessions
+                              );
+                void prepare(boost::asio::io_context * io_context, 
+                              std::string my_address,
+            		          short port,  
+                              tcp_session_container <T> * _sessions
                               );
                 ~tcp_accept_server(){
                                 }
             private:
-		std::shared_ptr <spdlog::logger> logger;
+#if LOG_LEVEL > 0
+		        std::shared_ptr <spdlog::logger> logger;
+#endif
                 void accept();
                 boost::asio::ip::tcp::acceptor acceptor_;
                 tcp_session_container <T> * sessions;
@@ -46,22 +62,50 @@ namespace galapagos{
 using namespace galapagos::net;
 
 template<class T>
+void tcp_accept_server<T>::prepare(boost::asio::io_context *io_context,
+						std::string my_address, 
+                                                short port,  
+                                                tcp_session_container<T> * _sessions
+                                        )
+{
+    _io_context = io_context;
+    sessions = _sessions;
+    std::thread t_accept(&tcp_accept_server<T>::accept,this);
+    t_accept.detach();
+
+}
+
+template<class T>
 tcp_accept_server<T>::tcp_accept_server(boost::asio::io_context *io_context,
 						std::string my_address, 
                                                 short port,  
-                                                tcp_session_container<T> * _sessions,
-		    	      			std::shared_ptr <spdlog::logger> _logger
+                                                tcp_session_container<T> * _sessions
+		    	      			                // std::shared_ptr <spdlog::logger> _logger
                                                 )
     : acceptor_(*io_context, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
 {
 
-    _io_context = io_context;
-    sessions = _sessions;
-    logger = _logger; 
-    
-    std::thread t_accept(&tcp_accept_server<T>::accept,this);
-    t_accept.detach();
+    prepare(io_context, my_address, port, _sessions);
 }
+
+
+#if LOG_LEVEL > 0
+template<class T>
+tcp_accept_server<T>::tcp_accept_server(boost::asio::io_context *io_context,
+						std::string my_address, 
+                                                short port,  
+                                                tcp_session_container<T> * _sessions,
+		    	      			                std::shared_ptr <spdlog::logger> _logger
+                                                )
+    : acceptor_(*io_context, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
+{
+
+    logger = _logger; 
+    prepare(io_context, my_address, port, _sessions);
+}
+
+#endif
+
 
 template<class T>
 void tcp_accept_server<T>::accept(){

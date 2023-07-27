@@ -1,0 +1,145 @@
+\hypertarget{classgalapagos_1_1net_1_1tcp}{}\section{galapagos\+:\+:net\+:\+:tcp$<$ T $>$ Class Template Reference}
+\label{classgalapagos_1_1net_1_1tcp}\index{galapagos\+::net\+::tcp$<$ T $>$@{galapagos\+::net\+::tcp$<$ T $>$}}
+
+
+Class tcp driver.  
+
+
+
+
+{\ttfamily \#include $<$galapagos\+\_\+net\+\_\+tcp.\+hpp$>$}
+
+
+
+Inheritance diagram for galapagos\+:\+:net\+:\+:tcp$<$ T $>$\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=217pt]{classgalapagos_1_1net_1_1tcp__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for galapagos\+:\+:net\+:\+:tcp$<$ T $>$\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=550pt]{classgalapagos_1_1net_1_1tcp__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classgalapagos_1_1net_1_1tcp_ad739afb4887a1af1388e901b951ede3a}{tcp} (short port, std\+::vector$<$ std\+::string $>$ kern\+\_\+info\+\_\+table, std\+::string my\+\_\+address)
+\item 
+\hyperlink{classgalapagos_1_1net_1_1tcp_a9908d7aea9bfaf39466706e53cf14437}{$\sim$tcp} ()
+\item 
+\hyperlink{classgalapagos_1_1interface}{interface}$<$ \hyperlink{test_8cpp_a0658ceffa730c765d449bb3d21871b5f}{T} $>$ $\ast$ \hyperlink{classgalapagos_1_1net_1_1tcp_ac9f3db01e1d6e9bf0bc7527fabf3543a}{get\+\_\+s\+\_\+axis} ()
+\item 
+\hyperlink{classgalapagos_1_1interface}{interface}$<$ \hyperlink{test_8cpp_a0658ceffa730c765d449bb3d21871b5f}{T} $>$ $\ast$ \hyperlink{classgalapagos_1_1net_1_1tcp_a47f42325519b0dda4c0157f1d897ed75}{get\+\_\+m\+\_\+axis} ()
+\item 
+void \hyperlink{classgalapagos_1_1net_1_1tcp_ad792d3c67e6e8a79cb18a6d0c4aaecda}{start} ()
+\item 
+void \hyperlink{classgalapagos_1_1net_1_1tcp_a10e2ca93acd1562162b2a49400be1292}{init} (\hyperlink{classgalapagos_1_1done__clean}{galapagos\+::done\+\_\+clean} $\ast$, int $\ast$\+\_\+packets\+\_\+in\+\_\+flight, std\+::mutex $\ast$\+\_\+mutex\+\_\+packets\+\_\+in\+\_\+flight)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::unique\+\_\+ptr$<$ std\+::thread $>$ \hyperlink{classgalapagos_1_1net_1_1tcp_a4820fa1fc2a4a396eaf0554042873643}{t}
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+\subsubsection*{template$<$class T$>$\\*
+class galapagos\+::net\+::tcp$<$ T $>$}
+
+Class tcp driver. 
+
+A software implementation of an n to one router, used by network node to arbitrade output of sessions into the node. Routes between input interfaces(s\+\_\+axis) and an output interface(m\+\_\+axis). \begin{DoxyAuthor}{Author}
+Naif Tarafdar 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+April 20, 2019 
+\end{DoxyDate}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{galapagos\+::net\+::tcp@{galapagos\+::net\+::tcp}!tcp@{tcp}}
+\index{tcp@{tcp}!galapagos\+::net\+::tcp@{galapagos\+::net\+::tcp}}
+\subsubsection[{\texorpdfstring{tcp(short port, std\+::vector$<$ std\+::string $>$ kern\+\_\+info\+\_\+table, std\+::string my\+\_\+address)}{tcp(short port, std::vector< std::string > kern_info_table, std::string my_address)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ {\bf galapagos\+::net\+::tcp}$<$ {\bf T} $>$\+::{\bf tcp} (
+\begin{DoxyParamCaption}
+\item[{short}]{port, }
+\item[{std\+::vector$<$ std\+::string $>$}]{kern\+\_\+info\+\_\+table, }
+\item[{std\+::string}]{my\+\_\+address}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1net_1_1tcp_ad739afb4887a1af1388e901b951ede3a}{}\label{classgalapagos_1_1net_1_1tcp_ad739afb4887a1af1388e901b951ede3a}
+\index{galapagos\+::net\+::tcp@{galapagos\+::net\+::tcp}!````~tcp@{$\sim$tcp}}
+\index{````~tcp@{$\sim$tcp}!galapagos\+::net\+::tcp@{galapagos\+::net\+::tcp}}
+\subsubsection[{\texorpdfstring{$\sim$tcp()}{~tcp()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ {\bf galapagos\+::net\+::tcp}$<$ {\bf T} $>$\+::$\sim${\bf tcp} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgalapagos_1_1net_1_1tcp_a9908d7aea9bfaf39466706e53cf14437}{}\label{classgalapagos_1_1net_1_1tcp_a9908d7aea9bfaf39466706e53cf14437}
+
+
+\subsection{Member Function Documentation}
+\index{galapagos\+::net\+::tcp@{galapagos\+::net\+::tcp}!get\+\_\+m\+\_\+axis@{get\+\_\+m\+\_\+axis}}
+\index{get\+\_\+m\+\_\+axis@{get\+\_\+m\+\_\+axis}!galapagos\+::net\+::tcp@{galapagos\+::net\+::tcp}}
+\subsubsection[{\texorpdfstring{get\+\_\+m\+\_\+axis()}{get_m_axis()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ {\bf galapagos\+::interface}$<$ {\bf T} $>$ $\ast$ {\bf galapagos\+::net\+::tcp}$<$ {\bf T} $>$\+::get\+\_\+m\+\_\+axis (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classgalapagos_1_1net_1_1tcp_a47f42325519b0dda4c0157f1d897ed75}{}\label{classgalapagos_1_1net_1_1tcp_a47f42325519b0dda4c0157f1d897ed75}
+
+
+Implements \hyperlink{classgalapagos_1_1external__driver_abc7938fd7247c7404441473da71a357e}{galapagos\+::external\+\_\+driver$<$ T $>$}.
+
+\index{galapagos\+::net\+::tcp@{galapagos\+::net\+::tcp}!get\+\_\+s\+\_\+axis@{get\+\_\+s\+\_\+axis}}
+\index{get\+\_\+s\+\_\+axis@{get\+\_\+s\+\_\+axis}!galapagos\+::net\+::tcp@{galapagos\+::net\+::tcp}}
+\subsubsection[{\texorpdfstring{get\+\_\+s\+\_\+axis()}{get_s_axis()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ {\bf galapagos\+::interface}$<$ {\bf T} $>$ $\ast$ {\bf galapagos\+::net\+::tcp}$<$ {\bf T} $>$\+::get\+\_\+s\+\_\+axis (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classgalapagos_1_1net_1_1tcp_ac9f3db01e1d6e9bf0bc7527fabf3543a}{}\label{classgalapagos_1_1net_1_1tcp_ac9f3db01e1d6e9bf0bc7527fabf3543a}
+
+
+Implements \hyperlink{classgalapagos_1_1external__driver_aded446e9ebbdd03b461f336045aa7cd2}{galapagos\+::external\+\_\+driver$<$ T $>$}.
+
+\index{galapagos\+::net\+::tcp@{galapagos\+::net\+::tcp}!init@{init}}
+\index{init@{init}!galapagos\+::net\+::tcp@{galapagos\+::net\+::tcp}}
+\subsubsection[{\texorpdfstring{init(galapagos\+::done\+\_\+clean $\ast$, int $\ast$\+\_\+packets\+\_\+in\+\_\+flight, std\+::mutex $\ast$\+\_\+mutex\+\_\+packets\+\_\+in\+\_\+flight)}{init(galapagos::done_clean *, int *_packets_in_flight, std::mutex *_mutex_packets_in_flight)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ void {\bf galapagos\+::net\+::tcp}$<$ {\bf T} $>$\+::init (
+\begin{DoxyParamCaption}
+\item[{{\bf galapagos\+::done\+\_\+clean} $\ast$}]{\+\_\+dc, }
+\item[{int $\ast$}]{\+\_\+packets\+\_\+in\+\_\+flight, }
+\item[{std\+::mutex $\ast$}]{\+\_\+mutex\+\_\+packets\+\_\+in\+\_\+flight}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classgalapagos_1_1net_1_1tcp_a10e2ca93acd1562162b2a49400be1292}{}\label{classgalapagos_1_1net_1_1tcp_a10e2ca93acd1562162b2a49400be1292}
+
+
+Implements \hyperlink{classgalapagos_1_1external__driver_ab8b753325b02ee15efe16158cd3fe119}{galapagos\+::external\+\_\+driver$<$ T $>$}.
+
+\index{galapagos\+::net\+::tcp@{galapagos\+::net\+::tcp}!start@{start}}
+\index{start@{start}!galapagos\+::net\+::tcp@{galapagos\+::net\+::tcp}}
+\subsubsection[{\texorpdfstring{start()}{start()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ void {\bf galapagos\+::net\+::tcp}$<$ {\bf T} $>$\+::start (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classgalapagos_1_1net_1_1tcp_ad792d3c67e6e8a79cb18a6d0c4aaecda}{}\label{classgalapagos_1_1net_1_1tcp_ad792d3c67e6e8a79cb18a6d0c4aaecda}
+
+
+Implements \hyperlink{classgalapagos_1_1external__driver_a7eacf72788a4ce6976499e36f1b7b3a6}{galapagos\+::external\+\_\+driver$<$ T $>$}.
+
+
+
+\subsection{Member Data Documentation}
+\index{galapagos\+::net\+::tcp@{galapagos\+::net\+::tcp}!t@{t}}
+\index{t@{t}!galapagos\+::net\+::tcp@{galapagos\+::net\+::tcp}}
+\subsubsection[{\texorpdfstring{t}{t}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ std\+::unique\+\_\+ptr$<$std\+::thread$>$ {\bf galapagos\+::net\+::tcp}$<$ {\bf T} $>$\+::t}\hypertarget{classgalapagos_1_1net_1_1tcp_a4820fa1fc2a4a396eaf0554042873643}{}\label{classgalapagos_1_1net_1_1tcp_a4820fa1fc2a4a396eaf0554042873643}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{galapagos__net__tcp_8hpp}{galapagos\+\_\+net\+\_\+tcp.\+hpp}\end{DoxyCompactItemize}

@@ -5,9 +5,15 @@
 //Test from packet filter on flit write
 TEST_CASE( "INTERFACE:TRACE:PASS:1" ) {
 
+    #if LOG_LEVEL > 0
     galapagos::interface <ap_uint <64> > source(std::string("source"), my_logger);
     galapagos::interface <ap_uint <64> > gen_to_output(std::string("gen_to_output"), my_logger);
     galapagos::interface <ap_uint <64> > sink(std::string("sink"), my_logger);
+    #else
+    galapagos::interface <ap_uint <64> > source(std::string("source"));
+    galapagos::interface <ap_uint <64> > gen_to_output(std::string("gen_to_output"));
+    galapagos::interface <ap_uint <64> > sink(std::string("sink"));
+    #endif
     
     gen_to_output.set_filter(0, 0x00);
 
@@ -20,16 +26,22 @@ TEST_CASE( "INTERFACE:TRACE:PASS:1" ) {
     std::chrono::duration<double> diff = end-start;
     std::cout << std::endl << " ......................." << Catch::getResultCapture().getCurrentTestName() << "......................." << std::endl;
     std::cout << "RUNTIME:"  <<  diff.count() << " s" << std::endl;
-    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1024*1024)) << " MB/s" << std::endl;
+    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1000*1000/8)) << " Mb/s" << std::endl;
 }
 
 
 //Test from packet filter on flit write
 TEST_CASE( "INTERFACE:TRACE:PASS:2" ) {
 
+    #if LOG_LEVEL > 0
     galapagos::interface <ap_uint <64> > source(std::string("source"), my_logger);
     galapagos::interface <ap_uint <64> > gen_to_output(std::string("gen_to_output"), my_logger);
     galapagos::interface <ap_uint <64> > sink(std::string("sink"), my_logger);
+    #else
+    galapagos::interface <ap_uint <64> > source(std::string("source"));
+    galapagos::interface <ap_uint <64> > gen_to_output(std::string("gen_to_output"));
+    galapagos::interface <ap_uint <64> > sink(std::string("sink"));
+    #endif
     
     gen_to_output.set_filter(7, 0xde);
     gen_to_output.set_filter(6, 0xad);
@@ -43,15 +55,21 @@ TEST_CASE( "INTERFACE:TRACE:PASS:2" ) {
     std::chrono::duration<double> diff = end-start;
     std::cout << std::endl << " ......................." << Catch::getResultCapture().getCurrentTestName() << "......................." << std::endl;
     std::cout << "RUNTIME:"  <<  diff.count() << " s" << std::endl;
-    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1024*1024)) << " MB/s" << std::endl;
+    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1000*1000/8)) << " Mb/s" << std::endl;
 }
 
 //Test from packet filter on flit write
 TEST_CASE( "INTERFACE:TRACE:FAIL:1" ) {
 
+    #if LOG_LEVEL > 0
     galapagos::interface <ap_uint <64> > source(std::string("source"), my_logger);
     galapagos::interface <ap_uint <64> > gen_to_output(std::string("gen_to_output"), my_logger);
     galapagos::interface <ap_uint <64> > sink(std::string("sink"), my_logger);
+    #else
+    galapagos::interface <ap_uint <64> > source(std::string("source"));
+    galapagos::interface <ap_uint <64> > gen_to_output(std::string("gen_to_output"));
+    galapagos::interface <ap_uint <64> > sink(std::string("sink"));
+    #endif
     
     gen_to_output.set_filter(0, 0xff);
 
@@ -64,7 +82,7 @@ TEST_CASE( "INTERFACE:TRACE:FAIL:1" ) {
     std::chrono::duration<double> diff = end-start;
     std::cout << std::endl << " ......................." << Catch::getResultCapture().getCurrentTestName() << "......................." << std::endl;
     std::cout << "RUNTIME:"  <<  diff.count() << " s" << std::endl;
-    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1024*1024)) << " MB/s" << std::endl;
+    std::cout << "TRANSFER_RATE:"  <<  ((MAX_BUFFER*NUM_ITERATIONS*sizeof(ap_uint<64>))/diff.count()/(1000*1000/8)) << " Mb/s" << std::endl;
 }
 
 #endif

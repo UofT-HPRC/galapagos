@@ -1,0 +1,172 @@
+\hypertarget{classgalapagos_1_1net_1_1tcp__session__container}{}\section{galapagos\+:\+:net\+:\+:tcp\+\_\+session\+\_\+container$<$ T $>$ Class Template Reference}
+\label{classgalapagos_1_1net_1_1tcp__session__container}\index{galapagos\+::net\+::tcp\+\_\+session\+\_\+container$<$ T $>$@{galapagos\+::net\+::tcp\+\_\+session\+\_\+container$<$ T $>$}}
+
+
+Class for the session\+\_\+container. Addressable by dest.  
+
+
+
+
+{\ttfamily \#include $<$galapagos\+\_\+net\+\_\+tcp\+\_\+session.\+hpp$>$}
+
+
+
+Collaboration diagram for galapagos\+:\+:net\+:\+:tcp\+\_\+session\+\_\+container$<$ T $>$\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=222pt]{classgalapagos_1_1net_1_1tcp__session__container__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classgalapagos_1_1net_1_1tcp__session__container_aff7a9dd66971b6812b9de462d588cc95}{tcp\+\_\+session\+\_\+container} (std\+::vector$<$ std\+::string $>$ \&\+\_\+kernel\+\_\+info\+\_\+table, std\+::string \&\hyperlink{test_8cpp_ad6c70ba8571527f1543822ce71b9a109}{my\+\_\+address}, \hyperlink{classgalapagos_1_1done__clean}{done\+\_\+clean} $\ast$\+\_\+dc, \hyperlink{classgalapagos_1_1n__to__one__router}{n\+\_\+to\+\_\+one\+\_\+router}$<$ \hyperlink{test_8cpp_a0658ceffa730c765d449bb3d21871b5f}{T} $>$ $\ast$\+\_\+router\+\_\+out, std\+::mutex $\ast$\+\_\+mutex\+\_\+packets\+\_\+in\+\_\+flight, int $\ast$\+\_\+packets\+\_\+in\+\_\+flight)
+\item 
+void \hyperlink{classgalapagos_1_1net_1_1tcp__session__container_ad1c38390da6df1bdd61d3c6801edd3c1}{add\+\_\+session} (boost\+::asio\+::ip\+::tcp\+::socket \+\_\+socket, boost\+::asio\+::io\+\_\+context $\ast$io\+\_\+context)
+\item 
+std\+::string \hyperlink{classgalapagos_1_1net_1_1tcp__session__container_a28211ba6529ca572b94169740416fb22}{get\+\_\+ip\+\_\+addr} (short dest)
+\item 
+bool \hyperlink{classgalapagos_1_1net_1_1tcp__session__container_a361a7a20068ba7341626863f05316602}{send} (std\+::string ip\+\_\+addr, char $\ast$data, int size, short dest, short src)
+\item 
+bool \hyperlink{classgalapagos_1_1net_1_1tcp__session__container_a176b5612e91affbb36ef59dcab13c011}{find} (std\+::string \+\_\+ip\+\_\+addr)
+\item 
+void \hyperlink{classgalapagos_1_1net_1_1tcp__session__container_aa180bb49b25f7987575dd00475ce00c5}{start} ()
+\item 
+bool \hyperlink{classgalapagos_1_1net_1_1tcp__session__container_a7c516c69d30b370dea139ede11d85187}{barrier} ()
+\item 
+\hyperlink{classgalapagos_1_1interface}{interface}$<$ \hyperlink{test_8cpp_a0658ceffa730c765d449bb3d21871b5f}{T} $>$ $\ast$ \hyperlink{classgalapagos_1_1net_1_1tcp__session__container_a6fb1b0b779f28ea29825eb6bd96fa66a}{get\+\_\+s\+\_\+axis} (std\+::string ip\+\_\+addr)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\subsubsection*{template$<$class T$>$\\*
+class galapagos\+::net\+::tcp\+\_\+session\+\_\+container$<$ T $>$}
+
+Class for the session\+\_\+container. Addressable by dest. 
+
+Vector of sessions, addressable by dest. Contains helping functions that can help address sessions by ip\+\_\+addrs. Allows user to send data into session and has router to arbitrate from m\+\_\+axis of each session to the output. \begin{DoxyAuthor}{Author}
+Naif Tarafdar 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+April 20, 2019 
+\end{DoxyDate}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{galapagos\+::net\+::tcp\+\_\+session\+\_\+container@{galapagos\+::net\+::tcp\+\_\+session\+\_\+container}!tcp\+\_\+session\+\_\+container@{tcp\+\_\+session\+\_\+container}}
+\index{tcp\+\_\+session\+\_\+container@{tcp\+\_\+session\+\_\+container}!galapagos\+::net\+::tcp\+\_\+session\+\_\+container@{galapagos\+::net\+::tcp\+\_\+session\+\_\+container}}
+\subsubsection[{\texorpdfstring{tcp\+\_\+session\+\_\+container(std\+::vector$<$ std\+::string $>$ \&\+\_\+kernel\+\_\+info\+\_\+table, std\+::string \&my\+\_\+address, done\+\_\+clean $\ast$\+\_\+dc, n\+\_\+to\+\_\+one\+\_\+router$<$ T $>$ $\ast$\+\_\+router\+\_\+out, std\+::mutex $\ast$\+\_\+mutex\+\_\+packets\+\_\+in\+\_\+flight, int $\ast$\+\_\+packets\+\_\+in\+\_\+flight)}{tcp_session_container(std::vector< std::string > &_kernel_info_table, std::string &my_address, done_clean *_dc, n_to_one_router< T > *_router_out, std::mutex *_mutex_packets_in_flight, int *_packets_in_flight)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ tcp\+\_\+session\+\_\+container\+::tcp\+\_\+session\+\_\+container (
+\begin{DoxyParamCaption}
+\item[{std\+::vector$<$ std\+::string $>$ \&}]{\+\_\+kernel\+\_\+info\+\_\+table, }
+\item[{std\+::string \&}]{my\+\_\+address, }
+\item[{{\bf galapagos\+::done\+\_\+clean} $\ast$}]{\+\_\+dc, }
+\item[{{\bf galapagos\+::n\+\_\+to\+\_\+one\+\_\+router}$<$ {\bf T} $>$ $\ast$}]{\+\_\+router\+\_\+out, }
+\item[{std\+::mutex $\ast$}]{\+\_\+mutex\+\_\+packets\+\_\+in\+\_\+flight, }
+\item[{int $\ast$}]{\+\_\+packets\+\_\+in\+\_\+flight}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1net_1_1tcp__session__container_aff7a9dd66971b6812b9de462d588cc95}{}\label{classgalapagos_1_1net_1_1tcp__session__container_aff7a9dd66971b6812b9de462d588cc95}
+
+
+\subsection{Member Function Documentation}
+\index{galapagos\+::net\+::tcp\+\_\+session\+\_\+container@{galapagos\+::net\+::tcp\+\_\+session\+\_\+container}!add\+\_\+session@{add\+\_\+session}}
+\index{add\+\_\+session@{add\+\_\+session}!galapagos\+::net\+::tcp\+\_\+session\+\_\+container@{galapagos\+::net\+::tcp\+\_\+session\+\_\+container}}
+\subsubsection[{\texorpdfstring{add\+\_\+session(boost\+::asio\+::ip\+::tcp\+::socket \+\_\+socket, boost\+::asio\+::io\+\_\+context $\ast$io\+\_\+context)}{add_session(boost::asio::ip::tcp::socket _socket, boost::asio::io_context *io_context)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ void tcp\+\_\+session\+\_\+container\+::add\+\_\+session (
+\begin{DoxyParamCaption}
+\item[{boost\+::asio\+::ip\+::tcp\+::socket}]{\+\_\+socket, }
+\item[{boost\+::asio\+::io\+\_\+context $\ast$}]{io\+\_\+context}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1net_1_1tcp__session__container_ad1c38390da6df1bdd61d3c6801edd3c1}{}\label{classgalapagos_1_1net_1_1tcp__session__container_ad1c38390da6df1bdd61d3c6801edd3c1}
+Adds a new session of a particular socket 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & the type of data used within each galapagos packet (default ap\+\_\+uint$<$64$>$) \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+socket} & tcp socket that has been made and moved into session \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+io\+\_\+context} & pointer to io\+\_\+context needed to communicate over socket \\
+\hline
+\end{DoxyParams}
+\index{galapagos\+::net\+::tcp\+\_\+session\+\_\+container@{galapagos\+::net\+::tcp\+\_\+session\+\_\+container}!barrier@{barrier}}
+\index{barrier@{barrier}!galapagos\+::net\+::tcp\+\_\+session\+\_\+container@{galapagos\+::net\+::tcp\+\_\+session\+\_\+container}}
+\subsubsection[{\texorpdfstring{barrier()}{barrier()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ bool {\bf galapagos\+::net\+::tcp\+\_\+session\+\_\+container}$<$ {\bf T} $>$\+::barrier (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1net_1_1tcp__session__container_a7c516c69d30b370dea139ede11d85187}{}\label{classgalapagos_1_1net_1_1tcp__session__container_a7c516c69d30b370dea139ede11d85187}
+\index{galapagos\+::net\+::tcp\+\_\+session\+\_\+container@{galapagos\+::net\+::tcp\+\_\+session\+\_\+container}!find@{find}}
+\index{find@{find}!galapagos\+::net\+::tcp\+\_\+session\+\_\+container@{galapagos\+::net\+::tcp\+\_\+session\+\_\+container}}
+\subsubsection[{\texorpdfstring{find(std\+::string \+\_\+ip\+\_\+addr)}{find(std::string _ip_addr)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ bool tcp\+\_\+session\+\_\+container\+::find (
+\begin{DoxyParamCaption}
+\item[{std\+::string}]{\+\_\+ip\+\_\+addr}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1net_1_1tcp__session__container_a176b5612e91affbb36ef59dcab13c011}{}\label{classgalapagos_1_1net_1_1tcp__session__container_a176b5612e91affbb36ef59dcab13c011}
+Checks if a session exists with ip\+\_\+addr 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & the type of data used within each galapagos packet (default ap\+\_\+uint$<$64$>$) \\
+\hline
+\end{DoxyTemplParams}
+\begin{DoxyReturn}{Returns}
+if session with ip\+\_\+addr exists 
+\end{DoxyReturn}
+\index{galapagos\+::net\+::tcp\+\_\+session\+\_\+container@{galapagos\+::net\+::tcp\+\_\+session\+\_\+container}!get\+\_\+ip\+\_\+addr@{get\+\_\+ip\+\_\+addr}}
+\index{get\+\_\+ip\+\_\+addr@{get\+\_\+ip\+\_\+addr}!galapagos\+::net\+::tcp\+\_\+session\+\_\+container@{galapagos\+::net\+::tcp\+\_\+session\+\_\+container}}
+\subsubsection[{\texorpdfstring{get\+\_\+ip\+\_\+addr(short dest)}{get_ip_addr(short dest)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ std\+::string tcp\+\_\+session\+\_\+container\+::get\+\_\+ip\+\_\+addr (
+\begin{DoxyParamCaption}
+\item[{short}]{dest}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1net_1_1tcp__session__container_a28211ba6529ca572b94169740416fb22}{}\label{classgalapagos_1_1net_1_1tcp__session__container_a28211ba6529ca572b94169740416fb22}
+Gets ip\+\_\+addr of kern dest 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & the type of data used within each galapagos packet (default ap\+\_\+uint$<$64$>$) \\
+\hline
+\end{DoxyTemplParams}
+\begin{DoxyReturn}{Returns}
+ip\+\_\+addr 
+\end{DoxyReturn}
+\index{galapagos\+::net\+::tcp\+\_\+session\+\_\+container@{galapagos\+::net\+::tcp\+\_\+session\+\_\+container}!get\+\_\+s\+\_\+axis@{get\+\_\+s\+\_\+axis}}
+\index{get\+\_\+s\+\_\+axis@{get\+\_\+s\+\_\+axis}!galapagos\+::net\+::tcp\+\_\+session\+\_\+container@{galapagos\+::net\+::tcp\+\_\+session\+\_\+container}}
+\subsubsection[{\texorpdfstring{get\+\_\+s\+\_\+axis(std\+::string ip\+\_\+addr)}{get_s_axis(std::string ip_addr)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ {\bf galapagos\+::interface}$<$ {\bf T} $>$ $\ast$ tcp\+\_\+session\+\_\+container\+::get\+\_\+s\+\_\+axis (
+\begin{DoxyParamCaption}
+\item[{std\+::string}]{ip\+\_\+addr}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1net_1_1tcp__session__container_a6fb1b0b779f28ea29825eb6bd96fa66a}{}\label{classgalapagos_1_1net_1_1tcp__session__container_a6fb1b0b779f28ea29825eb6bd96fa66a}
+Gets input interface of a session 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & the type of data used within each galapagos packet (default ap\+\_\+uint$<$64$>$) \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em ip\+\_\+addr} & session indexed by ip\+\_\+addr \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+pointer of input interface 
+\end{DoxyReturn}
+\index{galapagos\+::net\+::tcp\+\_\+session\+\_\+container@{galapagos\+::net\+::tcp\+\_\+session\+\_\+container}!send@{send}}
+\index{send@{send}!galapagos\+::net\+::tcp\+\_\+session\+\_\+container@{galapagos\+::net\+::tcp\+\_\+session\+\_\+container}}
+\subsubsection[{\texorpdfstring{send(std\+::string ip\+\_\+addr, char $\ast$data, int size, short dest, short src)}{send(std::string ip_addr, char *data, int size, short dest, short src)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ bool {\bf galapagos\+::net\+::tcp\+\_\+session\+\_\+container}$<$ {\bf T} $>$\+::send (
+\begin{DoxyParamCaption}
+\item[{std\+::string}]{ip\+\_\+addr, }
+\item[{char $\ast$}]{data, }
+\item[{int}]{size, }
+\item[{short}]{dest, }
+\item[{short}]{src}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1net_1_1tcp__session__container_a361a7a20068ba7341626863f05316602}{}\label{classgalapagos_1_1net_1_1tcp__session__container_a361a7a20068ba7341626863f05316602}
+\index{galapagos\+::net\+::tcp\+\_\+session\+\_\+container@{galapagos\+::net\+::tcp\+\_\+session\+\_\+container}!start@{start}}
+\index{start@{start}!galapagos\+::net\+::tcp\+\_\+session\+\_\+container@{galapagos\+::net\+::tcp\+\_\+session\+\_\+container}}
+\subsubsection[{\texorpdfstring{start()}{start()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ void {\bf galapagos\+::net\+::tcp\+\_\+session\+\_\+container}$<$ {\bf T} $>$\+::start (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1net_1_1tcp__session__container_aa180bb49b25f7987575dd00475ce00c5}{}\label{classgalapagos_1_1net_1_1tcp__session__container_aa180bb49b25f7987575dd00475ce00c5}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{galapagos__net__tcp__session_8hpp}{galapagos\+\_\+net\+\_\+tcp\+\_\+session.\+hpp}\end{DoxyCompactItemize}
