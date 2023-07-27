@@ -1,0 +1,370 @@
+\hypertarget{classgalapagos_1_1interface}{}\section{galapagos\+:\+:interface$<$ T $>$ Class Template Reference}
+\label{classgalapagos_1_1interface}\index{galapagos\+::interface$<$ T $>$@{galapagos\+::interface$<$ T $>$}}
+
+
+Class for the Galapagos Interface.  
+
+
+
+
+{\ttfamily \#include $<$galapagos\+\_\+interface.\+hpp$>$}
+
+
+
+Collaboration diagram for galapagos\+:\+:interface$<$ T $>$\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=222pt]{classgalapagos_1_1interface__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classgalapagos_1_1interface_a63cb49d57ceba5e8c98bba9525799a39}{interface} (std\+::string \+\_\+name)
+\item 
+void \hyperlink{classgalapagos_1_1interface_a4b3dd138cac79282418844e588e2535b}{write} (\hyperlink{structgalapagos_1_1stream__packet}{galapagos\+::stream\+\_\+packet}$<$ \hyperlink{test_8cpp_a0658ceffa730c765d449bb3d21871b5f}{T} $>$ gps)
+\item 
+\hyperlink{structgalapagos_1_1stream__packet}{galapagos\+::stream\+\_\+packet}$<$ \hyperlink{test_8cpp_a0658ceffa730c765d449bb3d21871b5f}{T} $>$ \hyperlink{classgalapagos_1_1interface_a5b6366fdfa799f10d782d9f26dccd537}{read} ()
+\item 
+bool \hyperlink{classgalapagos_1_1interface_af856cabc1eae494cec44f0db63723f90}{empty} ()
+\item 
+size\+\_\+t \hyperlink{classgalapagos_1_1interface_a385b790d8de8fa2bab099d23dbfe783e}{size} ()
+\item 
+void \hyperlink{classgalapagos_1_1interface_a1369e3db6102f97c9d34e48de905ecd4}{packet\+\_\+write} (char $\ast$data, int \hyperlink{classgalapagos_1_1interface_a385b790d8de8fa2bab099d23dbfe783e}{size}, short dest, short id)
+\item 
+void \hyperlink{classgalapagos_1_1interface_a815dfac71a7f639f62dbe0a0d9347624}{packet\+\_\+write\+\_\+partial} (char $\ast$data, int \hyperlink{classgalapagos_1_1interface_a385b790d8de8fa2bab099d23dbfe783e}{size}, bool assert\+\_\+last)
+\item 
+char $\ast$ \hyperlink{classgalapagos_1_1interface_ad5cc5346287afb304531bcd35667ee4e}{packet\+\_\+read} (size\+\_\+t $\ast$\hyperlink{classgalapagos_1_1interface_a385b790d8de8fa2bab099d23dbfe783e}{size}, short $\ast$dest, short $\ast$id)
+\item 
+void \hyperlink{classgalapagos_1_1interface_a3e42b3aa2133d0f05c680bfc8fae0195}{packet\+\_\+read} (char $\ast$mem, size\+\_\+t $\ast$\hyperlink{classgalapagos_1_1interface_a385b790d8de8fa2bab099d23dbfe783e}{size}, short $\ast$dest, short $\ast$id)
+\item 
+char $\ast$ \hyperlink{classgalapagos_1_1interface_a9c87f2c9fe9ed9ee0449dc014e160d16}{packet\+\_\+read} (size\+\_\+t $\ast$\+\_\+size)
+\item 
+void \hyperlink{classgalapagos_1_1interface_a087c18c30205c94e6bc458e5bf99f7e6}{set\+\_\+filter} (size\+\_\+t pos, char byte)
+\item 
+short \hyperlink{classgalapagos_1_1interface_ac39b859a468e02a0e6b6ca50f042f79d}{get\+\_\+head\+\_\+dest} ()
+\item 
+std\+::mutex $\ast$ \hyperlink{classgalapagos_1_1interface_a334efdcb21695a5eef218c3a85fbfecd}{get\+\_\+mutex} ()
+\item 
+std\+::list$<$ \hyperlink{structgalapagos_1_1buffer}{galapagos\+::buffer} $>$ $\ast$ \hyperlink{classgalapagos_1_1interface_a9becb63ba4b22e0b9454f779acb98831}{get\+\_\+packets} ()
+\item 
+std\+::condition\+\_\+variable $\ast$ \hyperlink{classgalapagos_1_1interface_a4be570f46f0b8e1033e1ad9fcb6dbebb}{get\+\_\+cv} ()
+\item 
+void \hyperlink{classgalapagos_1_1interface_a5997a6189db1f967df01d0a9fb9e1990}{splice} (\hyperlink{classgalapagos_1_1interface}{galapagos\+::interface}$<$ \hyperlink{test_8cpp_a0658ceffa730c765d449bb3d21871b5f}{T} $>$ $\ast$\+\_\+interface)
+\item 
+std\+::list$<$ \hyperlink{structgalapagos_1_1buffer}{buffer} $>$\+::iterator \hyperlink{classgalapagos_1_1interface_ab828fd748b635db64e13198d328fae79}{get\+\_\+unsafe\+\_\+head\+\_\+buffer} ()
+\item 
+void \hyperlink{classgalapagos_1_1interface_a5002553bd7196789fac8adcd8d837f42}{delete\+\_\+unsafe\+\_\+head\+\_\+buffer} ()
+\item 
+std\+::list$<$ \hyperlink{structgalapagos_1_1buffer}{buffer} $>$ $\ast$ \hyperlink{classgalapagos_1_1interface_ae6f7ed4a44a09ea0871e83a2d508fa13}{get\+\_\+unsafe\+\_\+list} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::string \hyperlink{classgalapagos_1_1interface_a5c9e7d1a9830311b74acd055ccd5f3f6}{name}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\subsubsection*{template$<$class T$>$\\*
+class galapagos\+::interface$<$ T $>$}
+
+Class for the Galapagos Interface. 
+
+Threadsafe for single producer, single consumer. Gives user an interface to read/write flits and entire packets. Packets internally are stored in linked-\/list and can be spliced to other linked-\/lists. The flit interface reads from the head packet of the linked-\/list and writes to the tail packet. \begin{DoxyAuthor}{Author}
+Naif Tarafdar 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+April 20, 2019 
+\end{DoxyDate}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{galapagos\+::interface@{galapagos\+::interface}!interface@{interface}}
+\index{interface@{interface}!galapagos\+::interface@{galapagos\+::interface}}
+\subsubsection[{\texorpdfstring{interface(std\+::string \+\_\+name)}{interface(std::string _name)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ {\bf galapagos\+::interface}$<$ {\bf T} $>$\+::{\bf interface} (
+\begin{DoxyParamCaption}
+\item[{std\+::string}]{\+\_\+name}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1interface_a63cb49d57ceba5e8c98bba9525799a39}{}\label{classgalapagos_1_1interface_a63cb49d57ceba5e8c98bba9525799a39}
+
+
+\subsection{Member Function Documentation}
+\index{galapagos\+::interface@{galapagos\+::interface}!delete\+\_\+unsafe\+\_\+head\+\_\+buffer@{delete\+\_\+unsafe\+\_\+head\+\_\+buffer}}
+\index{delete\+\_\+unsafe\+\_\+head\+\_\+buffer@{delete\+\_\+unsafe\+\_\+head\+\_\+buffer}!galapagos\+::interface@{galapagos\+::interface}}
+\subsubsection[{\texorpdfstring{delete\+\_\+unsafe\+\_\+head\+\_\+buffer()}{delete_unsafe_head_buffer()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ void {\bf galapagos\+::interface}$<$ {\bf T} $>$\+::delete\+\_\+unsafe\+\_\+head\+\_\+buffer (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1interface_a5002553bd7196789fac8adcd8d837f42}{}\label{classgalapagos_1_1interface_a5002553bd7196789fac8adcd8d837f42}
+\index{galapagos\+::interface@{galapagos\+::interface}!empty@{empty}}
+\index{empty@{empty}!galapagos\+::interface@{galapagos\+::interface}}
+\subsubsection[{\texorpdfstring{empty()}{empty()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ bool {\bf galapagos\+::interface}$<$ {\bf T} $>$\+::empty (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1interface_af856cabc1eae494cec44f0db63723f90}{}\label{classgalapagos_1_1interface_af856cabc1eae494cec44f0db63723f90}
+Get if buffer is empty 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & the type of data used within each galapagos packet (default ap\+\_\+uint$<$64$>$) \\
+\hline
+\end{DoxyTemplParams}
+\begin{DoxyReturn}{Returns}
+bool representing if buffer is empty 
+\end{DoxyReturn}
+\index{galapagos\+::interface@{galapagos\+::interface}!get\+\_\+cv@{get\+\_\+cv}}
+\index{get\+\_\+cv@{get\+\_\+cv}!galapagos\+::interface@{galapagos\+::interface}}
+\subsubsection[{\texorpdfstring{get\+\_\+cv()}{get_cv()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ std\+::condition\+\_\+variable $\ast$ {\bf galapagos\+::interface}$<$ {\bf T} $>$\+::get\+\_\+cv (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1interface_a4be570f46f0b8e1033e1ad9fcb6dbebb}{}\label{classgalapagos_1_1interface_a4be570f46f0b8e1033e1ad9fcb6dbebb}
+Get pointer to list of cv, needed to splice \begin{DoxyReturn}{Returns}
+pointer to list of packets 
+\end{DoxyReturn}
+\index{galapagos\+::interface@{galapagos\+::interface}!get\+\_\+head\+\_\+dest@{get\+\_\+head\+\_\+dest}}
+\index{get\+\_\+head\+\_\+dest@{get\+\_\+head\+\_\+dest}!galapagos\+::interface@{galapagos\+::interface}}
+\subsubsection[{\texorpdfstring{get\+\_\+head\+\_\+dest()}{get_head_dest()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ short {\bf galapagos\+::interface}$<$ {\bf T} $>$\+::get\+\_\+head\+\_\+dest (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1interface_ac39b859a468e02a0e6b6ca50f042f79d}{}\label{classgalapagos_1_1interface_ac39b859a468e02a0e6b6ca50f042f79d}
+\index{galapagos\+::interface@{galapagos\+::interface}!get\+\_\+mutex@{get\+\_\+mutex}}
+\index{get\+\_\+mutex@{get\+\_\+mutex}!galapagos\+::interface@{galapagos\+::interface}}
+\subsubsection[{\texorpdfstring{get\+\_\+mutex()}{get_mutex()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ std\+::mutex $\ast$ {\bf galapagos\+::interface}$<$ {\bf T} $>$\+::get\+\_\+mutex (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1interface_a334efdcb21695a5eef218c3a85fbfecd}{}\label{classgalapagos_1_1interface_a334efdcb21695a5eef218c3a85fbfecd}
+Get pointer to mutex, needed to splice \begin{DoxyReturn}{Returns}
+pointer to mutex for list 
+\end{DoxyReturn}
+\index{galapagos\+::interface@{galapagos\+::interface}!get\+\_\+packets@{get\+\_\+packets}}
+\index{get\+\_\+packets@{get\+\_\+packets}!galapagos\+::interface@{galapagos\+::interface}}
+\subsubsection[{\texorpdfstring{get\+\_\+packets()}{get_packets()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ std\+::list$<$ {\bf galapagos\+::buffer} $>$ $\ast$ {\bf galapagos\+::interface}$<$ {\bf T} $>$\+::get\+\_\+packets (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1interface_a9becb63ba4b22e0b9454f779acb98831}{}\label{classgalapagos_1_1interface_a9becb63ba4b22e0b9454f779acb98831}
+Get pointer to list of packets, needed to splice \begin{DoxyReturn}{Returns}
+pointer to list of packets 
+\end{DoxyReturn}
+\index{galapagos\+::interface@{galapagos\+::interface}!get\+\_\+unsafe\+\_\+head\+\_\+buffer@{get\+\_\+unsafe\+\_\+head\+\_\+buffer}}
+\index{get\+\_\+unsafe\+\_\+head\+\_\+buffer@{get\+\_\+unsafe\+\_\+head\+\_\+buffer}!galapagos\+::interface@{galapagos\+::interface}}
+\subsubsection[{\texorpdfstring{get\+\_\+unsafe\+\_\+head\+\_\+buffer()}{get_unsafe_head_buffer()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ std\+::list$<$ {\bf galapagos\+::buffer} $>$\+::iterator {\bf galapagos\+::interface}$<$ {\bf T} $>$\+::get\+\_\+unsafe\+\_\+head\+\_\+buffer (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1interface_ab828fd748b635db64e13198d328fae79}{}\label{classgalapagos_1_1interface_ab828fd748b635db64e13198d328fae79}
+\index{galapagos\+::interface@{galapagos\+::interface}!get\+\_\+unsafe\+\_\+list@{get\+\_\+unsafe\+\_\+list}}
+\index{get\+\_\+unsafe\+\_\+list@{get\+\_\+unsafe\+\_\+list}!galapagos\+::interface@{galapagos\+::interface}}
+\subsubsection[{\texorpdfstring{get\+\_\+unsafe\+\_\+list()}{get_unsafe_list()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ std\+::list$<$ {\bf galapagos\+::buffer} $>$ $\ast$ {\bf galapagos\+::interface}$<$ {\bf T} $>$\+::get\+\_\+unsafe\+\_\+list (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1interface_ae6f7ed4a44a09ea0871e83a2d508fa13}{}\label{classgalapagos_1_1interface_ae6f7ed4a44a09ea0871e83a2d508fa13}
+\index{galapagos\+::interface@{galapagos\+::interface}!packet\+\_\+read@{packet\+\_\+read}}
+\index{packet\+\_\+read@{packet\+\_\+read}!galapagos\+::interface@{galapagos\+::interface}}
+\subsubsection[{\texorpdfstring{packet\+\_\+read(size\+\_\+t $\ast$size, short $\ast$dest, short $\ast$id)}{packet_read(size_t *size, short *dest, short *id)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ char $\ast$ {\bf galapagos\+::interface}$<$ {\bf T} $>$\+::packet\+\_\+read (
+\begin{DoxyParamCaption}
+\item[{size\+\_\+t $\ast$}]{\+\_\+size, }
+\item[{short $\ast$}]{\+\_\+dest, }
+\item[{short $\ast$}]{\+\_\+id}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1interface_ad5cc5346287afb304531bcd35667ee4e}{}\label{classgalapagos_1_1interface_ad5cc5346287afb304531bcd35667ee4e}
+Executes a packet read, this function is not portable between C\+PU and F\+P\+GA. Please be careful to rewrite C\+PU functions to use an individual flit write when porting to H\+LS 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & the type of data used within each galapagos packet (default ap\+\_\+uint$<$64$>$) \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt out}  & {\em \+\_\+size} & size of buffer \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+dest} & dest of buffer \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+id} & id of buffer \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+buffer pointing to batch of data 
+\end{DoxyReturn}
+\index{galapagos\+::interface@{galapagos\+::interface}!packet\+\_\+read@{packet\+\_\+read}}
+\index{packet\+\_\+read@{packet\+\_\+read}!galapagos\+::interface@{galapagos\+::interface}}
+\subsubsection[{\texorpdfstring{packet\+\_\+read(char $\ast$mem, size\+\_\+t $\ast$size, short $\ast$dest, short $\ast$id)}{packet_read(char *mem, size_t *size, short *dest, short *id)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ void {\bf galapagos\+::interface}$<$ {\bf T} $>$\+::packet\+\_\+read (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{mem, }
+\item[{size\+\_\+t $\ast$}]{\+\_\+size, }
+\item[{short $\ast$}]{\+\_\+dest, }
+\item[{short $\ast$}]{\+\_\+id}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1interface_a3e42b3aa2133d0f05c680bfc8fae0195}{}\label{classgalapagos_1_1interface_a3e42b3aa2133d0f05c680bfc8fae0195}
+Executes a packet read, this function is not portable between C\+PU and F\+P\+GA. Please be careful to rewrite C\+PU functions to use an individual flit write when porting to H\+LS 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & the type of data used within each galapagos packet (default ap\+\_\+uint$<$64$>$) \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em mem} & memory to store read data in. No bounds checking (memory must be large enough to hold data) \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+size} & size of buffer \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+dest} & dest of buffer \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+id} & id of buffer \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+buffer pointing to batch of data 
+\end{DoxyReturn}
+\index{galapagos\+::interface@{galapagos\+::interface}!packet\+\_\+read@{packet\+\_\+read}}
+\index{packet\+\_\+read@{packet\+\_\+read}!galapagos\+::interface@{galapagos\+::interface}}
+\subsubsection[{\texorpdfstring{packet\+\_\+read(size\+\_\+t $\ast$\+\_\+size)}{packet_read(size_t *_size)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ char $\ast$ {\bf galapagos\+::interface}$<$ {\bf T} $>$\+::packet\+\_\+read (
+\begin{DoxyParamCaption}
+\item[{size\+\_\+t $\ast$}]{\+\_\+size}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1interface_a9c87f2c9fe9ed9ee0449dc014e160d16}{}\label{classgalapagos_1_1interface_a9c87f2c9fe9ed9ee0449dc014e160d16}
+Executes a packet read, this function is not portable between C\+PU and F\+P\+GA. Please be careful to rewrite C\+PU functions to use an individual flit write when porting to H\+LS 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & the type of data used within each galapagos packet (default ap\+\_\+uint$<$64$>$) \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt out}  & {\em \+\_\+size} & size of buffer \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+buffer pointing to batch of data 
+\end{DoxyReturn}
+\index{galapagos\+::interface@{galapagos\+::interface}!packet\+\_\+write@{packet\+\_\+write}}
+\index{packet\+\_\+write@{packet\+\_\+write}!galapagos\+::interface@{galapagos\+::interface}}
+\subsubsection[{\texorpdfstring{packet\+\_\+write(char $\ast$data, int size, short dest, short id)}{packet_write(char *data, int size, short dest, short id)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ void {\bf galapagos\+::interface}$<$ {\bf T} $>$\+::packet\+\_\+write (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{data, }
+\item[{int}]{size, }
+\item[{short}]{dest, }
+\item[{short}]{id}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1interface_a1369e3db6102f97c9d34e48de905ecd4}{}\label{classgalapagos_1_1interface_a1369e3db6102f97c9d34e48de905ecd4}
+Executes a packet write, this function is not portable between C\+PU and F\+P\+GA. Please be careful to rewrite C\+PU functions to use an individual flit write when porting to H\+LS 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & the type of data used within each galapagos packet (default ap\+\_\+uint$<$64$>$) \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em data} & buffer to be written \\
+\hline
+\mbox{\tt in}  & {\em size} & size of buffer \\
+\hline
+\end{DoxyParams}
+\index{galapagos\+::interface@{galapagos\+::interface}!packet\+\_\+write\+\_\+partial@{packet\+\_\+write\+\_\+partial}}
+\index{packet\+\_\+write\+\_\+partial@{packet\+\_\+write\+\_\+partial}!galapagos\+::interface@{galapagos\+::interface}}
+\subsubsection[{\texorpdfstring{packet\+\_\+write\+\_\+partial(char $\ast$data, int size, bool assert\+\_\+last)}{packet_write_partial(char *data, int size, bool assert_last)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ void {\bf galapagos\+::interface}$<$ {\bf T} $>$\+::packet\+\_\+write\+\_\+partial (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{data, }
+\item[{int}]{size, }
+\item[{bool}]{assert\+\_\+last}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1interface_a815dfac71a7f639f62dbe0a0d9347624}{}\label{classgalapagos_1_1interface_a815dfac71a7f639f62dbe0a0d9347624}
+Executes a partial packet write (the regular write should be called prior to initialize), this function is not portable between C\+PU and F\+P\+GA. Please be careful to rewrite C\+PU functions to use an individual flit write when porting to H\+LS 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & the type of data used within each galapagos packet (default ap\+\_\+uint$<$64$>$) \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em data} & buffer to be written \\
+\hline
+\mbox{\tt in}  & {\em size} & size of buffer \\
+\hline
+\end{DoxyParams}
+\index{galapagos\+::interface@{galapagos\+::interface}!read@{read}}
+\index{read@{read}!galapagos\+::interface@{galapagos\+::interface}}
+\subsubsection[{\texorpdfstring{read()}{read()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ {\bf galapagos\+::stream\+\_\+packet}$<$ {\bf T} $>$ {\bf galapagos\+::interface}$<$ {\bf T} $>$\+::read (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1interface_a5b6366fdfa799f10d782d9f26dccd537}{}\label{classgalapagos_1_1interface_a5b6366fdfa799f10d782d9f26dccd537}
+Read single flit for \hyperlink{classgalapagos_1_1interface}{galapagos\+::interface} 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & the type of data used within each galapagos packet (default ap\+\_\+uint$<$64$>$) \\
+\hline
+\end{DoxyTemplParams}
+\begin{DoxyReturn}{Returns}
+single flit of galapagos packet 
+\end{DoxyReturn}
+\index{galapagos\+::interface@{galapagos\+::interface}!set\+\_\+filter@{set\+\_\+filter}}
+\index{set\+\_\+filter@{set\+\_\+filter}!galapagos\+::interface@{galapagos\+::interface}}
+\subsubsection[{\texorpdfstring{set\+\_\+filter(size\+\_\+t pos, char byte)}{set_filter(size_t pos, char byte)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ void {\bf galapagos\+::interface}$<$ {\bf T} $>$\+::set\+\_\+filter (
+\begin{DoxyParamCaption}
+\item[{size\+\_\+t}]{pos, }
+\item[{char}]{byte}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1interface_a087c18c30205c94e6bc458e5bf99f7e6}{}\label{classgalapagos_1_1interface_a087c18c30205c94e6bc458e5bf99f7e6}
+Set a filter for logging when streaming out on the packet level 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em pos} & postion of byte in packet to check \\
+\hline
+{\em byte} & actual byte value \\
+\hline
+\end{DoxyTemplParams}
+\index{galapagos\+::interface@{galapagos\+::interface}!size@{size}}
+\index{size@{size}!galapagos\+::interface@{galapagos\+::interface}}
+\subsubsection[{\texorpdfstring{size()}{size()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ size\+\_\+t {\bf galapagos\+::interface}$<$ {\bf T} $>$\+::size (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1interface_a385b790d8de8fa2bab099d23dbfe783e}{}\label{classgalapagos_1_1interface_a385b790d8de8fa2bab099d23dbfe783e}
+Gets number of packets in list, plus if any packets are being written in progress 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & the type of data used within each galapagos packet (default ap\+\_\+uint$<$64$>$) \\
+\hline
+\end{DoxyTemplParams}
+\begin{DoxyReturn}{Returns}
+size of buffer in head of list 
+\end{DoxyReturn}
+\index{galapagos\+::interface@{galapagos\+::interface}!splice@{splice}}
+\index{splice@{splice}!galapagos\+::interface@{galapagos\+::interface}}
+\subsubsection[{\texorpdfstring{splice(galapagos\+::interface$<$ T $>$ $\ast$\+\_\+interface)}{splice(galapagos::interface< T > *_interface)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ void {\bf galapagos\+::interface}$<$ {\bf T} $>$\+::splice (
+\begin{DoxyParamCaption}
+\item[{{\bf galapagos\+::interface}$<$ {\bf T} $>$ $\ast$}]{\+\_\+interface}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1interface_a5997a6189db1f967df01d0a9fb9e1990}{}\label{classgalapagos_1_1interface_a5997a6189db1f967df01d0a9fb9e1990}
+Splices last element of \+\_\+interface-\/$>$packets into beginning of packets. The splice moves pointer and should be O(1) 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em \+\_\+interface} & is the interface which we are reading from \\
+\hline
+\end{DoxyTemplParams}
+\index{galapagos\+::interface@{galapagos\+::interface}!write@{write}}
+\index{write@{write}!galapagos\+::interface@{galapagos\+::interface}}
+\subsubsection[{\texorpdfstring{write(galapagos\+::stream\+\_\+packet$<$ T $>$ gps)}{write(galapagos::stream_packet< T > gps)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ void {\bf galapagos\+::interface}$<$ {\bf T} $>$\+::write (
+\begin{DoxyParamCaption}
+\item[{{\bf galapagos\+::stream\+\_\+packet}$<$ {\bf T} $>$}]{gps}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1interface_a4b3dd138cac79282418844e588e2535b}{}\label{classgalapagos_1_1interface_a4b3dd138cac79282418844e588e2535b}
+Write single flit for \hyperlink{classgalapagos_1_1interface}{galapagos\+::interface} 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & the type of data used within each galapagos packet (default ap\+\_\+uint$<$64$>$) \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em gps} & single flit of galapagos packet to write \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Data Documentation}
+\index{galapagos\+::interface@{galapagos\+::interface}!name@{name}}
+\index{name@{name}!galapagos\+::interface@{galapagos\+::interface}}
+\subsubsection[{\texorpdfstring{name}{name}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ std\+::string {\bf galapagos\+::interface}$<$ {\bf T} $>$\+::name}\hypertarget{classgalapagos_1_1interface_a5c9e7d1a9830311b74acd055ccd5f3f6}{}\label{classgalapagos_1_1interface_a5c9e7d1a9830311b74acd055ccd5f3f6}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{galapagos__interface_8hpp}{galapagos\+\_\+interface.\+hpp}\end{DoxyCompactItemize}

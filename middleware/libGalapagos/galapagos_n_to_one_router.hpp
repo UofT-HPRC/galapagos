@@ -27,20 +27,24 @@ namespace galapagos{
     template<class T>
     class n_to_one_router{
         private:
+#if LOG_LEVEL > 0        
             std::shared_ptr<spdlog::logger> logger;
-            
+#endif
 		
-	    _done_struct done_struct;            
+	        _done_struct done_struct;            
 
-	    std::vector <interface <T> *  >  s_axis_ptr; //<! array storing pointers to the input ports of the router
-	    interface <T> m_axis;
-	    std::mutex s_axis_mutex;
-	    std::unique_ptr <std::thread> t;
+	        std::vector <interface <T> *  >  s_axis_ptr; //<! array storing pointers to the input ports of the router
+	        interface <T> m_axis;
+	        std::mutex s_axis_mutex;
+	        std::unique_ptr <std::thread> t;
         public:
+#if LOG_LEVEL > 0        
             n_to_one_router(
                         done_clean * _dc,
                         std::shared_ptr<spdlog::logger> _logger
                         );
+#endif
+            n_to_one_router(done_clean * _dc);
 
             void route(); //!< routing function, can be overridden for different routers
             void add_s_axis(interface <T> * _s_axis); //!< adds a pair of axis interfaces to the router
@@ -54,6 +58,8 @@ namespace galapagos{
 
 }
 
+
+#if LOG_LEVEL > 0
 /**N to one Router constructor
 @tparam T the type of data used within each galapagos packet (default ap_uint<64>)
 @param[in] _done indicates if the local node has finished processing, tells the routing function to finish routing
@@ -72,9 +78,17 @@ galapagos::n_to_one_router<T>::n_to_one_router(
     logger->info("Created n to one router");
     
 }
+#endif
 
-
-
+template <class T> 
+galapagos::n_to_one_router<T>::n_to_one_router(
+                                    done_clean * _dc
+                                    )
+:m_axis(std::string("tcp_m_axis"))
+{
+    dc = _dc;
+    
+}
 
 /**Adds a new interface to the list of inputs
 @tparam T the type of data used within each galapagos packet (default ap_uint<64>)
@@ -93,7 +107,9 @@ void galapagos::n_to_one_router<T>::add_s_axis(galapagos::interface<T> * _s_axis
 */
 template <class T> 
 void galapagos::n_to_one_router<T>::start(){
+#if LOG_LEVEL > 0
     logger->info("Starting Router Node");
+#endif
     t=std::make_unique<std::thread>(&galapagos::n_to_one_router<T>::route, this); 
     t->detach();
      
@@ -109,10 +125,10 @@ void galapagos::n_to_one_router<T>::route(){
 
     do{
         std::lock_guard<std::mutex> lock(s_axis_mutex);
-	for(unsigned int i=0; i<s_axis_ptr.size(); i++){
+	    for(unsigned int i=0; i<s_axis_ptr.size(); i++){
             galapagos::interface <T> * _s_axis = s_axis_ptr[i];
             if(!_s_axis->empty()){
-		m_axis.splice(_s_axis);
+		        m_axis.splice(_s_axis);
             }//if(!_s_axis->empty())
         }//for
     }while(!dc->is_done());

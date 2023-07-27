@@ -1,8 +1,14 @@
 #ifndef __GALAPAGOS_COMMON_HPP__   // if x.h hasn't been included yet...
 #define __GALAPAGOS_COMMON_HPP__
 
+#include <mutex>
+#include <thread>
+#include <condition_variable>
+
+#if LOG_LEVEL > 0
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h"
+#endif
 
 namespace galapagos{
 
@@ -19,7 +25,10 @@ namespace galapagos{
 
     class done_clean{
         public:
+#if LOG_LEVEL > 0
             done_clean(bool * _done, std::mutex * _mutex, std::shared_ptr<spdlog::logger> _logger);
+#endif
+            done_clean(bool * _done, std::mutex * _mutex);
 	        _done_struct done_struct;
             bool is_done();
             void wait_for_clean();
@@ -29,51 +38,36 @@ namespace galapagos{
             std::mutex mutex_clean_up;
             bool clean_status;
             std::condition_variable cv_clean_up;
+#if LOG_LEVEL > 0
             std::shared_ptr<spdlog::logger> logger;
-
+#endif
     };
 
-}
 
+    #define POWER_2(x) (1ULL << (x))
 
-galapagos::done_clean::done_clean(
-                                    bool * _done,
-                                    std::mutex * _mutex,
-                                    std::shared_ptr<spdlog::logger> _logger
-                                    )
-{
-    done_struct.done = _done;
-    done_struct.mutex = _mutex;
-    clean_status = false;
-    logger = _logger;
-}
+    template <class T>
+    T range(short msb, short lsb, T source, size_t value){
+        short size = msb - lsb + 1;
+        T max_value = POWER_2(size) - 1;
+        T value_bitmask = ~(max_value << lsb);
 
-
-
-bool galapagos::done_clean::is_done(){
-    std::lock_guard<std::mutex> guard(*done_struct.mutex);
-    return *done_struct.done;
-}
-
-void galapagos::done_clean::wait_for_clean(){
-
-    
-    std::unique_lock<std::mutex> lock(mutex_clean_up);
-    logger->info("In wait_for clean");
-    logger->flush();
-    while(!clean_status)
-         cv_clean_up.wait(lock);
-    logger->info("after wait_for clean");
-    logger->flush();
-}
-
-void galapagos::done_clean::clean(){
-
-    {
-        std::unique_lock<std::mutex> lock(mutex_clean_up);
-        clean_status = true;
+        T source_masked = source & value_bitmask;
+        return source_masked | ((value & max_value) << lsb);
     }
-    cv_clean_up.notify_one();
+
+    // this conflicts with the one below
+    // template <class T>
+    // T range(short bit, T source, size_t value){
+    //     return range(bit, bit, source, value);
+    // }
+
+    template <class T>
+    T range(short msb, short lsb, T source){
+        short size = msb - lsb + 1;
+        T max_value = POWER_2(size) - 1;
+        return (source >> lsb) & max_value;
+    }
 
 }
 

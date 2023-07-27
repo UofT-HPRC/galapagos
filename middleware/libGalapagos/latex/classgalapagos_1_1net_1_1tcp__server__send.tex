@@ -1,0 +1,123 @@
+\hypertarget{classgalapagos_1_1net_1_1tcp__server__send}{}\section{galapagos\+:\+:net\+:\+:tcp\+\_\+server\+\_\+send$<$ T $>$ Class Template Reference}
+\label{classgalapagos_1_1net_1_1tcp__server__send}\index{galapagos\+::net\+::tcp\+\_\+server\+\_\+send$<$ T $>$@{galapagos\+::net\+::tcp\+\_\+server\+\_\+send$<$ T $>$}}
+
+
+Class for the \hyperlink{classgalapagos_1_1net_1_1tcp__server__send}{tcp\+\_\+server\+\_\+send}, responsible for sending packets to sessions.  
+
+
+
+
+{\ttfamily \#include $<$galapagos\+\_\+net\+\_\+tcp\+\_\+server\+\_\+send.\+hpp$>$}
+
+
+
+Collaboration diagram for galapagos\+:\+:net\+:\+:tcp\+\_\+server\+\_\+send$<$ T $>$\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=216pt]{classgalapagos_1_1net_1_1tcp__server__send__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classgalapagos_1_1net_1_1tcp__server__send_a3857d5f1fd45bb269867d5e0f99e5248}{tcp\+\_\+server\+\_\+send} (short \+\_\+port, boost\+::asio\+::io\+\_\+context $\ast$\+\_\+io\+\_\+context, \hyperlink{classgalapagos_1_1net_1_1tcp__session__container}{tcp\+\_\+session\+\_\+container}$<$ \hyperlink{test_8cpp_a0658ceffa730c765d449bb3d21871b5f}{T} $>$ $\ast$\+\_\+sessions, \hyperlink{classgalapagos_1_1done__clean}{done\+\_\+clean} $\ast$\+\_\+dc, \hyperlink{classgalapagos_1_1interface}{interface}$<$ \hyperlink{test_8cpp_a0658ceffa730c765d449bb3d21871b5f}{T} $>$ $\ast$\+\_\+s\+\_\+axis)
+\item 
+void \hyperlink{classgalapagos_1_1net_1_1tcp__server__send_a14d064e2ad5e0185c0bada4edfff1426}{prepare} (short \+\_\+port, boost\+::asio\+::io\+\_\+context $\ast$\+\_\+io\+\_\+context, \hyperlink{classgalapagos_1_1net_1_1tcp__session__container}{tcp\+\_\+session\+\_\+container}$<$ \hyperlink{test_8cpp_a0658ceffa730c765d449bb3d21871b5f}{T} $>$ $\ast$\+\_\+sessions, \hyperlink{classgalapagos_1_1done__clean}{done\+\_\+clean} $\ast$\+\_\+dc, \hyperlink{classgalapagos_1_1interface}{interface}$<$ \hyperlink{test_8cpp_a0658ceffa730c765d449bb3d21871b5f}{T} $>$ $\ast$\+\_\+s\+\_\+axis)
+\item 
+\hyperlink{classgalapagos_1_1net_1_1tcp__server__send_ab18eee975ce0c0d4cc93a293c1ab710e}{$\sim$tcp\+\_\+server\+\_\+send} ()
+\item 
+void \hyperlink{classgalapagos_1_1net_1_1tcp__server__send_a30cd97b5cb1b51846065a75121fb2656}{send\+\_\+new} (std\+::string ip\+\_\+addr)
+\item 
+void \hyperlink{classgalapagos_1_1net_1_1tcp__server__send_ade3b0a11a7025ce84b93bca633d9f793}{start} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classgalapagos_1_1done__clean}{done\+\_\+clean} $\ast$ \hyperlink{classgalapagos_1_1net_1_1tcp__server__send_ae17e0980a0d49b50cb59a98a6774241d}{dc}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\subsubsection*{template$<$class T$>$\\*
+class galapagos\+::net\+::tcp\+\_\+server\+\_\+send$<$ T $>$}
+
+Class for the \hyperlink{classgalapagos_1_1net_1_1tcp__server__send}{tcp\+\_\+server\+\_\+send}, responsible for sending packets to sessions. 
+
+Runs as daemon in background, with an s\+\_\+axis interface. If receives something on s\+\_\+axis, then checks to see if a session exists, if it does then writes into s\+\_\+axis of session, else creates a new session and then writes into s\+\_\+axis of that session. \begin{DoxyAuthor}{Author}
+Naif Tarafdar 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+April 20, 2019 
+\end{DoxyDate}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{galapagos\+::net\+::tcp\+\_\+server\+\_\+send@{galapagos\+::net\+::tcp\+\_\+server\+\_\+send}!tcp\+\_\+server\+\_\+send@{tcp\+\_\+server\+\_\+send}}
+\index{tcp\+\_\+server\+\_\+send@{tcp\+\_\+server\+\_\+send}!galapagos\+::net\+::tcp\+\_\+server\+\_\+send@{galapagos\+::net\+::tcp\+\_\+server\+\_\+send}}
+\subsubsection[{\texorpdfstring{tcp\+\_\+server\+\_\+send(short \+\_\+port, boost\+::asio\+::io\+\_\+context $\ast$\+\_\+io\+\_\+context, tcp\+\_\+session\+\_\+container$<$ T $>$ $\ast$\+\_\+sessions, done\+\_\+clean $\ast$\+\_\+dc, interface$<$ T $>$ $\ast$\+\_\+s\+\_\+axis)}{tcp_server_send(short _port, boost::asio::io_context *_io_context, tcp_session_container< T > *_sessions, done_clean *_dc, interface< T > *_s_axis)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ tcp\+\_\+server\+\_\+send\+::tcp\+\_\+server\+\_\+send (
+\begin{DoxyParamCaption}
+\item[{short}]{\+\_\+port, }
+\item[{boost\+::asio\+::io\+\_\+context $\ast$}]{\+\_\+io\+\_\+context, }
+\item[{{\bf tcp\+\_\+session\+\_\+container}$<$ {\bf T} $>$ $\ast$}]{\+\_\+sessions, }
+\item[{{\bf done\+\_\+clean} $\ast$}]{\+\_\+dc, }
+\item[{{\bf interface}$<$ {\bf T} $>$ $\ast$}]{\+\_\+s\+\_\+axis}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1net_1_1tcp__server__send_a3857d5f1fd45bb269867d5e0f99e5248}{}\label{classgalapagos_1_1net_1_1tcp__server__send_a3857d5f1fd45bb269867d5e0f99e5248}
+\index{galapagos\+::net\+::tcp\+\_\+server\+\_\+send@{galapagos\+::net\+::tcp\+\_\+server\+\_\+send}!````~tcp\+\_\+server\+\_\+send@{$\sim$tcp\+\_\+server\+\_\+send}}
+\index{````~tcp\+\_\+server\+\_\+send@{$\sim$tcp\+\_\+server\+\_\+send}!galapagos\+::net\+::tcp\+\_\+server\+\_\+send@{galapagos\+::net\+::tcp\+\_\+server\+\_\+send}}
+\subsubsection[{\texorpdfstring{$\sim$tcp\+\_\+server\+\_\+send()}{~tcp_server_send()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ {\bf galapagos\+::net\+::tcp\+\_\+server\+\_\+send}$<$ {\bf T} $>$\+::$\sim${\bf tcp\+\_\+server\+\_\+send} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classgalapagos_1_1net_1_1tcp__server__send_ab18eee975ce0c0d4cc93a293c1ab710e}{}\label{classgalapagos_1_1net_1_1tcp__server__send_ab18eee975ce0c0d4cc93a293c1ab710e}
+
+
+\subsection{Member Function Documentation}
+\index{galapagos\+::net\+::tcp\+\_\+server\+\_\+send@{galapagos\+::net\+::tcp\+\_\+server\+\_\+send}!prepare@{prepare}}
+\index{prepare@{prepare}!galapagos\+::net\+::tcp\+\_\+server\+\_\+send@{galapagos\+::net\+::tcp\+\_\+server\+\_\+send}}
+\subsubsection[{\texorpdfstring{prepare(short \+\_\+port, boost\+::asio\+::io\+\_\+context $\ast$\+\_\+io\+\_\+context, tcp\+\_\+session\+\_\+container$<$ T $>$ $\ast$\+\_\+sessions, done\+\_\+clean $\ast$\+\_\+dc, interface$<$ T $>$ $\ast$\+\_\+s\+\_\+axis)}{prepare(short _port, boost::asio::io_context *_io_context, tcp_session_container< T > *_sessions, done_clean *_dc, interface< T > *_s_axis)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ void tcp\+\_\+server\+\_\+send\+::prepare (
+\begin{DoxyParamCaption}
+\item[{short}]{\+\_\+port, }
+\item[{boost\+::asio\+::io\+\_\+context $\ast$}]{\+\_\+io\+\_\+context, }
+\item[{{\bf tcp\+\_\+session\+\_\+container}$<$ {\bf T} $>$ $\ast$}]{\+\_\+sessions, }
+\item[{{\bf done\+\_\+clean} $\ast$}]{\+\_\+dc, }
+\item[{{\bf interface}$<$ {\bf T} $>$ $\ast$}]{\+\_\+s\+\_\+axis}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1net_1_1tcp__server__send_a14d064e2ad5e0185c0bada4edfff1426}{}\label{classgalapagos_1_1net_1_1tcp__server__send_a14d064e2ad5e0185c0bada4edfff1426}
+\index{galapagos\+::net\+::tcp\+\_\+server\+\_\+send@{galapagos\+::net\+::tcp\+\_\+server\+\_\+send}!send\+\_\+new@{send\+\_\+new}}
+\index{send\+\_\+new@{send\+\_\+new}!galapagos\+::net\+::tcp\+\_\+server\+\_\+send@{galapagos\+::net\+::tcp\+\_\+server\+\_\+send}}
+\subsubsection[{\texorpdfstring{send\+\_\+new(std\+::string ip\+\_\+addr)}{send_new(std::string ip_addr)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ void tcp\+\_\+server\+\_\+send\+::send\+\_\+new (
+\begin{DoxyParamCaption}
+\item[{std\+::string}]{ip\+\_\+addr}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1net_1_1tcp__server__send_a30cd97b5cb1b51846065a75121fb2656}{}\label{classgalapagos_1_1net_1_1tcp__server__send_a30cd97b5cb1b51846065a75121fb2656}
+Creates a T\+CP session before sending data to session 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & the type of data used within each galapagos packet (default ap\+\_\+uint$<$64$>$) \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em ip\+\_\+addr} & address to create session \\
+\hline
+\end{DoxyParams}
+\index{galapagos\+::net\+::tcp\+\_\+server\+\_\+send@{galapagos\+::net\+::tcp\+\_\+server\+\_\+send}!start@{start}}
+\index{start@{start}!galapagos\+::net\+::tcp\+\_\+server\+\_\+send@{galapagos\+::net\+::tcp\+\_\+server\+\_\+send}}
+\subsubsection[{\texorpdfstring{start()}{start()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ void tcp\+\_\+server\+\_\+send\+::start (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1net_1_1tcp__server__send_ade3b0a11a7025ce84b93bca633d9f793}{}\label{classgalapagos_1_1net_1_1tcp__server__send_ade3b0a11a7025ce84b93bca633d9f793}
+
+
+\subsection{Member Data Documentation}
+\index{galapagos\+::net\+::tcp\+\_\+server\+\_\+send@{galapagos\+::net\+::tcp\+\_\+server\+\_\+send}!dc@{dc}}
+\index{dc@{dc}!galapagos\+::net\+::tcp\+\_\+server\+\_\+send@{galapagos\+::net\+::tcp\+\_\+server\+\_\+send}}
+\subsubsection[{\texorpdfstring{dc}{dc}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ {\bf done\+\_\+clean}$\ast$ {\bf galapagos\+::net\+::tcp\+\_\+server\+\_\+send}$<$ {\bf T} $>$\+::dc}\hypertarget{classgalapagos_1_1net_1_1tcp__server__send_ae17e0980a0d49b50cb59a98a6774241d}{}\label{classgalapagos_1_1net_1_1tcp__server__send_ae17e0980a0d49b50cb59a98a6774241d}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{galapagos__net__tcp__server__send_8hpp}{galapagos\+\_\+net\+\_\+tcp\+\_\+server\+\_\+send.\+hpp}\end{DoxyCompactItemize}

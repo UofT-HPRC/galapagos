@@ -1,0 +1,6 @@
+<map id="galapagos::net::tcp&lt; T &gt;" name="galapagos::net::tcp&lt; T &gt;">
+<area shape="rect" id="node2" href="$classgalapagos_1_1external__driver.html" title="{galapagos::external\l_driver\&lt; T \&gt;\n||+ external_driver()\l+ ~external_driver()\l+ init()\l+ get_s_axis()\l+ get_m_axis()\l+ start()\l}" alt="" coords="178,359,331,524"/>
+<area shape="rect" id="node3" href="$classgalapagos_1_1done__clean.html" title="{galapagos::done_clean\n||+ done_clean()\l+ is_done()\l+ wait_for_clean()\l+ clean()\l+ ~done_clean()\l}" alt="" coords="10,160,179,296"/>
+<area shape="rect" id="node4" href="$structgalapagos_1_1__done__struct.html" title="{galapagos::_done_struct\n|+ done\l+ mutex\l|}" alt="" coords="5,5,184,97"/>
+<area shape="rect" id="node5" href="$structgalapagos_1_1__num__threadsafe.html" title="{galapagos::_num_threadsafe\n|+ num\l+ mutex\l|}" alt="" coords="204,182,412,274"/>
+</map>

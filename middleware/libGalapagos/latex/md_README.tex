@@ -1,0 +1,28 @@
+
+\begin{DoxyEnumerate}
+\item Install boost 1.\+66. Refer to \href{https://github.com/UofT-HPRC/galapagos/blob/master/docker/Dockerfile}{\tt https\+://github.\+com/\+Uof\+T-\/\+H\+P\+R\+C/galapagos/blob/master/docker/\+Dockerfile} To install do the following\+: 
+\begin{DoxyCode}
+1 wget http://downloads.sourceforge.net/project/boost/boost/1.66.0/boost\_1\_66\_0.tar.gz
+2 tar xfz boost\_1\_66\_0.tar.gz 
+3 cd boost\_1\_66\_0 
+4 ./bootstrap.sh --prefix=/usr/local  --with-libraries=system,thread,log,program\_options  
+5 sudo ./b2 install 
+\end{DoxyCode}
+
+\item Clone spdlog into util directory if you want logging (not necessary)
+\end{DoxyEnumerate}
+
+\section*{Running Example}
+
+
+\begin{DoxyEnumerate}
+\item Go to hello\+\_\+world\+\_\+udp
+\item {\ttfamily make cpu}
+\item Run 
+\begin{DoxyCode}
+1 ./hello\_world --send\_address <ip address to run kern send> --node\_address <ip address of this kernel>
+       --loopback\_address <ip address that loopback kernel is on>
+\end{DoxyCode}
+ They can be the same IP address, if thats the case both kernels would run on the same C\+PU.
+\item Kernels described in kerns.\+cpp 
+\end{DoxyEnumerate}
