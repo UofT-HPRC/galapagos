@@ -21,8 +21,9 @@ sudo ./b2 install
 ./hello_world
 ```
 This example instantiates kernel 0 on the software side, and it sends messages to kernel 1.
-They can be the same IP address, if that is the case both kernels would run on the same CPU.
 4. Kernels described in kerns.cpp
-
+5. in cpu_node.cpp, 
+set kernel id with `kern_info.push_back(ip_address);`
+add kernels to the software side using `node_ptr->add_kernel(id, kernel_name);`
 
  
