@@ -14,13 +14,14 @@ sudo ./b2 install
 2. Clone spdlog into util directory if you want logging (not necessary)
 
 # Running Example
-1. Go to hello_world_udp
-2. `make cpu`
+1. Go to matrix_multiply
+2. `make`
 3. Run 
 ```
-./hello_world --send_address <ip address to run kern send> --node_address <ip address of this kernel> --loopback_address <ip address that loopback kernel is on>
+./hello_world
 ```
-They can be the same IP address, if thats the case both kernels would run on the same CPU.
+This example instantiates kernel 0 on the software side, and it sends messages to kernel 1.
+They can be the same IP address, if that is the case both kernels would run on the same CPU.
 4. Kernels described in kerns.cpp
 
 
