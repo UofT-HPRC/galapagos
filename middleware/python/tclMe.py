@@ -93,9 +93,9 @@ class tclMeFile():
     def instBlock(self, ip):
 
         if 'vendor' in ip and ip['vendor'] != None:
-            self.tprint('create_bd_cell -type ip -vlnv ' + ip['vendor'] + ':' + ip['lib']+ ':' + ip['name'] + ' ' +  ip['inst'] )
+            self.tprint('addip ' + ip['name'] + ' ' +  ip['inst'] )
         else:
-            self.tprint('create_bd_cell -type ip -vlnv xilinx.com:ip:' + ip['name'] + ' ' +  ip['inst'])
+            self.tprint('addip ' + ip['name'] + ' ' +  ip['inst'])
         
         if 'properties' in ip and ip['properties'] != None:
             self.setProperties(ip['inst'], ip['properties'])

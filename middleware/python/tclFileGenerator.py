@@ -1603,7 +1603,7 @@ def netBridgeConstants(tcl_net):
     # these constants are unneeded in raw mode
     if tcl_net.fpga['comm'] != "raw":
         ip_addr = tcl_net.fpga['ip'].split(".")
-        #tcl_net.write('create_bd_cell -type ip -vlnv user.org:user:ip_constant_block:1.0 network/ip_constant_block_inst\n')
+        #tcl_net.write('addip ip_constant_block network/ip_constant_block_inst\n')
 
         # Not sure where this vendor and lib came from
         tcl_net.instBlock(
@@ -2098,6 +2098,7 @@ if { ! [info exists default_dir] } {\n\
     if fpga['board'] == 'sidewinder':
         tclMain.tprint('set HUNDREDG 1')
     tclMain.addSource(galapagos_path + '/shells/tclScripts/pr_standard_interfaces.tcl')
+    tclMain.addSource(galapagos_path + '/shells/tclScripts/helper_functions.tcl')
     if fpga['comm'] != 'none':
         tclMain.addSource(outDir + '/' + str(fpga['num']) + '_net.tcl')
     tclMain.addSource(outDir + '/' + str(fpga['num']) + '_app.tcl')

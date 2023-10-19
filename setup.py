@@ -19,7 +19,7 @@ style = style_from_dict({
         })
 
 
-
+'''
 class directoryValidator(Validator):
   def validate(self, document):
         if not document.text=='':
@@ -29,7 +29,7 @@ class directoryValidator(Validator):
                         cursor_position=len(document.text)
                         )
 
-
+'''
 
 f = Figlet(font='slant')
 print(f.renderText('Welcome to Galapagos Setup'))
@@ -51,21 +51,18 @@ path_q = {
           'type': 'input',
           'name': 'galapagos_dir',
           'message': 'What is the absolute path where the galapagos directory is located? (default=$PWD)',
-          'validate': directoryValidator
           }
 
 viv_path_q = {
           'type': 'input',
           'name': 'vivado_dir',
           'message': 'What is the directory vivado is located? (default=/mnt/shares/tools/Xilinx/Vivado)',
-          'validate': directoryValidator
           }
 
 hls_path_q = {
           'type': 'input',
           'name': 'hls_dir',
           'message': 'What is the directory vivado_hls is located? (default=/mnt/shares/tools/Xilinx/Vivado)',
-          'validate': directoryValidator
           }
 
 viv_ver_q = {

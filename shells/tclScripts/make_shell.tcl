@@ -61,8 +61,10 @@ if { [info exists ::env(GALAPAGOS_PATH)] } {
     set top_board_part ${::env(SHELLS_BOARD)}
   }
 }
+
 set shell_path $top_shells/$top_board
 
+source $top_shells/tclScripts/helper_functions.tcl
 # assert that the board part exists
 #if { [info exists top_board_part] } {
 #  if { [lsearch [get_board_parts] $top_board_part] == -1 } {

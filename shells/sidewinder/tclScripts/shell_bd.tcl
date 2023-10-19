@@ -278,7 +278,7 @@ proc create_hier_cell_eth_100g { parentCell nameHier } {
   create_bd_pin -dir O -type clk gt_txusrclk2
 
   # Create instance: cmac_usplus_0, and set properties
-  set cmac_usplus_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:cmac_usplus cmac_usplus_0 ]
+  set cmac_usplus_0 [ addip cmac_usplus cmac_usplus_0 ]
   set_property -dict [ list \
    CONFIG.CMAC_CAUI4_MODE {1} \
    CONFIG.CMAC_CORE_SELECT {CMACE4_X0Y1} \
@@ -304,43 +304,43 @@ proc create_hier_cell_eth_100g { parentCell nameHier } {
  ] $cmac_usplus_0
 
   # Create instance: lbus_axis_converter_0, and set properties
-  set lbus_axis_converter_0 [ create_bd_cell -type ip -vlnv clarkshen.com:user:lbus_axis_converter lbus_axis_converter_0 ]
+  set lbus_axis_converter_0 [ addip lbus_axis_converter lbus_axis_converter_0 ]
 
   # Create instance: one, and set properties
-  set one [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant one ]
+  set one [ addip xlconstant one ]
 
   # Create instance: util_ds_buf_0, and set properties
-  set util_ds_buf_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_ds_buf util_ds_buf_0 ]
+  set util_ds_buf_0 [ addip util_ds_buf util_ds_buf_0 ]
 
   # Create instance: zero, and set properties
-  set zero [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant zero ]
+  set zero [ addip xlconstant zero ]
   set_property -dict [ list \
    CONFIG.CONST_VAL {0} \
  ] $zero
 
   # Create instance: zeroX10, and set properties
-  set zeroX10 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant zeroX10 ]
+  set zeroX10 [ addip xlconstant zeroX10 ]
   set_property -dict [ list \
    CONFIG.CONST_VAL {0} \
    CONFIG.CONST_WIDTH {10} \
  ] $zeroX10
 
   # Create instance: zeroX12, and set properties
-  set zeroX12 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant zeroX12 ]
+  set zeroX12 [ addip xlconstant zeroX12 ]
   set_property -dict [ list \
    CONFIG.CONST_VAL {0} \
    CONFIG.CONST_WIDTH {12} \
  ] $zeroX12
 
   # Create instance: zeroX16, and set properties
-  set zeroX16 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant zeroX16 ]
+  set zeroX16 [ addip xlconstant zeroX16 ]
   set_property -dict [ list \
    CONFIG.CONST_VAL {0} \
    CONFIG.CONST_WIDTH {16} \
  ] $zeroX16
 
   # Create instance: zeroX56, and set properties
-  set zeroX56 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant zeroX56 ]
+  set zeroX56 [ addip xlconstant zeroX56 ]
   set_property -dict [ list \
    CONFIG.CONST_VAL {0} \
    CONFIG.CONST_WIDTH {56} \
@@ -515,17 +515,17 @@ proc create_root_design { parentCell } {
  ] $CLK_300
 
   # Create instance: axi_bram_ctrl_0, and set properties
-  set axi_bram_ctrl_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_bram_ctrl axi_bram_ctrl_0 ]
+  set axi_bram_ctrl_0 [ addip axi_bram_ctrl axi_bram_ctrl_0 ]
 
   # Create instance: axi_interconnect_0, and set properties
-  set axi_interconnect_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect: axi_interconnect_0 ]
+  set axi_interconnect_0 [ addip axi_interconnect axi_interconnect_0 ]
   set_property -dict [ list \
    CONFIG.ENABLE_ADVANCED_OPTIONS {0} \
    CONFIG.NUM_MI {2} \
  ] $axi_interconnect_0
 
   # Create instance: axi_interconnect_1, and set properties
-  set axi_interconnect_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect axi_interconnect_1 ]
+  set axi_interconnect_1 [ addip axi_interconnect axi_interconnect_1 ]
   set_property -dict [ list \
    CONFIG.ENABLE_ADVANCED_OPTIONS {0} \
    CONFIG.NUM_MI {1} \
@@ -533,7 +533,7 @@ proc create_root_design { parentCell } {
  ] $axi_interconnect_1
 
   # Create instance: blk_mem_gen_0, and set properties
-  set blk_mem_gen_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen blk_mem_gen_0 ]
+  set blk_mem_gen_0 [ addip blk_mem_gen blk_mem_gen_0 ]
   set_property -dict [ list \
    CONFIG.Enable_B {Use_ENB_Pin} \
    CONFIG.Memory_Type {True_Dual_Port_RAM} \
@@ -544,7 +544,7 @@ proc create_root_design { parentCell } {
  ] $blk_mem_gen_0
 
   # Create instance: clk_wiz_0, and set properties
-  set clk_wiz_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz clk_wiz_0 ]
+  set clk_wiz_0 [ addip clk_wiz clk_wiz_0 ]
   set_property -dict [ list \
    CONFIG.CLKOUT1_DRIVES {Buffer} \
    CONFIG.CLKOUT1_JITTER {89.514} \
@@ -566,8 +566,8 @@ proc create_root_design { parentCell } {
  ] $clk_wiz_0
 
   # Create instance: debug_bridge_0, and set properties
-  set debug_bridge_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:debug_bridge debug_bridge_0 ]
-  set_property -dict [ list \
+  #set debug_bridge_0 [ addip debug_bridge debug_bridge_0 ]
+  #set_property -dict [ list \
    CONFIG.C_DEBUG_MODE {2} \
  ] $debug_bridge_0
 
@@ -575,19 +575,19 @@ proc create_root_design { parentCell } {
   create_hier_cell_eth_100g [current_bd_instance .] eth_100g
 
   # Create instance: proc_sys_reset_0, and set properties
-  set proc_sys_reset_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset proc_sys_reset_0 ]
+  set proc_sys_reset_0 [ addip proc_sys_reset proc_sys_reset_0 ]
 
   # Create instance: proc_sys_reset_1, and set properties
-  set proc_sys_reset_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset proc_sys_reset_1 ]
+  set proc_sys_reset_1 [ addip proc_sys_reset proc_sys_reset_1 ]
 
   # Create instance: rst, and set properties
-  set rst [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant rst ]
+  set rst [ addip xlconstant rst ]
   set_property -dict [ list \
    CONFIG.CONST_VAL {0} \
  ] $rst
 
   # Create instance: util_vector_logic_0, and set properties
-  set util_vector_logic_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic util_vector_logic_0 ]
+  set util_vector_logic_0 [ addip util_vector_logic util_vector_logic_0 ]
   set_property -dict [ list \
    CONFIG.C_OPERATION {not} \
    CONFIG.C_SIZE {1} \
@@ -595,7 +595,7 @@ proc create_root_design { parentCell } {
  ] $util_vector_logic_0
 
   # Create instance: zynq_ultra_ps_e_0, and set properties
-  set zynq_ultra_ps_e_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:zynq_ultra_ps_e zynq_ultra_ps_e_0 ]
+  set zynq_ultra_ps_e_0 [ addip zynq_ultra_ps_e zynq_ultra_ps_e_0 ]
   set_property -dict [ list \
    CONFIG.PSU_BANK_0_IO_STANDARD {LVCMOS33} \
    CONFIG.PSU_BANK_1_IO_STANDARD {LVCMOS33} \
@@ -1133,7 +1133,7 @@ proc create_root_design { parentCell } {
   connect_bd_intf_net -intf_net S_AXI_MEM_1_1 [get_bd_intf_ports S_AXI_MEM_1] [get_bd_intf_pins axi_interconnect_1/S00_AXI]
   connect_bd_intf_net -intf_net axi_bram_ctrl_0_BRAM_PORTA [get_bd_intf_pins axi_bram_ctrl_0/BRAM_PORTA] [get_bd_intf_pins blk_mem_gen_0/BRAM_PORTA]
   connect_bd_intf_net -intf_net axi_bram_ctrl_0_BRAM_PORTB [get_bd_intf_pins axi_bram_ctrl_0/BRAM_PORTB] [get_bd_intf_pins blk_mem_gen_0/BRAM_PORTB]
-  connect_bd_intf_net -intf_net axi_interconnect_0_M00_AXI [get_bd_intf_pins axi_interconnect_0/M00_AXI] [get_bd_intf_pins debug_bridge_0/S_AXI]
+  #connect_bd_intf_net -intf_net axi_interconnect_0_M00_AXI [get_bd_intf_pins axi_interconnect_0/M00_AXI] [get_bd_intf_pins debug_bridge_0/S_AXI]
   connect_bd_intf_net -intf_net axi_interconnect_0_M01_AXI [get_bd_intf_ports S_AXI_CONTROL] [get_bd_intf_pins axi_interconnect_0/M01_AXI]
   connect_bd_intf_net -intf_net axi_interconnect_1_M00_AXI [get_bd_intf_pins axi_bram_ctrl_0/S_AXI] [get_bd_intf_pins axi_interconnect_1/M00_AXI]
   connect_bd_intf_net -intf_net eth_100g_m_axis [get_bd_intf_ports S_AXIS] [get_bd_intf_pins eth_100g/m_axis]
@@ -1142,17 +1142,19 @@ proc create_root_design { parentCell } {
 
   # Create port connections
   connect_bd_net -net ARESETN_1 [get_bd_pins axi_interconnect_0/ARESETN] [get_bd_pins proc_sys_reset_1/interconnect_aresetn]
-  connect_bd_net -net S00_ACLK_1 [get_bd_pins axi_interconnect_0/M00_ACLK] [get_bd_pins axi_interconnect_0/S00_ACLK] [get_bd_pins debug_bridge_0/s_axi_aclk] [get_bd_pins proc_sys_reset_0/slowest_sync_clk] [get_bd_pins zynq_ultra_ps_e_0/maxihpm0_fpd_aclk] [get_bd_pins zynq_ultra_ps_e_0/pl_clk0]
+  #connect_bd_net -net S00_ACLK_1 [get_bd_pins axi_interconnect_0/M00_ACLK] [get_bd_pins axi_interconnect_0/S00_ACLK] [get_bd_pins debug_bridge_0/s_axi_aclk] [get_bd_pins proc_sys_reset_0/slowest_sync_clk] [get_bd_pins zynq_ultra_ps_e_0/maxihpm0_fpd_aclk] [get_bd_pins zynq_ultra_ps_e_0/pl_clk0]
+  connect_bd_net -net S00_ACLK_1 [get_bd_pins axi_interconnect_0/M00_ACLK] [get_bd_pins axi_interconnect_0/S00_ACLK] [get_bd_pins proc_sys_reset_0/slowest_sync_clk] [get_bd_pins zynq_ultra_ps_e_0/maxihpm0_fpd_aclk] [get_bd_pins zynq_ultra_ps_e_0/pl_clk0]
   connect_bd_net -net clk_wiz_0_clk_out1 [get_bd_ports CLK] [get_bd_pins axi_bram_ctrl_0/s_axi_aclk] [get_bd_pins axi_interconnect_0/ACLK] [get_bd_pins axi_interconnect_0/M01_ACLK] [get_bd_pins axi_interconnect_1/ACLK] [get_bd_pins axi_interconnect_1/M00_ACLK] [get_bd_pins axi_interconnect_1/S00_ACLK] [get_bd_pins axi_interconnect_1/S01_ACLK] [get_bd_pins clk_wiz_0/clk_out1] [get_bd_pins proc_sys_reset_1/slowest_sync_clk]
   connect_bd_net -net eth_100g_gt_txusrclk2 [get_bd_ports CLK_300] [get_bd_pins clk_wiz_0/clk_in1] [get_bd_pins eth_100g/gt_txusrclk2]
-  connect_bd_net -net proc_sys_reset_0_interconnect_aresetn [get_bd_pins axi_interconnect_0/S00_ARESETN] [get_bd_pins clk_wiz_0/resetn] [get_bd_pins debug_bridge_0/s_axi_aresetn] [get_bd_pins proc_sys_reset_0/interconnect_aresetn]
+  #connect_bd_net -net proc_sys_reset_0_interconnect_aresetn [get_bd_pins axi_interconnect_0/S00_ARESETN] [get_bd_pins clk_wiz_0/resetn] [get_bd_pins debug_bridge_0/s_axi_aresetn] [get_bd_pins proc_sys_reset_0/interconnect_aresetn]
+  connect_bd_net -net proc_sys_reset_0_interconnect_aresetn [get_bd_pins axi_interconnect_0/S00_ARESETN] [get_bd_pins clk_wiz_0/resetn] [get_bd_pins proc_sys_reset_0/interconnect_aresetn]
   connect_bd_net -net rst_dout [get_bd_pins rst/dout] [get_bd_pins util_vector_logic_0/Op1]
   connect_bd_net -net util_vector_logic_0_Res [get_bd_ports ARESETN] [get_bd_pins axi_bram_ctrl_0/s_axi_aresetn] [get_bd_pins axi_interconnect_0/M00_ARESETN] [get_bd_pins axi_interconnect_0/M01_ARESETN] [get_bd_pins axi_interconnect_1/ARESETN] [get_bd_pins axi_interconnect_1/M00_ARESETN] [get_bd_pins axi_interconnect_1/S00_ARESETN] [get_bd_pins axi_interconnect_1/S01_ARESETN] [get_bd_pins util_vector_logic_0/Res]
   connect_bd_net -net zynq_ultra_ps_e_0_pl_resetn0 [get_bd_pins proc_sys_reset_0/ext_reset_in] [get_bd_pins proc_sys_reset_1/ext_reset_in] [get_bd_pins zynq_ultra_ps_e_0/pl_resetn0]
 
   # Create address segments
-  create_bd_addr_seg -range 0x00010000 -offset 0xA0010000 [get_bd_addr_spaces zynq_ultra_ps_e_0/Data] [get_bd_addr_segs S_AXI_CONTROL/Reg] SEG_S_AXI_CONTROL_Reg
-  create_bd_addr_seg -range 0x00010000 -offset 0xA0000000 [get_bd_addr_spaces zynq_ultra_ps_e_0/Data] [get_bd_addr_segs debug_bridge_0/S_AXI/Reg0] SEG_debug_bridge_0_Reg0
+  create_bd_addr_seg -range 0x10000000 -offset 0xA0000000 [get_bd_addr_spaces zynq_ultra_ps_e_0/Data] [get_bd_addr_segs S_AXI_CONTROL/Reg] SEG_S_AXI_CONTROL_Reg
+  #create_bd_addr_seg -range 0x00010000 -offset 0xA0000000 [get_bd_addr_spaces zynq_ultra_ps_e_0/Data] [get_bd_addr_segs debug_bridge_0/S_AXI/Reg0] SEG_debug_bridge_0_Reg0
 
 
   # Restore current instance
