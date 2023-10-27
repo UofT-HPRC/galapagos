@@ -121,12 +121,12 @@ set_property ip_repo_paths [list \
 update_ip_catalog -rebuild
 
 # Set 'sources_1' fileset object
-set obj [get_filesets sources_1]
-if {! [catch {glob $shell_path/srcs/*} yikes] } {
-  set files [glob $shell_path/srcs/*]
-  import_files -norecurse -fileset $obj $files
+#set obj [get_filesets sources_1]
+#if {! [catch {glob $shell_path/srcs/*} yikes] } {
+#  set files [glob $shell_path/srcs/*]
+#  import_files -norecurse -fileset $obj $files
   #add_files -norecurse -fileset $obj $files
-}
+#}
 
 create_bd_design "shell"
 # open_bd_design $project_path/$project_name.srcs/sources_1/bd/shell/shell.bd
@@ -271,7 +271,7 @@ if { [file exists $shell_path/tclScripts/shell_epilogue.tcl] } {
     return $ret_val
   }
 }
-
+save_bd_design
 puts "INFO: Project created:$project_name"
 
 if { $start_synth != 0 } {

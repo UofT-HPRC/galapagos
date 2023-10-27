@@ -5,7 +5,7 @@ import subprocess
 import os
 from tclMe import tclMeFile
 import string
-
+from createTopLevel import top_fun
 """
 Most of these functions are called (directly or indirectly) by makeTclFiles.
 Each one takes care of one self-contained part of the TCL file generation.
@@ -2075,7 +2075,11 @@ def makeTCLFiles(fpga, projectName, output_path, sim):
     """
 
     outDir = output_path + '/' + projectName + '/' + str(fpga['num'])
-
+    sum = 0
+    for i in fpga.data["kernel"]:
+        sum = sum + int(i.data["rep"])
+    if (sum > 0):
+        top_fun(sum,outDir+"/topLevel.v",output_path+"/../middleware/python")
     #make bridge to network
     if fpga['comm'] != 'none':
         netBridge(outDir, fpga)
@@ -2095,10 +2099,11 @@ if { ! [info exists default_dir] } {\n\
 }\n\
 "
     )
+    tclMain.tprint("add_files -norecurse "+outDir+"/topLevel.v\nupdate_compile_order -fileset sources_1")
+    tclMain.addSource(galapagos_path + '/shells/tclScripts/helper_functions.tcl')
     if fpga['board'] == 'sidewinder':
         tclMain.tprint('set HUNDREDG 1')
     tclMain.addSource(galapagos_path + '/shells/tclScripts/pr_standard_interfaces.tcl')
-    tclMain.addSource(galapagos_path + '/shells/tclScripts/helper_functions.tcl')
     if fpga['comm'] != 'none':
         tclMain.addSource(outDir + '/' + str(fpga['num']) + '_net.tcl')
     tclMain.addSource(outDir + '/' + str(fpga['num']) + '_app.tcl')

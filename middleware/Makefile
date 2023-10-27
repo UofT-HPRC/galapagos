@@ -26,6 +26,7 @@ all: middleware hlsmiddleware
 middleware: guard-LOGICALFILE guard-MAPFILE guard-PROJECTNAME ${LOGICALFILE} ${MAPFILE}
 	python3.7 ${python_path}/globalFPGAParser.py --logicalFile=${LOGICALFILE} \
 		--mapFile=${MAPFILE} --projectName=${PROJECTNAME}
+	python3.7 ${python_path}/createTopLevel.py
 	chmod +x $(GALAPAGOS_PATH)/projects/$(PROJECTNAME)/createCluster.sh
 
 hlsmiddleware:

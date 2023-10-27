@@ -9,6 +9,31 @@ from node import node
 import os
 import socket, struct
 import glob
+import time
+import inspect
+def recursively_print(obj,preamble):
+    if obj == None:
+        print(preamble+"NoneType obj")
+    elif (isinstance(obj,dict)):
+        for i in obj:
+            print (preamble + "dict: "+str(i)+"->")
+            recursively_print(obj[i],preamble + "    ");
+    elif type(obj) is list:
+        print(preamble + "-> list")
+        for i in obj:
+            recursively_print(i,preamble +"    ");
+    elif (isinstance(obj,kernel) or isinstance(obj,node)):
+        print(preamble + "->"+ str(type(obj)))
+        preamble = preamble + "    "
+        attrs = vars(obj)
+        for i in attrs:
+            print(preamble + i + ">")
+            recursively_print(getattr(obj,i), preamble+"    ");
+    else:
+        print(preamble,end="")
+        print(obj)
+
+    
 
 class cluster(abstractDict):
     """ This class is the top-level interface to the myriad other objects used
@@ -190,7 +215,6 @@ class cluster(abstractDict):
                 kern_dict_local['rep'] = 1
                 kern_dict_local['num'] = int(kern_dict_local['num'])
                 self.kernels.append(kernel(**kern_dict_local))
-
         ## Dumps kernel info to the screen (printf debugging)
         #for kern in self.kernels:
         #    print("kernel object " + str(kern.data))
@@ -229,6 +253,7 @@ class cluster(abstractDict):
             node_inst['num'] = node_idx
             # Maintain array of pointer to node objects
             self.nodes.append(node_inst)
+        
 
     def writeClusterTCL(self, output_path, sim):
 
@@ -239,7 +264,6 @@ class cluster(abstractDict):
                 #tclFileThreads.append(threading.Thread(target=tclFileGenerator.makeTCLFiles, args=(node,self.name, output_path, sim)))
                 #tclFileThreads[len(tclFileThreads)-1].start()
                 tclFileGenerator.makeTCLFiles(node, self.name, output_path, sim)
-
 #        for thread in tclFileThreads:
 #            thread.join()
 
