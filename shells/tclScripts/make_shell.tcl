@@ -102,6 +102,10 @@ if { [file exists $shell_path/tclScripts/shell_prologue.tcl] } {
     puts "Error in shell_prologue script"
     return $ret_val
   }
+} else {
+  puts "shell file does not exist for shell_prologue"
+  puts $shell_path
+  return 5
 }
 
 # Create 'sources_1' fileset (if not found)
@@ -135,6 +139,7 @@ if { $ret_val != 0 } {
   puts "Error in shell_bd script"
   return $ret_val
 }
+puts $shell_path
 
 # Set 'sources_1' fileset file properties for remote files
 set file "$project_path/$project_name.srcs/sources_1/bd/shell/shell.bd"
@@ -166,6 +171,8 @@ if { [info exists sim_dir] } {
     source $shell_path/tclScripts/sim_mig.tcl
     validate_bd_design
 }
+
+save_bd_design
 
 # Set 'sources_1' fileset object
 create_bd_design "pr"
