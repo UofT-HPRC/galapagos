@@ -1,5 +1,4 @@
 #create the ports
-puts "In Shell Toplevel"
 create_bd_intf_port -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 eth_rx
 
 create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:diff_clock_rtl:1.0 init_clk

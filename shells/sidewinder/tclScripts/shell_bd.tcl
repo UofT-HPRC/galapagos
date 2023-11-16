@@ -1,4 +1,3 @@
-puts "This is a test"
 puts ${::env(GALAPAGOS_PATH)}
 source ${::env(GALAPAGOS_PATH)}/shells/sidewinder/tclScripts/shellTopLevel.tcl
 source ${::env(GALAPAGOS_PATH)}/shells/sidewinder/tclScripts/setup_ps_link.tcl

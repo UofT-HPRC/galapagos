@@ -106,8 +106,12 @@ class tclMeFile():
                 self.tprint('connect_bd_net [get_bd_ports CLK] [get_bd_pins ' + ip['inst'] + '/' + clk_name + ']')
 
         if 'resetns' in ip and ip['resetns'] != None:
-            for reset_name in ip['resetns']:
-                self.tprint('connect_bd_net [get_bd_ports ARESETN] [get_bd_pins ' + ip['inst'] + '/' + reset_name + ']')
+            if ip['resetns_port'] != None:
+                for reset_name in ip['resetns']:
+                    self.tprint('connect_bd_net [get_bd_ports '+ip['resetns_port']+'] [get_bd_pins ' + ip['inst'] + '/' + reset_name + ']')
+            else:
+                for reset_name in ip['resetns']:
+                    self.tprint('connect_bd_net [get_bd_ports ARESETN] [get_bd_pins ' + ip['inst'] + '/' + reset_name + ']')
 
 
     def makeConnection(self, conn_type, source, sink):

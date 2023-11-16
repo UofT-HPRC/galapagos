@@ -80,7 +80,7 @@ def copy_file(dest_fp,src_filename):
 
 def top_fun(num_users, target_files, source_dir):
     dst_file = open(target_files,"w")
-    copy_file(dst_file,source_dir+"/shellTop_pt1.v")
+    copy_file(dst_file,source_dir+"../verilog/shellTop_pt1.v")
     dst_file.write(construct_axis_wire("  ","M_AXIS",512,0,True))
     dst_file.write(construct_axis_wire("  ","S_AXIS",512,0,False))
     dst_file.write(construct_axi_wire("  ","S_AXI_CONTROL",16,128,40))
@@ -88,11 +88,11 @@ def top_fun(num_users, target_files, source_dir):
         dst_file.write(construct_axi_wire("  ","USER_"+str(i)+"_CONTROL",16,128,40))
         dst_file.write(construct_axis_wire("  ","M_USER_"+str(i),512,24,True))
         dst_file.write(construct_axis_wire("  ","S_USER_"+str(i),512,24,True))
-    copy_file(dst_file,source_dir+"/shellTop_pt2.v")
+    copy_file(dst_file,source_dir+"../verilog/shellTop_pt2.v")
     dst_file.write(construct_axis_base_defn("    ","M_AXIS","eth_tx",True))
     dst_file.write(construct_axis_base_defn("    ","S_AXIS","eth_rx",False))
     dst_file.write(construct_axi_defn("    ","S_AXI_CONTROL","S_AXI_CONTROL",True,True))
-    copy_file(dst_file,source_dir+"/shellTop_pt3.v")
+    copy_file(dst_file,source_dir+"../verilog/shellTop_pt3.v")
     dst_file.write(construct_axis_base_defn("    ","M_AXIS","M_AXIS",True))
     dst_file.write(construct_axis_base_defn("    ","S_AXIS","S_AXIS",False))
     dst_file.write(construct_axi_defn("    ","S_AXI_CONTROL","S_AXI_CONTROL",True,True))

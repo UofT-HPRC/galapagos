@@ -28,6 +28,7 @@ def userApplicationRegionControlInst(tcl_user_app):
 
     num_ctrl_interfaces = len(getInterfaces(tcl_user_app.fpga, 's_axi', 'scope', 'global'))
     # extra interfaces for the memories containing addresses in this mode
+    num_ctrl_interfaces = num_ctrl_interfaces + 2
     if tcl_user_app.fpga['comm'] == 'raw':
         num_ctrl_interfaces = num_ctrl_interfaces + 2
 
@@ -35,6 +36,7 @@ def userApplicationRegionControlInst(tcl_user_app):
     if(num_ctrl_interfaces == 0):
         tcl_user_app.instBlock(
                 {'name':'axi_vip',
+                 'resetns_port':'rst',
                 'inst':'applicationRegion/axi_vip_ctrl',
                 'clks':['aclk'],
                 'resetns':['aresetn'],
@@ -74,6 +76,7 @@ def userApplicationRegionControlInst(tcl_user_app):
 
         tcl_user_app.instBlock(
                 {'name':'axi_interconnect',
+                 'resetns_port': 'rst',
                 'inst':'applicationRegion/axi_interconnect_ctrl',
                 'clks':inc_clks,
                 'resetns':inc_resetns,
@@ -224,6 +227,7 @@ def userApplicationRegionMemInstLocal(tcl_user_app):
         tcl_user_app.instBlock(
                 {
                 'name':'axi_interconnect',
+                'resetns_port': 'rst',
                 'inst': m_axi['kernel_inst']['inst'] + '_' + m_axi['name'] + '_inc_inst',
                 'clks': inc_clks,
                 'resetns': inc_resetns,
@@ -319,85 +323,86 @@ def userApplicationRegionMemInstGlobal(tcl_user_app, shared):
                 {
                 'name':'axi_interconnect',
                 'inst':'applicationRegion/axi_interconnect_mem',
+                'resetns_port': 'rst',
                 'clks':inc_clks,
                 'resetns':inc_resetns,
                 'properties':properties
                 }
                 )
 
-        tcl_user_app.makeConnection(
-                    'intf',
-                    {
-                    'name':'applicationRegion/axi_interconnect_mem',
-                    'type':'intf',
-                    'port_name':'M00_AXI'
-                    },
-                    {'name':None,
-                    'type':'intf_port',
-                    'port_name':'S_AXI_MEM_0'
-                    }
-                    )
-        if shared:
-            tcl_user_app.makeConnection(
-                        'intf',
-                        {
-                        'name':'applicationRegion/axi_interconnect_mem',
-                        'type':'intf',
-                        'port_name':'M01_AXI'
-                        },
-                        {'name':None,
-                        'type':'intf_port',
-                        'port_name':'S_AXI_MEM_1'
-                        }
-                        )
+        # tcl_user_app.makeConnection(
+                    # 'intf',
+                    # {
+                    # 'name':'applicationRegion/axi_interconnect_mem',
+                    # 'type':'intf',
+                    # 'port_name':'M00_AXI'
+                    # },
+                    # {'name':None,
+                    # 'type':'intf_port',
+                    # 'port_name':'S_AXI_MEM_0'
+                    # }
+                    # )
+        # if shared:
+            # tcl_user_app.makeConnection(
+                        # 'intf',
+                        # {
+                        # 'name':'applicationRegion/axi_interconnect_mem',
+                        # 'type':'intf',
+                        # 'port_name':'M01_AXI'
+                        # },
+                        # {'name':None,
+                        # 'type':'intf_port',
+                        # 'port_name':'S_AXI_MEM_1'
+                        # }
+                        # )
 
 
-    else:
+    #else:
         #no mem interface use VIP instead
-        tcl_user_app.instBlock(
-                {
-                'name':'axi_vip',
-                'inst':'applicationRegion/axi_vip_mem_0',
-                'clks':['aclk'],
-                'resetns':['aresetn'],
-                'properties':['CONFIG.INTERFACE_MODE {MASTER}', 'CONFIG.DATA_WIDTH {512}']
-                }
-                )
-        tcl_user_app.makeConnection(
-                    'intf',
-                    {
-                    'name':'applicationRegion/axi_vip_mem_0',
-                    'type':'intf',
-                    'port_name':'M_AXI'
-                    },
-                    {'name':None,
-                    'type':'intf_port',
-                    'port_name':'S_AXI_MEM_0'
-                    }
-                    )
-        if shared:
-            tcl_user_app.instBlock(
-                     {
-                      'name':'axi_vip',
-                      'inst':'applicationRegion/axi_vip_mem_1',
-                      'clks':['aclk'],
-                      'resetns':['aresetn'],
-                      'properties':['CONFIG.INTERFACE_MODE {MASTER}', 'CONFIG.DATA_WIDTH {512}']
-                      }
-                      )
-            tcl_user_app.makeConnection(
-                          'intf',
-                          {
-                          'name':'applicationRegion/axi_vip_mem_1',
-                          'type':'intf',
-                          'port_name':'M_AXI'
-                          },
-                          {
-                          'name':None,
-                          'type':'intf_port',
-                          'port_name':'S_AXI_MEM_1'
-                          }
-                          )
+        # tcl_user_app.instBlock(
+                # {
+                # 'name':'axi_vip',
+                # 'inst':'applicationRegion/axi_vip_mem_0',
+                # 'clks':['aclk'],
+                # 'resetns':['aresetn'],
+                # 'properties':['CONFIG.INTERFACE_MODE {MASTER}', 'CONFIG.DATA_WIDTH {512}']
+                # }
+                # )
+        # tcl_user_app.makeConnection(
+                    # 'intf',
+                    # {
+                    # 'name':'applicationRegion/axi_vip_mem_0',
+                    # 'type':'intf',
+                    # 'port_name':'M_AXI'
+                    # },
+                    # {'name':None,
+                    # 'type':'intf_port',
+                    # 'port_name':'S_AXI_MEM_0'
+                    # }
+                    # )
+        # if shared:
+            # tcl_user_app.instBlock(
+                     # {
+                      # 'name':'axi_vip',
+                      # 'inst':'applicationRegion/axi_vip_mem_1',
+                      # 'clks':['aclk'],
+                      # 'resetns':['aresetn'],
+                      # 'properties':['CONFIG.INTERFACE_MODE {MASTER}', 'CONFIG.DATA_WIDTH {512}']
+                      # }
+                      # )
+            # tcl_user_app.makeConnection(
+                          # 'intf',
+                          # {
+                          # 'name':'applicationRegion/axi_vip_mem_1',
+                          # 'type':'intf',
+                          # 'port_name':'M_AXI'
+                          # },
+                          # {
+                          # 'name':None,
+                          # 'type':'intf_port',
+                          # 'port_name':'S_AXI_MEM_1'
+                          # }
+                          # )
 
 def userApplicationRegionKernelsInst(tcl_user_app):
     """
@@ -424,6 +429,7 @@ def userApplicationRegionKernelsInst(tcl_user_app):
                     'name': kern['name'],
                     'inst':'applicationRegion/' + instName,
                     'clks': kern['clk'],
+                    'resetns_port': 'rst',
                     'resetns': kern['aresetn'],
                     'properties': kern['properties']
                     }
@@ -436,6 +442,7 @@ def userApplicationRegionKernelsInst(tcl_user_app):
                     'name': kern['name'],
                     'inst':'applicationRegion/' + instName,
                     'clks': kern['clk'],
+                    'resetns_port': 'rst',
                     'resetns': kern['aresetn']
                     }
                     )
@@ -449,6 +456,7 @@ def userApplicationRegionKernelsInst(tcl_user_app):
                     {
                     'name':'xlconstant',
                     'inst': 'applicationRegion/id_' + str(kern['num']),
+                    'resetns_port': 'rst',
                     'properties':['CONFIG.CONST_WIDTH {32}',
                         'CONFIG.CONST_VAL {'+ str(kern['num'])+'}']
                     }
@@ -473,6 +481,7 @@ def userApplicationRegionKernelsInst(tcl_user_app):
                 tcl_user_app.instBlock(
                         {
                         'name':'xlconstant',
+                        'resetns_port': 'rst',
                         'inst': 'applicationRegion/' + instName + '_' + const['name'],
                         'properties':['CONFIG.CONST_WIDTH {' + str(const['width']) + '}',
                             ' CONFIG.CONST_VAL {'+ str(const['val']) + '}']
@@ -511,6 +520,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
         tcl_user_app.instBlock(
                 {
                 'name':'blk_mem_gen',
+                'resetns_port': 'rst',
                 'inst':'applicationRegion/blk_mem_switch_rom',
                 }
                 )
@@ -525,6 +535,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
             'name':'width32router',
             'inst':'applicationRegion/custom_switch_inst',
             'clks':['ap_clk'],
+            'resetns_port': 'rst',
             'resetns':['ap_rst_n']
             }
             )
@@ -585,7 +596,8 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                 'name':'width48router',
                 'inst':'applicationRegion/custom_switch_inst',
                 'clks':['aclk'],
-                'resetns':['aresetn']
+                'resetns':['aresetn'],
+                'resetns_port': 'rst'
                 }
                 )
 
@@ -661,6 +673,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
             'name':'axi_bram_ctrl',
             'inst':'applicationRegion/ctrl_blk_mem_switch_rom',
             'clks':['s_axi_aclk'],
+            'resetns_port': 'rst',
             'resetns':['s_axi_aresetn']
             }
         )
@@ -671,6 +684,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
             {
             'name':'blk_mem_gen',
             'inst':'applicationRegion/blk_mem_switch_rom_mac',
+            'resetns_port': 'rst',
             }
         )
 
@@ -679,7 +693,8 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
             'name':'axi_bram_ctrl',
             'inst':'applicationRegion/ctrl_blk_mem_switch_rom_mac',
             'clks':['s_axi_aclk'],
-            'resetns':['s_axi_aresetn']
+            'resetns':['s_axi_aresetn'],
+            'resetns_port': 'rst'
             }
         )
         tcl_user_app.setProperties('applicationRegion/ctrl_blk_mem_switch_rom_mac', ["CONFIG.SINGLE_PORT_BRAM {1}", "CONFIG.DATA_WIDTH {64}"])
@@ -789,6 +804,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                             'inst':'applicationRegion/input_switch',
                             'clks':['aclk'],
                             'resetns':['aresetn'],
+                            'resetns_port': 'rst',
                             'properties':['CONFIG.NUM_SI {1}',
                                 'CONFIG.NUM_MI {' + str(num_slave_s_axis_global) + '}',
                                 'CONFIG.ARG_ON_TLAST {1}',
@@ -805,6 +821,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                         'inst':'applicationRegion/input_switch',
                         'clks':['aclk'],
                         'resetns':['aresetn'],
+                        'resetns_port': 'rst',
                         'properties':['CONFIG.NUM_SI {2}',
                             'CONFIG.NUM_MI {' + str(num_slave_s_axis_global) + '}',
                             'CONFIG.HAS_TLAST {1}',
@@ -838,6 +855,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                     'lib':'hls',
                     'vendor':'xilinx.com',
                     'inst':'applicationRegion/arbiter',
+                    'resetns_port': 'rst',
                     'clks':['ap_clk'],
                     'resetns':['ap_rst_n'],
                     }
@@ -874,6 +892,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                 'inst':'applicationRegion/input_switch',
                 'clks':['aclk'],
                 'resetns':['aresetn'],
+                'resetns_port': 'rst',
                 'properties':['CONFIG.NUM_SI {2}',
                     'CONFIG.NUM_MI {' + str(num_slave_s_axis_global) + '}',
                     'CONFIG.ARB_ON_TLAST {1}']
@@ -887,6 +906,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                 'name':'axis_switch',
                 'inst':'applicationRegion/output_switch',
                 'clks':['aclk'],
+                'resetns_port': 'rst',
                 'resetns':['aresetn'],
                 'properties':['CONFIG.NUM_SI {' + str(num_slave_m_axis_global) + '}',
                     'CONFIG.NUM_MI {1}',
@@ -1165,7 +1185,8 @@ def add_debug_interfaces(outDir, fpga):
                 'name':'system_ila',
                 'inst':'system_ila_inst',
                 'clks':['clk'],
-                'resetns':['resetn']
+                'resetns':['resetn'],
+                'resetns_port': 'rst'
                 }
                 )
 
@@ -1347,9 +1368,9 @@ def userApplicationRegionAssignAddresses(tcl_user_app, shared):
     #global m_axi
     m_axi_array = getInterfaces(tcl_user_app.fpga, 'm_axi', 'scope', 'global')
 
-    tcl_user_app.assign_address(None, 'S_AXI_MEM_0', 'Reg')
-    if shared:
-        tcl_user_app.assign_address(None, 'S_AXI_MEM_1', 'Reg')
+    # tcl_user_app.assign_address(None, 'S_AXI_MEM_0', 'Reg')
+    # if shared:
+        # tcl_user_app.assign_address(None, 'S_AXI_MEM_1', 'Reg')
 
     for global_m_axi in m_axi_array:
         instName = global_m_axi['kernel_inst']['inst']
@@ -1361,9 +1382,9 @@ def userApplicationRegionAssignAddresses(tcl_user_app, shared):
 
         properties = {'offset': '0x00000000', 'range': '4G'}
 
-        tcl_user_app.set_address_properties(None, 'S_AXI_MEM_0', 'Reg', master, offset='0x00000000')
-        if shared:
-            tcl_user_app.set_address_properties(None, 'S_AXI_MEM_1', 'Reg', master, offset='0x00000000')
+        # tcl_user_app.set_address_properties(None, 'S_AXI_MEM_0', 'Reg', master, offset='0x00000000')
+        # if shared:
+            # tcl_user_app.set_address_properties(None, 'S_AXI_MEM_1', 'Reg', master, offset='0x00000000')
 
     for global_m_axi in m_axi_array:
         instName = global_m_axi['kernel_inst']['inst']
@@ -1375,9 +1396,9 @@ def userApplicationRegionAssignAddresses(tcl_user_app, shared):
 
         properties = {'range': '4G'}
 
-        tcl_user_app.set_address_properties(None, 'S_AXI_MEM_0', 'Reg', master, **properties)
-        if shared:
-            tcl_user_app.set_address_properties(None, 'S_AXI_MEM_1', 'Reg', master, **properties)
+        # tcl_user_app.set_address_properties(None, 'S_AXI_MEM_0', 'Reg', master, **properties)
+        # if shared:
+            # tcl_user_app.set_address_properties(None, 'S_AXI_MEM_1', 'Reg', master, **properties)
 
 
 
@@ -1611,6 +1632,7 @@ def netBridgeConstants(tcl_net):
                 'vendor':'user.org',
                 'lib':'user',
                 'name':'ip_constant_block',
+                'resetns_port': 'rst',
                 'inst':'network/ip_constant_block_inst'
                 }
                 )
@@ -1647,6 +1669,7 @@ def netBridgeConstants(tcl_net):
             {
                 'name':'xlconstant',
                 'inst': 'network/node_id',
+                'resetns_port': 'rst',
                 'properties':[
                     'CONFIG.CONST_WIDTH {8}',
                     'CONFIG.CONST_VAL {' + str(tcl_net.fpga['num']) + '}'
@@ -1715,6 +1738,7 @@ def bridgeConnections(outDir, fpga, sim):
             'inst':'network/galapagos_bridge_inst',
             'vendor':'xilinx.com',
             'lib':'hls',
+            'resetns_port': 'rst300',
             'clks':['ap_clk'],
             'resetns':['ap_rst_n']
         }
@@ -1950,7 +1974,8 @@ def bridgeConnections(outDir, fpga, sim):
                 'lib': tcl_bridge_connections.fpga['app_bridge']['lib'],
                 'vendor': tcl_bridge_connections.fpga['app_bridge']['vendor'],
                 'clks':tcl_bridge_connections.fpga['app_bridge']['clk'],
-                'resetns':tcl_bridge_connections.fpga['app_bridge']['aresetn']
+                'resetns':tcl_bridge_connections.fpga['app_bridge']['aresetn'],
+                'resetns_port': 'rst'
                 }
                 )
         if (sim == 1):

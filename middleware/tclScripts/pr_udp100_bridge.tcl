@@ -37,9 +37,9 @@ connect_bd_net [get_bd_pins network/GULF_Stream_0/local_port_tx] [get_bd_pins ne
 
 create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic network/not_aresetn
 set_property -dict [list CONFIG.C_OPERATION {not} CONFIG.LOGO_FILE {data/sym_notgate.png}] [get_bd_cells network/not_aresetn]
-connect_bd_net [get_bd_ports ARESETN] [get_bd_pins network/not_aresetn/Op1]
+connect_bd_net [get_bd_ports rst300] [get_bd_pins network/not_aresetn/Op1]
 connect_bd_net [get_bd_pins network/GULF_Stream_0/rst] [get_bd_pins network/not_aresetn/Res]
-connect_bd_net [get_bd_ports ARESETN] [get_bd_pins network/network_bridge_udp_1_0/ap_rst_n]
+connect_bd_net [get_bd_ports rst300] [get_bd_pins network/network_bridge_udp_1_0/ap_rst_n]
 
 create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen network/blk_mem_bridge_rom
 #set_property -dict [list CONFIG.Memory_Type {Dual_Port_ROM} CONFIG.Enable_32bit_Address {false} CONFIG.Use_Byte_Write_Enable {false} CONFIG.Byte_Size {9} CONFIG.Enable_B {Use_ENB_Pin} CONFIG.Register_PortA_Output_of_Memory_Primitives {true} CONFIG.Register_PortB_Output_of_Memory_Primitives {true} CONFIG.Use_RSTA_Pin {false} CONFIG.Use_RSTB_Pin {false} CONFIG.Port_A_Write_Rate {0} CONFIG.Port_B_Clock {100} CONFIG.Port_B_Enable_Rate {100} CONFIG.use_bram_block{Stand_Alone} CONFIG.EN_SAFETY_CKT {false}] [get_bd_cells network/blk_mem_bridge_rom]
@@ -97,14 +97,14 @@ connect_bd_intf_net [get_bd_intf_pins network/network_bridge_inst/axis_data_fifo
 #connect_bd_intf_net [get_bd_intf_pins network/network_bridge_inst/axis_data_fifo_0_1/M_AXIS] [get_bd_intf_pins network/network_bridge_udp_1_0/rxGalapagosBridge]
 connect_bd_net [get_bd_ports CLK] [get_bd_pins network/network_bridge_inst/axis_data_fifo_0/s_axis_aclk]
 connect_bd_net [get_bd_ports CLK_300] [get_bd_pins network/network_bridge_inst/axis_data_fifo_0/m_axis_aclk]
-connect_bd_net [get_bd_ports ARESETN] [get_bd_pins network/network_bridge_inst/axis_data_fifo_0/s_axis_aresetn]
+connect_bd_net [get_bd_ports rst] [get_bd_pins network/network_bridge_inst/axis_data_fifo_0/s_axis_aresetn]
 connect_bd_net [get_bd_ports CLK] [get_bd_pins network/network_bridge_inst/axis_data_fifo_0_1/s_axis_aclk]
-connect_bd_net [get_bd_ports ARESETN] [get_bd_pins network/network_bridge_inst/axis_data_fifo_0_1/s_axis_aresetn]
+connect_bd_net [get_bd_ports rst] [get_bd_pins network/network_bridge_inst/axis_data_fifo_0_1/s_axis_aresetn]
 
 connect_bd_intf_net [get_bd_intf_pins network/network_bridge_inst/axis_data_fifo_1/S_AXIS] [get_bd_intf_pins network/network_bridge_udp_1_0/txGalapagosBridge]
 connect_bd_intf_net [get_bd_intf_pins network/network_bridge_inst/axis_data_fifo_1/M_AXIS] [get_bd_intf_pins network/network_bridge_inst/axis_data_fifo_1_1/S_AXIS]
 connect_bd_net [get_bd_ports CLK_300] [get_bd_pins network/network_bridge_inst/axis_data_fifo_1/s_axis_aclk]
 connect_bd_net [get_bd_ports CLK] [get_bd_pins network/network_bridge_inst/axis_data_fifo_1/m_axis_aclk]
-connect_bd_net [get_bd_ports ARESETN] [get_bd_pins network/network_bridge_inst/axis_data_fifo_1/s_axis_aresetn]
+connect_bd_net [get_bd_ports rst300] [get_bd_pins network/network_bridge_inst/axis_data_fifo_1/s_axis_aresetn]
 connect_bd_net [get_bd_ports CLK] [get_bd_pins network/network_bridge_inst/axis_data_fifo_1_1/s_axis_aclk]
-connect_bd_net [get_bd_ports ARESETN] [get_bd_pins network/network_bridge_inst/axis_data_fifo_1_1/s_axis_aresetn]
+connect_bd_net [get_bd_ports rst] [get_bd_pins network/network_bridge_inst/axis_data_fifo_1_1/s_axis_aresetn]
