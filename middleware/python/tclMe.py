@@ -89,7 +89,11 @@ class tclMeFile():
                 self.tprint('set_property  ' + key + ' ' + value +  ' [get_bd_addr_segs {' + master + '/SEG_' + slave_inst + '_' + slave_base + '}]')
             else:
                 self.tprint('set_property  ' + key + ' ' + value +  ' [get_bd_addr_segs {' + master + '/SEG_' + slave_port + '_' + slave_base + '}]')
-
+    def add_intf_port(self, port_name, intf_type, type):
+        self.tprint('create_bd_intf_port -mode '+type+' -vlnv '+intf_type+' '+port_name)
+    def add_axis_port(self, port_name, type):
+        self.add_intf_port(port_name, 'xilinx.com:interface:axis_rtl:1.0', type)
+        print(port_name)
     def instBlock(self, ip):
 
         if 'vendor' in ip and ip['vendor'] != None:

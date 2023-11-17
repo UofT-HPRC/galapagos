@@ -420,6 +420,7 @@ def userApplicationRegionKernelsInst(tcl_user_app):
         print("instantiating kernel " + instName)
         #instantiate kernel
         tcl_user_app.fpga['kernel'][kern_idx]['inst'] = 'applicationRegion/' + instName
+        '''
         if 'properties' in kern:
             print('properties ' + str(kern['properties']))
             tcl_user_app.instBlock(
@@ -446,6 +447,7 @@ def userApplicationRegionKernelsInst(tcl_user_app):
                     'resetns': kern['aresetn']
                     }
                     )
+        '''
        # if 'properties' in tcl_user_app.fpga['kernel'][kern_idx]:
        #     for properties in tcl_user_app.fpga['kernel'][kern_idx]['properties']:
        #         tcl_user_app.setProperties('applicationRegion/' + instName, properties)
@@ -461,6 +463,7 @@ def userApplicationRegionKernelsInst(tcl_user_app):
                         'CONFIG.CONST_VAL {'+ str(kern['num'])+'}']
                     }
                     )
+            '''
             tcl_user_app.makeConnection(
                     'net',
                         {
@@ -474,7 +477,7 @@ def userApplicationRegionKernelsInst(tcl_user_app):
                         'port_name':kern['id_port']
                         }
                         )
-
+            '''
         if kern['const'] != None:
             for const in kern['const']:
                 #print(const)
@@ -957,10 +960,12 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
         # For each s_axis connection
         for idx, s_axis in enumerate(s_axis_array):
             instName = s_axis['kernel_inst']['inst']
+            portName = instName.split('/')[-1]+"_MAXIS"
             idx_str = "%02d"%idx
             # Connect it to the correct port on the AXI switch (NOT directly into
             # the Galapagos router; there is an AXI stream switch IP between
             # the router and the kernel(s) )
+            tcl_user_app.add_axis_port(portName, 'Master')
             tcl_user_app.makeConnection(
                     'intf',
                     {
@@ -969,9 +974,8 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
                     'port_name':'M' + idx_str + '_AXIS'
                     },
                     {
-                    'name': instName,
-                    'type':'intf',
-                    'port_name':s_axis['name']
+                    'type':'intf_port',
+                    'port_name':portName
                     }
                     )
         # custom_switch_inst only exists without raw
@@ -1021,6 +1025,9 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
         else:
             # there's no input switch in this case
             if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
+                instName = s_axis_array[0]['kernel_inst']['inst']
+                portName = instName.split('/')[-1] + "_MAXIS"
+                tcl_user_app.add_axis_port(portName, 'Master')
                 # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
                 tcl_user_app.makeConnection(
                     'intf',
@@ -1029,9 +1036,8 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
                     'type':'intf',
                     'port_name':'M00_AXIS'
                     },
-                    {'name': s_axis_array[0]['kernel_inst']['inst'],
-                    'type':'intf',
-                    'port_name': s_axis_array[0]['name']
+                    {'type':'intf_port',
+                    'port_name': portName
                     }
                 )
                 tcl_user_app.makeConnection(
@@ -1057,13 +1063,14 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
     if len(m_axis_array) == 1:
         if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
             instName = m_axis_array[0]['kernel_inst']['inst']
+            portName = instName.split('/')[-1] + "_SAXIS"
+            tcl_user_app.add_axis_port(portName, 'Slave')
             # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
             tcl_user_app.makeConnection(
                     'intf',
                     {
-                    'name': instName,
-                    'type':'intf',
-                    'port_name': m_axis_array[0]['name']
+                    'type':'intf_port',
+                    'port_name': portName
                     },
                     {
                     'name':'applicationRegion/custom_switch_inst',
@@ -1074,13 +1081,14 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
     elif len(m_axis_array) > 1:
         for idx, m_axis in enumerate(m_axis_array):
             instName = m_axis['kernel_inst']['inst']
+            portName = instName.split('/')[-1] + "_SAXIS"
+            tcl_user_app.add_axis_port(portName, 'Slave')
             idx_str = "%02d"%idx
             tcl_user_app.makeConnection(
                     'intf',
                     {
-                    'name': instName ,
-                    'type':'intf',
-                    'port_name': m_axis['name']
+                    'type':'intf_port',
+                    'port_name': portName
                     },
                     {
                     'name':'applicationRegion/output_switch',
