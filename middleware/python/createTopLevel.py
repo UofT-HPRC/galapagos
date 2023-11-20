@@ -78,16 +78,16 @@ def copy_file(dest_fp,src_filename):
     dest_fp.write(src_file.read())
     src_file.close()
 
-def top_fun(num_users, target_files, source_dir):
+def top_fun(target_files, source_dir, kernel_names):
     dst_file = open(target_files,"w")
     copy_file(dst_file,source_dir+"/../verilog/shellTop_pt1.v")
     dst_file.write(construct_axis_wire("  ","M_AXIS",512,0,True))
     dst_file.write(construct_axis_wire("  ","S_AXIS",512,0,False))
     dst_file.write(construct_axi_wire("  ","S_AXI_CONTROL",16,128,40))
-    for i in range(num_users):
-        dst_file.write(construct_axi_wire("  ","USER_"+str(i)+"_CONTROL",16,128,40))
-        dst_file.write(construct_axis_wire("  ","M_USER_"+str(i),512,24,True))
-        dst_file.write(construct_axis_wire("  ","S_USER_"+str(i),512,24,True))
+    for i in kernel_names:
+        dst_file.write(construct_axi_wire("  ",str(i)+"_CONTROL",16,128,40))
+        dst_file.write(construct_axis_wire("  ",str(i)+"_MAXIS",512,24,True))
+        dst_file.write(construct_axis_wire("  ",str(i)+"_SAXIS",512,24,True))
     copy_file(dst_file,source_dir+"/../verilog/shellTop_pt2.v")
     dst_file.write(construct_axis_base_defn("    ","M_AXIS","eth_tx",True))
     dst_file.write(construct_axis_base_defn("    ","S_AXIS","eth_rx",False))
@@ -96,18 +96,18 @@ def top_fun(num_users, target_files, source_dir):
     dst_file.write(construct_axis_base_defn("    ","M_AXIS","M_AXIS",True))
     dst_file.write(construct_axis_base_defn("    ","S_AXIS","S_AXIS",False))
     dst_file.write(construct_axi_defn("    ","S_AXI_CONTROL","S_AXI_CONTROL",True,True))
-    for i in range(num_users):
+    for i in kernel_names:
         dst_file.write("\n\n    //User: "+str(i)+"\n")
-        dst_file.write(construct_axi_defn("      ","USER_"+str(i)+"_CONTROL","USER_"+str(i)+"_CONTROL",True,True))
-        dst_file.write(construct_axis_defn("      ","M_USER_"+str(i),"M_USER_"+str(i),True))
-        dst_file.write(construct_axis_defn("      ","S_USER_"+str(i),"S_USER_"+str(i),True))
+        dst_file.write(construct_axi_defn("      ",str(i)+"_CONTROL","USER_"+str(i)+"_CONTROL",True,True))
+        dst_file.write(construct_axis_defn("      ",str(i)+"_MAXIS","M_USER_"+str(i),True))
+        dst_file.write(construct_axis_defn("      ",str(i)+"_SAXIS","S_USER_"+str(i),True))
     dst_file.write("    );\n\n\n")
     
-    for i in range(num_users):
+    for i in kernel_names:
         dst_file.write("  //User: "+str(i)+"\n  user_"+str(i)+" user_"+str(i)+"_i\n    (.rst(rst)\n    ,.CLK(CLK)\n")
-        dst_file.write(construct_axi_defn("    ","USER_"+str(i)+"_CONTROL","USER_"+str(i)+"_CONTROL",True,True))
-        dst_file.write(construct_axis_defn("    ","M_USER_"+str(i),"M_USER_"+str(i),True))
-        dst_file.write(construct_axis_defn("    ","S_USER_"+str(i),"S_USER_"+str(i),True))
+        dst_file.write(construct_axi_defn("    ",str(i)+"_CONTROL","AXI_CONTROL",True,True))
+        dst_file.write(construct_axis_defn("    ",str(i)+"_MAXIS","MAXIS",True))
+        dst_file.write(construct_axis_defn("    ",str(i)+"_SAXIS","SAXIS",True))
         dst_file.write("    );\n\n\n")
     dst_file.write("  endmodule")
     dst_file.close()

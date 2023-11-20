@@ -918,7 +918,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                 }
                 )
 
-def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
+def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app, sim):
     """
     Now that the kernels, Galapagos router, and memory controllers are instantiated,
     it's time to connect them all together.
@@ -942,6 +942,7 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
 
     # Now connect the Galapagos router through the input switch into all of
     # the s_axis interfaces
+    port_names_list=[]
     if len(s_axis_array) > 1:
         if(sim == 1):
             tcl_user_app.makeConnection(
@@ -960,7 +961,8 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
         # For each s_axis connection
         for idx, s_axis in enumerate(s_axis_array):
             instName = s_axis['kernel_inst']['inst']
-            portName = instName.split('/')[-1]+"_MAXIS"
+            presufix_port_name = instName.split('/')[-1]
+            portName = presufix_port_name+"_MAXIS"
             idx_str = "%02d"%idx
             # Connect it to the correct port on the AXI switch (NOT directly into
             # the Galapagos router; there is an AXI stream switch IP between
@@ -978,6 +980,7 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
                     'port_name':portName
                     }
                     )
+            port_names_list.append(str(presufix_port_name))
         # custom_switch_inst only exists without raw
         if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
             # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
@@ -1009,6 +1012,7 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
                     'port_name': s_axis_array[0]['name']
                     }
                     )
+            port_names_list.append(str(s_axis_array[0]['name']))
             if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
                 tcl_user_app.makeConnection(
                         'intf',
@@ -1026,7 +1030,8 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
             # there's no input switch in this case
             if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
                 instName = s_axis_array[0]['kernel_inst']['inst']
-                portName = instName.split('/')[-1] + "_MAXIS"
+                presufix_port_name = instName.split('/')[-1]
+                portName = presufix_port_name+ "_MAXIS"
                 tcl_user_app.add_axis_port(portName, 'Master')
                 # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
                 tcl_user_app.makeConnection(
@@ -1040,6 +1045,7 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
                     'port_name': portName
                     }
                 )
+                port_names_list.append(str(presufix_port_name))
                 tcl_user_app.makeConnection(
                     'intf',
                     {
@@ -1052,6 +1058,7 @@ def userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim):
                     'port_name':'S01_AXIS'
                     }
                 )
+    top_fun(outDir + "/topLevel.v", output_path + "/../middleware/python",port_names_list)
 
 
     m_axis_array = getInterfaces(tcl_user_app.fpga, 'm_axis', 'scope', 'global')
@@ -1320,7 +1327,7 @@ def add_debug_interfaces(outDir, fpga):
 def getKernel(fpga, num):
 
     for kern in fpga['kernel']:
-        if int(kernel['num']) == num:
+        if int(kern['num']) == num:
             return kern
 
     return None
@@ -1589,7 +1596,7 @@ def userApplicationLocalConnections(tcl_user_app):
                         }
                         )
 
-def userApplicationRegion(outDir, fpga, sim):
+def userApplicationRegion(outDir,output_path, fpga, sim):
     """
     Takes care of calling a bunch of functions for assembling the user application
     region part of the block diagram. To be specific, this function takes care
@@ -1613,7 +1620,7 @@ def userApplicationRegion(outDir, fpga, sim):
     userApplicationRegionMemInstGlobal(tcl_user_app, tcl_user_app.fpga['comm'] != 'tcp')
     userApplicationRegionMemInstLocal(tcl_user_app)
     userApplicationRegionSwitchesInst(tcl_user_app, sim)
-    userApplicationRegionKernelConnectSwitches(outDir, tcl_user_app, sim)
+    userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app, sim)
     userApplicationRegionAssignAddresses(tcl_user_app, tcl_user_app.fpga['comm'] !='tcp' and tcl_user_app.fpga.address_space == 64)
     userApplicationLocalConnections(tcl_user_app)
 
@@ -2108,15 +2115,10 @@ def makeTCLFiles(fpga, projectName, output_path, sim):
     """
 
     outDir = output_path + '/' + projectName + '/' + str(fpga['num'])
-    sum = 0
-    for i in fpga.data["kernel"]:
-        sum = sum + int(i.data["rep"])
-    if (sum > 0):
-        top_fun(sum,outDir+"/topLevel.v",output_path+"/../middleware/python")
     #make bridge to network
     if fpga['comm'] != 'none':
         netBridge(outDir, fpga)
-    userApplicationRegion(outDir, fpga, sim)
+    userApplicationRegion(outDir,output_path, fpga, sim)
     bridgeConnections(outDir, fpga, sim)
     #if(num_debug_interfaces > 0):
     #    add_debug_interfaces(outDir, num_debug_interfaces, fpga)
