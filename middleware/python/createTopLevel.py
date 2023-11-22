@@ -78,7 +78,7 @@ def copy_file(dest_fp,src_filename):
     dest_fp.write(src_file.read())
     src_file.close()
 
-def top_fun(target_files, source_dir, kernel_names):
+def createTopLevelVerilog(target_files, source_dir, kernel_names):
     dst_file = open(target_files,"w")
     copy_file(dst_file,source_dir+"/../verilog/shellTop_pt1.v")
     dst_file.write(construct_axis_wire("  ","M_AXIS",512,0,True))
@@ -98,16 +98,16 @@ def top_fun(target_files, source_dir, kernel_names):
     dst_file.write(construct_axi_defn("    ","S_AXI_CONTROL","S_AXI_CONTROL",True,True))
     for i in kernel_names:
         dst_file.write("\n\n    //User: "+str(i)+"\n")
-        dst_file.write(construct_axi_defn("      ",str(i)+"_CONTROL","USER_"+str(i)+"_CONTROL",True,True))
-        dst_file.write(construct_axis_defn("      ",str(i)+"_MAXIS","M_USER_"+str(i),True))
-        dst_file.write(construct_axis_defn("      ",str(i)+"_SAXIS","S_USER_"+str(i),True))
+        dst_file.write(construct_axi_defn("      ",str(i)+"_CONTROL",str(i)+"_CONTROL",True,True))
+        dst_file.write(construct_axis_defn("      ",str(i)+"_MAXIS",str(i)+"_MAXIS",True))
+        dst_file.write(construct_axis_defn("      ",str(i)+"_SAXIS",str(i)+"_SAXIS",True))
     dst_file.write("    );\n\n\n")
     
     for i in kernel_names:
-        dst_file.write("  //User: "+str(i)+"\n  user_"+str(i)+" user_"+str(i)+"_i\n    (.rst(rst)\n    ,.CLK(CLK)\n")
+        dst_file.write("  //User: "+str(i)+"\n  user_"+str(i)+"_i user_"+str(i)+"_i_i\n    (.rst(rst)\n    ,.CLK(CLK)\n")
         dst_file.write(construct_axi_defn("    ",str(i)+"_CONTROL","AXI_CONTROL",True,True))
-        dst_file.write(construct_axis_defn("    ",str(i)+"_MAXIS","MAXIS",True))
-        dst_file.write(construct_axis_defn("    ",str(i)+"_SAXIS","SAXIS",True))
+        dst_file.write(construct_axis_defn("    ",str(i)+"_MAXIS","RX_AXIS",True))
+        dst_file.write(construct_axis_defn("    ",str(i)+"_SAXIS","TX_AXIS",True))
         dst_file.write("    );\n\n\n")
     dst_file.write("  endmodule")
     dst_file.close()

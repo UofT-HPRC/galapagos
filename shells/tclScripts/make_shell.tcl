@@ -175,6 +175,7 @@ if { [info exists sim_dir] } {
 save_bd_design
 
 # Set 'sources_1' fileset object
+source $project_path/userkernels.tcl
 create_bd_design "pr"
 open_bd_design $project_path/$project_name.srcs/sources_1/bd/pr/pr.bd
 
@@ -196,7 +197,6 @@ if { [info exists pr_tcl] } {
       set_property "synth_checkpoint_mode" "Hierarchical" $file_obj
     }
 }
-
 # Create 'constrs_1' fileset (if not found)
 if {[string equal [get_filesets -quiet constrs_1] ""]} {
   create_fileset -constrset constrs_1

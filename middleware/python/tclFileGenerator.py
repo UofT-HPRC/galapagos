@@ -5,7 +5,7 @@ import subprocess
 import os
 from tclMe import tclMeFile
 import string
-from createTopLevel import top_fun
+from createTopLevel import createTopLevelVerilog
 """
 Most of these functions are called (directly or indirectly) by makeTclFiles.
 Each one takes care of one self-contained part of the TCL file generation.
@@ -13,6 +13,19 @@ Each one takes care of one self-contained part of the TCL file generation.
 
 #interfaces constant
 #creates the standard interfaces, same for all fpgas
+
+def createHierarchyTCL(outFile,kernels):
+    dst_file = open(outFile, "w")
+    for kern in kernels:
+        file_contents = ""
+        file_contents = file_contents +"create_bd_design \"user_"+str(kern)+"_i\"\n"
+        file_contents = file_contents +"create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 AXI_CONTROL\n"
+        file_contents = file_contents + "create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 RX_AXIS\n"
+        file_contents = file_contents + "create_bd_intf_port -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 TX_AXIS\n"
+        file_contents = file_contents + "create_bd_port -dir I -type clk -freq_hz 199498000 CLK\n"
+        file_contents = file_contents + "create_bd_port -dir I -type rst rst\nset_property CONFIG.ASSOCIATED_RESET {rst} [get_bd_ports /CLK]\n"
+        file_contents = file_contents + "save_bd_design\n"
+        dst_file.write(file_contents)
 
 def userApplicationRegionControlInst(tcl_user_app):
     """
@@ -918,6 +931,8 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                 }
                 )
 
+
+
 def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app, sim):
     """
     Now that the kernels, Galapagos router, and memory controllers are instantiated,
@@ -1058,8 +1073,8 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
                     'port_name':'S01_AXIS'
                     }
                 )
-    top_fun(outDir + "/topLevel.v", output_path + "/../middleware/python",port_names_list)
-
+    createTopLevelVerilog(outDir + "/topLevel.v", output_path + "/../middleware/python",port_names_list)
+    createHierarchyTCL(outDir + "/userkernels.tcl",port_names_list)
 
     m_axis_array = getInterfaces(tcl_user_app.fpga, 'm_axis', 'scope', 'global')
 
@@ -1615,7 +1630,6 @@ def userApplicationRegion(outDir,output_path, fpga, sim):
 
 
     userApplicationRegionKernelsInst(tcl_user_app)
-    userApplicationRegionControlInst(tcl_user_app)
     #if communication medium is ethernet then combine offchip memory into one shared address space
     userApplicationRegionMemInstGlobal(tcl_user_app, tcl_user_app.fpga['comm'] != 'tcp')
     userApplicationRegionMemInstLocal(tcl_user_app)
@@ -1623,7 +1637,7 @@ def userApplicationRegion(outDir,output_path, fpga, sim):
     userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app, sim)
     userApplicationRegionAssignAddresses(tcl_user_app, tcl_user_app.fpga['comm'] !='tcp' and tcl_user_app.fpga.address_space == 64)
     userApplicationLocalConnections(tcl_user_app)
-
+    userApplicationRegionControlInst(tcl_user_app)
     tcl_user_app.close()
     #return num_debug_interfaces
 
