@@ -93,7 +93,8 @@ class tclMeFile():
         self.tprint('create_bd_intf_port -mode '+type+' -vlnv '+intf_type+' '+port_name)
     def add_axis_port(self, port_name, type):
         self.add_intf_port(port_name, 'xilinx.com:interface:axis_rtl:1.0', type)
-        print(port_name)
+    def add_axi4_port(self, port_name, type):
+        self.add_intf_port(port_name, 'xilinx.com:interface:aximm_rtl:1.0', type)
     def instBlock(self, ip):
 
         if 'vendor' in ip and ip['vendor'] != None:

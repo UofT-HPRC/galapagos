@@ -27,7 +27,7 @@ def createHierarchyTCL(outFile,kernels):
         file_contents = file_contents + "save_bd_design\n"
         dst_file.write(file_contents)
 
-def userApplicationRegionControlInst(tcl_user_app):
+def userApplicationRegionControlInst(tcl_user_app,kern_name_list):
     """
     Connects the AXI control interface from the shell (through an AXI interconnect)
     to the various kernels in this FPGA (provided they declared control interfaces
@@ -41,7 +41,7 @@ def userApplicationRegionControlInst(tcl_user_app):
 
     num_ctrl_interfaces = len(getInterfaces(tcl_user_app.fpga, 's_axi', 'scope', 'global'))
     # extra interfaces for the memories containing addresses in this mode
-    num_ctrl_interfaces = num_ctrl_interfaces + 2
+    num_ctrl_interfaces = num_ctrl_interfaces + len(kern_name_list)
     if tcl_user_app.fpga['comm'] == 'raw':
         num_ctrl_interfaces = num_ctrl_interfaces + 2
 
@@ -109,6 +109,24 @@ def userApplicationRegionControlInst(tcl_user_app):
                     'port_name':'S00_AXI'
                     }
                     )
+        master_port_index = num_ctrl_interfaces - len(kern_name_list)
+        for kern in kern_name_list:
+            port_name = kern + "_CONTROL"
+            tcl_user_app.add_axi4_port(port_name, 'Master')
+            inc_index_str = "M"+"%02d" % master_port_index +"_AXI"
+            tcl_user_app.makeConnection(
+                'intf',
+                {'name': 'applicationRegion/axi_interconnect_ctrl',
+                 'type': 'intf',
+                 'port_name': inc_index_str
+                 },
+                {
+                    'name': None,
+                    'type': 'intf_port',
+                    'port_name': port_name
+                }
+            )
+            master_port_index = master_port_index + 1
 
 def getInterfaces(fpga, intf, flag = None, scope = None):
     """
@@ -1075,7 +1093,7 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
                 )
     createTopLevelVerilog(outDir + "/topLevel.v", output_path + "/../middleware/python",port_names_list)
     createHierarchyTCL(outDir + "/userkernels.tcl",port_names_list)
-
+    kern_name_list= port_names_list
     m_axis_array = getInterfaces(tcl_user_app.fpga, 'm_axis', 'scope', 'global')
 
     # Now connect all m_axis interfaces through the output switch into the
@@ -1197,6 +1215,7 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
             else:
                 curr_col += 1
             tcl_custom.tprint('set CUSTOM_arr(' + str(curr_row) + ',' + str(curr_col) + ') ' + m_axi['name'])
+    return kern_name_list
 
 def add_debug_interfaces(outDir, fpga):
 
@@ -1634,10 +1653,10 @@ def userApplicationRegion(outDir,output_path, fpga, sim):
     userApplicationRegionMemInstGlobal(tcl_user_app, tcl_user_app.fpga['comm'] != 'tcp')
     userApplicationRegionMemInstLocal(tcl_user_app)
     userApplicationRegionSwitchesInst(tcl_user_app, sim)
-    userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app, sim)
+    kern_name_list=userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app, sim)
     userApplicationRegionAssignAddresses(tcl_user_app, tcl_user_app.fpga['comm'] !='tcp' and tcl_user_app.fpga.address_space == 64)
     userApplicationLocalConnections(tcl_user_app)
-    userApplicationRegionControlInst(tcl_user_app)
+    userApplicationRegionControlInst(tcl_user_app,kern_name_list)
     tcl_user_app.close()
     #return num_debug_interfaces
 
