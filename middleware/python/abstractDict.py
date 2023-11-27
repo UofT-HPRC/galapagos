@@ -25,9 +25,19 @@ class abstractDict():
 
         for optional_elem in optional_array:
             self.data[optional_elem] = None
-
+        #special keys
+        self.data['control'] = False
         for key, value in kwargs.items():
-            if key in self.data:
+            #special keys
+            if key == 'control':
+                if value.strip().lower() == 'false':
+                    self.data[key] = False
+                elif value.strip().lower() == 'true':
+                    self.data[key] = True
+                else:
+                    raise ValueError('control initialized with invalid value ' + value)
+            #normal keys
+            elif key in self.data:
                 self.data[key] = value
             else:
                 raise ValueError('Init with ' + key + ' failed. Key does not exist')

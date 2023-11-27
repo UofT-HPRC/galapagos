@@ -1,7 +1,6 @@
 import warnings
 from abstractDict import abstractDict
 from app_bridge import appBridge
-from kernel import kernel
 
 # Why is this done differently than the kernel object?
 # Whatever, it doesn't really matter.

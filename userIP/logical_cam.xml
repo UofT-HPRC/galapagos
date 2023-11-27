@@ -11,6 +11,7 @@
         <lib> hls </lib>
         <num> 2 </num>
         <rep> 1 </rep>
+        <control> True </control>
         <clk> ap_clk </clk>
         <aresetn> ap_rst_n </aresetn>
         <s_axis>
@@ -28,6 +29,7 @@
         <lib> hls </lib>
         <num> 1 </num>
         <rep> 1 </rep>
+        <control> False </control>
         <clk> ap_clk </clk>
         <aresetn> ap_rst_n </aresetn>
         <s_axis>
@@ -45,6 +47,7 @@
         <lib> hls </lib>
         <num> 0 </num>
         <rep> 1 </rep>
+        <control> True </control>
         <clk> ap_clk </clk>
         <aresetn> ap_rst_n </aresetn>
         <s_axis>

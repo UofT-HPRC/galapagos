@@ -11,27 +11,6 @@ import socket, struct
 import glob
 import time
 import inspect
-def recursively_print(obj,preamble):
-    if obj == None:
-        print(preamble+"NoneType obj")
-    elif (isinstance(obj,dict)):
-        for i in obj:
-            print (preamble + "dict: "+str(i)+"->")
-            recursively_print(obj[i],preamble + "    ");
-    elif type(obj) is list:
-        print(preamble + "-> list")
-        for i in obj:
-            recursively_print(i,preamble +"    ");
-    elif (isinstance(obj,kernel) or isinstance(obj,node)):
-        print(preamble + "->"+ str(type(obj)))
-        preamble = preamble + "    "
-        attrs = vars(obj)
-        for i in attrs:
-            print(preamble + i + ">")
-            recursively_print(getattr(obj,i), preamble+"    ");
-    else:
-        print(preamble,end="")
-        print(obj)
 
     
 
