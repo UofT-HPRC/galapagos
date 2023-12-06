@@ -1156,11 +1156,20 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
     # Galapagos router
 
     #no output switch, direct connect if only one
+    AXIS_PROPERTIES = [
+        "CONFIG.HAS_TLAST {1}",
+        "CONFIG.HAS_TKEEP {1}",
+        "CONFIG.TDATA_NUM_BYTES {64}",
+        "CONFIG.TDEST_WIDTH {8}",
+        "CONFIG.TID_WIDTH {8}",
+        "CONFIG.TUSER_WIDTH {16}"
+    ]
     if len(m_axis_array) == 1:
         if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
             instName = m_axis_array[0]['kernel_inst']['inst']
             portName = instName.split('/')[-1] + "_SAXIS"
             tcl_user_app.add_axis_port(portName, 'Slave')
+            tcl_user_app.setPortProperties(portName,AXIS_PROPERTIES)
             # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
             tcl_user_app.makeConnection(
                     'intf',
@@ -1179,6 +1188,7 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
             instName = m_axis['kernel_inst']['inst']
             portName = instName.split('/')[-1] + "_SAXIS"
             tcl_user_app.add_axis_port(portName, 'Slave')
+            tcl_user_app.setPortProperties(portName, AXIS_PROPERTIES)
             idx_str = "%02d"%idx
             tcl_user_app.makeConnection(
                     'intf',
