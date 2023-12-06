@@ -11,8 +11,45 @@ import socket, struct
 import glob
 import time
 import inspect
+def memory_sort_and_validate(memories):
+    #Process the size
+    #Returns an array of arrays containing
+    #[index,mem_size word, address as hex string]
+    int_memory = []
+    final_memory = []
+    k_sizes =[4,8,16,32,64,128,256,512]
+    m_sizes = [1024,2048,4096,8192,16384,32768,65536,131072]
+    current_memory = 0xA0000000
+    valid_sizes = k_sizes + m_sizes
+    for mem in memories:
+        try:
+            processed=mem[1].replace(" ","").lower().rstrip("b")
+            if processed.endswith("k"):
+                value = int(processed.rstrip("k"))
+            elif processed.endswith("m"):
+                value = int(processed.rstrip("m"))*1024
+            else:
+                value = int(processed)
+                assert (value%1024==0)
+                value = int(value / 1024)
+        except:
+            raise ValueError('Memory size \"'+mem[1]+'\" is invalid')
+        if value in k_sizes:
+            word = str(value)+"K"
+        elif value in m_sizes:
+            word = str(int(value/1024)) + "M"
+        else:
+            raise ValueError('Memory size \"' + mem[1] + '\" is invalid')
+        int_memory.append([value,word,mem[0]])
+    int_memory = sorted(int_memory,reverse=True)
+    for mem in int_memory:
+        final_memory.append([mem[2],mem[1],hex(current_memory).lower().replace("l","")])
+        current_memory = current_memory + mem[0]*1024
+    if (current_memory > 0xAFF00000):
+        raise ValueError('Exposed control memory in FPGA exceeds maximum 255M size')
+    return final_memory
 
-    
+
 
 class cluster(abstractDict):
     """ This class is the top-level interface to the myriad other objects used
@@ -232,10 +269,22 @@ class cluster(abstractDict):
             node_inst['num'] = node_idx
             # Maintain array of pointer to node objects
             self.nodes.append(node_inst)
-        
 
+    def processMemoryBus(self):
+        for i in range(len(self.nodes)):
+            memories = []
+            for j in range(len(self.nodes[i]['kernel'])):
+                if self.nodes[i]['kernel'][j].data['control']:
+                    memories.append([j,self.nodes[i]['kernel'][j].data['control_range']])
+            ext_memories = memory_sort_and_validate(memories)
+            for mem in ext_memories:
+                self.nodes[i]['kernel'][mem[0]].data['control_size'] = mem[1]
+                self.nodes[i]['kernel'][mem[0]].data['control_address'] = mem[2]
+
+
+
+        return
     def writeClusterTCL(self, output_path, sim):
-
         #tclFileThreads = []
         for node_idx, node in enumerate(self.nodes):
             #tclFileThreads.append(threading.Thread(target=tclFileGenerator.makeTCLFiles, args=(node,self.name, output_path, sim)))

@@ -28,7 +28,7 @@ def createHierarchyTCL(outFile,kernel_names,ctrl_ports_list):
         file_contents = file_contents + "save_bd_design\n"
         dst_file.write(file_contents)
 
-def userApplicationRegionControlInst(tcl_user_app,kern_name_list):
+def userApplicationRegionControlInst(tcl_user_app,kern_name_list,kern_prop_list):
     """
     Connects the AXI control interface from the shell (through an AXI interconnect)
     to the various kernels in this FPGA (provided they declared control interfaces
@@ -47,6 +47,15 @@ def userApplicationRegionControlInst(tcl_user_app,kern_name_list):
         num_ctrl_interfaces = num_ctrl_interfaces + 2
 
     #make dummy bram for control interface if no control interfaces
+    properties = ['CONFIG.PROTOCOL AXI4']
+    tcl_user_app.setPortProperties('S_AXI_CONTROL', properties)
+    properties = ['CONFIG.ADDR_WIDTH {40}',
+                  'CONFIG.DATA_WIDTH {128}',
+                  'CONFIG.ARUSER_WIDTH {16}',
+                  'CONFIG.AWUSER_WIDTH {16}',
+                  'CONFIG.ID_WIDTH {16}'
+                  ]
+    tcl_user_app.setPortProperties('S_AXI_CONTROL',properties)
     if(num_ctrl_interfaces == 0):
         tcl_user_app.instBlock(
                 {'name':'axi_vip',
@@ -111,10 +120,16 @@ def userApplicationRegionControlInst(tcl_user_app,kern_name_list):
                     }
                     )
         master_port_index = num_ctrl_interfaces - len(kern_name_list)
-        for kern in kern_name_list:
+        slave_base = "Reg"
+        master = "S_AXI_CONTROL"
+        interconnect_properties = ['CONFIG.S00_HAS_REGSLICE {1}']
+        for kern_num in range(len(kern_name_list)):
+            kern = kern_name_list[kern_num]
             port_name = kern + "_CONTROL"
             tcl_user_app.add_axi4_port(port_name, 'Master')
             inc_index_str = "M"+"%02d" % master_port_index +"_AXI"
+            properties_str = "CONFIG.M"+"%02d" % master_port_index + "_HAS_REGSLICE {4}"
+            interconnect_properties.append(properties_str)
             tcl_user_app.makeConnection(
                 'intf',
                 {'name': 'applicationRegion/axi_interconnect_ctrl',
@@ -127,7 +142,24 @@ def userApplicationRegionControlInst(tcl_user_app,kern_name_list):
                     'port_name': port_name
                 }
             )
+            tcl_user_app.assign_address(
+                None,
+                port_name,
+                'Reg'
+            )
             master_port_index = master_port_index + 1
+        tcl_user_app.setProperties('applicationRegion/axi_interconnect_ctrl', interconnect_properties)
+        for kern_num in range(len(kern_name_list)):
+            kern = kern_name_list[kern_num]
+            prop = kern_prop_list[kern_num]
+            slave_port = kern + "_CONTROL"
+            property = {'range': '4K'}
+            tcl_user_app.set_address_properties(None, slave_port, slave_base, master, **property)
+            property = {'offset': prop[1]}
+            tcl_user_app.set_address_properties(None, slave_port, slave_base, master, **property)
+            property = {'range': prop[0]}
+            tcl_user_app.set_address_properties(None, slave_port, slave_base, master, **property)
+
 
 def getInterfaces(fpga, intf, flag = None, scope = None):
     """
@@ -978,6 +1010,9 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
     # the s_axis interfaces
     port_names_list=[]
     control_port_names_list=[]
+    control_properties_list=[]
+    clk_200_intf_config = ['S_AXI_CONTROL']
+    clk_300_intf_config = ['S_AXIS', 'M_AXIS']
     if len(s_axis_array) > 1:
         if(sim == 1):
             tcl_user_app.makeConnection(
@@ -1015,9 +1050,14 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
                     'port_name':portName
                     }
                     )
+            clk_200_intf_config.append(presufix_port_name + "_MAXIS")
+            clk_200_intf_config.append(presufix_port_name + "_SAXIS")
             if s_axis['kernel_inst']['control']:
+                clk_200_intf_config.append(presufix_port_name + "_CONTROL")
                 control_port_names_list.append(str(presufix_port_name))
+                control_properties_list.append([s_axis['kernel_inst']['control_size'],s_axis['kernel_inst']['control_address']])
             port_names_list.append(str(presufix_port_name))
+
         # custom_switch_inst only exists without raw
         if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
             # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
@@ -1050,8 +1090,12 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
                     }
                     )
             port_names_list.append(str(s_axis_array[0]['name']))
+            clk_200_intf_config.append(str(s_axis_array[0]['name']) + "_MAXIS")
+            clk_200_intf_config.append(str(s_axis_array[0]['name']) + "_SAXIS")
             if s_axis_array[0]['kernel_inst']['control']:
+                clk_200_intf_config.append(str(s_axis_array[0]['name']) + "_CONTROL")
                 control_port_names_list.append(str(s_axis_array[0]['name']))
+                control_properties_list.append([s_axis_array[0]['kernel_inst']['control_size'], s_axis_array[0]['kernel_inst']['control_address']])
             if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
                 tcl_user_app.makeConnection(
                         'intf',
@@ -1085,8 +1129,12 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
                     }
                 )
                 port_names_list.append(str(presufix_port_name))
+                clk_200_intf_config.append(str(presufix_port_name) + "_MAXIS")
+                clk_200_intf_config.append(str(presufix_port_name) + "_SAXIS")
                 if s_axis_array[0]['kernel_inst']['control']:
+                    clk_200_intf_config.append(str(presufix_port_name) + "_CONTROL")
                     control_port_names_list.append(str(presufix_port_name))
+                    control_properties_list.append([s_axis_array[0]['kernel_inst']['control_size'], s_axis_array[0]['kernel_inst']['control_address']])
                 tcl_user_app.makeConnection(
                     'intf',
                     {
@@ -1223,7 +1271,7 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
             else:
                 curr_col += 1
             tcl_custom.tprint('set CUSTOM_arr(' + str(curr_row) + ',' + str(curr_col) + ') ' + m_axi['name'])
-    return (kern_name_list , control_port_names_list)
+    return (kern_name_list , control_port_names_list , control_properties_list,clk_200_intf_config,clk_300_intf_config)
 
 def add_debug_interfaces(outDir, fpga):
 
@@ -1661,10 +1709,12 @@ def userApplicationRegion(outDir,output_path, fpga, sim):
     userApplicationRegionMemInstGlobal(tcl_user_app, tcl_user_app.fpga['comm'] != 'tcp')
     userApplicationRegionMemInstLocal(tcl_user_app)
     userApplicationRegionSwitchesInst(tcl_user_app, sim)
-    (kern_name_list,control_name_list)=userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app, sim)
+    (kern_name_list,control_name_list,control_prop_list,clk_200_int,clk_300_int)=userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app, sim)
     userApplicationRegionAssignAddresses(tcl_user_app, tcl_user_app.fpga['comm'] !='tcp' and tcl_user_app.fpga.address_space == 64)
     userApplicationLocalConnections(tcl_user_app)
-    userApplicationRegionControlInst(tcl_user_app,control_name_list)
+    userApplicationRegionControlInst(tcl_user_app,control_name_list,control_prop_list)
+    tcl_user_app.setInterfacesCLK("CLK",clk_200_int)
+    tcl_user_app.setInterfacesCLK("CLK_300", clk_300_int)
     tcl_user_app.close()
     #return num_debug_interfaces
 
@@ -1794,7 +1844,7 @@ def bridgeConnections(outDir, fpga, sim):
             'inst':'network/galapagos_bridge_inst',
             'vendor':'xilinx.com',
             'lib':'hls',
-            'resetns_port': 'rst300',
+            'resetns_port': 'rst',
             'clks':['ap_clk'],
             'resetns':['ap_rst_n']
         }

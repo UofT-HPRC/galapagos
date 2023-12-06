@@ -65,7 +65,9 @@ class kernel(abstractDict):
             'const',
             'properties',
             'board',
-            'note'
+            'note',
+            'control',
+            'control_range'
 
         )
 

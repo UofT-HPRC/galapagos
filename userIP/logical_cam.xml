@@ -12,6 +12,7 @@
         <num> 2 </num>
         <rep> 1 </rep>
         <control> True </control>
+        <control_range> 16K </control_range>
         <clk> ap_clk </clk>
         <aresetn> ap_rst_n </aresetn>
         <s_axis>
@@ -29,7 +30,8 @@
         <lib> hls </lib>
         <num> 1 </num>
         <rep> 1 </rep>
-        <control> False </control>
+        <control> True </control>
+        <control_range> 4M </control_range>
         <clk> ap_clk </clk>
         <aresetn> ap_rst_n </aresetn>
         <s_axis>
@@ -48,6 +50,7 @@
         <num> 0 </num>
         <rep> 1 </rep>
         <control> True </control>
+        <control_range> 4K </control_range>
         <clk> ap_clk </clk>
         <aresetn> ap_rst_n </aresetn>
         <s_axis>

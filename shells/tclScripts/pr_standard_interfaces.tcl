@@ -6,9 +6,11 @@ if {[info exists HUNDREDG]} {
     create_bd_port -dir I -type rst rst
     create_bd_port -dir I -type rst rst300
     set_property CONFIG.POLARITY ACTIVE_LOW [get_bd_ports rst]
-    set_property CONFIG.ASSOCIATED_RESET {ARESETN:rst} [get_bd_ports /CLK]
     set_property CONFIG.POLARITY ACTIVE_LOW [get_bd_ports rst300]
-    set_property CONFIG.ASSOCIATED_RESET {ARESETN:rst300} [get_bd_ports /CLK_300]
+    startgroup
+    set_property CONFIG.ASSOCIATED_RESET {rst} [get_bd_ports /CLK]
+    set_property CONFIG.ASSOCIATED_RESET {rst300} [get_bd_ports /CLK_300]
+    endgroup
 } else {
     create_bd_port -dir I -type clk CLK
     set_property CONFIG.FREQ_HZ 156250000 [get_bd_ports CLK]

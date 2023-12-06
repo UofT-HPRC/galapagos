@@ -67,14 +67,25 @@ class tclMeFile():
         """
         self.tprint('source ' + source)
 
+    def setInterfacesCLK(self,clk_name,intfs):
+        self.tprint("set_property CONFIG.ASSOCIATED_BUSIF {",'')
+        first_config = True
+        for intf in intfs:
+            if not first_config:
+                self.tprint(":","")
+            self.tprint(str(intf) , "")
+        self.tprint("} [get_bd_ports /"+clk_name+"]")
     def setProperties(self, inst_name, properties):
+        self.setGeneralProperies(inst_name,properties,'cells')
+    def setPortProperties(self, inst_name, properties):
+        self.setGeneralProperies(inst_name, properties, 'intf_ports')
+    def setGeneralProperies(self, inst_name, properties, type):
         if properties != None:
             self.tprint('set_property -dict [list ', '')
         for prop in properties:
             self.tprint_raw(prop + ' ', end ='')
         if properties != None:
-            self.tprint_raw('] [get_bd_cells ' + inst_name + ']')
-
+            self.tprint_raw('] [get_bd_'+type+' ' + inst_name + ']')
     def assign_address(self, slave_inst, slave_port, slave_base):
         
         if slave_inst != None:
@@ -104,7 +115,6 @@ class tclMeFile():
         
         if 'properties' in ip and ip['properties'] != None:
             self.setProperties(ip['inst'], ip['properties'])
-            print("setting properties for "+ str(ip))
 
         if 'clks' in ip and ip['clks'] != None:
             for clk_name in ip['clks']:

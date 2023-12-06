@@ -36,6 +36,7 @@ print("Output path: " + path)
 
 
 cluster_inst = cluster(projectName, logicalFile, mapFile)
+cluster_inst.processMemoryBus()
 cluster_inst.makeProjectClusterScript(path)
 cluster_inst.writeClusterTCL(path, sim)
 cluster_inst.writeBRAMFile(path, 'mac')
