@@ -969,18 +969,33 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
     #instantiate switch only if more than one output
     elif num_slave_m_axis_global > 1:
         tcl_user_app.instBlock(
-                {
+            {
                 'name':'axis_switch',
                 'inst':'applicationRegion/output_switch',
                 'clks':['aclk'],
                 'resetns_port': 'rst',
-                'resetns':['aresetn'],
-                'properties':['CONFIG.NUM_SI {' + str(num_slave_m_axis_global) + '}',
-                    'CONFIG.NUM_MI {1}',
-                    'CONFIG.ARB_ON_TLAST {1}',
-                    'CONFIG.M00_AXIS_HIGHTDEST {0xffffffff}']
-                }
-                )
+                'resetns':['aresetn']
+            }
+        )
+        #Configure the switch to have 1 slave per kernel, 1 master, that it allows all messages through, and arbitrate on TLAST only.
+        properties = [
+            'CONFIG.NUM_SI {' + str(num_slave_m_axis_global) + '}',
+            'CONFIG.NUM_MI {1}',
+            'CONFIG.HAS_TLAST.VALUE_SRC USER',
+            'CONFIG.M00_AXIS_HIGHTDEST {0xffffffff}'
+        ]
+        tcl_user_app.setProperties('applicationRegion/output_switch',properties)
+        properties = [
+            'CONFIG.HAS_TLAST {1}'
+        ]
+        tcl_user_app.setProperties('applicationRegion/output_switch', properties)
+        properties = [
+            'CONFIG.ARB_ON_MAX_XFERS {0}',
+            'CONFIG.ARB_ON_TLAST {1}'
+        ]
+        tcl_user_app.setProperties('applicationRegion/output_switch', properties)
+
+
 
 
 
