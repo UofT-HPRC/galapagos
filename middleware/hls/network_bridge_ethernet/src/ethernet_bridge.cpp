@@ -246,23 +246,24 @@ void ethernet_bridge(
 
 {
     #pragma HLS DATAFLOW
-    // #pragma HLS resource core = AXI4Stream variable = to_app
-    // #pragma HLS resource core = AXI4Stream variable = from_eth
-    // #pragma HLS resource core = AXI4Stream variable = from_app
-    // #pragma HLS resource core = AXI4Stream variable = to_eth
     #pragma HLS INTERFACE axis port=to_app
     #pragma HLS INTERFACE axis port=from_eth
     #pragma HLS INTERFACE axis port=from_app
     #pragma HLS INTERFACE axis port=to_eth
-
-    // #pragma HLS DATA_PACK variable = to_app
-    // #pragma HLS DATA_PACK variable = from_eth
-    // #pragma HLS DATA_PACK variable = from_app
-    // #pragma HLS DATA_PACK variable = to_eth
+    /* 
+    #pragma HLS resource core = AXI4Stream variable = to_app
+    #pragma HLS resource core = AXI4Stream variable = from_eth
+    #pragma HLS resource core = AXI4Stream variable = from_app
+    #pragma HLS resource core = AXI4Stream variable = to_eth
+    #pragma HLS DATA_PACK variable = to_app
+    #pragma HLS DATA_PACK variable = from_eth
+    #pragma HLS DATA_PACK variable = from_app
+    #pragma HLS DATA_PACK variable = to_eth
     #pragma HLS aggregate variable = to_app compact=bit
     #pragma HLS aggregate variable = from_eth compact=bit
     #pragma HLS aggregate variable = from_app compact=bit
     #pragma HLS aggregate variable = to_eth compact=bit
+    */
     #pragma HLS_INTERFACE ap_ctrl_none state_out
     #ifdef DEBUG
     #pragma HLS_INTERFACE ap_none observedAddress_out

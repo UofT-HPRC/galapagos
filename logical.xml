@@ -5,8 +5,8 @@
         <keep> 64 </keep>
         <last> 1 </last>
     </packet>
-	<kernel> cpu
-        <num> 1 </num>
+	<!-- <kernel> cpu
+        <num> 0 </num>
         <rep> 1 </rep>
         <s_axis>
             <scope> global </scope>
@@ -16,23 +16,40 @@
             <scope> global </scope>
             <name> stream_out </name>
         </m_axis>
-	</kernel>
-    <kernel> kernel_1 
+	</kernel> -->
+    <kernel> sender
         <vendor> xilinx.com </vendor>
         <version> 1.0 </version>
         <lib> hls </lib>
-        <num> 0 </num>
+        <num> 1 </num>
         <rep> 1 </rep>
-        <clk> ap_clk </clk>
-        <aresetn> ap_rst_n </aresetn>
+        <clk> aclk </clk>
+        <aresetn> aresetn </aresetn>
         <s_axis>
             <scope> global </scope>
-            <name> in_r </name>
+            <name> pkt_in_V </name>
         </s_axis>
         <m_axis>
             <scope> global </scope>
-            <name> out_r </name>
+            <name> pkt_out_V </name>
         </m_axis>
+    </kernel>
+    <kernel> receiver
+        <vendor> xilinx.com </vendor>
+        <version> 1.0 </version>
+        <lib> hls </lib>
+        <num> 2 </num>
+        <rep> 1 </rep>
+        <clk> aclk </clk>
+        <aresetn> aresetn </aresetn>
+        <s_axis>
+            <scope> global </scope>
+            <name> pkt_in_V </name>
+        </s_axis>
+        <!-- <m_axis>
+            <scope> global </scope>
+            <name> out_r </name>
+        </m_axis> -->
     </kernel>
 </cluster>
 

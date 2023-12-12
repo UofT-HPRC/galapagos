@@ -17,12 +17,18 @@ ap_uint<32> byteSwap32(ap_uint<32> &inputVector)
     return (inputVector.range(7, 0), inputVector(15, 8), inputVector(23, 16), inputVector(31, 24));
 }
 
+// Old AXIS signals (Vivado HLS <2019.1)
+/*
 struct axiWord512
 {
     ap_uint<512> data;
     ap_uint<16> keep;
     ap_uint<1> last;
 };
+*/
+
+// New AXIS signals (Vitis HLS 2023.1+) <WData, WUser, WDest, WId>
+typedef ap_axiu<512, 0, 0, 0> axiWord512;
 
 void rxPath(stream<axiWord512> &lbRxDataIn,
             stream<axiWord512> &txGalapagosBridge)

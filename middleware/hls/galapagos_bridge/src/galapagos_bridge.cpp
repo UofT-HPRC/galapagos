@@ -101,11 +101,11 @@ void galapagos_bridge(
 {
 
     #pragma HLS DATAFLOW
-    #pragma HLS INTERFACE ap_ctrl_none port = return
-    #pragma HLS INTERFACE axis port = g2N_input
-    #pragma HLS INTERFACE axis port = g2N_output
-    #pragma HLS INTERFACE axis port = n2G_input
-    #pragma HLS INTERFACE axis port = n2G_output
+    #pragma HLS INTERFACE ap_ctrl_none port=return
+    #pragma HLS INTERFACE axis port=g2N_input
+    #pragma HLS INTERFACE axis port=g2N_output
+    #pragma HLS INTERFACE axis port=n2G_input
+    #pragma HLS INTERFACE axis port=n2G_output
 
     galapagos_interface buff_stream;
 

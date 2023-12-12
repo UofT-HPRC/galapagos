@@ -6,3 +6,4 @@ my_init.sh
 vivado_*
 vivado.jou
 *.log
+userIP/*

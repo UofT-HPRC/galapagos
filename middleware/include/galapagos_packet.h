@@ -1,11 +1,10 @@
-#ifndef GALAPAGOS_PACKET_H
+#ifndef GALAPAGOS_PACKET_H // Guard
 #define GALAPAGOS_PACKET_H
 
 #include "hls_stream.h"
 #include "ap_int.h"
 #include "packet_size.h"
-
-
+#include "ap_axi_sdata.h"
 
 #if(PACKET_DATA_LENGTH == 64)
 #define KEEP_ALL 0xff
@@ -46,8 +45,10 @@ typedef galapagos::stream_packet <ap_uint<PACKET_DATA_LENGTH> > galapagos_packet
 #define MAX_SIZE 4096
 #define MAX_LENGTH_BITS 16
 
-#else //CPU
+#else // not CPU
 
+// Old AXIS signals (Vivado HLS <2019.1)
+/*
 namespace galapagos{
     template <typename T>
     struct stream_packet {
@@ -69,7 +70,7 @@ namespace galapagos{
 #ifdef PACKET_KEEP_LENGTH
         ap_uint <PACKET_KEEP_LENGTH> keep;
 #endif
-	    stream_packet() {}
+        stream_packet() {}
     };
 
     template<typename T>
@@ -77,6 +78,10 @@ namespace galapagos{
 }
 
 typedef galapagos::stream_packet<ap_uint<PACKET_DATA_LENGTH> >  galapagos_packet;
+*/
+
+// New AXIS signals (Vitis HLS 2023.1+) <WData, WUser, WDest, WId>
+typedef ap_axis<PACKET_DATA_LENGTH, PACKET_USER_LENGTH, PACKET_DEST_LENGTH, PACKET_DEST_LENGTH> galapagos_packet;
 
 typedef hls::stream<galapagos_packet> galapagos_interface;
 

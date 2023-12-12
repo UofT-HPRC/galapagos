@@ -62,6 +62,9 @@ create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen network/blk_mem_bridge_r
 set_property -dict [list CONFIG.Memory_Type {Single_Port_ROM} CONFIG.Enable_32bit_Address {true} CONFIG.Use_Byte_Write_Enable {false} CONFIG.Byte_Size {8} CONFIG.Write_Depth_A {8192} CONFIG.Register_PortA_Output_of_Memory_Primitives {false} CONFIG.Use_RSTA_Pin {true} CONFIG.Port_A_Write_Rate {0} CONFIG.use_bram_block {Stand_Alone} CONFIG.EN_SAFETY_CKT {true} ] [get_bd_cells network/blk_mem_bridge_rom]
 
                    
+# Kartavya's comment: Added this line to initialize the network/blk_mem_bridge_rom using ip.coe file, Yu forgot to initialize?
+# set_property -dict [list CONFIG.Load_Init_File {true} CONFIG.Coe_File {../../../../../../../ip.coe} ] [get_bd_cells network/blk_mem_bridge_rom]
+set_property -dict [list CONFIG.Load_Init_File {true} CONFIG.Coe_File $top_path/projects/$default_dir/ip.coe ] [get_bd_cells network/blk_mem_bridge_rom]
 
 connect_bd_intf_net [get_bd_intf_pins network/blk_mem_bridge_rom/BRAM_PORTA] [get_bd_intf_pins network/network_bridge_udp_1_0/ip_table_PORTA]
 #connect_bd_intf_net [get_bd_intf_pins network/blk_mem_bridge_rom/BRAM_PORTB] [get_bd_intf_pins network/network_bridge_udp_1_0/ip_table_PORTB]

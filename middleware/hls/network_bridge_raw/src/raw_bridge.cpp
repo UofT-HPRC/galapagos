@@ -71,8 +71,8 @@ void raw_to_app(hls::stream<raw_axis> &from_raw,
         {
             raw_packet_in = from_raw.read();
             // raw_packet_in.data = reverseEndian64_data(raw_packet_in.data);
-            // raw_packet_in.tkeep = reverseEndian64_keep(raw_packet_in.tkeep);
-            app_packet_out.keep = raw_packet_in.tkeep;
+            // raw_packet_in.keep = reverseEndian64_keep(raw_packet_in.keep);
+            app_packet_out.keep = raw_packet_in.keep;
             app_packet_out.data = raw_packet_in.data;
             app_packet_out.last = raw_packet_in.last;
             to_app.write(app_packet_out);
@@ -105,11 +105,11 @@ void app_to_raw(
         if (!from_app.empty())
         {
             app_packet_in = from_app.read();
-            raw_packet_out.tkeep = 0xff;
+            raw_packet_out.keep = 0xff;
             temp_dest = 0;
             temp_dest(15, 8) = app_packet_in.dest;
             raw_packet_out.data = temp_dest;
-            // raw_packet_out.tkeep = reverseEndian64_keep(raw_packet_out.tkeep);
+            // raw_packet_out.keep = reverseEndian64_keep(raw_packet_out.keep);
             raw_packet_out.last = 0;
             raw_packet_out.data = reverseEndian64_data(raw_packet_out.data);
             to_raw.write(raw_packet_out);
@@ -117,9 +117,9 @@ void app_to_raw(
         }
         break;
     case STREAM_FIRST_FLIT_APP_TO_RAW:
-        // raw_packet_out.tkeep = reverseEndian64_keep(app_packet_in.tkeep);
+        // raw_packet_out.keep = reverseEndian64_keep(app_packet_in.keep);
         // raw_packet_out.data = reverseEndian64_data(app_packet_in.data);
-        raw_packet_out.tkeep = app_packet_in.keep;
+        raw_packet_out.keep = app_packet_in.keep;
         raw_packet_out.data = app_packet_in.data;
         raw_packet_out.last = app_packet_in.last;
         to_raw.write(raw_packet_out);
@@ -132,9 +132,9 @@ void app_to_raw(
         if (!from_app.empty())
         {
             app_packet_in = from_app.read();
-            // raw_packet_out.tkeep = reverseEndian64_keep(app_packet_in.tkeep);
+            // raw_packet_out.keep = reverseEndian64_keep(app_packet_in.keep);
             // raw_packet_out.data = reverseEndian64_data(app_packet_in.data);
-            raw_packet_out.tkeep = app_packet_in.keep;
+            raw_packet_out.keep = app_packet_in.keep;
             raw_packet_out.data = app_packet_in.data;
             raw_packet_out.last = app_packet_in.last;
 
@@ -156,15 +156,20 @@ void raw_bridge(
 {
 #pragma HLS DATAFLOW
 
+#pragma HLS INTERFACE mode=axis port=to_app
+#pragma HLS INTERFACE mode=axis port=from_raw
+#pragma HLS INTERFACE mode=axis port=from_app
+#pragma HLS INTERFACE mode=axis port=to_raw
+/*
 #pragma HLS resource core = AXI4Stream variable = to_app
 #pragma HLS resource core = AXI4Stream variable = from_raw
 #pragma HLS resource core = AXI4Stream variable = from_app
 #pragma HLS resource core = AXI4Stream variable = to_raw
-
 #pragma HLS DATA_PACK variable = to_app
 #pragma HLS DATA_PACK variable = from_raw
 #pragma HLS DATA_PACK variable = from_app
 #pragma HLS DATA_PACK variable = to_raw
+*/
 
 #pragma HLS_INTERFACE ap_ctrl_none state_out
 #pragma HLS_INTERFACE ap_ctrl_none observedAddress_out

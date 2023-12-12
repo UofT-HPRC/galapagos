@@ -43,6 +43,8 @@ static ap_uint<64>byteSwap64(ap_uint<64> inputVector){
 
 }
 
+// Old AXIS signals (Vivado HLS <2019.1)
+/*
 template<int D>
 struct ap_axis_net{
 	ap_uint <D> data;
@@ -60,6 +62,10 @@ struct ap_axis_net{
 //typedef ap_axis_net<8*BYTESPERCYCLE,1,8,8> netStream;
 //typedef ap_axis_net<8*BYTESPERCYCLE> netStream;
 typedef ap_axis_net<PACKET_DATA_LENGTH> netStream;
+*/
+
+// New AXIS signals (Vitis HLS 2023.1+) <WData, WUser, WDest, WId>
+typedef ap_axiu<PACKET_DATA_LENGTH, 16, 0, 0 > netStream;
 
 void galapagos_bridge(
           galapagos_interface *g2N_input,
