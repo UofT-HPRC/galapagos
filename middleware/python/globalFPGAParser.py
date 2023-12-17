@@ -21,7 +21,7 @@ for o, a in opts:
     elif o in ("--mapFile"):
         mapFile = a
     elif o in ("--projectName"):
-        projectName= a
+        projectName = a
     elif o in ("--sim"):
         sim = int(a)
     elif o in ("--path"):

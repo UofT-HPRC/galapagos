@@ -282,25 +282,25 @@ def userApplicationRegionMemInstGlobal(tcl_user_app, shared):
             properties = ['CONFIG.NUM_MI {1}']
 
 
-#MAKES SMARTCONNECT
-#DOESN'T PLAY WELL WITH ENCRYPTED CORES, REPLACING WITH INTERCONNECT
+    #MAKES SMARTCONNECT
+    #DOESN'T PLAY WELL WITH ENCRYPTED CORES, REPLACING WITH INTERCONNECT
 
         properties.append('CONFIG.NUM_SI {' + str(num_mem_interfaces) + '}')
         # adds an interface for the second memory interface to be added
         if shared:
             properties.append('CONFIG.NUM_MI {2}')
-#
-#        tcl_user_app.instBlock(
-#                {
-#                'name':'smartconnect',
-#                'inst':'applicationRegion/axi_interconnect_mem',
-#                'clks':['aclk'],
-#                'resetns':['aresetn'],
-#                'properties':properties
-#                }
-#                )
 
-#AXI INTERCONNECT
+        # tcl_user_app.instBlock(
+        #         {
+        #         'name':'smartconnect',
+        #         'inst':'applicationRegion/axi_interconnect_mem',
+        #         'clks':['aclk'],
+        #         'resetns':['aresetn'],
+        #         'properties':properties
+        #         }
+        #         )
+
+    #AXI INTERCONNECT
         for inc_index in range(0, num_mem_interfaces):
             inc_index_str = "%02d"%inc_index
             inc_clks.append('S' + inc_index_str + '_ACLK')
@@ -778,7 +778,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
         quit(0)
 
     else:
-#for simulation purposes use custom arbiter instead of axis_switch
+    #for simulation purposes use custom arbiter instead of axis_switch
         if(sim == 0):
             # we don't want an input switch IFF 1 slave and mode is raw
             # if it is raw, we need just a single slave interface
@@ -1678,7 +1678,6 @@ def netBridgeConstants(tcl_net):
         tcl_net.tprint('set net_mask 0xFFFF0000')
         tcl_net.addSource(galapagos_path + '/middleware/tclScripts/pr_udp100_bridge.tcl')
 
-
 def netBridge(outDir, fpga):
     """
     Handles makign a TCL file for generating this FPGA's network bridge.
@@ -2061,7 +2060,6 @@ def bridgeConnections(outDir, fpga, sim):
         tcl_custom.close()
     tcl_bridge_connections.close()
 
-
 def makeTCLFiles(fpga, projectName, output_path, sim):
     """
     Top-level function call for TCL file generation functions.
@@ -2087,13 +2085,13 @@ def makeTCLFiles(fpga, projectName, output_path, sim):
     galapagos_path = str(os.environ.get('GALAPAGOS_PATH'))
     tclMain = tclMeFile( outDir + '/' + str(fpga['num']), fpga)
     tclMain.tprint(
-"if { ! [info exists top_dir] } {\n\
-    set top_path ${::env(GALAPAGOS_PATH)}\n\
-}\n\
-if { ! [info exists default_dir] } {\n\
-    set default_dir " + projectName + "\n\
-}\n\
-"
+    "if { ! [info exists top_dir] } {\n\
+        set top_path ${::env(GALAPAGOS_PATH)}\n\
+    }\n\
+    if { ! [info exists default_dir] } {\n\
+        set default_dir " + projectName + "\n\
+    }\n\
+    "
     )
     if fpga['board'] == 'sidewinder':
         tclMain.tprint('set HUNDREDG 1')

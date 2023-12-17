@@ -24,14 +24,14 @@ python_path = $(middleware_path)/python
 all: middleware hlsmiddleware
 
 middleware: guard-LOGICALFILE guard-MAPFILE guard-PROJECTNAME ${LOGICALFILE} ${MAPFILE}
-	python3 ${python_path}/globalFPGAParser.py --logicalFile=${LOGICALFILE} --mapFile=${MAPFILE} --projectName=${PROJECTNAME}
-	chmod +x $(GALAPAGOS_PATH)/projects/$(PROJECTNAME)/createCluster.sh
+    python3 ${python_path}/globalFPGAParser.py --logicalFile=${LOGICALFILE} --mapFile=${MAPFILE} --projectName=${PROJECTNAME}
+    chmod +x $(GALAPAGOS_PATH)/projects/$(PROJECTNAME)/createCluster.sh
 
 hlsmiddleware:
-	 $(MAKE) -C $(hls_path)
+    $(MAKE) -C $(hls_path)
 
 clean: guard-PROJECTNAME
-	 $(MAKE) -C $(hls_path) clean
-	 rm -rf ${GALAPAGOS_PATH}/projects/${PROJECTNAME}
-	 rm -rf ${GALAPAGOS_PATH}/createCluster.sh
-	 rm -rf ${GALAPAGOS_PATH}/createSim.sh
+    $(MAKE) -C $(hls_path) clean
+    rm -rf ${GALAPAGOS_PATH}/projects/${PROJECTNAME}
+    rm -rf ${GALAPAGOS_PATH}/createCluster.sh
+    rm -rf ${GALAPAGOS_PATH}/createSim.sh
