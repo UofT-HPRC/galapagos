@@ -18,20 +18,22 @@ include $(GALAPAGOS_PATH)/include.mk
 middleware_path = $(GALAPAGOS_PATH)/middleware
 hls_path = $(middleware_path)/hls
 python_path = $(middleware_path)/python
+start_synth = $(GALAPAGOS_START_SYNTH)
 
+$(info    start_synth is $(GALAPAGOS_START_SYNTH))
 .PHONY: middleware
 
 all: middleware hlsmiddleware
 
 middleware: guard-LOGICALFILE guard-MAPFILE guard-PROJECTNAME ${LOGICALFILE} ${MAPFILE}
-    python3 ${python_path}/globalFPGAParser.py --logicalFile=${LOGICALFILE} --mapFile=${MAPFILE} --projectName=${PROJECTNAME}
-    chmod +x $(GALAPAGOS_PATH)/projects/$(PROJECTNAME)/createCluster.sh
+	python3 ${python_path}/globalFPGAParser.py --logicalFile=${LOGICALFILE} --mapFile=${MAPFILE} --projectName=${PROJECTNAME} --startSynth=${start_synth}
+	chmod +x $(GALAPAGOS_PATH)/projects/$(PROJECTNAME)/createCluster.sh
 
 hlsmiddleware:
-    $(MAKE) -C $(hls_path)
+	 $(MAKE) -C $(hls_path)
 
 clean: guard-PROJECTNAME
-    $(MAKE) -C $(hls_path) clean
-    rm -rf ${GALAPAGOS_PATH}/projects/${PROJECTNAME}
-    rm -rf ${GALAPAGOS_PATH}/createCluster.sh
-    rm -rf ${GALAPAGOS_PATH}/createSim.sh
+	 $(MAKE) -C $(hls_path) clean
+	 rm -rf ${GALAPAGOS_PATH}/projects/${PROJECTNAME}
+	 rm -rf ${GALAPAGOS_PATH}/createCluster.sh
+	 rm -rf ${GALAPAGOS_PATH}/createSim.sh

@@ -18,14 +18,12 @@ ap_uint<32> byteSwap32(ap_uint<32> &inputVector)
 }
 
 // Old AXIS signals (Vivado HLS <2019.1)
-/*
-struct axiWord512
-{
-    ap_uint<512> data;
-    ap_uint<16> keep;
-    ap_uint<1> last;
-};
-*/
+// struct axiWord512
+// {
+//     ap_uint<512> data;
+//     ap_uint<16> keep;
+//     ap_uint<1> last;
+// };
 
 // New AXIS signals (Vitis HLS 2023.1+) <WData, WUser, WDest, WId>
 typedef ap_axiu<512, 0, 0, 0> axiWord512;

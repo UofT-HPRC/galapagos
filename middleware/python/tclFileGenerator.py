@@ -282,25 +282,25 @@ def userApplicationRegionMemInstGlobal(tcl_user_app, shared):
             properties = ['CONFIG.NUM_MI {1}']
 
 
-    #MAKES SMARTCONNECT
-    #DOESN'T PLAY WELL WITH ENCRYPTED CORES, REPLACING WITH INTERCONNECT
+#MAKES SMARTCONNECT
+#DOESN'T PLAY WELL WITH ENCRYPTED CORES, REPLACING WITH INTERCONNECT
 
         properties.append('CONFIG.NUM_SI {' + str(num_mem_interfaces) + '}')
         # adds an interface for the second memory interface to be added
         if shared:
             properties.append('CONFIG.NUM_MI {2}')
+#
+#        tcl_user_app.instBlock(
+#                {
+#                'name':'smartconnect',
+#                'inst':'applicationRegion/axi_interconnect_mem',
+#                'clks':['aclk'],
+#                'resetns':['aresetn'],
+#                'properties':properties
+#                }
+#                )
 
-        # tcl_user_app.instBlock(
-        #         {
-        #         'name':'smartconnect',
-        #         'inst':'applicationRegion/axi_interconnect_mem',
-        #         'clks':['aclk'],
-        #         'resetns':['aresetn'],
-        #         'properties':properties
-        #         }
-        #         )
-
-    #AXI INTERCONNECT
+#AXI INTERCONNECT
         for inc_index in range(0, num_mem_interfaces):
             inc_index_str = "%02d"%inc_index
             inc_clks.append('S' + inc_index_str + '_ACLK')
@@ -522,7 +522,8 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
         tcl_user_app.instBlock(
             {'vendor':'xilinx.com',
             'lib':'hls',
-            'name':'width32router',
+            'name':'router',
+            # 'name':'width32router',
             'inst':'applicationRegion/custom_switch_inst',
             'clks':['ap_clk'],
             'resetns':['ap_rst_n']
@@ -557,7 +558,8 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
             {
             'name':'applicationRegion/custom_switch_inst',
             'type':'pin',
-            'port_name':'network_addr_V'
+            'port_name':'network_addr'
+            # 'port_name':'network_addr_V'
             }
             )
 
@@ -567,7 +569,8 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                     {
                     'name':'applicationRegion/custom_switch_inst',
                     'type':'intf',
-                    'port_name':'network_table_V_PORTA'
+                    'port_name':'network_table_PORTA'
+                    # 'port_name':'network_table_V_PORTA'
                     },
                     {
                     'name':'applicationRegion/blk_mem_switch_rom',
@@ -619,7 +622,8 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                     {
                     'name':'applicationRegion/custom_switch_inst',
                     'type':'pin',
-                    'port_name':'network_addr_V'
+                    'port_name':'network_addr'
+                    # 'port_name':'network_addr_V'
                     }
                     )
 
@@ -628,7 +632,8 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                 {
                 'name':'applicationRegion/custom_switch_inst',
                 'type':'intf',
-                'port_name':'network_table_V_PORTA'
+                'port_name':'network_table_PORTA'
+                # 'port_name':'network_table_V_PORTA'
                 },
                 {
                 'name':'applicationRegion/blk_mem_switch_rom',
@@ -778,7 +783,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
         quit(0)
 
     else:
-    #for simulation purposes use custom arbiter instead of axis_switch
+#for simulation purposes use custom arbiter instead of axis_switch
         if(sim == 0):
             # we don't want an input switch IFF 1 slave and mode is raw
             # if it is raw, we need just a single slave interface
@@ -880,7 +885,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                 }
 
                 )
-    #instantiate switch only if more than one output
+    # instantiate switch only if more than one output
     elif num_slave_m_axis_global > 1:
         tcl_user_app.instBlock(
                 {
@@ -1663,7 +1668,8 @@ def netBridgeConstants(tcl_net):
             {
                 'name':'network/network_bridge_inst',
                 'type':'pin',
-                'port_name': 'node_id_V'
+                'port_name': 'node_id'
+                # 'port_name': 'node_id_V'
             }
         )
     elif tcl_net.fpga['comm'] == 'eth':
@@ -2085,13 +2091,13 @@ def makeTCLFiles(fpga, projectName, output_path, sim):
     galapagos_path = str(os.environ.get('GALAPAGOS_PATH'))
     tclMain = tclMeFile( outDir + '/' + str(fpga['num']), fpga)
     tclMain.tprint(
-    "if { ! [info exists top_dir] } {\n\
-        set top_path ${::env(GALAPAGOS_PATH)}\n\
-    }\n\
-    if { ! [info exists default_dir] } {\n\
-        set default_dir " + projectName + "\n\
-    }\n\
-    "
+"if { ! [info exists top_dir] } {\n\
+    set top_path ${::env(GALAPAGOS_PATH)}\n\
+}\n\
+if { ! [info exists default_dir] } {\n\
+    set default_dir " + projectName + "\n\
+}\n\
+"
     )
     if fpga['board'] == 'sidewinder':
         tclMain.tprint('set HUNDREDG 1')
@@ -2109,5 +2115,6 @@ def makeTCLFiles(fpga, projectName, output_path, sim):
         tclMain.addSource(galapagos_path + '/middleware/tclScripts/custom/' + fpga['custom'] + '.tcl')
 
     tclMain.tprint('validate_bd_design')
+    tclMain.tprint('save_bd_design')
     tclMain.close()
     print("END OF TCL FILE GENERATOR")

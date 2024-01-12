@@ -5,19 +5,19 @@
         <keep> 64 </keep>
         <last> 1 </last>
     </packet>
-	<!-- <kernel> cpu
+	<kernel> data_sender
         <num> 0 </num>
         <rep> 1 </rep>
         <s_axis>
             <scope> global </scope>
-            <name> stream_in </name>
+            <name> in </name>
         </s_axis>
         <m_axis>
             <scope> global </scope>
-            <name> stream_out </name>
+            <name> out </name>
         </m_axis>
-	</kernel> -->
-    <kernel> sender
+	</kernel>
+    <kernel> multiplierA
         <vendor> xilinx.com </vendor>
         <version> 1.0 </version>
         <lib> hls </lib>
@@ -34,7 +34,7 @@
             <name> pkt_out_V </name>
         </m_axis>
     </kernel>
-    <kernel> receiver
+    <kernel> multiplierB
         <vendor> xilinx.com </vendor>
         <version> 1.0 </version>
         <lib> hls </lib>
@@ -46,10 +46,22 @@
             <scope> global </scope>
             <name> pkt_in_V </name>
         </s_axis>
-        <!-- <m_axis>
+        <m_axis>
             <scope> global </scope>
-            <name> out_r </name>
-        </m_axis> -->
+            <name> pkt_out_V </name>
+        </m_axis>
     </kernel>
+	<kernel> data_receiver
+        <num> 3 </num>
+        <rep> 1 </rep>
+        <s_axis>
+            <scope> global </scope>
+            <name> in </name>
+        </s_axis>
+        <m_axis>
+            <scope> global </scope>
+            <name> out </name>
+        </m_axis>
+	</kernel>
 </cluster>
 

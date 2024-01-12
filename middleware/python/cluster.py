@@ -240,8 +240,10 @@ class cluster(abstractDict):
                 #tclFileThreads[len(tclFileThreads)-1].start()
                 tclFileGenerator.makeTCLFiles(node, self.name, output_path, sim)
 
-        # for thread in tclFileThreads:
-        #     thread.join()
+#        for thread in tclFileThreads:
+#            thread.join()
+
+
 
     #make COE to intialize BRAM of all IP addresses
     def writeBRAMFile(self, output_path, addr_type):
@@ -304,7 +306,7 @@ class cluster(abstractDict):
             nodeFile.close()
         bramFile.close()
 
-    def makeProjectClusterScript(self, output_path):
+    def makeProjectClusterScript(self, output_path, startSynth):
         """
         As per the name, makes a project cluster script. You may be wondering what a
         project cluster script is. Me too.
@@ -323,6 +325,7 @@ class cluster(abstractDict):
 
         Args:
             output_path (string): Location of Galapagos's projects folder.
+            startSynth (int): 1 to start synthesizing the design and 0 to not synthesize
         """
 
         # If this project directory already exists, just delete it! Oops! I forgot
@@ -334,6 +337,11 @@ class cluster(abstractDict):
 
         globalConfigFile = open(output_path + "/" + self.name + '/createCluster.sh', 'w')
         globalSimFile = open(output_path + "/" + self.name + '/simCluster.sh', 'w')
+
+        if(startSynth):
+            print("Setting startSynth = 1, will start synthesis after creating the project block designs.")
+        else:
+            print("Setting startSynth = 0, will NOT start synthesis.")
 
         globalConfigFile.write("cd " + str(os.environ.get('GALAPAGOS_PATH')) + "\n")
         for node_idx, node_obj in enumerate(self.nodes):
@@ -349,9 +357,10 @@ class cluster(abstractDict):
 
                 #currently only making flattened bitstreams
                 globalConfigFile.write("galapagos-update-board " + node_obj['board'] + "\n")
-                globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + self.name +  " --start_synth 1" + "\n")
-                # globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + output_path + '/' + self.name " & \n")
-                # globalSimFile.write("vivado -mode gui -source tclScripts/createSim.tcl -tclargs " + node_obj['board'] + " " + self.name + " " + str(node_idx) + "\n")
+                globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + " --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + self.name +  " --start_synth " + str(startSynth) +"\n")
+                # globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + self.name +  " --start_synth 1" + "\n")
+#                globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + output_path + '/' + self.name " & \n")
+#                globalSimFile.write("vivado -mode gui -source tclScripts/createSim.tcl -tclargs " + node_obj['board'] + " " + self.name + " " + str(node_idx) + "\n")
 
 
 

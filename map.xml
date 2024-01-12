@@ -1,31 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cluster>
-
-    <!-- <node> -->
-        <!-- SW (CPU) -->
-        <!-- <type> sw </type>
-        <kernel> 0 </kernel>
+    <node>
+        <type> sw </type>
+        <kernel> 0 </kernel><!-- data_sender (CPU) -->
+        <kernel> 3 </kernel><!-- data_receiver -->
         <mac> a0:42:3f:38:dd:0d </mac>
         <ip> 10.1.24.132 </ip>
-    </node> -->
-    <node>
-        <!-- Sender -->
-        <board> sidewinder </board>
-        <comm> udp </comm>
-        <type> hw </type>
-        <kernel> 1 </kernel>
-        <!-- <kernel> 2 </kernel> -->
-        <mac> d2:2f:5e:c5:db:ca </mac>
-        <ip> 10.1.24.102 </ip>
     </node>
     <node>
-        <!-- Receiver -->
         <board> sidewinder </board>
         <comm> udp </comm>
         <type> hw </type>
-        <!-- <kernel> 1 </kernel> -->
-        <kernel> 2 </kernel>
-        <mac> d2:0e:5f:cd:c5:f0 </mac>
-        <ip> 10.1.24.103 </ip>
+        <kernel> 1 </kernel><!-- multiplierA -->
+        <kernel> 2 </kernel><!-- multiplierB -->
+        <mac> d2:2f:5e:c5:db:ca </mac>
+        <ip> 10.1.24.102 </ip>
     </node>
 </cluster>
