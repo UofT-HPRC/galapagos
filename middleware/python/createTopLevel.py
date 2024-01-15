@@ -83,9 +83,9 @@ def createTopLevelVerilog(target_files, source_dir, kernel_names,control_names):
     copy_file(dst_file,source_dir+"/../verilog/shellTop_pt1.v")
     dst_file.write(construct_axis_wire("  ","M_AXIS",512,0,True))
     dst_file.write(construct_axis_wire("  ","S_AXIS",512,0,False))
-    dst_file.write(construct_axi_wire("  ","S_AXI_CONTROL",16,64,40))
+    dst_file.write(construct_axi_wire("  ","S_AXI_CONTROL",16,128,40))
     for i in control_names:
-        dst_file.write(construct_axi_wire("  ", str(i) + "_CONTROL", 16, 64, 40))
+        dst_file.write(construct_axi_wire("  ", str(i) + "_CONTROL", 16, 128, 40))
     for i in kernel_names:
         dst_file.write(construct_axis_wire("  ",str(i)+"_MAXIS",512,24,True))
         dst_file.write(construct_axis_wire("  ",str(i)+"_SAXIS",512,24,True))

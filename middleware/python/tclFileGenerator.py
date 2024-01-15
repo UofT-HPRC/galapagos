@@ -25,6 +25,8 @@ def createHierarchyTCL(outFile,kernel_names,ctrl_ports_list):
         file_contents = file_contents + "create_bd_intf_port -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 TX_AXIS\n"
         file_contents = file_contents + "create_bd_port -dir I -type clk -freq_hz 199498000 CLK\n"
         file_contents = file_contents + "create_bd_port -dir I -type rst rst\nset_property CONFIG.ASSOCIATED_RESET {rst} [get_bd_ports /CLK]\n"
+        file_contents = file_contents + "set_property -dict [ list CONFIG.HAS_TKEEP {1} CONFIG.HAS_TLAST {1} CONFIG.TDEST_WIDTH {24} CONFIG.TDATA_NUM_BYTES {64} CONFIG.TID_WIDTH {24} CONFIG.TUSER_WIDTH {16} ] [get_bd_intf_ports /RX_AXIS]\n"
+        file_contents = file_contents + "set_property -dict [ list CONFIG.DATA_WIDTH {128} CONFIG.ADDR_WIDTH {40} CONFIG.ID_WIDTH {16} CONFIG.ARUSER_WIDTH {16} CONFIG.AWUSER_WIDTH {16} ] [get_bd_intf_ports /AXI_CONTROL]\n"
         file_contents = file_contents + "save_bd_design\n"
         dst_file.write(file_contents)
 
@@ -55,6 +57,9 @@ def userApplicationRegionControlInst(tcl_user_app,kern_name_list,kern_prop_list)
                   'CONFIG.AWUSER_WIDTH {16}',
                   'CONFIG.ID_WIDTH {16}'
                   ]
+    slave_axim_properties = ['CONFIG.ADDR_WIDTH {40}',
+                  'CONFIG.DATA_WIDTH {128}'
+                  ]
     tcl_user_app.setPortProperties('S_AXI_CONTROL',properties)
     if(num_ctrl_interfaces == 0):
         tcl_user_app.instBlock(
@@ -78,6 +83,97 @@ def userApplicationRegionControlInst(tcl_user_app,kern_name_list,kern_prop_list)
                     'port_name':'S_AXI'
                     }
                     )
+    elif (num_ctrl_interfaces == 1):
+        inc_clks = ['ACLK', 'S00_ACLK']
+        inc_resetns = ['ARESETN', 'S00_ARESETN']
+        inc_clks.append('M00_ACLK')
+        inc_resetns.append('M00_ARESETN')
+        inc_clks.append('M01_ACLK')
+        inc_resetns.append('M01_ARESETN')
+        tcl_user_app.instBlock(
+            {'name': 'axi_interconnect',
+             'resetns_port': 'rst',
+             'inst': 'applicationRegion/axi_interconnect_ctrl',
+             'clks': inc_clks,
+             'resetns': inc_resetns,
+             'properties': ['CONFIG.NUM_SI {1}',
+                            'CONFIG.NUM_MI {2}']
+             }
+        )
+
+        tcl_user_app.instBlock(
+            {'name': 'axi_gpio',
+             'resetns_port': 'rst',
+             'inst': 'applicationRegion/dummy_gpio',
+             'clks': ['s_axi_aclk'],
+             'resetns': ['s_axi_aresetn'],
+             }
+        )
+        tcl_user_app.makeConnection(
+            'intf',
+            {
+                'name': None,
+                'type': 'intf_port',
+                'port_name': 'S_AXI_CONTROL'
+            },
+            {'name': 'applicationRegion/axi_interconnect_ctrl',
+             'type': 'intf',
+             'port_name': 'S00_AXI'
+             }
+        )
+        tcl_user_app.makeConnection(
+            'intf',
+            {'name': 'applicationRegion/dummy_gpio',
+             'type': 'intf',
+             'port_name': 'S_AXI'
+             },
+            {'name': 'applicationRegion/axi_interconnect_ctrl',
+             'type': 'intf',
+             'port_name': 'M01_AXI'
+             }
+        )
+        slave_base = "Reg"
+        master = "S_AXI_CONTROL"
+        interconnect_properties = ['CONFIG.S00_HAS_REGSLICE {1}']
+        kern = kern_name_list[0]
+        port_name = kern + "_CONTROL"
+        tcl_user_app.add_axi4_port(port_name, 'Master')
+        tcl_user_app.setPortProperties(port_name, slave_axim_properties)
+        inc_index_str = "M00_AXI"
+        properties_str = "CONFIG.M00_HAS_REGSLICE {4}"
+        interconnect_properties.append(properties_str)
+        tcl_user_app.makeConnection(
+            'intf',
+            {'name': 'applicationRegion/axi_interconnect_ctrl',
+             'type': 'intf',
+             'port_name': inc_index_str
+             },
+            {
+                'name': None,
+                'type': 'intf_port',
+                'port_name': port_name
+            }
+        )
+        tcl_user_app.assign_address(
+            None,
+            port_name,
+            'Reg'
+        )
+        tcl_user_app.assign_address(
+            'applicationRegion/dummy_gpio',
+            'S_AXI',
+            'Reg'
+        )
+        tcl_user_app.setProperties('applicationRegion/axi_interconnect_ctrl', interconnect_properties)
+        kern = kern_name_list[0]
+        prop = kern_prop_list[0]
+        slave_port = kern + "_CONTROL"
+        property = {'range': '4K'}
+        tcl_user_app.set_address_properties(None, slave_port, slave_base, master, **property)
+        property = {'offset': prop[1]}
+        tcl_user_app.set_address_properties(None, slave_port, slave_base, master, **property)
+        property = {'range': prop[0]}
+        tcl_user_app.set_address_properties(None, slave_port, slave_base, master, **property)
     else:
         #tcl_user_app.instBlock(
         #        {'name':'smartconnect',
@@ -127,6 +223,7 @@ def userApplicationRegionControlInst(tcl_user_app,kern_name_list,kern_prop_list)
             kern = kern_name_list[kern_num]
             port_name = kern + "_CONTROL"
             tcl_user_app.add_axi4_port(port_name, 'Master')
+            tcl_user_app.setPortProperties(port_name, slave_axim_properties)
             inc_index_str = "M"+"%02d" % master_port_index +"_AXI"
             properties_str = "CONFIG.M"+"%02d" % master_port_index + "_HAS_REGSLICE {4}"
             interconnect_properties.append(properties_str)
@@ -1739,7 +1836,7 @@ def userApplicationRegion(outDir,output_path, fpga, sim):
     userApplicationLocalConnections(tcl_user_app)
     userApplicationRegionControlInst(tcl_user_app,control_name_list,control_prop_list)
     tcl_user_app.setInterfacesCLK("CLK",clk_200_int)
-    tcl_user_app.setInterfacesCLK("CLK_300", clk_300_int)
+    tcl_user_app.setInterfacesCLK("CLK300", clk_300_int)
     tcl_user_app.close()
     #return num_debug_interfaces
 

@@ -577,9 +577,6 @@ set_property PROHIBIT true [get_bels IOB_X0Y103/PAD]
 ## 10G tcp/ip##################################################
 
 ##> qsfp0 <##
-create_clock -period 3.103 [get_ports gt_refclk_p_1]
-set_property PACKAGE_PIN R33 [get_ports gt_refclk_n_1]
-set_property PACKAGE_PIN R32 [get_ports gt_refclk_p_1]
 set_property PACKAGE_PIN D11 [get_ports {qsfp0_lp_mode_1v8}]
 set_property PACKAGE_PIN A10 [get_ports {qsfp0_sel_1v8_l}]
 

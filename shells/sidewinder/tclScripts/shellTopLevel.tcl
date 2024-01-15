@@ -13,6 +13,11 @@ create_bd_port -dir O -type rst rst300
 create_bd_port -dir O -type clk CLK
 create_bd_port -dir O -type clk CLK300
 
+startgroup
+set_property CONFIG.ASSOCIATED_RESET {rst} [get_bd_ports /CLK]
+set_property CONFIG.ASSOCIATED_RESET {rst300} [get_bd_ports /CLK300]
+endgroup
+
 #configure external ports
 
 set_property CONFIG.FREQ_HZ 322265625 [get_bd_intf_ports /gt_ref]
