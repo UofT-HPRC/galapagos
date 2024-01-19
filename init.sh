@@ -2,7 +2,7 @@
 
 # Given the Xilinx FPGA part number, this finds the appropriate FPGA family,
 # which is appended to the provided configFile
-
+echo $configFile
 find_family () {
   configFile=$1
   part=$2
@@ -55,16 +55,17 @@ find_family () {
 
 if [[ "$#" != 1 && "$#" != 5 && "$#" != 7 && "$#" != 9 && "$#" != 10 ]]; then
   echo "5,7 or 8 arguments expected, got $#"
-  echo "Usage: init.sh /abs/path/to/galapagos/repository /abs/path/to/vivado /abs/path/to/vivado_hls vivado_version vivado_hls_version [part name] [board name] [board] "
+  echo "Usage: init.sh /abs/path/to/galapagos/repository /abs/path/to/vitis /abs/path/to/vitis_hls vitis_version vitis_hls_version [part name] [board name] [board] "
   echo "Usage: source init.sh OPERATION"
   return 1
 fi
 
 if [[ "$#" != 1 ]]; then
   repoPath=$(readlink -f "$1")
-  vivadoPath=$(readlink -f "$2")
+  vitisPath=$(readlink -f "$2")
   hlsPath=$(readlink -f "$3")
-  vivadoVersion=$4
+  echo $vitisPath
+  vitisVersion=$4
   hlsVersion=$5
   if [[ "$#" > 5 ]]; then
     part=$6
@@ -101,22 +102,7 @@ if [[ -f $configFile ]]; then
 fi
 
 # TODO make versions into a list and print supported versions on 'else' path
-if [[ $hlsVersion == "2017.2" ]]; then
-  hlsPath_append=$hlsPath/$hlsVersion
-elif [[ $hlsVersion == "2017.4" ]]; then
-  hlsPath_append=$hlsPath/$hlsVersion
-elif [[ $hlsVersion == "2018.1" ]]; then
-  hlsPath_append=$hlsPath/$hlsVersion
-elif [[ $hlsVersion == "2018.2" ]]; then
-  hlsPath_append=$hlsPath/$hlsVersion
-elif [[ $hlsVersion == "2018.3" ]]; then
-  hlsPath_append=$hlsPath/$hlsVersion
-elif [[ $hlsVersion == "2019.1" ]]; then
-  hlsPath_append=$hlsPath/$hlsVersion
-else
-  echo "Error: unsupported Vivado HLS Version $hlsVersion"
-  return 1
-fi
+hlsPath_append=$hlsPath/$hlsVersion
 
 if [[ "$#" > 5 ]]; then
   # https://stackoverflow.com/a/2264537
@@ -129,7 +115,7 @@ if [[ "$#" > 5 ]]; then
   fi
 fi
 
-vivadoPath_append=$vivadoPath/$vivadoVersion
+vitisPath_append=$vitisPath/$vitisVersion
 
 if [ "$board_name" == "sidewinder"  ]; then
     interfaceBandwidth="100G"
@@ -139,10 +125,11 @@ fi
 
 {
   echo "export GALAPAGOS_PATH=$repoPath"
-  echo "export GALAPAGOS_VIVADO_PATH=$vivadoPath_append"
+  echo "export GALAPAGOS_VITIS_PATH=$vitisPath_append"
   echo "export GALAPAGOS_HLS_PATH=$hlsPath_append"
-  echo "export GALAPAGOS_VIVADO_VERSION=$vivadoVersion"
+  echo "export GALAPAGOS_VITIS_VERSION=$vitisVersion"
   echo "export GALAPAGOS_HLS_VERSION=$hlsVersion"
+  echo "source $vitisPath_append/settings64.sh"
 } >> $configFile
 
 if [[ "$#" > 5 ]]; then
@@ -196,9 +183,9 @@ galapagos-update-board() {
   if [[ \$board != "NULL" ]]; then
     source \$GALAPAGOS_PATH/init.sh \\
       \$GALAPAGOS_PATH \\
-      $vivadoPath \\
+      $vitisPath \\
       $hlsPath \\
-      \$GALAPAGOS_VIVADO_VERSION \\
+      \$GALAPAGOS_VITIS_VERSION \\
       \$GALAPAGOS_HLS_VERSION \\
       \$GALAPAGOS_SET_FREQUENCY \\
       \$GALAPAGOS_ACTUAL_FREQUENCY \\
@@ -208,9 +195,9 @@ galapagos-update-board() {
   else
     source \$GALAPAGOS_PATH/init.sh \\
       \$GALAPAGOS_PATH \\
-      $vivadoPath \\
+      $vitisPath \\
       $hlsPath \\
-      \$GALAPAGOS_VIVADO_VERSION \\
+      \$GALAPAGOS_VITIS_VERSION \\
       \$GALAPAGOS_HLS_VERSION \\
       \$GALAPAGOS_SET_FREQUENCY \\
       \$GALAPAGOS_ACTUAL_FREQUENCY \\
@@ -221,24 +208,24 @@ galapagos-update-board() {
 
 galapagos-update-versions() {
   if [[ "\$#" != 2 || \$1 == '--h' || \$1 == '-help' ]]; then
-    echo "Usage: galapagos-update-versions vivado_version vivado_hls_version"
+    echo "Usage: galapagos-update-versions vitis_version vitis_hls_version"
     return 1
   fi
 
   configFile=$configFile
-  vivadoPath=$vivadoPath
+  vitisPath=$vitisPath
 
   # replace only lines starting with GALAPAGOS_*
-  sed -i "/^export GALAPAGOS_VIVADO_VERSION=/ s/export GALAPAGOS_VIVADO_VERSION=.*/export GALAPAGOS_VIVADO_VERSION=\$1/" \$configFile
+  sed -i "/^export GALAPAGOS_VITIS_VERSION=/ s/export GALAPAGOS_VITIS_VERSION=.*/export GALAPAGOS_VITIS_VERSION=\$1/" \$configFile
   sed -i "/^export GALAPAGOS_HLS_VERSION=/ s/export GALAPAGOS_HLS_VERSION=.*/export GALAPAGOS_HLS_VERSION=\$2/" \$configFile
 
   source \$configFile
-  export PATH=$vivadoPath_append/bin:$PATH
+  export PATH=$vitisPath_append/bin:$PATH
 }
 EOF
 
 source $configFile
-export PATH=$vivadoPath_append/bin:$PATH
+export PATH=$vitisPath_append/bin:$PATH
 
 # if it doesn't exist in the .bashrc, add it. Otherwise, uncomment it in case
 if ! grep -Fq "# added by galapagos" ~/.bashrc; then

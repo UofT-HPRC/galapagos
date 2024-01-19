@@ -20,8 +20,8 @@ ifndef GALAPAGOS_PART
 $(error GALAPAGOS_PART is not set)
 endif
 
-ifndef GALAPAGOS_VIVADO_PATH
-$(error GALAPAGOS_VIVADO_PATH is not set)
+ifndef GALAPAGOS_VITIS_PATH
+$(error GALAPAGOS_VITIS_PATH is not set)
 endif
 
 ifndef GALAPAGOS_BOARD_NAME
