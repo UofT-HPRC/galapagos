@@ -31,8 +31,8 @@ sim.exe:
 hls: $(HLS_PATH)/src/*.cpp  
 	mkdir -p $(BOARD_PATH)/ip/width48/$(HLSMIDDLEWAREIP)
 	mkdir -p $(BOARD_PATH)/ip/width32/$(HLSMIDDLEWAREIP)
-#	vivado_hls $(GALAPAGOS_PATH)/middleware/hls/$(HLSMIDDLEWAREIP)/generate_hls.tcl -tclargs 48
-	vivado_hls $(GALAPAGOS_PATH)/middleware/hls/$(HLSMIDDLEWAREIP)/generate_hls.tcl -tclargs 32
+#	vitis_hls $(GALAPAGOS_PATH)/middleware/hls/$(HLSMIDDLEWAREIP)/generate_hls.tcl -tclargs 48
+	vitis_hls $(GALAPAGOS_PATH)/middleware/hls/$(HLSMIDDLEWAREIP)/generate_hls.tcl -tclargs 32
 
 clean:
 	rm -rf $(BOARD_PATH)/csim/$(HLSMIDDLEWAREIP)

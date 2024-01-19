@@ -696,7 +696,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
         tcl_user_app.instBlock(
             {'vendor':'xilinx.com',
             'lib':'hls',
-            'name':'width32router',
+            'name':'hls:router',
             'inst':'applicationRegion/custom_switch_inst',
             'clks':['ap_clk'],
             'resetns_port': 'rst',
@@ -732,7 +732,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
             {
             'name':'applicationRegion/custom_switch_inst',
             'type':'pin',
-            'port_name':'network_addr_V'
+            'port_name':'network_addr'
             }
             )
 
@@ -742,7 +742,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                     {
                     'name':'applicationRegion/custom_switch_inst',
                     'type':'intf',
-                    'port_name':'network_table_V_PORTA'
+                    'port_name':'network_table_PORTA'
                     },
                     {
                     'name':'applicationRegion/blk_mem_switch_rom',
@@ -795,7 +795,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                     {
                     'name':'applicationRegion/custom_switch_inst',
                     'type':'pin',
-                    'port_name':'network_addr_V'
+                    'port_name':'network_addr'
                     }
                     )
 
@@ -804,7 +804,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                 {
                 'name':'applicationRegion/custom_switch_inst',
                 'type':'intf',
-                'port_name':'network_table_V_PORTA'
+                'port_name':'network_table_PORTA'
                 },
                 {
                 'name':'applicationRegion/blk_mem_switch_rom',
@@ -1914,7 +1914,7 @@ def netBridgeConstants(tcl_net):
             {
                 'name':'network/network_bridge_inst',
                 'type':'pin',
-                'port_name': 'node_id_V'
+                'port_name': 'node_id'
             }
         )
     elif tcl_net.fpga['comm'] == 'eth':

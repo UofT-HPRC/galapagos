@@ -13,7 +13,7 @@ set_part ${part_name}
 #csynth path
 add_files $src_path_root/src/raw_bridge.cpp -cflags "-I $src_path_root/include -I $galapagos_path/middleware/include"
 create_clock -period 250MHz -name default
-config_interface -expose_global
+# config_interface -expose_global
 csynth_design
 export_design -format ip_catalog
 close_project

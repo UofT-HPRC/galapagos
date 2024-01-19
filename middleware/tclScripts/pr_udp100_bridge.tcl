@@ -25,7 +25,7 @@ connect_bd_net [get_bd_ports CLK300] [get_bd_pins network/axis_endianness_conv_0
 connect_bd_net [get_bd_ports CLK300] [get_bd_pins network/axis_endianness_conv_1/clk]
 
 
-connect_bd_net [get_bd_pins network/network_bridge_udp_1_0/remote_ip_tx_V] [get_bd_pins network/GULF_Stream_0/remote_ip_tx]
+connect_bd_net [get_bd_pins network/network_bridge_udp_1_0/remote_ip_tx] [get_bd_pins network/GULF_Stream_0/remote_ip_tx]
 #connect_bd_net [get_bd_pins network/network_bridge_udp_1_0/arp_status_V] [get_bd_pins network/GULF_Stream_0/arp_status]
 connect_bd_net [get_bd_ports CLK300] [get_bd_pins network/GULF_Stream_0/clk]
 connect_bd_net [get_bd_ports CLK300] [get_bd_pins network/network_bridge_udp_1_0/ap_clk]
@@ -61,11 +61,12 @@ create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen network/blk_mem_bridge_r
 
 #set_property -dict [list CONFIG.Memory_Type {Single_Port_ROM} CONFIG.Enable_32bit_Address {true} CONFIG.Use_Byte_Write_Enable {false} CONFIG.Byte_Size {8} CONFIG.Write_Depth_A {8192} CONFIG.Register_PortA_Output_of_Memory_Primitives {false} CONFIG.Use_RSTA_Pin {true} CONFIG.Port_A_Write_Rate {0} CONFIG.use_bram_block {Stand_Alone} CONFIG.EN_SAFETY_CKT {true} ] [get_bd_cells network/blk_mem_bridge_rom]
 
-set_property -dict [list CONFIG.Memory_Type {Dual_Port_ROM} CONFIG.Enable_32bit_Address {true} CONFIG.Use_Byte_Write_Enable {false} CONFIG.Byte_Size {8} CONFIG.Write_Depth_A {8192} CONFIG.Enable_B {Use_ENB_Pin} CONFIG.Register_PortA_Output_of_Memory_Primitives {false} CONFIG.Register_PortB_Output_of_Memory_Primitives {false} CONFIG.Use_RSTA_Pin {true} CONFIG.Use_RSTB_Pin {true} CONFIG.Port_A_Write_Rate {0} CONFIG.Port_B_Clock {100} CONFIG.Port_B_Enable_Rate {100} CONFIG.use_bram_block {BRAM_Controller} CONFIG.EN_SAFETY_CKT {true} CONFIG.Load_Init_File {true} CONFIG.Coe_File {../../../../../../../ip.coe}] [get_bd_cells network/blk_mem_bridge_rom]
+#set_property -dict [list CONFIG.Memory_Type {Dual_Port_ROM} CONFIG.Enable_32bit_Address {true} CONFIG.Use_Byte_Write_Enable {false} CONFIG.Byte_Size {8} CONFIG.Write_Depth_A {8192} CONFIG.Enable_B {Use_ENB_Pin} CONFIG.Register_PortA_Output_of_Memory_Primitives {false} CONFIG.Register_PortB_Output_of_Memory_Primitives {false} CONFIG.Use_RSTA_Pin {true} CONFIG.Use_RSTB_Pin {true} CONFIG.Port_A_Write_Rate {0} CONFIG.Port_B_Clock {100} CONFIG.Port_B_Enable_Rate {100} CONFIG.use_bram_block {BRAM_Controller} CONFIG.EN_SAFETY_CKT {true} CONFIG.Load_Init_File {true} CONFIG.Coe_File {../../../../../../../ip.coe}] [get_bd_cells network/blk_mem_bridge_rom]
+set_property -dict [list CONFIG.Memory_Type {Dual_Port_ROM} CONFIG.Enable_32bit_Address {true} CONFIG.Use_Byte_Write_Enable {false} CONFIG.Byte_Size {8} CONFIG.Write_Depth_A {8192} CONFIG.Register_PortA_Output_of_Memory_Primitives {false} CONFIG.Use_RSTA_Pin {true} CONFIG.Port_A_Write_Rate {0} CONFIG.use_bram_block {Stand_Alone} CONFIG.EN_SAFETY_CKT {true} CONFIG.Load_Init_File {true} CONFIG.Coe_File {../../../../../../../ip.coe} ] [get_bd_cells network/blk_mem_bridge_rom]
 
 
-connect_bd_intf_net [get_bd_intf_pins network/blk_mem_bridge_rom/BRAM_PORTA] [get_bd_intf_pins network/network_bridge_udp_1_0/ip_table_V_PORTA]
-connect_bd_intf_net [get_bd_intf_pins network/blk_mem_bridge_rom/BRAM_PORTB] [get_bd_intf_pins network/network_bridge_udp_1_0/ip_table_V_PORTB]
+connect_bd_intf_net [get_bd_intf_pins network/blk_mem_bridge_rom/BRAM_PORTA] [get_bd_intf_pins network/network_bridge_udp_1_0/ip_table_PORTA]
+connect_bd_intf_net [get_bd_intf_pins network/blk_mem_bridge_rom/BRAM_PORTB] [get_bd_intf_pins network/network_bridge_udp_1_0/ip_table_PORTB]
 
 connect_bd_intf_net [get_bd_intf_ports S_AXIS] [get_bd_intf_pins network/GULF_Stream_0/s_axis]
 connect_bd_intf_net [get_bd_intf_ports M_AXIS] [get_bd_intf_pins network/GULF_Stream_0/m_axis]
