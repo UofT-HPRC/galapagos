@@ -18,7 +18,7 @@ include include.mk
 
 MIDDLEWARE_DIR = $(GALAPAGOS_PATH)/middleware
 SHELLS_DIR = $(GALAPAGOS_PATH)/shells
-HLSMIDDLEWARE_DIR = $(GALAPAGOS_PATH)/middleware/hls 
+HLSMIDDLEWARE_DIR = $(GALAPAGOS_PATH)/middleware/hls
 
 .PHONY: middleware
 

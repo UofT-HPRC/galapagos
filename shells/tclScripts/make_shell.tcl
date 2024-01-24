@@ -113,6 +113,7 @@ set obj [get_filesets sources_1]
 set_property ip_repo_paths [list \
   $top_path/hlsBuild \
   $top_shells/shell_ips \
+  kernels_hw \
   userIP] [current_project]
 
 # Rebuild user ip_repo's index before adding any source files

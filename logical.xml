@@ -23,15 +23,15 @@
         <lib> hls </lib>
         <num> 1 </num>
         <rep> 1 </rep>
-        <clk> aclk </clk>
-        <aresetn> aresetn </aresetn>
+        <clk> ap_clk </clk>
+        <aresetn> ap_rst_n </aresetn>
         <s_axis>
             <scope> global </scope>
-            <name> pkt_in_V </name>
+            <name> pkt_in </name>
         </s_axis>
         <m_axis>
             <scope> global </scope>
-            <name> pkt_out_V </name>
+            <name> pkt_out </name>
         </m_axis>
     </kernel>
     <kernel> multiplierB
@@ -40,15 +40,15 @@
         <lib> hls </lib>
         <num> 2 </num>
         <rep> 1 </rep>
-        <clk> aclk </clk>
-        <aresetn> aresetn </aresetn>
+        <clk> ap_clk </clk>
+        <aresetn> ap_rst_n </aresetn>
         <s_axis>
             <scope> global </scope>
-            <name> pkt_in_V </name>
+            <name> pkt_in </name>
         </s_axis>
         <m_axis>
             <scope> global </scope>
-            <name> pkt_out_V </name>
+            <name> pkt_out </name>
         </m_axis>
     </kernel>
 	<kernel> data_receiver

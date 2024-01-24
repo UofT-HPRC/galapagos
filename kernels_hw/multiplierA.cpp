@@ -1,39 +1,42 @@
 #include "hls_stream.h"
 #include "ap_int.h"
-#include "ap_utils.h"
+#include "etc/ap_utils.h"
+#include "ap_axi_sdata.h"
 
-// Receiver
+// MultiplierA
 
 // Parameters
 #define BYTE_WIDTH_OF_DATA 64
 // Calculated pre-processed values
 #define bitwidth (BYTE_WIDTH_OF_DATA * 8)
 
-struct net_data
-{
-    ap_uint<bitwidth> data;
-    ap_uint<BYTE_WIDTH_OF_DATA> keep;
-    ap_uint<1> last;
-    ap_uint<24> dest;
-    ap_uint<24> id;
-    ap_uint<16> user;
-    // Add any other necessary sideband signals
-};
+// Old AXIS signals (Vivado HLS <2019.1)
+// struct net_data
+// {
+// 	ap_uint<bitwidth> data;
+// 	ap_uint<BYTE_WIDTH_OF_DATA> keep;
+// 	ap_uint<1> last;
+// 	ap_uint<24> dest;
+// 	ap_uint<24> id;
+// 	ap_uint<16> user;
+// 	//Add any other necessary sideband signals
+// };
+
+// New AXIS signals (Vitis HLS 2023.1+) <WData, WUser, WDest, WId>
+typedef ap_axiu<bitwidth, 16, 24, 24> net_data;
 
 void multiplierA(
     hls::stream<net_data> &pkt_in,
-    ap_uint<24> dest_prt,
-    ap_uint<24> id_prt,
-    ap_uint<16> user_prt,
-    hls::stream<net_data> &pkt_out)
+    hls::stream<net_data> &pkt_out,)
 {
 #pragma HLS INTERFACE ap_ctrl_none port = return
 
-#pragma HLS resource core = AXI4Stream variable = pkt_in
-#pragma HLS DATA_PACK variable = pkt_in
-#pragma HLS resource core = AXI4Stream variable = pkt_out
-#pragma HLS DATA_PACK variable = pkt_out
+#pragma HLS INTERFACE mode = axis port = pkt_in
+#pragma HLS INTERFACE mode = axis port = pkt_out
 
+    ap_uint<24> dest_prt = 2;
+    ap_uint<24> id_prt = 1;
+    ap_uint<16> user_prt = 0;
     ap_uint<32> numberA;
     ap_uint<32> numberB;
     ap_uint<64> numberC;
