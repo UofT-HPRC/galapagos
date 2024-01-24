@@ -6,11 +6,14 @@
 
 #include "galapagos_packet.h"
 
-struct raw_axis{
-	ap_int <64> data;
-	ap_uint<1> last;
-	ap_uint<8> tkeep;
-};
+// Old AXIS signals (Vivado HLS <2019.1)
+// struct raw_axis{
+// 	ap_int <64> data;
+// 	ap_uint<1> last;
+// 	ap_uint<8> keep;
+// };
+// New AXIS signals (Vitis HLS 2023.1+) <WData, WUser, WDest, WId>
+typedef ap_axiu<64, 0, 0, 0> raw_axis;
 
 void raw_bridge(
 	galapagos_interface & to_app,

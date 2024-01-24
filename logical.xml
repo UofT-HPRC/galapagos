@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cluster>
+    <packet>
+        <data> 512 </data>
+        <keep> 64 </keep>
+        <last> 1 </last>
+    </packet>
+	<kernel> data_sender
+        <num> 0 </num>
+        <rep> 1 </rep>
+        <s_axis>
+            <scope> global </scope>
+            <name> in </name>
+        </s_axis>
+        <m_axis>
+            <scope> global </scope>
+            <name> out </name>
+        </m_axis>
+	</kernel>
+    <kernel> multiplierA
+        <vendor> xilinx.com </vendor>
+        <version> 1.0 </version>
+        <lib> hls </lib>
+        <num> 1 </num>
+        <rep> 1 </rep>
+        <clk> ap_clk </clk>
+        <aresetn> ap_rst_n </aresetn>
+        <s_axis>
+            <scope> global </scope>
+            <name> pkt_in </name>
+        </s_axis>
+        <m_axis>
+            <scope> global </scope>
+            <name> pkt_out </name>
+        </m_axis>
+    </kernel>
+    <kernel> multiplierB
+        <vendor> xilinx.com </vendor>
+        <version> 1.0 </version>
+        <lib> hls </lib>
+        <num> 2 </num>
+        <rep> 1 </rep>
+        <clk> ap_clk </clk>
+        <aresetn> ap_rst_n </aresetn>
+        <s_axis>
+            <scope> global </scope>
+            <name> pkt_in </name>
+        </s_axis>
+        <m_axis>
+            <scope> global </scope>
+            <name> pkt_out </name>
+        </m_axis>
+    </kernel>
+	<kernel> data_receiver
+        <num> 3 </num>
+        <rep> 1 </rep>
+        <s_axis>
+            <scope> global </scope>
+            <name> in </name>
+        </s_axis>
+        <m_axis>
+            <scope> global </scope>
+            <name> out </name>
+        </m_axis>
+	</kernel>
+</cluster>
+

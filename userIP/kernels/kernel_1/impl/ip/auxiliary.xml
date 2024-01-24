@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xd:acceleratorMap xmlns:xd="http://www.xilinx.com/xidane" xd:functionName="kernel_1" xd:componentRef="kernel_1" xd:initiationInterval="3145748" xd:clockPeriod="5.000" xd:sequential="true" xd:hostMachine="64" xd:reset="control">
+  <xd:arg xd:name="in.data" xd:originalName="in" xd:direction="in" xd:interfaceRef="in_r" xd:busTypeRef="axis" xd:dataWidth="512"/>
+  <xd:arg xd:name="in.id" xd:originalName="in" xd:direction="in" xd:interfaceRef="in_r" xd:busTypeRef="axis" xd:dataWidth="8"/>
+  <xd:arg xd:name="in.dest" xd:originalName="in" xd:direction="in" xd:interfaceRef="in_r" xd:busTypeRef="axis" xd:dataWidth="8"/>
+  <xd:arg xd:name="in.user" xd:originalName="in" xd:direction="in" xd:interfaceRef="in_r" xd:busTypeRef="axis" xd:dataWidth="16"/>
+  <xd:arg xd:name="in.last" xd:originalName="in" xd:direction="in" xd:interfaceRef="in_r" xd:busTypeRef="axis" xd:dataWidth="1"/>
+  <xd:arg xd:name="out.data" xd:originalName="out" xd:direction="out" xd:interfaceRef="out_r" xd:busTypeRef="axis" xd:dataWidth="512"/>
+  <xd:arg xd:name="out.id" xd:originalName="out" xd:direction="out" xd:interfaceRef="out_r" xd:busTypeRef="axis" xd:dataWidth="8"/>
+  <xd:arg xd:name="out.dest" xd:originalName="out" xd:direction="out" xd:interfaceRef="out_r" xd:busTypeRef="axis" xd:dataWidth="8"/>
+  <xd:arg xd:name="out.user" xd:originalName="out" xd:direction="out" xd:interfaceRef="out_r" xd:busTypeRef="axis" xd:dataWidth="16"/>
+  <xd:arg xd:name="out.last" xd:originalName="out" xd:direction="out" xd:interfaceRef="out_r" xd:busTypeRef="axis" xd:dataWidth="1"/>
+  <xd:latencyEstimates xd:best-case="787" xd:worst-case="3145747" xd:average-case="24595"/>
+  <xd:resourceEstimates xd:LUT="94813" xd:FF="37149" xd:BRAM="74" xd:DSP="448"/>
+</xd:acceleratorMap>

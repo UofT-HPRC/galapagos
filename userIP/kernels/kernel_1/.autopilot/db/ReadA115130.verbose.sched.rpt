@@ -1,0 +1,306 @@
+
+
+================================================================
+== Vivado HLS Report for 'ReadA115130'
+================================================================
+* Date:           Mon Feb 27 15:55:07 2023
+
+* Version:        2019.1 (Build 2552052 on Fri May 24 15:28:33 MDT 2019)
+* Project:        hls_project
+* Solution:       kernel_1
+* Product family: zynquplus
+* Target device:  xczu19eg-ffvc1760-2-i
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |   5.00|     3.676|        0.62|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+---------+-----+---------+---------+
+    |    Latency    |    Interval   | Pipeline|
+    | min |   max   | min |   max   |   Type  |
+    +-----+---------+-----+---------+---------+
+    |  770|  3145730|  770|  3145730|   none  |
+    +-----+---------+-----+---------+---------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        +----------+-----+---------+----------+-----------+-----------+---------------+----------+
+        |          |    Latency    | Iteration|  Initiation Interval  |      Trip     |          |
+        | Loop Name| min |   max   |  Latency |  achieved |   target  |     Count     | Pipelined|
+        +----------+-----+---------+----------+-----------+-----------+---------------+----------+
+        |- Loop 1  |  768|  3145728|         2|          1|          1| 768 ~ 3145728 |    yes   |
+        +----------+-----+---------+----------+-----------+-----------+---------------+----------+
+
+============================================================
++ Verbose Summary: Synthesis Manager
+============================================================
+InlineROM: 1
+ExposeGlobal: 0
+============================================================
++ Verbose Summary: CDFG Model
+============================================================
+IsTopModel: 0
+ResetActiveHigh: 1
+IsCombinational: 2
+IsDatapathOnly: 0
+HasWiredReturn: 1
+HasMFsm: 0
+HasVarLatency: 1
+IsPipeline: 0
+IsRtlPipelined: 0
+IsInstanceOverlapped: 0
+IsDontTouch: 0
+HasImplIP: 0
+IsGatedGlobalClock: 0
+
++ Individual pipeline summary: 
+  * Pipeline-0: initiation interval (II) = 1, depth = 2
+
+
+============================================================
++ Verbose Summary: Schedule
+============================================================
+* Number of FSM states : 4
+* Pipeline : 1
+  Pipeline-0 : II = 1, D = 2, States = { 2 3 }
+* Dataflow Pipeline: 0
+
+* FSM state transitions: 
+1 --> 2 
+2 --> 4 3 
+3 --> 2 
+4 --> 
+
+* FSM state operations: 
+
+State 1 <SV = 0> <Delay = 3.67>
+ST_1 : Operation 5 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_31, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 5 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 6 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_30, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 6 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 7 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_29, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 7 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 8 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_28, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 8 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 9 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_27, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 9 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 10 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_26, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 10 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 11 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_25, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 11 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 12 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_24, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 12 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 13 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_23, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 13 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 14 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_22, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 14 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 15 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_21, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 15 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 16 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_20, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 16 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 17 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_19, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 17 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 18 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_18, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 18 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 19 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_17, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 19 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 20 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_16, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 20 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 21 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_15, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 21 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 22 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_14, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 22 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 23 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_13, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 23 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 24 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_12, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 24 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 25 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_11, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 25 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 26 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_10, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 26 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 27 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_9, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 27 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 28 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_8, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 28 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 29 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_7, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 29 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 30 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_6, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 30 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 31 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_5, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 31 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 32 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_4, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 32 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 33 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_3, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 33 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 34 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_2, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 34 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 35 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_1, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 35 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 36 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecMemCore([768 x i32]* @weights_0_1_0, [1 x i8]* @p_str1, [12 x i8]* @p_str14, [1 x i8]* @p_str1, i32 -1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1, [1 x i8]* @p_str1)"   --->   Operation 36 'specmemcore' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 37 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i32* %N_pipe_out_V_V8, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str461, i32 0, i32 0, [1 x i8]* @p_str462, [1 x i8]* @p_str463, [1 x i8]* @p_str464, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str465, [1 x i8]* @p_str466)"   --->   Operation 37 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 38 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i32* %N_pipe_in_V_V1, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str454, i32 0, i32 0, [1 x i8]* @p_str455, [1 x i8]* @p_str456, [1 x i8]* @p_str457, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str458, [1 x i8]* @p_str459)"   --->   Operation 38 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 39 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i256* %a_pipes_4_V_V28, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str370, i32 0, i32 0, [1 x i8]* @p_str371, [1 x i8]* @p_str372, [1 x i8]* @p_str373, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str374, [1 x i8]* @p_str375)"   --->   Operation 39 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 40 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i256* %a_pipes_3_V_V23, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str328, i32 0, i32 0, [1 x i8]* @p_str329, [1 x i8]* @p_str330, [1 x i8]* @p_str331, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str332, [1 x i8]* @p_str333)"   --->   Operation 40 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 41 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i256* %a_pipes_2_V_V18, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str286, i32 0, i32 0, [1 x i8]* @p_str287, [1 x i8]* @p_str288, [1 x i8]* @p_str289, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str290, [1 x i8]* @p_str291)"   --->   Operation 41 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 42 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i256* %a_pipes_1_V_V13, [8 x i8]* @ap_fifo_str, i32 0, i32 0, [1 x i8]* @p_str244, i32 0, i32 0, [1 x i8]* @p_str245, [1 x i8]* @p_str246, [1 x i8]* @p_str247, i32 2, i32 2, i32 16, i32 16, [1 x i8]* @p_str248, [1 x i8]* @p_str249)"   --->   Operation 42 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 43 [1/1] (1.83ns)   --->   "%tmp_V = call i32 @_ssdm_op_Read.ap_fifo.volatile.i32P(i32* %N_pipe_in_V_V1)" [src/modules.hpp:19]   --->   Operation 43 'read' 'tmp_V' <Predicate = true> <Delay = 1.83> <Core = "FIFO">   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 1.83> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 32> <Depth = 2> <FIFO>
+ST_1 : Operation 44 [1/1] (1.83ns)   --->   "call void @_ssdm_op_Write.ap_fifo.volatile.i32P(i32* %N_pipe_out_V_V8, i32 %tmp_V)" [src/modules.hpp:22]   --->   Operation 44 'write' <Predicate = true> <Delay = 1.83> <Core = "FIFO">   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 1.83> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 32> <Depth = 2> <FIFO>
+ST_1 : Operation 45 [1/1] (0.00ns)   --->   "%p_shl = call i42 @_ssdm_op_BitConcatenate.i42.i32.i10(i32 %tmp_V, i10 0)" [src/modules.hpp:19]   --->   Operation 45 'bitconcatenate' 'p_shl' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 46 [1/1] (0.00ns)   --->   "%tmp = call i40 @_ssdm_op_BitConcatenate.i40.i32.i8(i32 %tmp_V, i8 0)" [src/modules.hpp:19]   --->   Operation 46 'bitconcatenate' 'tmp' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 47 [1/1] (0.00ns)   --->   "%p_shl190 = zext i40 %tmp to i42" [src/modules.hpp:19]   --->   Operation 47 'zext' 'p_shl190' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 48 [1/1] (1.04ns)   --->   "%bound = sub i42 %p_shl, %p_shl190" [src/modules.hpp:19]   --->   Operation 48 'sub' 'bound' <Predicate = true> <Delay = 1.04> <Core = "AddSub">   --->   Core 14 'AddSub' <Latency = 0> <II = 1> <Delay = 1.04> <FuncUnit> <Opcode : 'add' 'sub'> <InPorts = 2> <OutPorts = 1>
+ST_1 : Operation 49 [1/1] (0.65ns)   --->   "br label %1" [src/modules.hpp:25]   --->   Operation 49 'br' <Predicate = true> <Delay = 0.65>
+
+State 2 <SV = 1> <Delay = 2.55>
+ST_2 : Operation 50 [1/1] (0.00ns)   --->   "%indvar_flatten = phi i42 [ 0, %0 ], [ %add_ln25, %hls_label_7 ]" [src/modules.hpp:25]   --->   Operation 50 'phi' 'indvar_flatten' <Predicate = true> <Delay = 0.00>
+ST_2 : Operation 51 [1/1] (0.00ns)   --->   "%n_0 = phi i10 [ 0, %0 ], [ %n, %hls_label_7 ]"   --->   Operation 51 'phi' 'n_0' <Predicate = true> <Delay = 0.00>
+ST_2 : Operation 52 [1/1] (1.11ns)   --->   "%icmp_ln25 = icmp eq i42 %indvar_flatten, %bound" [src/modules.hpp:25]   --->   Operation 52 'icmp' 'icmp_ln25' <Predicate = true> <Delay = 1.11> <Core = "Cmp">   --->   Core 25 'Cmp' <Latency = 0> <II = 1> <Delay = 0.91> <FuncUnit> <Opcode : 'icmp'> <InPorts = 2> <OutPorts = 1>
+ST_2 : Operation 53 [1/1] (1.04ns)   --->   "%add_ln25 = add i42 %indvar_flatten, 1" [src/modules.hpp:25]   --->   Operation 53 'add' 'add_ln25' <Predicate = true> <Delay = 1.04> <Core = "AddSub">   --->   Core 14 'AddSub' <Latency = 0> <II = 1> <Delay = 1.04> <FuncUnit> <Opcode : 'add' 'sub'> <InPorts = 2> <OutPorts = 1>
+ST_2 : Operation 54 [1/1] (0.00ns)   --->   "br i1 %icmp_ln25, label %2, label %hls_label_7" [src/modules.hpp:25]   --->   Operation 54 'br' <Predicate = true> <Delay = 0.00>
+ST_2 : Operation 55 [1/1] (0.91ns)   --->   "%icmp_ln27 = icmp eq i10 %n_0, -256" [src/modules.hpp:27]   --->   Operation 55 'icmp' 'icmp_ln27' <Predicate = (!icmp_ln25)> <Delay = 0.91> <Core = "Cmp">   --->   Core 25 'Cmp' <Latency = 0> <II = 1> <Delay = 0.91> <FuncUnit> <Opcode : 'icmp'> <InPorts = 2> <OutPorts = 1>
+ST_2 : Operation 56 [1/1] (0.40ns)   --->   "%select_ln27 = select i1 %icmp_ln27, i10 0, i10 %n_0" [src/modules.hpp:27]   --->   Operation 56 'select' 'select_ln27' <Predicate = (!icmp_ln25)> <Delay = 0.40> <Core = "Sel">   --->   Core 26 'Sel' <Latency = 0> <II = 1> <Delay = 0.40> <FuncUnit> <Opcode : 'select'> <InPorts = 3> <OutPorts = 1>
+ST_2 : Operation 57 [1/1] (0.00ns)   --->   "%zext_ln32 = zext i10 %select_ln27 to i64" [src/modules.hpp:32]   --->   Operation 57 'zext' 'zext_ln32' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 58 [1/1] (0.00ns)   --->   "%weights_0_1_0_addr = getelementptr [768 x i32]* @weights_0_1_0, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 58 'getelementptr' 'weights_0_1_0_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 59 [2/2] (1.23ns)   --->   "%weights_0_1_0_load = load i32* %weights_0_1_0_addr, align 4" [src/modules.hpp:32]   --->   Operation 59 'load' 'weights_0_1_0_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 60 [1/1] (0.00ns)   --->   "%weights_0_1_1_addr = getelementptr [768 x i32]* @weights_0_1_1, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 60 'getelementptr' 'weights_0_1_1_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 61 [2/2] (1.23ns)   --->   "%weights_0_1_1_load = load i32* %weights_0_1_1_addr, align 4" [src/modules.hpp:32]   --->   Operation 61 'load' 'weights_0_1_1_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 62 [1/1] (0.00ns)   --->   "%weights_0_1_2_addr = getelementptr [768 x i32]* @weights_0_1_2, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 62 'getelementptr' 'weights_0_1_2_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 63 [2/2] (1.23ns)   --->   "%weights_0_1_2_load = load i32* %weights_0_1_2_addr, align 4" [src/modules.hpp:32]   --->   Operation 63 'load' 'weights_0_1_2_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 64 [1/1] (0.00ns)   --->   "%weights_0_1_3_addr = getelementptr [768 x i32]* @weights_0_1_3, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 64 'getelementptr' 'weights_0_1_3_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 65 [2/2] (1.23ns)   --->   "%weights_0_1_3_load = load i32* %weights_0_1_3_addr, align 4" [src/modules.hpp:32]   --->   Operation 65 'load' 'weights_0_1_3_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 66 [1/1] (0.00ns)   --->   "%weights_0_1_4_addr = getelementptr [768 x i32]* @weights_0_1_4, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 66 'getelementptr' 'weights_0_1_4_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 67 [2/2] (1.23ns)   --->   "%weights_0_1_4_load = load i32* %weights_0_1_4_addr, align 4" [src/modules.hpp:32]   --->   Operation 67 'load' 'weights_0_1_4_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 68 [1/1] (0.00ns)   --->   "%weights_0_1_5_addr = getelementptr [768 x i32]* @weights_0_1_5, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 68 'getelementptr' 'weights_0_1_5_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 69 [2/2] (1.23ns)   --->   "%weights_0_1_5_load = load i32* %weights_0_1_5_addr, align 4" [src/modules.hpp:32]   --->   Operation 69 'load' 'weights_0_1_5_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 70 [1/1] (0.00ns)   --->   "%weights_0_1_6_addr = getelementptr [768 x i32]* @weights_0_1_6, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 70 'getelementptr' 'weights_0_1_6_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 71 [2/2] (1.23ns)   --->   "%weights_0_1_6_load = load i32* %weights_0_1_6_addr, align 4" [src/modules.hpp:32]   --->   Operation 71 'load' 'weights_0_1_6_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 72 [1/1] (0.00ns)   --->   "%weights_0_1_7_addr = getelementptr [768 x i32]* @weights_0_1_7, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 72 'getelementptr' 'weights_0_1_7_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 73 [2/2] (1.23ns)   --->   "%weights_0_1_7_load = load i32* %weights_0_1_7_addr, align 4" [src/modules.hpp:32]   --->   Operation 73 'load' 'weights_0_1_7_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 74 [1/1] (0.00ns)   --->   "%weights_0_1_8_addr = getelementptr [768 x i32]* @weights_0_1_8, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 74 'getelementptr' 'weights_0_1_8_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 75 [2/2] (1.23ns)   --->   "%weights_0_1_8_load = load i32* %weights_0_1_8_addr, align 4" [src/modules.hpp:32]   --->   Operation 75 'load' 'weights_0_1_8_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 76 [1/1] (0.00ns)   --->   "%weights_0_1_9_addr = getelementptr [768 x i32]* @weights_0_1_9, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 76 'getelementptr' 'weights_0_1_9_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 77 [2/2] (1.23ns)   --->   "%weights_0_1_9_load = load i32* %weights_0_1_9_addr, align 4" [src/modules.hpp:32]   --->   Operation 77 'load' 'weights_0_1_9_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 78 [1/1] (0.00ns)   --->   "%weights_0_1_10_addr = getelementptr [768 x i32]* @weights_0_1_10, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 78 'getelementptr' 'weights_0_1_10_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 79 [2/2] (1.23ns)   --->   "%weights_0_1_10_load = load i32* %weights_0_1_10_addr, align 4" [src/modules.hpp:32]   --->   Operation 79 'load' 'weights_0_1_10_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 80 [1/1] (0.00ns)   --->   "%weights_0_1_11_addr = getelementptr [768 x i32]* @weights_0_1_11, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 80 'getelementptr' 'weights_0_1_11_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 81 [2/2] (1.23ns)   --->   "%weights_0_1_11_load = load i32* %weights_0_1_11_addr, align 4" [src/modules.hpp:32]   --->   Operation 81 'load' 'weights_0_1_11_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 82 [1/1] (0.00ns)   --->   "%weights_0_1_12_addr = getelementptr [768 x i32]* @weights_0_1_12, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 82 'getelementptr' 'weights_0_1_12_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 83 [2/2] (1.23ns)   --->   "%weights_0_1_12_load = load i32* %weights_0_1_12_addr, align 4" [src/modules.hpp:32]   --->   Operation 83 'load' 'weights_0_1_12_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 84 [1/1] (0.00ns)   --->   "%weights_0_1_13_addr = getelementptr [768 x i32]* @weights_0_1_13, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 84 'getelementptr' 'weights_0_1_13_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 85 [2/2] (1.23ns)   --->   "%weights_0_1_13_load = load i32* %weights_0_1_13_addr, align 4" [src/modules.hpp:32]   --->   Operation 85 'load' 'weights_0_1_13_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 86 [1/1] (0.00ns)   --->   "%weights_0_1_14_addr = getelementptr [768 x i32]* @weights_0_1_14, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 86 'getelementptr' 'weights_0_1_14_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 87 [2/2] (1.23ns)   --->   "%weights_0_1_14_load = load i32* %weights_0_1_14_addr, align 4" [src/modules.hpp:32]   --->   Operation 87 'load' 'weights_0_1_14_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 88 [1/1] (0.00ns)   --->   "%weights_0_1_15_addr = getelementptr [768 x i32]* @weights_0_1_15, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 88 'getelementptr' 'weights_0_1_15_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 89 [2/2] (1.23ns)   --->   "%weights_0_1_15_load = load i32* %weights_0_1_15_addr, align 4" [src/modules.hpp:32]   --->   Operation 89 'load' 'weights_0_1_15_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 90 [1/1] (0.00ns)   --->   "%weights_0_1_16_addr = getelementptr [768 x i32]* @weights_0_1_16, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 90 'getelementptr' 'weights_0_1_16_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 91 [2/2] (1.23ns)   --->   "%weights_0_1_16_load = load i32* %weights_0_1_16_addr, align 4" [src/modules.hpp:32]   --->   Operation 91 'load' 'weights_0_1_16_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 92 [1/1] (0.00ns)   --->   "%weights_0_1_17_addr = getelementptr [768 x i32]* @weights_0_1_17, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 92 'getelementptr' 'weights_0_1_17_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 93 [2/2] (1.23ns)   --->   "%weights_0_1_17_load = load i32* %weights_0_1_17_addr, align 4" [src/modules.hpp:32]   --->   Operation 93 'load' 'weights_0_1_17_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 94 [1/1] (0.00ns)   --->   "%weights_0_1_18_addr = getelementptr [768 x i32]* @weights_0_1_18, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 94 'getelementptr' 'weights_0_1_18_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 95 [2/2] (1.23ns)   --->   "%weights_0_1_18_load = load i32* %weights_0_1_18_addr, align 4" [src/modules.hpp:32]   --->   Operation 95 'load' 'weights_0_1_18_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 96 [1/1] (0.00ns)   --->   "%weights_0_1_19_addr = getelementptr [768 x i32]* @weights_0_1_19, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 96 'getelementptr' 'weights_0_1_19_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 97 [2/2] (1.23ns)   --->   "%weights_0_1_19_load = load i32* %weights_0_1_19_addr, align 4" [src/modules.hpp:32]   --->   Operation 97 'load' 'weights_0_1_19_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 98 [1/1] (0.00ns)   --->   "%weights_0_1_20_addr = getelementptr [768 x i32]* @weights_0_1_20, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 98 'getelementptr' 'weights_0_1_20_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 99 [2/2] (1.23ns)   --->   "%weights_0_1_20_load = load i32* %weights_0_1_20_addr, align 4" [src/modules.hpp:32]   --->   Operation 99 'load' 'weights_0_1_20_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 100 [1/1] (0.00ns)   --->   "%weights_0_1_21_addr = getelementptr [768 x i32]* @weights_0_1_21, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 100 'getelementptr' 'weights_0_1_21_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 101 [2/2] (1.23ns)   --->   "%weights_0_1_21_load = load i32* %weights_0_1_21_addr, align 4" [src/modules.hpp:32]   --->   Operation 101 'load' 'weights_0_1_21_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 102 [1/1] (0.00ns)   --->   "%weights_0_1_22_addr = getelementptr [768 x i32]* @weights_0_1_22, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 102 'getelementptr' 'weights_0_1_22_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 103 [2/2] (1.23ns)   --->   "%weights_0_1_22_load = load i32* %weights_0_1_22_addr, align 4" [src/modules.hpp:32]   --->   Operation 103 'load' 'weights_0_1_22_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 104 [1/1] (0.00ns)   --->   "%weights_0_1_23_addr = getelementptr [768 x i32]* @weights_0_1_23, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 104 'getelementptr' 'weights_0_1_23_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 105 [2/2] (1.23ns)   --->   "%weights_0_1_23_load = load i32* %weights_0_1_23_addr, align 4" [src/modules.hpp:32]   --->   Operation 105 'load' 'weights_0_1_23_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 106 [1/1] (0.00ns)   --->   "%weights_0_1_24_addr = getelementptr [768 x i32]* @weights_0_1_24, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 106 'getelementptr' 'weights_0_1_24_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 107 [2/2] (1.23ns)   --->   "%weights_0_1_24_load = load i32* %weights_0_1_24_addr, align 4" [src/modules.hpp:32]   --->   Operation 107 'load' 'weights_0_1_24_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 108 [1/1] (0.00ns)   --->   "%weights_0_1_25_addr = getelementptr [768 x i32]* @weights_0_1_25, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 108 'getelementptr' 'weights_0_1_25_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 109 [2/2] (1.23ns)   --->   "%weights_0_1_25_load = load i32* %weights_0_1_25_addr, align 4" [src/modules.hpp:32]   --->   Operation 109 'load' 'weights_0_1_25_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 110 [1/1] (0.00ns)   --->   "%weights_0_1_26_addr = getelementptr [768 x i32]* @weights_0_1_26, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 110 'getelementptr' 'weights_0_1_26_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 111 [2/2] (1.23ns)   --->   "%weights_0_1_26_load = load i32* %weights_0_1_26_addr, align 4" [src/modules.hpp:32]   --->   Operation 111 'load' 'weights_0_1_26_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 112 [1/1] (0.00ns)   --->   "%weights_0_1_27_addr = getelementptr [768 x i32]* @weights_0_1_27, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 112 'getelementptr' 'weights_0_1_27_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 113 [2/2] (1.23ns)   --->   "%weights_0_1_27_load = load i32* %weights_0_1_27_addr, align 4" [src/modules.hpp:32]   --->   Operation 113 'load' 'weights_0_1_27_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 114 [1/1] (0.00ns)   --->   "%weights_0_1_28_addr = getelementptr [768 x i32]* @weights_0_1_28, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 114 'getelementptr' 'weights_0_1_28_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 115 [2/2] (1.23ns)   --->   "%weights_0_1_28_load = load i32* %weights_0_1_28_addr, align 4" [src/modules.hpp:32]   --->   Operation 115 'load' 'weights_0_1_28_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 116 [1/1] (0.00ns)   --->   "%weights_0_1_29_addr = getelementptr [768 x i32]* @weights_0_1_29, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 116 'getelementptr' 'weights_0_1_29_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 117 [2/2] (1.23ns)   --->   "%weights_0_1_29_load = load i32* %weights_0_1_29_addr, align 4" [src/modules.hpp:32]   --->   Operation 117 'load' 'weights_0_1_29_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 118 [1/1] (0.00ns)   --->   "%weights_0_1_30_addr = getelementptr [768 x i32]* @weights_0_1_30, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 118 'getelementptr' 'weights_0_1_30_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 119 [2/2] (1.23ns)   --->   "%weights_0_1_30_load = load i32* %weights_0_1_30_addr, align 4" [src/modules.hpp:32]   --->   Operation 119 'load' 'weights_0_1_30_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 120 [1/1] (0.00ns)   --->   "%weights_0_1_31_addr = getelementptr [768 x i32]* @weights_0_1_31, i64 0, i64 %zext_ln32" [src/modules.hpp:32]   --->   Operation 120 'getelementptr' 'weights_0_1_31_addr' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_2 : Operation 121 [2/2] (1.23ns)   --->   "%weights_0_1_31_load = load i32* %weights_0_1_31_addr, align 4" [src/modules.hpp:32]   --->   Operation 121 'load' 'weights_0_1_31_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_2 : Operation 122 [1/1] (0.78ns)   --->   "%n = add i10 %select_ln27, 1" [src/modules.hpp:27]   --->   Operation 122 'add' 'n' <Predicate = (!icmp_ln25)> <Delay = 0.78> <Core = "AddSub">   --->   Core 14 'AddSub' <Latency = 0> <II = 1> <Delay = 1.04> <FuncUnit> <Opcode : 'add' 'sub'> <InPorts = 2> <OutPorts = 1>
+
+State 3 <SV = 2> <Delay = 3.07>
+ST_3 : Operation 123 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecLoopTripCount(i64 768, i64 3145728, i64 24576)"   --->   Operation 123 'speclooptripcount' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_3 : Operation 124 [1/1] (0.00ns)   --->   "%tmp_s = call i32 (...)* @_ssdm_op_SpecRegionBegin([12 x i8]* @p_str30)" [src/modules.hpp:27]   --->   Operation 124 'specregionbegin' 'tmp_s' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_3 : Operation 125 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecPipeline(i32 1, i32 1, i32 1, i32 0, [1 x i8]* @p_str1) nounwind" [src/modules.hpp:28]   --->   Operation 125 'specpipeline' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_3 : Operation 126 [1/2] (1.23ns)   --->   "%weights_0_1_0_load = load i32* %weights_0_1_0_addr, align 4" [src/modules.hpp:32]   --->   Operation 126 'load' 'weights_0_1_0_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 127 [1/2] (1.23ns)   --->   "%weights_0_1_1_load = load i32* %weights_0_1_1_addr, align 4" [src/modules.hpp:32]   --->   Operation 127 'load' 'weights_0_1_1_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 128 [1/2] (1.23ns)   --->   "%weights_0_1_2_load = load i32* %weights_0_1_2_addr, align 4" [src/modules.hpp:32]   --->   Operation 128 'load' 'weights_0_1_2_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 129 [1/2] (1.23ns)   --->   "%weights_0_1_3_load = load i32* %weights_0_1_3_addr, align 4" [src/modules.hpp:32]   --->   Operation 129 'load' 'weights_0_1_3_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 130 [1/2] (1.23ns)   --->   "%weights_0_1_4_load = load i32* %weights_0_1_4_addr, align 4" [src/modules.hpp:32]   --->   Operation 130 'load' 'weights_0_1_4_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 131 [1/2] (1.23ns)   --->   "%weights_0_1_5_load = load i32* %weights_0_1_5_addr, align 4" [src/modules.hpp:32]   --->   Operation 131 'load' 'weights_0_1_5_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 132 [1/2] (1.23ns)   --->   "%weights_0_1_6_load = load i32* %weights_0_1_6_addr, align 4" [src/modules.hpp:32]   --->   Operation 132 'load' 'weights_0_1_6_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 133 [1/2] (1.23ns)   --->   "%weights_0_1_7_load = load i32* %weights_0_1_7_addr, align 4" [src/modules.hpp:32]   --->   Operation 133 'load' 'weights_0_1_7_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 134 [1/1] (0.00ns)   --->   "%tmp_V_14 = call i256 @_ssdm_op_BitConcatenate.i256.i32.i32.i32.i32.i32.i32.i32.i32(i32 %weights_0_1_7_load, i32 %weights_0_1_6_load, i32 %weights_0_1_5_load, i32 %weights_0_1_4_load, i32 %weights_0_1_3_load, i32 %weights_0_1_2_load, i32 %weights_0_1_1_load, i32 %weights_0_1_0_load)" [src/modules.hpp:32]   --->   Operation 134 'bitconcatenate' 'tmp_V_14' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_3 : Operation 135 [1/2] (1.23ns)   --->   "%weights_0_1_8_load = load i32* %weights_0_1_8_addr, align 4" [src/modules.hpp:32]   --->   Operation 135 'load' 'weights_0_1_8_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 136 [1/2] (1.23ns)   --->   "%weights_0_1_9_load = load i32* %weights_0_1_9_addr, align 4" [src/modules.hpp:32]   --->   Operation 136 'load' 'weights_0_1_9_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 137 [1/2] (1.23ns)   --->   "%weights_0_1_10_load = load i32* %weights_0_1_10_addr, align 4" [src/modules.hpp:32]   --->   Operation 137 'load' 'weights_0_1_10_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 138 [1/2] (1.23ns)   --->   "%weights_0_1_11_load = load i32* %weights_0_1_11_addr, align 4" [src/modules.hpp:32]   --->   Operation 138 'load' 'weights_0_1_11_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 139 [1/2] (1.23ns)   --->   "%weights_0_1_12_load = load i32* %weights_0_1_12_addr, align 4" [src/modules.hpp:32]   --->   Operation 139 'load' 'weights_0_1_12_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 140 [1/2] (1.23ns)   --->   "%weights_0_1_13_load = load i32* %weights_0_1_13_addr, align 4" [src/modules.hpp:32]   --->   Operation 140 'load' 'weights_0_1_13_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 141 [1/2] (1.23ns)   --->   "%weights_0_1_14_load = load i32* %weights_0_1_14_addr, align 4" [src/modules.hpp:32]   --->   Operation 141 'load' 'weights_0_1_14_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 142 [1/2] (1.23ns)   --->   "%weights_0_1_15_load = load i32* %weights_0_1_15_addr, align 4" [src/modules.hpp:32]   --->   Operation 142 'load' 'weights_0_1_15_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 143 [1/1] (0.00ns)   --->   "%tmp_V_9 = call i256 @_ssdm_op_BitConcatenate.i256.i32.i32.i32.i32.i32.i32.i32.i32(i32 %weights_0_1_15_load, i32 %weights_0_1_14_load, i32 %weights_0_1_13_load, i32 %weights_0_1_12_load, i32 %weights_0_1_11_load, i32 %weights_0_1_10_load, i32 %weights_0_1_9_load, i32 %weights_0_1_8_load)" [src/modules.hpp:32]   --->   Operation 143 'bitconcatenate' 'tmp_V_9' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_3 : Operation 144 [1/2] (1.23ns)   --->   "%weights_0_1_16_load = load i32* %weights_0_1_16_addr, align 4" [src/modules.hpp:32]   --->   Operation 144 'load' 'weights_0_1_16_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 145 [1/2] (1.23ns)   --->   "%weights_0_1_17_load = load i32* %weights_0_1_17_addr, align 4" [src/modules.hpp:32]   --->   Operation 145 'load' 'weights_0_1_17_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 146 [1/2] (1.23ns)   --->   "%weights_0_1_18_load = load i32* %weights_0_1_18_addr, align 4" [src/modules.hpp:32]   --->   Operation 146 'load' 'weights_0_1_18_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 147 [1/2] (1.23ns)   --->   "%weights_0_1_19_load = load i32* %weights_0_1_19_addr, align 4" [src/modules.hpp:32]   --->   Operation 147 'load' 'weights_0_1_19_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 148 [1/2] (1.23ns)   --->   "%weights_0_1_20_load = load i32* %weights_0_1_20_addr, align 4" [src/modules.hpp:32]   --->   Operation 148 'load' 'weights_0_1_20_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 149 [1/2] (1.23ns)   --->   "%weights_0_1_21_load = load i32* %weights_0_1_21_addr, align 4" [src/modules.hpp:32]   --->   Operation 149 'load' 'weights_0_1_21_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 150 [1/2] (1.23ns)   --->   "%weights_0_1_22_load = load i32* %weights_0_1_22_addr, align 4" [src/modules.hpp:32]   --->   Operation 150 'load' 'weights_0_1_22_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 151 [1/2] (1.23ns)   --->   "%weights_0_1_23_load = load i32* %weights_0_1_23_addr, align 4" [src/modules.hpp:32]   --->   Operation 151 'load' 'weights_0_1_23_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 152 [1/1] (0.00ns)   --->   "%tmp_V_1 = call i256 @_ssdm_op_BitConcatenate.i256.i32.i32.i32.i32.i32.i32.i32.i32(i32 %weights_0_1_23_load, i32 %weights_0_1_22_load, i32 %weights_0_1_21_load, i32 %weights_0_1_20_load, i32 %weights_0_1_19_load, i32 %weights_0_1_18_load, i32 %weights_0_1_17_load, i32 %weights_0_1_16_load)" [src/modules.hpp:32]   --->   Operation 152 'bitconcatenate' 'tmp_V_1' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_3 : Operation 153 [1/2] (1.23ns)   --->   "%weights_0_1_24_load = load i32* %weights_0_1_24_addr, align 4" [src/modules.hpp:32]   --->   Operation 153 'load' 'weights_0_1_24_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 154 [1/2] (1.23ns)   --->   "%weights_0_1_25_load = load i32* %weights_0_1_25_addr, align 4" [src/modules.hpp:32]   --->   Operation 154 'load' 'weights_0_1_25_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 155 [1/2] (1.23ns)   --->   "%weights_0_1_26_load = load i32* %weights_0_1_26_addr, align 4" [src/modules.hpp:32]   --->   Operation 155 'load' 'weights_0_1_26_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 156 [1/2] (1.23ns)   --->   "%weights_0_1_27_load = load i32* %weights_0_1_27_addr, align 4" [src/modules.hpp:32]   --->   Operation 156 'load' 'weights_0_1_27_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 157 [1/2] (1.23ns)   --->   "%weights_0_1_28_load = load i32* %weights_0_1_28_addr, align 4" [src/modules.hpp:32]   --->   Operation 157 'load' 'weights_0_1_28_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 158 [1/2] (1.23ns)   --->   "%weights_0_1_29_load = load i32* %weights_0_1_29_addr, align 4" [src/modules.hpp:32]   --->   Operation 158 'load' 'weights_0_1_29_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 159 [1/2] (1.23ns)   --->   "%weights_0_1_30_load = load i32* %weights_0_1_30_addr, align 4" [src/modules.hpp:32]   --->   Operation 159 'load' 'weights_0_1_30_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 160 [1/2] (1.23ns)   --->   "%weights_0_1_31_load = load i32* %weights_0_1_31_addr, align 4" [src/modules.hpp:32]   --->   Operation 160 'load' 'weights_0_1_31_load' <Predicate = (!icmp_ln25)> <Delay = 1.23> <Core = "RAM_1P_URAM">   --->   Core 47 'RAM_1P_URAM' <Latency = 1> <II = 1> <Delay = 1.23> <Storage> <Opcode : 'load' 'store'> <Ports = 1> <Width = 32> <Depth = 768> <RAM>
+ST_3 : Operation 161 [1/1] (1.83ns)   --->   "call void @_ssdm_op_Write.ap_fifo.volatile.i256P(i256* %a_pipes_1_V_V13, i256 %tmp_V_14)" [src/modules.hpp:34]   --->   Operation 161 'write' <Predicate = (!icmp_ln25)> <Delay = 1.83> <Core = "FIFO">   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 1.83> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 32> <Depth = 2> <FIFO>
+ST_3 : Operation 162 [1/1] (1.83ns)   --->   "call void @_ssdm_op_Write.ap_fifo.volatile.i256P(i256* %a_pipes_2_V_V18, i256 %tmp_V_9)" [src/modules.hpp:35]   --->   Operation 162 'write' <Predicate = (!icmp_ln25)> <Delay = 1.83> <Core = "FIFO">   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 1.83> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 32> <Depth = 2> <FIFO>
+ST_3 : Operation 163 [1/1] (1.83ns)   --->   "call void @_ssdm_op_Write.ap_fifo.volatile.i256P(i256* %a_pipes_3_V_V23, i256 %tmp_V_1)" [src/modules.hpp:36]   --->   Operation 163 'write' <Predicate = (!icmp_ln25)> <Delay = 1.83> <Core = "FIFO">   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 1.83> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 32> <Depth = 2> <FIFO>
+ST_3 : Operation 164 [1/1] (0.00ns)   --->   "%tmp_V_15 = call i256 @_ssdm_op_BitConcatenate.i256.i32.i32.i32.i32.i32.i32.i32.i32(i32 %weights_0_1_31_load, i32 %weights_0_1_30_load, i32 %weights_0_1_29_load, i32 %weights_0_1_28_load, i32 %weights_0_1_27_load, i32 %weights_0_1_26_load, i32 %weights_0_1_25_load, i32 %weights_0_1_24_load)" [src/modules.hpp:37]   --->   Operation 164 'bitconcatenate' 'tmp_V_15' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_3 : Operation 165 [1/1] (1.83ns)   --->   "call void @_ssdm_op_Write.ap_fifo.volatile.i256P(i256* %a_pipes_4_V_V28, i256 %tmp_V_15)" [src/modules.hpp:37]   --->   Operation 165 'write' <Predicate = (!icmp_ln25)> <Delay = 1.83> <Core = "FIFO">   --->   Core 32 'FIFO' <Latency = 0> <II = 1> <Delay = 1.83> <Storage> <Opcode : 'read' 'write' 'nbread' 'nbwrite'> <Ports = 0> <Width = 32> <Depth = 2> <FIFO>
+ST_3 : Operation 166 [1/1] (0.00ns)   --->   "%empty = call i32 (...)* @_ssdm_op_SpecRegionEnd([12 x i8]* @p_str30, i32 %tmp_s)" [src/modules.hpp:38]   --->   Operation 166 'specregionend' 'empty' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+ST_3 : Operation 167 [1/1] (0.00ns)   --->   "br label %1"   --->   Operation 167 'br' <Predicate = (!icmp_ln25)> <Delay = 0.00>
+
+State 4 <SV = 2> <Delay = 0.00>
+ST_4 : Operation 168 [1/1] (0.00ns)   --->   "ret void" [src/modules.hpp:40]   --->   Operation 168 'ret' <Predicate = true> <Delay = 0.00>
+
+
+============================================================
++ Verbose Summary: Timing violations
+============================================================
+Target clock period: 5ns, clock uncertainty: 0.625ns.
+
+ <State 1>: 3.68ns
+The critical path consists of the following:
+	fifo read on port 'N_pipe_in_V_V1' (src/modules.hpp:19) [77]  (1.84 ns)
+	fifo write on port 'N_pipe_out_V_V8' (src/modules.hpp:22) [78]  (1.84 ns)
+
+ <State 2>: 2.55ns
+The critical path consists of the following:
+	'phi' operation ('n') with incoming values : ('n', src/modules.hpp:27) [86]  (0 ns)
+	'icmp' operation ('icmp_ln27', src/modules.hpp:27) [92]  (0.912 ns)
+	'select' operation ('select_ln27', src/modules.hpp:27) [93]  (0.403 ns)
+	'getelementptr' operation ('weights_0_1_0_addr', src/modules.hpp:32) [97]  (0 ns)
+	'load' operation ('weights_0_1_0_load', src/modules.hpp:32) on array 'weights_0_1_0' [98]  (1.24 ns)
+
+ <State 3>: 3.08ns
+The critical path consists of the following:
+	'load' operation ('weights_0_1_0_load', src/modules.hpp:32) on array 'weights_0_1_0' [98]  (1.24 ns)
+	fifo write on port 'a_pipes_1_V_V13' (src/modules.hpp:34) [164]  (1.84 ns)
+
+ <State 4>: 0ns
+The critical path consists of the following:
+
+
+============================================================
++ Verbose Summary: Binding
+============================================================
+N/A
+* FSMD analyzer results:
+  - Output states:
+ - Input state : 
+  - Chain level:
+	State 1
+	State 2
+	State 3
+	State 4
+
+
+============================================================
++ Verbose Summary: Datapath Resource usage 
+============================================================
+N/A

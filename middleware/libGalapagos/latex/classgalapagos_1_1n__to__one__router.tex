@@ -1,0 +1,172 @@
+\hypertarget{classgalapagos_1_1n__to__one__router}{}\section{galapagos\+:\+:n\+\_\+to\+\_\+one\+\_\+router$<$ T $>$ Class Template Reference}
+\label{classgalapagos_1_1n__to__one__router}\index{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router$<$ T $>$@{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router$<$ T $>$}}
+
+
+Class for the \hyperlink{classgalapagos_1_1n__to__one__router}{n\+\_\+to\+\_\+one\+\_\+router}.  
+
+
+
+
+{\ttfamily \#include $<$galapagos\+\_\+n\+\_\+to\+\_\+one\+\_\+router.\+hpp$>$}
+
+
+
+Collaboration diagram for galapagos\+:\+:n\+\_\+to\+\_\+one\+\_\+router$<$ T $>$\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=216pt]{classgalapagos_1_1n__to__one__router__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classgalapagos_1_1n__to__one__router_a3fbff119ec60336ceb9b4211da7390c8}{n\+\_\+to\+\_\+one\+\_\+router} (\hyperlink{classgalapagos_1_1done__clean}{done\+\_\+clean} $\ast$\+\_\+dc)
+\item 
+void \hyperlink{classgalapagos_1_1n__to__one__router_ae4d5a405ad2706d909fd8b261b2ee7f9}{route} ()
+\begin{DoxyCompactList}\small\item\em routing function, can be overridden for different routers \end{DoxyCompactList}\item 
+void \hyperlink{classgalapagos_1_1n__to__one__router_a9f20fa4aaa47b5aceb838fc19e468854}{add\+\_\+s\+\_\+axis} (\hyperlink{classgalapagos_1_1interface}{interface}$<$ \hyperlink{test_8cpp_a0658ceffa730c765d449bb3d21871b5f}{T} $>$ $\ast$\+\_\+s\+\_\+axis)
+\begin{DoxyCompactList}\small\item\em adds a pair of axis interfaces to the router \end{DoxyCompactList}\item 
+void \hyperlink{classgalapagos_1_1n__to__one__router_afc25a84a3b345401a91b1c2b7c8484ae}{start} ()
+\begin{DoxyCompactList}\small\item\em starts the routing function \end{DoxyCompactList}\item 
+unsigned int \hyperlink{classgalapagos_1_1n__to__one__router_ae79a9ee609e42b91f3e8058a0a24fc0c}{num\+\_\+packets} ()
+\begin{DoxyCompactList}\small\item\em returns current number of packets within the router \end{DoxyCompactList}\item 
+\hyperlink{classgalapagos_1_1n__to__one__router_a1b38ec16587aaa2e3d56ffa5c9afa008}{$\sim$n\+\_\+to\+\_\+one\+\_\+router} ()
+\item 
+\hyperlink{classgalapagos_1_1interface}{interface}$<$ \hyperlink{test_8cpp_a0658ceffa730c765d449bb3d21871b5f}{T} $>$ $\ast$ \hyperlink{classgalapagos_1_1n__to__one__router_a65b746fb4a20c0260a3b93af0a907be6}{get\+\_\+m\+\_\+axis} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classgalapagos_1_1done__clean}{done\+\_\+clean} $\ast$ \hyperlink{classgalapagos_1_1n__to__one__router_a42603cc4ee2ee8391a7d0e14bb1f39df}{dc}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\subsubsection*{template$<$class T$>$\\*
+class galapagos\+::n\+\_\+to\+\_\+one\+\_\+router$<$ T $>$}
+
+Class for the \hyperlink{classgalapagos_1_1n__to__one__router}{n\+\_\+to\+\_\+one\+\_\+router}. 
+
+A software implementation of an n to one router, used by network node to arbitrade output of sessions into the node. Routes between input interfaces(s\+\_\+axis) and an output interface(m\+\_\+axis). \begin{DoxyAuthor}{Author}
+Naif Tarafdar 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+April 20, 2019 
+\end{DoxyDate}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router@{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router}!n\+\_\+to\+\_\+one\+\_\+router@{n\+\_\+to\+\_\+one\+\_\+router}}
+\index{n\+\_\+to\+\_\+one\+\_\+router@{n\+\_\+to\+\_\+one\+\_\+router}!galapagos\+::n\+\_\+to\+\_\+one\+\_\+router@{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router}}
+\subsubsection[{\texorpdfstring{n\+\_\+to\+\_\+one\+\_\+router(done\+\_\+clean $\ast$\+\_\+dc)}{n_to_one_router(done_clean *_dc)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ {\bf galapagos\+::n\+\_\+to\+\_\+one\+\_\+router}$<$ {\bf T} $>$\+::{\bf n\+\_\+to\+\_\+one\+\_\+router} (
+\begin{DoxyParamCaption}
+\item[{{\bf done\+\_\+clean} $\ast$}]{\+\_\+dc}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1n__to__one__router_a3fbff119ec60336ceb9b4211da7390c8}{}\label{classgalapagos_1_1n__to__one__router_a3fbff119ec60336ceb9b4211da7390c8}
+\index{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router@{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router}!````~n\+\_\+to\+\_\+one\+\_\+router@{$\sim$n\+\_\+to\+\_\+one\+\_\+router}}
+\index{````~n\+\_\+to\+\_\+one\+\_\+router@{$\sim$n\+\_\+to\+\_\+one\+\_\+router}!galapagos\+::n\+\_\+to\+\_\+one\+\_\+router@{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router}}
+\subsubsection[{\texorpdfstring{$\sim$n\+\_\+to\+\_\+one\+\_\+router()}{~n_to_one_router()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ {\bf galapagos\+::n\+\_\+to\+\_\+one\+\_\+router}$<$ {\bf T} $>$\+::$\sim${\bf n\+\_\+to\+\_\+one\+\_\+router} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1n__to__one__router_a1b38ec16587aaa2e3d56ffa5c9afa008}{}\label{classgalapagos_1_1n__to__one__router_a1b38ec16587aaa2e3d56ffa5c9afa008}
+n to one destructor 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & the type of data used within each galapagos packet (default ap\+\_\+uint$<$64$>$) \\
+\hline
+\end{DoxyTemplParams}
+
+
+\subsection{Member Function Documentation}
+\index{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router@{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router}!add\+\_\+s\+\_\+axis@{add\+\_\+s\+\_\+axis}}
+\index{add\+\_\+s\+\_\+axis@{add\+\_\+s\+\_\+axis}!galapagos\+::n\+\_\+to\+\_\+one\+\_\+router@{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router}}
+\subsubsection[{\texorpdfstring{add\+\_\+s\+\_\+axis(interface$<$ T $>$ $\ast$\+\_\+s\+\_\+axis)}{add_s_axis(interface< T > *_s_axis)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ void {\bf galapagos\+::n\+\_\+to\+\_\+one\+\_\+router}$<$ {\bf T} $>$\+::add\+\_\+s\+\_\+axis (
+\begin{DoxyParamCaption}
+\item[{{\bf galapagos\+::interface}$<$ {\bf T} $>$ $\ast$}]{\+\_\+s\+\_\+axis}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1n__to__one__router_a9f20fa4aaa47b5aceb838fc19e468854}{}\label{classgalapagos_1_1n__to__one__router_a9f20fa4aaa47b5aceb838fc19e468854}
+
+
+adds a pair of axis interfaces to the router 
+
+Adds a new interface to the list of inputs 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & the type of data used within each galapagos packet (default ap\+\_\+uint$<$64$>$) \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+s\+\_\+axis} & interface to add to list \\
+\hline
+\end{DoxyParams}
+\index{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router@{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router}!get\+\_\+m\+\_\+axis@{get\+\_\+m\+\_\+axis}}
+\index{get\+\_\+m\+\_\+axis@{get\+\_\+m\+\_\+axis}!galapagos\+::n\+\_\+to\+\_\+one\+\_\+router@{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router}}
+\subsubsection[{\texorpdfstring{get\+\_\+m\+\_\+axis()}{get_m_axis()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ {\bf galapagos\+::interface}$<$ {\bf T} $>$ $\ast$ {\bf galapagos\+::n\+\_\+to\+\_\+one\+\_\+router}$<$ {\bf T} $>$\+::get\+\_\+m\+\_\+axis (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1n__to__one__router_a65b746fb4a20c0260a3b93af0a907be6}{}\label{classgalapagos_1_1n__to__one__router_a65b746fb4a20c0260a3b93af0a907be6}
+\index{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router@{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router}!num\+\_\+packets@{num\+\_\+packets}}
+\index{num\+\_\+packets@{num\+\_\+packets}!galapagos\+::n\+\_\+to\+\_\+one\+\_\+router@{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router}}
+\subsubsection[{\texorpdfstring{num\+\_\+packets()}{num_packets()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ unsigned int {\bf galapagos\+::n\+\_\+to\+\_\+one\+\_\+router}$<$ {\bf T} $>$\+::num\+\_\+packets (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1n__to__one__router_ae79a9ee609e42b91f3e8058a0a24fc0c}{}\label{classgalapagos_1_1n__to__one__router_ae79a9ee609e42b91f3e8058a0a24fc0c}
+
+
+returns current number of packets within the router 
+
+Returns number of packets within router 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & the type of data used within each galapagos packet (default ap\+\_\+uint$<$64$>$) \\
+\hline
+\end{DoxyTemplParams}
+\begin{DoxyReturn}{Returns}
+number of packets within router 
+\end{DoxyReturn}
+\index{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router@{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router}!route@{route}}
+\index{route@{route}!galapagos\+::n\+\_\+to\+\_\+one\+\_\+router@{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router}}
+\subsubsection[{\texorpdfstring{route()}{route()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ void {\bf galapagos\+::n\+\_\+to\+\_\+one\+\_\+router}$<$ {\bf T} $>$\+::route (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1n__to__one__router_ae4d5a405ad2706d909fd8b261b2ee7f9}{}\label{classgalapagos_1_1n__to__one__router_ae4d5a405ad2706d909fd8b261b2ee7f9}
+
+
+routing function, can be overridden for different routers 
+
+Routing function Round robins through the m\+\_\+axis (the outputs of all kernels and external drivers). Reads header\+\_\+dest of interface and splices into correct s\+\_\+axis based off dest. This keeps running until the done is asserted externally. 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & the type of data used within each galapagos packet (default ap\+\_\+uint$<$64$>$) \\
+\hline
+\end{DoxyTemplParams}
+\index{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router@{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router}!start@{start}}
+\index{start@{start}!galapagos\+::n\+\_\+to\+\_\+one\+\_\+router@{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router}}
+\subsubsection[{\texorpdfstring{start()}{start()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ void {\bf galapagos\+::n\+\_\+to\+\_\+one\+\_\+router}$<$ {\bf T} $>$\+::start (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classgalapagos_1_1n__to__one__router_afc25a84a3b345401a91b1c2b7c8484ae}{}\label{classgalapagos_1_1n__to__one__router_afc25a84a3b345401a91b1c2b7c8484ae}
+
+
+starts the routing function 
+
+Starts the routing function 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & the type of data used within each galapagos packet (default ap\+\_\+uint$<$64$>$) \\
+\hline
+\end{DoxyTemplParams}
+
+
+\subsection{Member Data Documentation}
+\index{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router@{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router}!dc@{dc}}
+\index{dc@{dc}!galapagos\+::n\+\_\+to\+\_\+one\+\_\+router@{galapagos\+::n\+\_\+to\+\_\+one\+\_\+router}}
+\subsubsection[{\texorpdfstring{dc}{dc}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ {\bf done\+\_\+clean}$\ast$ {\bf galapagos\+::n\+\_\+to\+\_\+one\+\_\+router}$<$ {\bf T} $>$\+::dc}\hypertarget{classgalapagos_1_1n__to__one__router_a42603cc4ee2ee8391a7d0e14bb1f39df}{}\label{classgalapagos_1_1n__to__one__router_a42603cc4ee2ee8391a7d0e14bb1f39df}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{galapagos__n__to__one__router_8hpp}{galapagos\+\_\+n\+\_\+to\+\_\+one\+\_\+router.\+hpp}\end{DoxyCompactItemize}

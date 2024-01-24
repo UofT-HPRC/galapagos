@@ -43,21 +43,23 @@ static ap_uint<64>byteSwap64(ap_uint<64> inputVector){
 
 }
 
-template<int D>
-struct ap_axis_net{
-	ap_uint <D> data;
-    ap_uint<D/8> keep;
-	ap_uint<1> last;
+// Old AXIS signals (Vivado HLS <2019.1)
+// template<int D>
+// struct ap_axis_net{
+//     p_uint <D> data;
+//     ap_uint<D/8> keep;
+//     ap_uint<1> last;
+//     ap_uint<16> user;
+// };
 
-};
-//
-//
-//typedef ap_axiu<8*BYTESPERCYCLE,1,ID_LENGTH,DEST_LENGTH> galapagosStream;
-////typedef ap_axis_galapagos<8*BYTESPERCYCLE,DEST_LENGTH> galapagosStream;
-//
+//// typedef ap_axiu<8*BYTESPERCYCLE,1,ID_LENGTH,DEST_LENGTH> galapagosStream;
+//// typedef ap_axis_galapagos<8*BYTESPERCYCLE,DEST_LENGTH> galapagosStream;
+//// typedef ap_axis_net<8*BYTESPERCYCLE,1,8,8> netStream;
+//// typedef ap_axis_net<8*BYTESPERCYCLE> netStream;
+// typedef ap_axis_net<PACKET_DATA_LENGTH> netStream;
 
-//typedef ap_axis_net<8*BYTESPERCYCLE,1,8,8> netStream;
-typedef ap_axis_net<8*BYTESPERCYCLE> netStream;
+// New AXIS signals (Vitis HLS 2023.1+) <WData, WUser, WDest, WId>
+typedef ap_axiu<PACKET_DATA_LENGTH, 16, 0, 0 > netStream;
 
 void galapagos_bridge(
           galapagos_interface *g2N_input,

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xd:acceleratorMap xmlns:xd="http://www.xilinx.com/xidane" xd:functionName="ether_protocol_spliter" xd:componentRef="ether_protocol_spliter" xd:initiationInterval="1" xd:clockPeriod="3.103" xd:sequential="true" xd:hostMachine="64" xd:reset="all">
+  <xd:arg xd:name="myMacAddr" xd:originalName="myMacAddr" xd:direction="in" xd:interfaceRef="myMacAddr_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="48"/>
+  <xd:arg xd:name="s_axis.data" xd:originalName="s_axis" xd:direction="in" xd:interfaceRef="s_axis_data_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="512"/>
+  <xd:arg xd:name="s_axis.keep" xd:originalName="s_axis" xd:direction="in" xd:interfaceRef="s_axis_keep_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="64"/>
+  <xd:arg xd:name="s_axis.last" xd:originalName="s_axis" xd:direction="in" xd:interfaceRef="s_axis_last_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1"/>
+  <xd:arg xd:name="s_axis.valid" xd:originalName="s_axis" xd:direction="in" xd:interfaceRef="s_axis_valid_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1"/>
+  <xd:arg xd:name="arp.data" xd:originalName="arp" xd:direction="out" xd:interfaceRef="arp_data_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="336" xd:firstOut="0"/>
+  <xd:arg xd:name="arp.valid" xd:originalName="arp" xd:direction="out" xd:interfaceRef="arp_valid_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:arg xd:name="ip.data" xd:originalName="ip" xd:direction="out" xd:interfaceRef="ip_data_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="336" xd:firstOut="0"/>
+  <xd:arg xd:name="ip.valid" xd:originalName="ip" xd:direction="out" xd:interfaceRef="ip_valid_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:arg xd:name="payload.data" xd:originalName="payload" xd:direction="out" xd:interfaceRef="payload_data_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="512" xd:firstOut="0"/>
+  <xd:arg xd:name="payload.valid" xd:originalName="payload" xd:direction="out" xd:interfaceRef="payload_valid_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:arg xd:name="payload.last" xd:originalName="payload" xd:direction="out" xd:interfaceRef="payload_last_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:arg xd:name="payload_len.data" xd:originalName="payload_len" xd:direction="out" xd:interfaceRef="payload_len_data_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="16" xd:firstOut="0"/>
+  <xd:arg xd:name="payload_len.valid" xd:originalName="payload_len" xd:direction="out" xd:interfaceRef="payload_len_valid_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:latencyEstimates xd:best-case="0" xd:worst-case="0" xd:average-case="0"/>
+  <xd:resourceEstimates xd:LUT="1348" xd:FF="1833" xd:BRAM="0" xd:DSP="0"/>
+</xd:acceleratorMap>

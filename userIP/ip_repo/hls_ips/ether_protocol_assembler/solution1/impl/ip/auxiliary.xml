@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xd:acceleratorMap xmlns:xd="http://www.xilinx.com/xidane" xd:functionName="ether_protocol_assembler" xd:componentRef="ether_protocol_assembler" xd:initiationInterval="1" xd:clockPeriod="3.103" xd:sequential="true" xd:hostMachine="64" xd:reset="all">
+  <xd:arg xd:name="eth_arp_in.data" xd:originalName="eth_arp_in" xd:direction="in" xd:interfaceRef="eth_arp_in_data_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="512"/>
+  <xd:arg xd:name="eth_arp_in.keep" xd:originalName="eth_arp_in" xd:direction="in" xd:interfaceRef="eth_arp_in_keep_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="64"/>
+  <xd:arg xd:name="eth_arp_in.valid" xd:originalName="eth_arp_in" xd:direction="in" xd:interfaceRef="eth_arp_in_valid_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1"/>
+  <xd:arg xd:name="eth_arp_in.last" xd:originalName="eth_arp_in" xd:direction="in" xd:interfaceRef="eth_arp_in_last_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1"/>
+  <xd:arg xd:name="arp_ready" xd:originalName="arp_ready" xd:direction="out" xd:interfaceRef="arp_ready_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:arg xd:name="eth_ip_in.data" xd:originalName="eth_ip_in" xd:direction="in" xd:interfaceRef="eth_ip_in_data_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="512" xd:firstOut="0"/>
+  <xd:arg xd:name="eth_ip_in.keep" xd:originalName="eth_ip_in" xd:direction="in" xd:interfaceRef="eth_ip_in_keep_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="64" xd:firstOut="0"/>
+  <xd:arg xd:name="eth_ip_in.valid" xd:originalName="eth_ip_in" xd:direction="in" xd:interfaceRef="eth_ip_in_valid_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:arg xd:name="eth_ip_in.last" xd:originalName="eth_ip_in" xd:direction="in" xd:interfaceRef="eth_ip_in_last_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:arg xd:name="ip_ready" xd:originalName="ip_ready" xd:direction="out" xd:interfaceRef="ip_ready_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:arg xd:name="eth_out.data" xd:originalName="eth_out" xd:direction="out" xd:interfaceRef="eth_out_data_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="512" xd:firstOut="0"/>
+  <xd:arg xd:name="eth_out.keep" xd:originalName="eth_out" xd:direction="out" xd:interfaceRef="eth_out_keep_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="64" xd:firstOut="0"/>
+  <xd:arg xd:name="eth_out.valid" xd:originalName="eth_out" xd:direction="out" xd:interfaceRef="eth_out_valid_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:arg xd:name="eth_out.last" xd:originalName="eth_out" xd:direction="out" xd:interfaceRef="eth_out_last_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:arg xd:name="eth_out_ready" xd:originalName="eth_out_ready" xd:direction="in" xd:interfaceRef="eth_out_ready_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:latencyEstimates xd:best-case="0" xd:worst-case="0" xd:average-case="0"/>
+  <xd:resourceEstimates xd:LUT="1196" xd:FF="581" xd:BRAM="0" xd:DSP="0"/>
+</xd:acceleratorMap>

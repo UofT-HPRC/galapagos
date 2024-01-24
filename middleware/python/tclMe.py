@@ -99,6 +99,7 @@ class tclMeFile():
         
         if 'properties' in ip and ip['properties'] != None:
             self.setProperties(ip['inst'], ip['properties'])
+            print("setting properties for "+ str(ip))
 
         if 'clks' in ip and ip['clks'] != None:
             for clk_name in ip['clks']:

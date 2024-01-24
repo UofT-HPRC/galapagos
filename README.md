@@ -4,7 +4,7 @@ Welcome to the Galapagos Hardware Stack.
 
 ## Prerequisites
 
-Both the Docker Container and native install requires Xilinx Vivado to be installed. Current versions supported are 2017.4, 2018.1, 2018.2, 2018.3
+Both the Docker Container and native install requires Xilinx Vivado to be installed. Current versions supported are 2018.1, 2018.2, 2018.3, 2019.1
 
 
 ## Docker Jupyter Tutorial
@@ -16,7 +16,16 @@ To run tutorial refer to instructions in [this README](https://github.com/UofT-H
 
 
 First you need to initialize all environment variables. This is done with a build script.
+
 `source build.sh`
+
+Second you need to compile the Vivado_HLS source code and generate a Vivado project.
+
+`make PROJECTNAME=${project_name}`
+
+Third you need to build the Vivado project.
+
+`source projects/${project_name}/createCluster.sh`
 
 The layers of the stack that we introduce are as follows:
 
@@ -112,29 +121,3 @@ The `<kernel>` refers to the unique kernel ID that you wish to put on this node.
   
 For an example refer to `galapagos/middleware/python/tests/conf0/configuration_files/*`
 
-
-## Publications
-- N. Tarafdar, N. Eskandari, V. Sharma, C Lo, P. Chow, *Galapagos: A Full Stack Approach to FPGA Integration in the Cloud*, in IEEE Micro 38(6) 2018.
-
-- N. Eskandari, N. Tarafdar, D. Ly-Ma, P. Chow, *A Modular Heterogeneous Stack for Deploying FPGAs and CPUs in the Data Center*, in FPGA Symposium 2019.
-
-- N. Tarafdar, T. Lin, D. Ly-Ma, D. Rozhko, A. Leon-Garcia, P.Chow, *Building the Infrastructure for Deploying FPGAs in the Cloud*, in Hardware Accelerators in Data Center by Springer.
-
-- N. Tarafdar, N. Eskandari, V. Sharma, C Lo, P. Chow, *Heterogeneous virtualized network function framework for the data center*, in FPL 2017.
-
-- N. Tarafdar, T.Lin, E. Fukuda, H. Bannazadeh, A. Leon-Garcia, P. Chow, *Enabling Flexible Network FPGA Clusters in a Heterogeneous Cloud Data Center*, in FPGA Symposium 2017.
-
-## Citation
-If you use the Galapagos Hardware Stack in your project please cite the following paper and/or link to the github project:
-```
-@article{tarafdar2018galapagos,
-  title={Galapagos: A Full Stack Approach to FPGA Integration in the Cloud},
-  author={Tarafdar, Naif and Eskandari, Nariman and Sharma, Varun and Lo, Charles and Chow, Paul},
-  journal={IEEE Micro},
-  volume={38},
-  number={6},
-  pages={18--24},
-  year={2018},
-  publisher={IEEE}
-}
-```

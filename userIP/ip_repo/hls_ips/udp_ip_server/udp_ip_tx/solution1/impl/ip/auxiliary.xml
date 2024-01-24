@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xd:acceleratorMap xmlns:xd="http://www.xilinx.com/xidane" xd:functionName="udp_ip_tx" xd:componentRef="udp_ip_tx" xd:initiationInterval="1" xd:clockPeriod="3.103" xd:sequential="true" xd:hostMachine="64" xd:reset="all">
+  <xd:arg xd:name="myIP" xd:originalName="myIP" xd:direction="in" xd:interfaceRef="myIP_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="32"/>
+  <xd:arg xd:name="dst_ip" xd:originalName="dst_ip" xd:direction="in" xd:interfaceRef="dst_ip_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="32"/>
+  <xd:arg xd:name="dst_mac" xd:originalName="dst_mac" xd:direction="in" xd:interfaceRef="dst_mac_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="48"/>
+  <xd:arg xd:name="src_port" xd:originalName="src_port" xd:direction="in" xd:interfaceRef="src_port_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="16"/>
+  <xd:arg xd:name="dst_port" xd:originalName="dst_port" xd:direction="in" xd:interfaceRef="dst_port_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="16"/>
+  <xd:arg xd:name="arp_status" xd:originalName="arp_status" xd:direction="in" xd:interfaceRef="arp_status_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="2"/>
+  <xd:arg xd:name="payload_in.data" xd:originalName="payload_in" xd:direction="in" xd:interfaceRef="payload_in_data_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="512"/>
+  <xd:arg xd:name="payload_in.keep" xd:originalName="payload_in" xd:direction="in" xd:interfaceRef="payload_in_keep_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="64"/>
+  <xd:arg xd:name="payload_in.valid" xd:originalName="payload_in" xd:direction="in" xd:interfaceRef="payload_in_valid_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1"/>
+  <xd:arg xd:name="payload_in.last" xd:originalName="payload_in" xd:direction="in" xd:interfaceRef="payload_in_last_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1"/>
+  <xd:arg xd:name="payload_in_ready" xd:originalName="payload_in_ready" xd:direction="out" xd:interfaceRef="payload_in_ready_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:arg xd:name="payload_out.data" xd:originalName="payload_out" xd:direction="out" xd:interfaceRef="payload_out_data_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="512" xd:firstOut="0"/>
+  <xd:arg xd:name="payload_out.keep" xd:originalName="payload_out" xd:direction="out" xd:interfaceRef="payload_out_keep_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="64" xd:firstOut="0"/>
+  <xd:arg xd:name="payload_out.valid" xd:originalName="payload_out" xd:direction="out" xd:interfaceRef="payload_out_valid_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:arg xd:name="payload_out.last" xd:originalName="payload_out" xd:direction="out" xd:interfaceRef="payload_out_last_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:arg xd:name="payload_out_ready" xd:originalName="payload_out_ready" xd:direction="in" xd:interfaceRef="payload_out_ready_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:arg xd:name="action_out.dst_ip" xd:originalName="action_out" xd:direction="out" xd:interfaceRef="action_out" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="32" xd:firstOut="0" xd:dataPack="true" xd:bitMapping="31:0"/>
+  <xd:arg xd:name="action_out.dst_mac" xd:originalName="action_out" xd:direction="out" xd:interfaceRef="action_out" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="48" xd:firstOut="0" xd:dataPack="true" xd:bitMapping="79:32"/>
+  <xd:arg xd:name="action_out.src_port" xd:originalName="action_out" xd:direction="out" xd:interfaceRef="action_out" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="16" xd:firstOut="0" xd:dataPack="true" xd:bitMapping="95:80"/>
+  <xd:arg xd:name="action_out.dst_port" xd:originalName="action_out" xd:direction="out" xd:interfaceRef="action_out" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="16" xd:firstOut="0" xd:dataPack="true" xd:bitMapping="111:96"/>
+  <xd:arg xd:name="action_out.udp_cksum" xd:originalName="action_out" xd:direction="out" xd:interfaceRef="action_out" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="17" xd:firstOut="0" xd:dataPack="true" xd:bitMapping="128:112"/>
+  <xd:arg xd:name="action_out.ip_cksum" xd:originalName="action_out" xd:direction="out" xd:interfaceRef="action_out" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="16" xd:firstOut="0" xd:dataPack="true" xd:bitMapping="144:129"/>
+  <xd:arg xd:name="action_out.payload_length" xd:originalName="action_out" xd:direction="out" xd:interfaceRef="action_out" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="16" xd:firstOut="0" xd:dataPack="true" xd:bitMapping="160:145"/>
+  <xd:arg xd:name="action_out_we" xd:originalName="action_out_we" xd:direction="out" xd:interfaceRef="action_out_we_V" xd:busTypeRef="register" xd:handshakeRef="ap_none" xd:dataWidth="1" xd:firstOut="0"/>
+  <xd:latencyEstimates xd:best-case="0" xd:worst-case="0" xd:average-case="0"/>
+  <xd:resourceEstimates xd:LUT="3703" xd:FF="5829" xd:BRAM="0" xd:DSP="0"/>
+</xd:acceleratorMap>
