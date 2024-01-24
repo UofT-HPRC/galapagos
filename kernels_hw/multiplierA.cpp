@@ -27,7 +27,7 @@ typedef ap_axiu<bitwidth, 16, 24, 24> net_data;
 
 void multiplierA(
     hls::stream<net_data> &pkt_in,
-    hls::stream<net_data> &pkt_out,)
+    hls::stream<net_data> &pkt_out)
 {
 #pragma HLS INTERFACE ap_ctrl_none port = return
 
