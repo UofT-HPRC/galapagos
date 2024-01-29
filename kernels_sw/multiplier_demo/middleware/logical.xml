@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cluster>
+    <kernel> kern_loopback 
+        <vendor> xilinx.com </vendor>
+        <version> 1.0 </version>
+        <lib> hls </lib>
+        <num> 1 </num>
+        <rep> 1 </rep>
+        <clk> ap_clk </clk>
+        <aresetn> ap_rst_n </aresetn>
+        <s_axis>
+            <scope> global </scope>
+            <name> in_r </name>
+        </s_axis>
+        <m_axis>
+            <scope> global </scope>
+            <name> out_r </name>
+        </m_axis>
+    </kernel>
+	<kernel> cpu
+        <num> 0 </num>
+        <rep> 1 </rep>
+        <s_axis>
+            <scope> global </scope>
+            <name> stream_in </name>
+        </s_axis>
+        <m_axis>
+            <scope> global </scope>
+            <name> stream_out </name>
+        </m_axis>
+	</kernel>
+</cluster>

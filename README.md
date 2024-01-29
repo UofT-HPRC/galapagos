@@ -4,20 +4,47 @@ Welcome to the Galapagos Hardware Stack.
 
 ## Prerequisites
 
-Both the Docker Container and native install requires Xilinx Vivado to be installed. Current versions supported are 2018.1, 2018.2, 2018.3, 2019.1
+Both the Docker Container and native install requires Xilinx Vivado to be installed. Current versions supported are 2018.1, 2018.2, 2018.3, 2019.1 and 2023.1
 
 
 ## Docker Jupyter Tutorial
 
 To run tutorial refer to instructions in [this README](https://github.com/UofT-HPRC/galapagos/blob/master/docker/README.md)
 
+## Multiplier Demo Description:
+2 software kernels (Data Sender and Data Receiver), 2 hardware kernels (MultiplierA and MultiplierB).
+The Data Sender sends 3 32-bit integers to MultiplierA formatted as:
+MultiplierA multiplies numberA and numberB, and sends the result of A*B and numberC to MultiplierB.
+MultiplierB multiplies the result of A*B and numberC and sends the final value back to software kernel Data Receiver.
+Data Receiver receives the result of A*B*C and prints it using std::cout.
+
+### To make the demo project:
+
+`make` in the /kernals_sw/multiplier_demo folder, the executable ./kern will be created.
+The software kernels are defined in kern.cpp and their mapping is done in cpu_node.cpp such that any kernel with the same IPv4 address as node_address will be run on software and kernels with different addresses will have the data sent and received to the respective address using Galapagos' kernel IDs mapped to Addresses.
+
+To build the Galapagos project with demo kernels. (any HLS Synthesized IP in kernels_hw or userIP/kernels can be used in the map.xml and logical.xml files to build them into Galapagos).
+
+`make` in the /kernals_hw folder, the two hardware multipliers (multiplierA and multiplierB) will be HLS Synthesized in their respective folders.
+
+First you need to initialize all environment variables. This is done with a build script.
+`source build.sh`
+
+`make PROJECTNAME={project_name}` to synthesize the galapagos IPs and create a script to make a project using map.xml and logical.xml (configured as: both multipliers on a single FPGA in the given xml files)
+
+run the script by:
+`source projects/{project_name}/createCluster.sh` to create the project, (I have disabled the direct synthesis and generation of bitstream, so manually generate it) and then program the FPGA.
+
+By running `/kernals_sw/kernals/kern`, it will send 3x 32-bit integers to the FPGA which will return the result of multiplication of the 3 numbers.
+
+### Other notes
+
+`make hlsmiddleware` compiles the HLS source code of Galapagos' IPs.
+
+`make middleware` only generates the createCluster.sh and various .tcl files to build a project using the Galapagos' IPs and kernels specified in map.xml and logical.xml
 
 ## Initial Setup for Native Install
 
-
-First you need to initialize all environment variables. This is done with a build script.
-
-`source build.sh`
 
 Second you need to compile the Vivado_HLS source code and generate a Vivado project.
 

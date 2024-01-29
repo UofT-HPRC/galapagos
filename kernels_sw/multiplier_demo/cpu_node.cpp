@@ -18,12 +18,10 @@ using namespace boost::program_options;
 int main(int argc, char **argv)
 {
     std::string node_ip_address = "10.1.24.132";
+
     std::string data_sender_ip = "10.1.24.132";
     std::string multiplierA_ip = "10.1.24.102";
     std::string multiplierB_ip = "10.1.24.103";
-    // std::string data_receiver_ip = "10.1.24.104";
-    // std::string multiplierA_ip = "10.1.24.132";
-    // std::string multiplierB_ip = "10.1.24.132";
     std::string data_receiver_ip = "10.1.24.132";
 
     std::vector<std::string> kern_info;
