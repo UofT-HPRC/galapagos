@@ -14,33 +14,32 @@ To run tutorial refer to instructions in [this README](https://github.com/UofT-H
 ## Multiplier Demo Description:
 2 software kernels (Data Sender and Data Receiver), 2 hardware kernels (MultiplierA and MultiplierB).
 
-The Data Sender sends 3 32-bit integers to MultiplierA formatted as:
-MultiplierA multiplies numberA and numberB, and sends the result of A*B and numberC to MultiplierB.
-MultiplierB multiplies the result of A*B and numberC and sends the final value back to software kernel Data Receiver.
-Data Receiver receives the result of A*B*C and prints it using std::cout.
+The Data Sender sends 3 32-bit integers to MultiplierA.
+MultiplierA multiplies numberA and numberB, and sends the result of A\*B and numberC to MultiplierB.
+MultiplierB multiplies the result of A\*B and numberC and sends the final value back to software kernel Data Receiver.
+Data Receiver receives the result of A\*B\*C and prints it using std::cout.
 
 ### To make the demo project:
 
-`make` in the /kernals_sw/multiplier_demo folder, the executable ./kern will be created.
+1. `make` in the /kernals_sw/multiplier_demo folder, the executable ./kern will be created.
 The software kernels are defined in kern.cpp and their mapping is done in cpu_node.cpp such that any kernel with the same IPv4 address as node_address will be run on software
 and kernels with different addresses will have the data sent and received to the respective address using Galapagos' kernel IDs mapped to Addresses.
 
-To build the Galapagos project with demo kernels. (any HLS Synthesized IP in kernels_hw or userIP/kernels can be used in the map.xml and logical.xml files to build them into Galapagos).
-
+1. To build the Galapagos project with demo kernels. (any HLS Synthesized IP in kernels_hw or userIP/kernels can be used in the map.xml and logical.xml files to build them into Galapagos).
 `make` in the /kernals_hw folder, the two hardware multipliers (multiplierA and multiplierB) will be HLS Synthesized in their respective folders.
 
-First you need to initialize all environment variables. This is done with a build script.
+1. First you need to initialize all environment variables. This is done with a build script.
 `source build.sh`
 
 You can set direct synthesis and generation of bitstream on running of this script by setting the environment variable `export GALAPAGOS_START_SYNTH=1` (=0 to disble synthesis and bitstream generation)
 
-`make PROJECTNAME={project_name}` to synthesize the galapagos IPs and create a script to make a project using map.xml and logical.xml (configured as: both multipliers on a single FPGA in the given xml files)
+1. `make PROJECTNAME={project_name}` to synthesize the galapagos IPs and create a script to make a project using map.xml and logical.xml (configured as: both multipliers on a single FPGA in the given xml files)
 
-Create the project.
+1. Create the project.
 `source projects/{project_name}/createCluster.sh`
 and then program the FPGA.
 
-By running `/kernals_sw/kernals/kern`, it will send 3x 32-bit integers to the FPGA which will return the result of multiplication of the 3 numbers.
+1. By running `/kernals_sw/kernals/kern`, it will send 3x 32-bit integers to the FPGA which will return the result of multiplication of the 3 numbers.
 
 ### Other notes
 
