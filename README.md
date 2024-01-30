@@ -36,13 +36,14 @@ You can enable direct synthesis and generation of bitstream on running of this s
 
 5. Create the project.  
 `source projects/{project_name}/createCluster.sh`  
-and then program the FPGA.
+and then program the FPGA.(the bitstreams would be located at /projects/{project_name}/1/1.runs/impl_1/shellTop.bit and /projects/{project_name}/2/2.runs/impl_1/shellTop.bit)
 
 6. By running `/kernals_sw/kernals/kern`, it will send 3x 32-bit integers to the FPGA which will return the result of multiplication of the 3 numbers.
 
 ### Other notes
 
 To make a project with your own kernels, you would need to edit the map.xml and logical.xml files, then run the above steps.
+The /map.xml and /kernels_sw/multiplier_demo/cpu_node.cpp would need the IP Addresses of CPU and/or FPGAs depending on where each kernel would be running.
 
 `make hlsmiddleware` compiles the HLS source code of Galapagos' IPs.
 
