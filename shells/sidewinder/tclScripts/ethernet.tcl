@@ -1,6 +1,6 @@
 #QSFP0
 
-set net_num 0
+set net_num 1
 set GT_GROUP_SELECT X0Y12~X0Y15
 set CMAC_CORE_SELECT CMACE4_X0Y1
 set LANE1_GT_LOC X0Y12
@@ -10,8 +10,6 @@ set LANE4_GT_LOC X0Y15
 #source ${::env(GALAPAGOS_PATH)}/shells/sidewinder/tclScripts/generateEthernet.tcl
 
 #QSFP1
-
-set net_num 1
 set GT_GROUP_SELECT X0Y16~X0Y19
 set CMAC_CORE_SELECT CMACE4_X0Y2
 set LANE1_GT_LOC X0Y16
