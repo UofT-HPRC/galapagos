@@ -13,37 +13,43 @@ To run tutorial refer to instructions in [this README](https://github.com/UofT-H
 ## Multiplier Demo Description:
 This demo includes 4 kernels:  
 2 software kernels (Data Sender and Data Receiver) and 2 hardware kernels (MultiplierA and MultiplierB).
+- The Data Sender sends 3 32-bit integers to MultiplierA.  
+- MultiplierA multiplies numberA and numberB, and sends the result of A\*B and numberC to MultiplierB.  
+- MultiplierB multiplies the result of A\*B and numberC and sends the final value back to software kernel Data Receiver.  
+- Data Receiver receives the result of A\*B\*C and prints it.
 
-The Data Sender sends 3 32-bit integers to MultiplierA.  
-MultiplierA multiplies numberA and numberB, and sends the result of A\*B and numberC to MultiplierB.  
-MultiplierB multiplies the result of A\*B and numberC and sends the final value back to software kernel Data Receiver.  
-Data Receiver receives the result of A\*B\*C and prints it.
+Both hardware kernels would need to be programmed on two different boards, but you can change this by editing the map.xml and cpu_node.cpp (See other notes below)  
 
 ### To make the demo project:
 
-1. `make` in the /kernals_sw/multiplier_demo folder, the executable ./kern will be created.  
-The software kernels are defined in kern.cpp and their mapping is done in cpu_node.cpp such that any kernel with the same IPv4 address as node_address will be run on software,  
+A. Initialize the kernels
+
+1. Compile the demo kernels (sw).  
+Run `make` in the /kernals_sw/multiplier_demo folder, and executable file `kern` will be created.  
+The software kernels are defined in kern.cpp and their mapping is done in cpu_node.cpp such that any kernel with the same IPv4 address as node_ip_address will be run on software,  
 and kernels with different addresses will have the data sent and received to the respective address using Galapagos' kernel IDs mapped to Addresses.
 
-2. To build the Galapagos project with demo kernels. (any HLS Synthesized IP in kernels_hw or userIP/kernels can be used in the map.xml and logical.xml files to build them into Galapagos).  
-`make` in the /kernals_hw folder, the two hardware multipliers (multiplierA and multiplierB) will be HLS Synthesized in their respective folders.
+2. Synthesize the HLS for demo kernels (hw).  
+Run `make` in the /kernals_hw folder, the two hardware multipliers (multiplierA and multiplierB) will be HLS Synthesized in their respective folders.  
+(any HLS Synthesized IP in kernels_hw or userIP/kernels can be used in the map.xml and logical.xml files to build them into Galapagos).
+
+B. Setup Galapagos Project
 
 3. First you need to initialize all environment variables. This is done with a build script.  
 `source build.sh`  
 You can enable direct synthesis and generation of bitstream on running of this script by setting the environment variable `export GALAPAGOS_START_SYNTH=1` (=0 to disble synthesis and bitstream generation)
 
-4. `make PROJECTNAME={project_name}` to synthesize the galapagos IPs and create a script to make a project using map.xml and logical.xml (configured as: both multipliers on a single FPGA in the given xml files)
+4. `make PROJECTNAME={project_name}` to synthesize the galapagos IPs and create a script to make a project using map.xml and logical.xml (configured as: both multipliers on different FPGAs in the given xml files)
 
-5. Create the project.  
-`source projects/{project_name}/createCluster.sh`  
-and then program the FPGA.(the bitstreams would be located at /projects/{project_name}/1/1.runs/impl_1/shellTop.bit and /projects/{project_name}/2/2.runs/impl_1/shellTop.bit)
+5. `source projects/{project_name}/createCluster.sh`  to create the project (depending on the GALAPAGOS_START_SYNTH env variable, synthesis and bitstreams may be generated automatically) and then program the FPGAs by flashing the bitstreams.  
+(Bitstream for multiplierA located at /projects/{project_name}/1/1.runs/impl_1/shellTop.bit and multiplierB at /projects/{project_name}/2/2.runs/impl_1/shellTop.bit)  
 
 6. By running `/kernals_sw/kernals/kern`, it will send 3x 32-bit integers to the FPGA which will return the result of multiplication of the 3 numbers.
 
 ### Other notes
 
 To make a project with your own kernels, you would need to edit the map.xml and logical.xml files, then run the above steps.
-The /map.xml and /kernels_sw/multiplier_demo/cpu_node.cpp would need the IP Addresses of CPU and/or FPGAs depending on where each kernel would be running.
+The `/map.xml` and `/kernels_sw/multiplier_demo/cpu_node.cpp` would need the IP Addresses of CPU and/or FPGAs depending on where each kernel would be running.
 
 `make hlsmiddleware` compiles the HLS source code of Galapagos' IPs.
 
