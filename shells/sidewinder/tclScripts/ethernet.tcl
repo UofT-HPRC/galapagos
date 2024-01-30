@@ -7,7 +7,7 @@ set LANE1_GT_LOC X0Y12
 set LANE2_GT_LOC X0Y13
 set LANE3_GT_LOC X0Y14
 set LANE4_GT_LOC X0Y15
-#source $project_dir/tcl/shell/generateEthernet.tcl
+#source ${::env(GALAPAGOS_PATH)}/shells/sidewinder/tclScripts/generateEthernet.tcl
 
 #QSFP1
 
