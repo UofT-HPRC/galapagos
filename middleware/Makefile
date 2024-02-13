@@ -17,11 +17,12 @@ include $(GALAPAGOS_PATH)/include.mk
 
 middleware_path = $(GALAPAGOS_PATH)/middleware
 hls_path = $(middleware_path)/hls
+old_hls_path = $(middleware_path)/old_hls
 python_path = $(middleware_path)/python
 
-.PHONY: middleware
+.PHONY: middleware oldhls
 
-all: middleware hlsmiddleware
+all: middleware hlsmiddleware oldhls
 
 middleware: guard-LOGICALFILE guard-MAPFILE guard-PROJECTNAME ${LOGICALFILE} ${MAPFILE}
 	python3.7 ${python_path}/globalFPGAParser.py --logicalFile=${LOGICALFILE} \
@@ -32,8 +33,12 @@ middleware: guard-LOGICALFILE guard-MAPFILE guard-PROJECTNAME ${LOGICALFILE} ${M
 hlsmiddleware:
 	 $(MAKE) -C $(hls_path)
 
+oldhls:
+	$(MAKE) -C $(old_hls_path)
+
 clean: guard-PROJECTNAME
 	 $(MAKE) -C $(hls_path) clean
+	$(MAKE) -C $(old_hls_path) clean
 	 rm -rf ${GALAPAGOS_PATH}/projects/${PROJECTNAME}
 	 rm -rf ${GALAPAGOS_PATH}/createCluster.sh
 	 rm -rf ${GALAPAGOS_PATH}/createSim.sh

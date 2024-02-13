@@ -35,6 +35,9 @@ middleware: ${LOGICALFILE} ${MAPFILE} guard-LOGICALFILE guard-MAPFILE guard-PROJ
 hlsmiddleware:
 	mkdir -p $(GALAPAGOS_PATH)/hlsBuild
 	$(MAKE) -C $(MIDDLEWARE_DIR) hlsmiddleware
+oldhls:
+	mkdir -p $(GALAPAGOS_PATH)/oldhlsBuild
+	$(MAKE) -C $(MIDDLEWARE_DIR) oldhls
 
 clean:
 	$(MAKE) -C $(MIDDLEWARE_DIR) clean

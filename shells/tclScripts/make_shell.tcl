@@ -47,7 +47,7 @@ if { [info exists ::env(GALAPAGOS_PATH)] } {
   set top_shells ${::env(GALAPAGOS_PATH)}/shells
   set top_part ${::env(GALAPAGOS_PART)}
   set top_board ${::env(GALAPAGOS_BOARD_NAME)}
-  set vivado_version ${::env(GALAPAGOS_VIVADO_VERSION)}
+  set vivado_version ${::env(GALAPAGOS_VITIS_VERSION)}
   if { [info exists ::env(GALAPAGOS_BOARD)] } {
     set top_board_part ${::env(GALAPAGOS_BOARD)}
   }
@@ -56,7 +56,7 @@ if { [info exists ::env(GALAPAGOS_PATH)] } {
   set top_shells $top_path 
   set top_part ${::env(SHELLS_PART)}
   set top_board ${::env(SHELLS_BOARD_NAME)}
-  set vivado_version ${::env(SHELLS_VIVADO_VERSION)}
+  set vivado_version ${::env(SHELLS_VITIS_VERSION)}
   if { [info exists ::env(SHELLS_BOARD)] } {
     set top_board_part ${::env(SHELLS_BOARD)}
   }
@@ -118,6 +118,7 @@ set obj [get_filesets sources_1]
 # set_property ip_repo_paths {hlsIP_adm-8k5 shells/shell_ips userIP} [current_project]
 set_property ip_repo_paths [list \
   $top_path/hlsBuild \
+  $top_path/oldhlsBuild \
   $top_shells/shell_ips \
   userIP] [current_project]
 
