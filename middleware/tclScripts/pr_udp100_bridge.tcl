@@ -42,8 +42,8 @@ set_property -dict [list \
 ] [get_bd_cells network/direct_ip_rx_switch]
 
 connect_bd_intf_net [get_bd_intf_pins network/axis_endianness_conv_0/s_axis] [get_bd_intf_pins network/GULF_Stream_0/payload_to_user]
-connect_bd_intf_net [get_bd_intf_pins network/axis_endianness_conv_0/m_axis] [get_bd_intf_pins network/receptionist_0/gulf]
-connect_bd_intf_net [get_bd_intf_pins network/receptionist_0/gal] [get_bd_intf_pins network/direct_ip_rx_switch/S00_AXIS]
+connect_bd_intf_net [get_bd_intf_pins network/axis_endianness_conv_0/m_axis] [get_bd_intf_pins network/receptionist/gulf]
+connect_bd_intf_net [get_bd_intf_pins network/receptionist/gal] [get_bd_intf_pins network/direct_ip_rx_switch/S00_AXIS]
 connect_bd_intf_net [get_bd_intf_pins network/direct_ip_rx_switch/M00_AXIS] [get_bd_intf_pins network/network_bridge_udp_1_0/lbRxDataIn]
 connect_bd_intf_net [get_bd_intf_pins network/direct_ip_switch/M00_AXIS] [get_bd_intf_pins network/fifo_gulf/S_AXIS]
 connect_bd_intf_net [get_bd_intf_pins network/network_bridge_udp_1_0/lbTxDataOut] [get_bd_intf_pins network/direct_ip_switch/S01_AXIS]
@@ -53,6 +53,9 @@ connect_bd_intf_net [get_bd_intf_pins network/axis_endianness_conv_1/m_axis] [ge
 connect_bd_net [get_bd_ports CLK300] [get_bd_pins network/axis_endianness_conv_0/clk]
 connect_bd_net [get_bd_ports CLK300] [get_bd_pins network/axis_endianness_conv_1/clk]
 
+connect_bd_net [get_bd_pins network/GULF_Stream_0/remote_ip_rx] [get_bd_pins network/receptionist/ip]
+connect_bd_net [get_bd_pins network/GULF_Stream_0/remote_port_rx] [get_bd_pins network/receptionist/src_prt]
+connect_bd_net [get_bd_pins network/GULF_Stream_0/local_port_rx] [get_bd_pins network/receptionist/dst_prt]
 
 #connect_bd_net [get_bd_pins network/network_bridge_udp_1_0/remote_ip_tx] [get_bd_pins network/GULF_Stream_0/remote_ip_tx]
 #connect_bd_net [get_bd_pins network/network_bridge_udp_1_0/arp_status_V] [get_bd_pins network/GULF_Stream_0/arp_status]
@@ -140,8 +143,8 @@ connect_bd_net [get_bd_pins network/CLK300] [get_bd_pins network/fifo_gulf/s_axi
 connect_bd_net [get_bd_pins network/rst300] [get_bd_pins network/fifo_gulf/s_axis_aresetn]
 connect_bd_net [get_bd_pins network/CLK300] [get_bd_pins network/direct_ip_switch/aclk]
 connect_bd_net [get_bd_pins network/rst300] [get_bd_pins network/direct_ip_switch/aresetn]
-connect_bd_net [get_bd_pins network/CLK300] [get_bd_pins network/receptionist_0/clk]
-connect_bd_net [get_bd_pins network/rst300] [get_bd_pins network/receptionist_0/resetn]
+connect_bd_net [get_bd_pins network/CLK300] [get_bd_pins network/receptionist/clk]
+connect_bd_net [get_bd_pins network/rst300] [get_bd_pins network/receptionist/resetn]
 
 connect_bd_intf_net [get_bd_intf_pins network/network_bridge_inst/axis_data_fifo_1/S_AXIS] [get_bd_intf_pins network/network_bridge_udp_1_0/txGalapagosBridge]
 connect_bd_intf_net [get_bd_intf_pins network/network_bridge_inst/axis_data_fifo_1/M_AXIS] [get_bd_intf_pins network/network_bridge_inst/axis_data_fifo_1_1/S_AXIS]

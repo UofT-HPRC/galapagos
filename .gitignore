@@ -1,6 +1,7 @@
 .Xil/*
 vivado.*
 hlsBuild/*
+oldhlsBuild/*
 projects/*
 my_init.sh
 vivado_*
