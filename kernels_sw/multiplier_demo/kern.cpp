@@ -1,10 +1,11 @@
 using namespace std;
 #define INTERFACE_100G
 #include "kern.hpp"
+// IDs of kernels
 #define dS 0
 #define mA 1
-#define mB 0
-#define dR 0
+#define mB 2
+#define dR 3
 
 bool printer = true;
 
@@ -48,6 +49,8 @@ void multiplierA(short id, galapagos_interface *in, galapagos_interface *out)
 {
 #pragma HLS INTERFACE axis register both port = out
 #pragma HLS INTERFACE axis register both port = in
+// This kernel was designed to run on hardware, but the following lines of code were written to debug the other software kernels of the multiplier_demo project
+
     ap_uint<512> mAin_data;
     size_t size;
     short dest, src;
@@ -84,6 +87,8 @@ void multiplierB(short id, galapagos_interface *in, galapagos_interface *out)
 {
 #pragma HLS INTERFACE axis register both port = out
 #pragma HLS INTERFACE axis register both port = in
+// This kernel was designed to run on hardware, but the following lines of code were written to debug the other software kernels of the multiplier_demo project
+
     ap_uint<512> mBin_data;
     size_t size;
     short dest, src;
