@@ -26,7 +26,7 @@ ap_uint<32> byteSwap32(ap_uint<32> &inputVector)
 // };
 
 // New AXIS signals (Vitis HLS 2023.1+) <WData, WUser, WDest, WId>
-typedef ap_axiu<512, 0, 0, 0> axiWord512;
+typedef ap_axiu<512, 8, 0, 0> axiWord512;
 
 typedef ap_axiu<512, 64, 0, 0> extAxiWord512;
 
@@ -47,7 +47,7 @@ extAxiWord512 currWordExtender(axiWord512 wordIn, ap_uint<32> ip)
 {
 #pragma HLS inline
     extAxiWord512 wordOut;
-    const ap_uint<16> port=9000;
+    ap_uint<16> port= wordIn.user == 0 ? 9000 : 32798;
     wordOut.data = wordIn.data;
     wordOut.user=(port,port,ip);
     wordOut.last=wordIn.last;
@@ -70,7 +70,7 @@ void txPath(
 
     // read header
     currWordIn = rxGalapagosBridge.read();
-    dest = currWordIn.data.range(31, 24);
+    dest = currWordIn.data.range(PACKET_DEST_LENGTH+PACKET_DEST_LENGTH+PACKET_USER_LENGTH-1, PACKET_DEST_LENGTH+PACKET_USER_LENGTH);
     dest_ip_addr = ip_table[dest * 4];
     currWordOut=currWordExtender(currWordIn,dest_ip_addr);
     // write header

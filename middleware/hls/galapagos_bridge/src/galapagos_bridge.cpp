@@ -15,7 +15,7 @@ void g2N(
     galapagos_packet gp = input->read();
     ap_uint<PACKET_USER_LENGTH> size;
 
-    ap_uint<PACKET_DATA_LENGTH> header = get_header(gp.id, gp.dest, gp.user);
+    ap_uint<PACKET_DATA_LENGTH> header = get_header(gp.id, gp.dest, 0);
     // ap_uint<PACKET_DATA_LENGTH> header = get_header(gp.id, gp.dest);
 
     netStream np;
@@ -23,6 +23,7 @@ void g2N(
     np.keep = KEEP_ALL;
     np.last = 0;
     np.data = header;
+    np.user = gp.user;
     // np.user= size;
     // ap_wait();
     output->write(np);
@@ -30,6 +31,7 @@ void g2N(
     // write first packet
     np.data = gp.data;
     np.last = gp.last;
+    np.user = gp.user;
     //    np.user = size;
     output->write(np);
 
@@ -40,6 +42,7 @@ void g2N(
         np.keep = gp.keep;
         np.data = gp.data;
         np.last = gp.last;
+        np.user = gp.user;
         output->write(np);
     }
 }

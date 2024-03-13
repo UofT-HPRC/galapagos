@@ -61,11 +61,11 @@ def construct_axis_wire(preamble,name,data_size,id_size, has_ready):
     else:
         return(add_axi_wire_field(preamble,name,"t",axis_fields[:-1],axis_sizes[:-1],id_size,data_size,0)+"\n")
     
-def construct_axis_defn(preamble,name,portname, has_ready):
+def construct_axis_defn(preamble,name,portname, has_ready,has_user):
     if has_ready:
-        return(add_axi_defn_field(preamble,name,portname,"t",axis_fields,True,True)+"\n")
+        return(add_axi_defn_field(preamble,name,portname,"t",axis_fields,True,has_user)+"\n")
     else:
-        return(add_axi_defn_field(preamble,name,portname,"t",axis_fields[:-1],True,True)+"\n")
+        return(add_axi_defn_field(preamble,name,portname,"t",axis_fields[:-1],True,has_user)+"\n")
 
 def construct_axis_base_defn(preamble,name,portname, has_ready):
     if has_ready:
@@ -101,16 +101,16 @@ def createTopLevelVerilog(target_files, source_dir, kernel_names,control_names):
         dst_file.write("\n\n    //User: "+str(i)+"\n")
         if i in control_names:
             dst_file.write(construct_axi_defn("      ",str(i)+"_CONTROL",str(i)+"_CONTROL",True,True))
-        dst_file.write(construct_axis_defn("      ",str(i)+"_MAXIS",str(i)+"_MAXIS",True))
-        dst_file.write(construct_axis_defn("      ",str(i)+"_SAXIS",str(i)+"_SAXIS",True))
+        dst_file.write(construct_axis_defn("      ",str(i)+"_MAXIS",str(i)+"_MAXIS",True,True))
+        dst_file.write(construct_axis_defn("      ",str(i)+"_SAXIS",str(i)+"_SAXIS",True,False))
     dst_file.write("    );\n\n\n")
     
     for i in kernel_names:
         dst_file.write("  //User: "+str(i)+"\n  user_"+str(i)+"_i user_"+str(i)+"_i_i\n    (.rst(rst)\n    ,.CLK(CLK)\n")
         if i in control_names:
             dst_file.write(construct_axi_defn("    ",str(i)+"_CONTROL","AXI_CONTROL",True,True))
-        dst_file.write(construct_axis_defn("    ",str(i)+"_MAXIS","RX_AXIS",True))
-        dst_file.write(construct_axis_defn("    ",str(i)+"_SAXIS","TX_AXIS",True))
+        dst_file.write(construct_axis_defn("    ",str(i)+"_MAXIS","RX_AXIS",True,True))
+        dst_file.write(construct_axis_defn("    ",str(i)+"_SAXIS","TX_AXIS",True,False))
         dst_file.write("    );\n\n\n")
     dst_file.write("  endmodule")
     dst_file.close()

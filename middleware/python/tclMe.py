@@ -128,6 +128,25 @@ class tclMeFile():
                 for reset_name in ip['resetns']:
                     self.tprint('connect_bd_net [get_bd_ports ARESETN] [get_bd_pins ' + ip['inst'] + '/' + reset_name + ']')
 
+    def instModule(self, ip):
+
+        self.tprint('create_bd_cell -type module -reference '+ip['name']+' '+ip['inst'])
+        if 'properties' in ip and ip['properties'] != None:
+            self.setProperties(ip['inst'], ip['properties'])
+
+        if 'clks' in ip and ip['clks'] != None:
+            for clk_name in ip['clks']:
+                self.tprint('connect_bd_net [get_bd_ports CLK] [get_bd_pins ' + ip['inst'] + '/' + clk_name + ']')
+
+        if 'resetns' in ip and ip['resetns'] != None:
+            if ip['resetns_port'] != None:
+                for reset_name in ip['resetns']:
+                    self.tprint('connect_bd_net [get_bd_ports ' + ip['resetns_port'] + '] [get_bd_pins ' + ip[
+                        'inst'] + '/' + reset_name + ']')
+            else:
+                for reset_name in ip['resetns']:
+                    self.tprint(
+                        'connect_bd_net [get_bd_ports ARESETN] [get_bd_pins ' + ip['inst'] + '/' + reset_name + ']')
 
     def makeConnection(self, conn_type, source, sink):
         if conn_type == 'net':

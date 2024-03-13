@@ -1047,7 +1047,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
 
 
     # Ask how many (global) m_axis connections are in the user app region.
-    num_slave_m_axis_global = len(getInterfaces(tcl_user_app.fpga, 'm_axis', 'scope', 'global'))
+    num_slave_m_axis_global = len(getInterfaces(tcl_user_app.fpga, 'm_axis', 'scope', 'global'))+1
     if num_slave_m_axis_global == 0:
         # TODO: CHANGE TO VIP FOR 0 SLAVES
         tcl_user_app.instBlock(
@@ -1276,59 +1276,62 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
         "CONFIG.TID_WIDTH {8}",
         "CONFIG.TUSER_WIDTH {16}"
     ]
-    if len(m_axis_array) == 1:
-        if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
-            instName = m_axis_array[0]['kernel_inst']['inst']
-            portName = instName.split('/')[-1] + "_SAXIS"
-            tcl_user_app.add_axis_port(portName, 'Slave')
-            tcl_user_app.setPortProperties(portName,AXIS_PROPERTIES)
-            # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
-            tcl_user_app.makeConnection(
-                    'intf',
-                    {
-                    'type':'intf_port',
-                    'port_name': portName
-                    },
-                    {
-                    'name':'applicationRegion/custom_switch_inst',
-                    'type':'intf',
-                    'port_name':'stream_in'
-                    }
-                    )
-    elif len(m_axis_array) > 1:
-        for idx, m_axis in enumerate(m_axis_array):
-            instName = m_axis['kernel_inst']['inst']
-            portName = instName.split('/')[-1] + "_SAXIS"
-            tcl_user_app.add_axis_port(portName, 'Slave')
-            tcl_user_app.setPortProperties(portName, AXIS_PROPERTIES)
-            idx_str = "%02d"%idx
-            tcl_user_app.makeConnection(
-                    'intf',
-                    {
-                    'type':'intf_port',
-                    'port_name': portName
-                    },
-                    {
-                    'name':'applicationRegion/output_switch',
-                    'type':'intf',
-                    'port_name':'S'+ idx_str + '_AXIS'
-                    }
-                    )
-        if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
-            # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
-            tcl_user_app.makeConnection(
+    for idx, m_axis in enumerate(m_axis_array):
+        instName = m_axis['kernel_inst']['inst']
+        ht_name = instName.split('/')[-1]
+        portName = ht_name + "_SAXIS"
+        tcl_user_app.add_axis_port(portName, 'Slave')
+        tcl_user_app.setPortProperties(portName, AXIS_PROPERTIES)
+        idx_str = "%02d"%idx
+        tcl_user_app.instModule(
+            {
+                'name': 'ht_marker',
+                'inst': 'applicationRegion/ht_'+ht_name,
+                'clks': ['clk'],
+                'resetns_port': 'rst',
+                'resetns': ['resetn']
+            }
+        )
+        tcl_user_app.makeConnection(
+            'intf',
+            {
+                'type': 'intf_port',
+                'port_name': portName
+            },
+            {
+                'name': 'applicationRegion/ht_'+ht_name,
+                'type': 'intf',
+                'port_name': 'usr'
+            }
+        )
+        tcl_user_app.makeConnection(
                 'intf',
                 {
-                    'name':'applicationRegion/output_switch',
-                    'type':'intf',
-                    'port_name':'M00_AXIS'
+                'name': 'applicationRegion/ht_' + ht_name,
+                'type': 'intf',
+                'port_name': 'gal'
                 },
                 {
-                    'name':'applicationRegion/custom_switch_inst',
-                    'type':'intf',
-                    'port_name':'stream_in'
+                'name':'applicationRegion/output_switch',
+                'type':'intf',
+                'port_name':'S'+ idx_str + '_AXIS'
                 }
-            )
+                )
+    if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
+        # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
+        tcl_user_app.makeConnection(
+            'intf',
+            {
+                'name':'applicationRegion/output_switch',
+                'type':'intf',
+                'port_name':'M00_AXIS'
+            },
+            {
+                'name':'applicationRegion/custom_switch_inst',
+                'type':'intf',
+                'port_name':'stream_in'
+            }
+        )
 
 
     # Now handle the control interfaces
@@ -2347,6 +2350,7 @@ if { ! [info exists default_dir] } {\n\
 }\n\
 "
     )
+    tclMain.tprint("add_files -norecurse " + galapagos_path + "/middleware/verilog/ht_marker.v\nupdate_compile_order -fileset sources_1")
     tclMain.tprint("add_files -norecurse "+outDir+"/topLevel.v\nupdate_compile_order -fileset sources_1")
     tclMain.addSource(galapagos_path + '/shells/tclScripts/helper_functions.tcl')
     if fpga['board'] == 'sidewinder':
