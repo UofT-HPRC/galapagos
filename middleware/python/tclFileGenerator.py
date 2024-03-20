@@ -1282,7 +1282,7 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
         portName = ht_name + "_SAXIS"
         tcl_user_app.add_axis_port(portName, 'Slave')
         tcl_user_app.setPortProperties(portName, AXIS_PROPERTIES)
-        idx_str = "%02d"%idx
+        idx_str = "%02d"%(idx+1)
         tcl_user_app.instModule(
             {
                 'name': 'ht_marker',
