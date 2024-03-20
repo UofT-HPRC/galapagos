@@ -22,7 +22,7 @@ HLSMIDDLEWARE_DIR = $(GALAPAGOS_PATH)/middleware/hls
 
 .PHONY: middleware
 
-all: hlsmiddleware middleware
+all: hlsmiddleware oldhls middleware
 
 example_shell:
 	mkdir -p $(GALAPAGOS_PATH)/projects
