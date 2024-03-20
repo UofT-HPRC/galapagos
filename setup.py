@@ -38,6 +38,7 @@ parser = argparse.ArgumentParser(description='Galapagos Menu')
 parser.add_argument("-d", "--dir", help="absolute path where galapagos directory is located", default='')
 parser.add_argument("-vd", "--vit_dir", help="absolute path of vitis", default='')
 parser.add_argument("-hd", "--hls_dir", help="absolute path of vitis_hls", default='')
+parser.add_argument("-ohd", "--viv_hls_dir", help="absolute path of vivado_hls", default='')
 parser.add_argument("-pn", "--par_name", help="set part name", default='')
 parser.add_argument("-bn", "--boa_name", help="set board name", default='')
 
@@ -61,6 +62,11 @@ hls_path_q = {
           'type': 'input',
           'name': 'hls_dir',
           'message': 'What is the directory vitis_hls is located? (default=/mnt/shares/tools/Xilinx/Vitis)',
+          }
+viv_hls_path_q = {
+          'type': 'input',
+          'name': 'viv_hls_dir',
+          'message': 'What is the directory vivado_hls is located? (default=/mnt/shares/tools/Xilinx/Vivado)',
           }
 
 par_name_q = {
@@ -93,6 +99,11 @@ if(args.hls_dir == ''):
     hls_dir = ''
 else:
     hls_dir = args.hls_dir
+if(args.viv_hls_dir == ''):
+    questions.append(viv_hls_path_q)
+    viv_hls_dir = ''
+else:
+    viv_hls_dir = args.viv_hls_dir
 
 vitis_ver = '2023.1'
 
@@ -122,6 +133,9 @@ if answers['vitis_dir'] == '':
 if answers['hls_dir'] == '':
     answers['hls_dir'] = '/mnt/shares/tools/Xilinx/Vitis'
 
+if answers['viv_hls_dir'] == '':
+    answers['viv_hls_dir'] = '/mnt/shares/tools/Xilinx/Vivado'
+
 
 if answers['par_name'] == '':
     answers['par_name'] = 'xczu19eg-ffvc1760-2-i'
@@ -136,6 +150,7 @@ env_var = {'GALAPAGOS_PATH': answers['galapagos_dir'],
            'GALAPAGOS_HLS_PATH' : answers['hls_dir'],
            'GALAPAGOS_VITIS_VERSION' : '2023.1',
            'GALAPAGOS_HLS_VERSION' : '2023.1',
+           'GALAPAGOS_VIV_HLS_VERSION' : '2018.3',
            'GALAPAGOS_PART': answers['par_name'],
            'GALAPAGOS_BOARD_NAME': answers['boa_name']
         }
@@ -143,6 +158,8 @@ env_var = {'GALAPAGOS_PATH': answers['galapagos_dir'],
 pprint(env_var)
 
 out_file = open("my_init.sh", "w") 
+
+out_file.write("source "+answers['viv_hls_dir'] +"/2018.3/settings64.sh\n" )
 
 out_file.write("source init.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['hls_dir'] + ' 2023.1 2023.1 ' + answers['par_name'] + ' ' + answers['boa_name'] )
 
