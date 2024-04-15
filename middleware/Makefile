@@ -18,6 +18,7 @@ include $(GALAPAGOS_PATH)/include.mk
 middleware_path = $(GALAPAGOS_PATH)/middleware
 hls_path = $(middleware_path)/hls
 old_hls_path = $(middleware_path)/old_hls
+ctrl_path = $(middleware_path)/control_api/src
 python_path = $(middleware_path)/python
 
 .PHONY: middleware
@@ -42,9 +43,19 @@ apiquery: guard-APIFILE guard-PROJECTNAME ${APIFILE}
 hlsmiddleware:
 	 $(MAKE) -C $(hls_path)
 
+oldhls:
+	$(MAKE) -C $(old_hls_path)
+
+ctrlmiddleware:
+	$(MAKE) -C $(ctrl_path) all_ip
+
+clean_ctrl:
+	$(MAKE) -C $(ctrl_path) clean
+
 clean: guard-PROJECTNAME
 	 $(MAKE) -C $(hls_path) clean
 	$(MAKE) -C $(old_hls_path) clean
+	$(MAKE) -C $(ctrl_path) clean
 	 rm -rf ${GALAPAGOS_PATH}/projects/${PROJECTNAME}
 	 rm -rf ${GALAPAGOS_PATH}/createCluster.sh
 	 rm -rf ${GALAPAGOS_PATH}/createSim.sh
