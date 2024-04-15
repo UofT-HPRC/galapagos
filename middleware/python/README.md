@@ -21,18 +21,3 @@ This folder contains Python scripts used to demonstrate the framework, and the P
 
 # tclMeFile API
 - Full details are found in the `tclMe.py` file
-- `tcl_user_app.instBlock(ip)`:
-- `tcl_user_app.instModule(ip)`:
-- `tcl_user_app.makeConnection(conn_type, source, sink)`: Connects ports from source and destination together
-  - `conn_type`: 'net' or 'intf' depending on if net or interface connection
-  - `source/destination`: Dictionary that describes the source or destination with the following fields:
-    - 'name': Module name
-    - 'type': should match 'net' or 'intf' from above
-    - 'port_name': Name of the port to be connected
-    - eg. `{'name':'applicationRegion/custom_switch_inst', 'type':'intf', 'port_name':'network_table_PORTA'}`
-- `tcl_user_app.setProperties(inst_name, properties)`: Sets the properties for the specified module
-  - `inst_name`: Name of the module Eg. `applicationRegion/blk_mem_switch_rom`
-  - `properties`: List of properties in TCL format (same syntax as seen in TCL console)
-    - eg. `properties = ['CONFIG.Memory_Type {Single_Port_ROM}','CONFIG.Enable_32bit_Address {true}']` (exact commands as seen in a TCL console)
-- `tcl_user_app.setPortProperties(inst_name, properties)`:
-- `tcl_user_app.setGeneralProperties(inst_name, properties)`: Used to 
