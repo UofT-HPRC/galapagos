@@ -11,20 +11,20 @@ add_files -norecurse $top_path/middleware/verilog/receptionist.v
 update_compile_order -fileset sources_1
 create_bd_cell -type module -reference receptionist network/receptionist
 
-create_bd_cell -type ip -vlnv clarkshen.com:user:GULF_Stream network/GULF_Stream_0
-create_bd_cell -type ip -vlnv xilinx.com:hls:network_bridge_udp_100g network/network_bridge_udp_1_0
-create_bd_cell -type ip -vlnv xilinx.com:hls:gulf_input_switch:1.0 network/gulf_input_switch_0
-create_bd_cell -type ip -vlnv xilinx.com:ip:axis_data_fifo:2.0 network/fifo_gulf
-create_bd_cell -type ip -vlnv xilinx.com:ip:axis_switch:1.1 network/direct_ip_switch
-create_bd_cell -type ip -vlnv xilinx.com:ip:axis_switch:1.1 network/direct_ip_rx_switch
-create_bd_cell -type ip -vlnv xilinx.com:ip:axis_data_fifo:2.0 network/fetch_clock_converter
+addip GULF_Stream network/GULF_Stream_0
+addip network_bridge_udp_100g network/network_bridge_udp_1_0
+addip gulf_input_switch network/gulf_input_switch_0
+addip axis_data_fifo network/fifo_gulf
+addip axis_switch network/direct_ip_switch
+addip axis_switch network/direct_ip_rx_switch
+addip axis_data_fifo network/fetch_clock_converter
 
 set_property -dict [list CONFIG.IP_ADDR $ip_addr] [get_bd_cells network/GULF_Stream_0]
 set_property -dict [list CONFIG.GATEWAY $ip_gateway] [get_bd_cells network/GULF_Stream_0]
 set_property -dict [list CONFIG.MAC_ADDR $mac_addr] [get_bd_cells network/GULF_Stream_0]
 set_property -dict [list CONFIG.NETMASK $net_mask] [get_bd_cells network/GULF_Stream_0]
-create_bd_cell -type ip -vlnv clarkshen.com:user:axis_endianness_converter network/axis_endianness_conv_0
-create_bd_cell -type ip -vlnv clarkshen.com:user:axis_endianness_converter network/axis_endianness_conv_1
+addip axis_endianness_converter network/axis_endianness_conv_0
+addip axis_endianness_converter network/axis_endianness_conv_1
 set_property -dict [list CONFIG.DATA_WIDTH {512}] [get_bd_cells network/axis_endianness_conv_0]
 set_property -dict [list CONFIG.DATA_WIDTH {512}] [get_bd_cells network/axis_endianness_conv_1]
 set_property -dict [list CONFIG.HAS_KEEP {true} CONFIG.HAS_LAST {true} CONFIG.HAS_READY {true}] [get_bd_cells network/axis_endianness_conv_0]
