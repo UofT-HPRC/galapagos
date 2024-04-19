@@ -1,0 +1,10 @@
+#ifndef PACKET_SIZE_H
+#define PACKET_SIZE_H
+
+# define PACKET_DATA_LENGTH 512 
+# define PACKET_KEEP_LENGTH 64
+# define PACKET_LAST
+# define PACKET_USER_LENGTH 16
+# define PACKET_DEST_LENGTH 32
+
+#endif

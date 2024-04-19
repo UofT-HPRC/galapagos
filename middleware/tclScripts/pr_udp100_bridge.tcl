@@ -1,5 +1,9 @@
 #comment out when running full script
 #create_bd_cell -type hier network
+source $top_path/middleware/tclScripts/pr_fetch_bypass.tcl
+
+connect_bd_net [get_bd_pins dns_server_info/dout] [get_bd_pins network/fetch/dns_addr]
+
 set netBridge_from_app S_AXIS 
 set netBridge_to_app M_AXIS
 
@@ -13,6 +17,7 @@ create_bd_cell -type ip -vlnv xilinx.com:hls:gulf_input_switch:1.0 network/gulf_
 create_bd_cell -type ip -vlnv xilinx.com:ip:axis_data_fifo:2.0 network/fifo_gulf
 create_bd_cell -type ip -vlnv xilinx.com:ip:axis_switch:1.1 network/direct_ip_switch
 create_bd_cell -type ip -vlnv xilinx.com:ip:axis_switch:1.1 network/direct_ip_rx_switch
+create_bd_cell -type ip -vlnv xilinx.com:ip:axis_data_fifo:2.0 network/fetch_clock_converter
 
 set_property -dict [list CONFIG.IP_ADDR $ip_addr] [get_bd_cells network/GULF_Stream_0]
 set_property -dict [list CONFIG.GATEWAY $ip_gateway] [get_bd_cells network/GULF_Stream_0]
@@ -31,22 +36,34 @@ set_property -dict [list \
   CONFIG.ARB_ON_TLAST {1} \
   CONFIG.HAS_TLAST {1} \
   CONFIG.M00_AXIS_HIGHTDEST {0xFFFFFFFF} \
+  CONFIG.NUM_SI {3} \
 ] [get_bd_cells network/direct_ip_switch]
 
 set_property -dict [list \
+  CONFIG.NUM_MI {3} \
   CONFIG.M00_AXIS_BASETDEST {0x0} \
-  CONFIG.M00_AXIS_HIGHTDEST {0x7530} \
+  CONFIG.M00_AXIS_HIGHTDEST {0x2328} \
   CONFIG.M01_AXIS_BASETDEST {0x7531} \
   CONFIG.M01_AXIS_HIGHTDEST {0xFFFFFFFF} \
+  CONFIG.M02_AXIS_BASETDEST {0x2329} \
+  CONFIG.M02_AXIS_HIGHTDEST {0x2329} \
   CONFIG.NUM_SI {1} \
 ] [get_bd_cells network/direct_ip_rx_switch]
+
+set_property -dict [list \
+  CONFIG.FIFO_DEPTH {32} \
+  CONFIG.IS_ACLK_ASYNC {1} \
+] [get_bd_cells network/fetch_clock_converter]
 
 connect_bd_intf_net [get_bd_intf_pins network/axis_endianness_conv_0/s_axis] [get_bd_intf_pins network/GULF_Stream_0/payload_to_user]
 connect_bd_intf_net [get_bd_intf_pins network/axis_endianness_conv_0/m_axis] [get_bd_intf_pins network/receptionist/gulf]
 connect_bd_intf_net [get_bd_intf_pins network/receptionist/gal] [get_bd_intf_pins network/direct_ip_rx_switch/S00_AXIS]
 connect_bd_intf_net [get_bd_intf_pins network/direct_ip_rx_switch/M00_AXIS] [get_bd_intf_pins network/network_bridge_udp_1_0/lbRxDataIn]
+connect_bd_intf_net [get_bd_intf_pins network/direct_ip_rx_switch/M02_AXIS] [get_bd_intf_pins network/fetch_clock_converter/S_AXIS]
+connect_bd_intf_net [get_bd_intf_pins network/fetch_clock_converter/M_AXIS] -boundary_type upper [get_bd_intf_pins network/fetch/in_network]
 connect_bd_intf_net [get_bd_intf_pins network/direct_ip_switch/M00_AXIS] [get_bd_intf_pins network/fifo_gulf/S_AXIS]
 connect_bd_intf_net [get_bd_intf_pins network/network_bridge_udp_1_0/lbTxDataOut] [get_bd_intf_pins network/direct_ip_switch/S01_AXIS]
+connect_bd_intf_net [get_bd_intf_pins network/fetch/Net_TX] [get_bd_intf_pins network/direct_ip_switch/S02_AXIS]
 connect_bd_intf_net [get_bd_intf_pins network/fifo_gulf/M_AXIS] [get_bd_intf_pins network/gulf_input_switch_0/in_network_V]
 connect_bd_intf_net [get_bd_intf_pins network/gulf_input_switch_0/out_V] [get_bd_intf_pins network/axis_endianness_conv_1/s_axis]
 connect_bd_intf_net [get_bd_intf_pins network/axis_endianness_conv_1/m_axis] [get_bd_intf_pins network/GULF_Stream_0/payload_from_user]
@@ -70,13 +87,13 @@ connect_bd_net [get_bd_pins network/gulf_input_switch_0/out_source_prt_V] [get_b
 
 create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic network/not_aresetn
 set_property -dict [list CONFIG.C_OPERATION {not} CONFIG.LOGO_FILE {data/sym_notgate.png}] [get_bd_cells network/not_aresetn]
-connect_bd_net [get_bd_ports rst300] [get_bd_pins network/not_aresetn/Op1]
+connect_bd_net [get_bd_ports rstn300] [get_bd_pins network/not_aresetn/Op1]
 connect_bd_net [get_bd_pins network/GULF_Stream_0/rst] [get_bd_pins network/not_aresetn/Res]
-connect_bd_net [get_bd_ports rst300] [get_bd_pins network/network_bridge_udp_1_0/ap_rst_n]
-connect_bd_net [get_bd_ports rst300] [get_bd_pins network/gulf_input_switch_0/aresetn]
+connect_bd_net [get_bd_ports rstn300] [get_bd_pins network/network_bridge_udp_1_0/ap_rst_n]
+connect_bd_net [get_bd_ports rstn300] [get_bd_pins network/gulf_input_switch_0/aresetn]
 
-connect_bd_net [get_bd_pins network/CLK300] [get_bd_pins network/direct_ip_rx_switch/aclk]
-connect_bd_net [get_bd_pins network/rst300] [get_bd_pins network/direct_ip_rx_switch/aresetn]
+connect_bd_net [get_bd_ports CLK300] [get_bd_pins network/direct_ip_rx_switch/aclk]
+connect_bd_net [get_bd_ports rstn300] [get_bd_pins network/direct_ip_rx_switch/aresetn]
 
 create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen network/blk_mem_bridge_rom
 #set_property -dict [list CONFIG.Memory_Type {Dual_Port_ROM} CONFIG.Enable_32bit_Address {false} CONFIG.Use_Byte_Write_Enable {false} CONFIG.Byte_Size {9} CONFIG.Enable_B {Use_ENB_Pin} CONFIG.Register_PortA_Output_of_Memory_Primitives {true} CONFIG.Register_PortB_Output_of_Memory_Primitives {true} CONFIG.Use_RSTA_Pin {false} CONFIG.Use_RSTB_Pin {false} CONFIG.Port_A_Write_Rate {0} CONFIG.Port_B_Clock {100} CONFIG.Port_B_Enable_Rate {100} CONFIG.use_bram_block{Stand_Alone} CONFIG.EN_SAFETY_CKT {false}] [get_bd_cells network/blk_mem_bridge_rom]
@@ -136,20 +153,25 @@ connect_bd_intf_net [get_bd_intf_pins network/network_bridge_inst/axis_data_fifo
 #connect_bd_intf_net [get_bd_intf_pins network/network_bridge_inst/axis_data_fifo_0_1/M_AXIS] [get_bd_intf_pins network/network_bridge_udp_1_0/rxGalapagosBridge]
 connect_bd_net [get_bd_ports CLK] [get_bd_pins network/network_bridge_inst/axis_data_fifo_0/s_axis_aclk]
 connect_bd_net [get_bd_ports CLK300] [get_bd_pins network/network_bridge_inst/axis_data_fifo_0/m_axis_aclk]
-connect_bd_net [get_bd_ports rst] [get_bd_pins network/network_bridge_inst/axis_data_fifo_0/s_axis_aresetn]
+connect_bd_net [get_bd_ports rstn] [get_bd_pins network/network_bridge_inst/axis_data_fifo_0/s_axis_aresetn]
 connect_bd_net [get_bd_ports CLK] [get_bd_pins network/network_bridge_inst/axis_data_fifo_0_1/s_axis_aclk]
-connect_bd_net [get_bd_ports rst] [get_bd_pins network/network_bridge_inst/axis_data_fifo_0_1/s_axis_aresetn]
-connect_bd_net [get_bd_pins network/CLK300] [get_bd_pins network/fifo_gulf/s_axis_aclk]
-connect_bd_net [get_bd_pins network/rst300] [get_bd_pins network/fifo_gulf/s_axis_aresetn]
-connect_bd_net [get_bd_pins network/CLK300] [get_bd_pins network/direct_ip_switch/aclk]
-connect_bd_net [get_bd_pins network/rst300] [get_bd_pins network/direct_ip_switch/aresetn]
-connect_bd_net [get_bd_pins network/CLK300] [get_bd_pins network/receptionist/clk]
-connect_bd_net [get_bd_pins network/rst300] [get_bd_pins network/receptionist/resetn]
+connect_bd_net [get_bd_ports rstn] [get_bd_pins network/network_bridge_inst/axis_data_fifo_0_1/s_axis_aresetn]
+connect_bd_net [get_bd_ports CLK300] [get_bd_pins network/fifo_gulf/s_axis_aclk]
+connect_bd_net [get_bd_ports rstn300] [get_bd_pins network/fifo_gulf/s_axis_aresetn]
+connect_bd_net [get_bd_ports CLK300] [get_bd_pins network/direct_ip_switch/aclk]
+connect_bd_net [get_bd_ports rstn300] [get_bd_pins network/direct_ip_switch/aresetn]
+connect_bd_net [get_bd_ports CLK300] [get_bd_pins network/receptionist/clk]
+connect_bd_net [get_bd_ports rstn300] [get_bd_pins network/receptionist/resetn]
+
+connect_bd_net [get_bd_ports CLK300] [get_bd_pins network/fetch_clock_converter/s_axis_aclk]
+connect_bd_net [get_bd_ports rstn300] [get_bd_pins network/fetch_clock_converter/s_axis_aresetn]
+connect_bd_net [get_bd_ports CLK] [get_bd_pins network/fetch_clock_converter/m_axis_aclk]
+
 
 connect_bd_intf_net [get_bd_intf_pins network/network_bridge_inst/axis_data_fifo_1/S_AXIS] [get_bd_intf_pins network/network_bridge_udp_1_0/txGalapagosBridge]
 connect_bd_intf_net [get_bd_intf_pins network/network_bridge_inst/axis_data_fifo_1/M_AXIS] [get_bd_intf_pins network/network_bridge_inst/axis_data_fifo_1_1/S_AXIS]
 connect_bd_net [get_bd_ports CLK300] [get_bd_pins network/network_bridge_inst/axis_data_fifo_1/s_axis_aclk]
 connect_bd_net [get_bd_ports CLK] [get_bd_pins network/network_bridge_inst/axis_data_fifo_1/m_axis_aclk]
-connect_bd_net [get_bd_ports rst300] [get_bd_pins network/network_bridge_inst/axis_data_fifo_1/s_axis_aresetn]
+connect_bd_net [get_bd_ports rstn300] [get_bd_pins network/network_bridge_inst/axis_data_fifo_1/s_axis_aresetn]
 connect_bd_net [get_bd_ports CLK] [get_bd_pins network/network_bridge_inst/axis_data_fifo_1_1/s_axis_aclk]
-connect_bd_net [get_bd_ports rst] [get_bd_pins network/network_bridge_inst/axis_data_fifo_1_1/s_axis_aresetn]
+connect_bd_net [get_bd_ports rstn] [get_bd_pins network/network_bridge_inst/axis_data_fifo_1_1/s_axis_aresetn]

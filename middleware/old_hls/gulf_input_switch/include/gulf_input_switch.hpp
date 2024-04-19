@@ -3,7 +3,6 @@
 
 #define INTERFACE_100G
 #include "wan_packet.h"
-#include "wan_packet_size.h"
 
 #define ARP_STATUS_VALID 0
 #define ARP_STATUS_WORKING 1

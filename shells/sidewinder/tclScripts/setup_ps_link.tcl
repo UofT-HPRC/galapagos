@@ -32,7 +32,7 @@ connect_bd_net [get_bd_pins ps_sector/CLK_200_RES/interconnect_aresetn] [get_bd_
 connect_bd_net [get_bd_pins ps_sector/CLK_200_RES/interconnect_aresetn] [get_bd_pins ps_sector/PS_to_PL_AXI/S00_ARESETN]
 connect_bd_net [get_bd_pins ps_sector/CLK_200_RES/interconnect_aresetn] [get_bd_pins ps_sector/PS_to_PL_AXI/M00_ARESETN]
 connect_bd_net [get_bd_pins ps_sector/CLK_200_RES/interconnect_aresetn] [get_bd_pins ps_sector/PS_to_PL_AXI/M01_ARESETN]
-connect_bd_net [get_bd_pins ps_sector/CLK_200_RES/interconnect_aresetn] [get_bd_pins ps_sector/rst]
+connect_bd_net [get_bd_pins ps_sector/CLK_200_RES/interconnect_aresetn] [get_bd_pins ps_sector/rstn]
 
 #Connect Interfaces
 

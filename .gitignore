@@ -8,3 +8,5 @@ vivado_*
 vivado.log
 vivado.jou
 vitis_hls.log
+vivado_hls.log
+middleware/python/.idea/*

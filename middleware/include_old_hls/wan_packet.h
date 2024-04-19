@@ -6,6 +6,8 @@
 #define INTERFACE_100G
 #include "wan_packet_size.h"
 
+#define WAN_SRC_PORT            9001
+#define FETCH_DEST_ADDRESS      9001
 
 #if(PACKET_DATA_LENGTH == 64)
 #define KEEP_ALL 0xff
@@ -24,9 +26,6 @@ namespace galapagos{
 #endif
 #ifdef PACKET_LAST
         ap_uint <1> last;
-#endif
-#ifdef PACKET_DEST_LENGTH
-        ap_uint <PACKET_DEST_LENGTH> id;
 #endif
 #ifdef PACKET_USER_LENGTH
         ap_uint <PACKET_USER_LENGTH> user;
@@ -58,9 +57,6 @@ namespace galapagos{
 #ifdef PACKET_LAST
         ap_uint <1> last;
 #endif
-#ifdef PACKET_DEST_LENGTH
-        ap_uint <PACKET_DEST_LENGTH> id;
-#endif
 #ifdef PACKET_USER_LENGTH
 #if PACKET_USER_LENGTH > 0
         ap_uint <PACKET_USER_LENGTH> user;
@@ -78,6 +74,17 @@ namespace galapagos{
 
 typedef galapagos::stream_packet<PACKET_DATA_LENGTH> galapagos_packet;
 typedef hls::stream<galapagos_packet> galapagos_interface;
+
+template<int D>
+struct ap_axis_net{
+	ap_uint <D> data;
+    ap_uint<D/8> keep;
+	ap_uint<1> last;
+	ap_uint<PACKET_USER_LENGTH> user;
+
+};
+
+typedef ap_axis_net<PACKET_DATA_LENGTH> netStream;
 
 // Interface to communicate with GULF-Stream
 struct axis_gulfstream_t{
@@ -124,20 +131,20 @@ typedef hls::stream<fetch_bin_reply> fetch_bin_reply_interface;
 
 struct axis_gulfstream_extend_t{
 	ap_uint<512>		data;
-  ap_uint<64>    user;
-	ap_uint<64>		keep;
-	ap_uint<1>		last;
+	ap_uint<64>         user;
+	ap_uint<64>         keep;
+	ap_uint<1>          last;
 };
 typedef hls::stream<axis_gulfstream_extend_t> gulfstream_interface_extend;
 
-inline ap_uint<PACKET_DATA_LENGTH> get_header(ap_uint<PACKET_DEST_LENGTH> _id, ap_uint<PACKET_DEST_LENGTH> _dest, ap_uint<PACKET_USER_LENGTH> _size){
+inline ap_uint<PACKET_DATA_LENGTH> get_header(ap_uint<PACKET_DEST_LENGTH> _dest, ap_uint<PACKET_USER_LENGTH> _size){
 #pragma HLS INLINE
 
     ap_uint<PACKET_DATA_LENGTH> retVal;
 
     retVal.range(PACKET_DATA_LENGTH - 1,PACKET_DEST_LENGTH+PACKET_DEST_LENGTH+PACKET_USER_LENGTH) = 0; //unused
     retVal.range(PACKET_DEST_LENGTH+PACKET_DEST_LENGTH+PACKET_USER_LENGTH-1, PACKET_DEST_LENGTH+PACKET_USER_LENGTH) = _dest; //unused
-    retVal.range(PACKET_DEST_LENGTH+PACKET_USER_LENGTH-1, PACKET_USER_LENGTH) = _id;
+    retVal.range(PACKET_DEST_LENGTH+PACKET_USER_LENGTH-1, PACKET_USER_LENGTH) = 0;
     //retVal.range(PACKET_USER_LENGTH - 1, 0) = _size << 3; //length in bytes
     retVal.range(PACKET_USER_LENGTH - 1, 0) = _size; //length in words
 

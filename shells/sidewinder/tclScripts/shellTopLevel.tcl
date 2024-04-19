@@ -8,21 +8,21 @@ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 eth_tx
 
 create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 S_AXI_CONTROL
 
-create_bd_port -dir O -type rst rst
-create_bd_port -dir O -type rst rst300
+create_bd_port -dir O -type rst rstn
+create_bd_port -dir O -type rst rstn300
 create_bd_port -dir O -type clk CLK
 create_bd_port -dir O -type clk CLK300
 
 startgroup
-set_property CONFIG.ASSOCIATED_RESET {rst} [get_bd_ports /CLK]
-set_property CONFIG.ASSOCIATED_RESET {rst300} [get_bd_ports /CLK300]
+set_property CONFIG.ASSOCIATED_RESET {rstn} [get_bd_ports /CLK]
+set_property CONFIG.ASSOCIATED_RESET {rstn300} [get_bd_ports /CLK300]
 endgroup
 
 #configure external ports
 
 set_property CONFIG.FREQ_HZ 322265625 [get_bd_intf_ports /gt_ref]
 set_property CONFIG.FREQ_HZ 200000000 [get_bd_intf_ports /init_clk]
-set_property CONFIG.ASSOCIATED_RESET {rst} [get_bd_ports /CLK]
+set_property CONFIG.ASSOCIATED_RESET {rstn} [get_bd_ports /CLK]
 
 set_property CONFIG.DATA_WIDTH 128 [get_bd_intf_ports /S_AXI_CONTROL]
 set_property CONFIG.ADDR_WIDTH 40 [get_bd_intf_ports /S_AXI_CONTROL]
@@ -44,7 +44,7 @@ create_bd_cell -type hier ethernet
 #Add ports to the hierarchies
 create_bd_pin -dir O ps_sector/CLK_200
 create_bd_pin -dir O ps_sector/ARESETN
-create_bd_pin -dir O ps_sector/rst
+create_bd_pin -dir O ps_sector/rstn
 
 create_bd_pin -dir O ethernet/CLK_322
 create_bd_pin -dir O ethernet/rst_322
@@ -65,9 +65,9 @@ connect_bd_net [get_bd_pins ethernet/CLK_322] [get_bd_ports CLK300]
 
 connect_bd_net [get_bd_pins ps_sector/CLK_200] [get_bd_ports CLK]
 
-connect_bd_net [get_bd_pins ps_sector/rst] [get_bd_ports rst]
+connect_bd_net [get_bd_pins ps_sector/rstn] [get_bd_ports rstn]
 
-connect_bd_net [get_bd_pins ethernet/rst_322] [get_bd_ports rst300]
+connect_bd_net [get_bd_pins ethernet/rst_322] [get_bd_ports rstn300]
 
 connect_bd_net [get_bd_pins ps_sector/ARESETN] [get_bd_pins ethernet/ARESETN] -boundary_type upper
 

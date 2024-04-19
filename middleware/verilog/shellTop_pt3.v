@@ -2,7 +2,7 @@
   
   
   pr pr_i
-    (.rst(rst)
-    ,.rst300(rst300)
+    (.rstn(rstn)
+    ,.rstn300(rstn300)
      ,.CLK(CLK)
      ,.CLK300(CLK300)

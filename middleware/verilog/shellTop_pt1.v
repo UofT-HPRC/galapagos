@@ -13,8 +13,8 @@ module shellTop
   input [0:0]init_clk_n;
   input [0:0]init_clk_p;
 
-  wire rst;
-  wire rst300;
+  wire rstn;
+  wire rstn300;
   wire CLK;
   wire CLK300;
 

@@ -23,8 +23,9 @@ def createHierarchyTCL(outFile,kernel_names,ctrl_ports_list):
             file_contents = file_contents +"create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 AXI_CONTROL\n"
         file_contents = file_contents + "create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 RX_AXIS\n"
         file_contents = file_contents + "create_bd_intf_port -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 TX_AXIS\n"
+        file_contents = file_contents + "create_bd_intf_port -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 TX_WAN_AXIS\n"
         file_contents = file_contents + "create_bd_port -dir I -type clk -freq_hz 199498000 CLK\n"
-        file_contents = file_contents + "create_bd_port -dir I -type rst rst\nset_property CONFIG.ASSOCIATED_RESET {rst} [get_bd_ports /CLK]\n"
+        file_contents = file_contents + "create_bd_port -dir I -type rst rstn\nset_property CONFIG.ASSOCIATED_RESET {rstn} [get_bd_ports /CLK]\n"
         file_contents = file_contents + "set_property -dict [ list CONFIG.HAS_TKEEP {1} CONFIG.HAS_TLAST {1} CONFIG.TDEST_WIDTH {24} CONFIG.TDATA_NUM_BYTES {64} CONFIG.TID_WIDTH {24} CONFIG.TUSER_WIDTH {16} ] [get_bd_intf_ports /RX_AXIS]\n"
         file_contents = file_contents + "set_property -dict [ list CONFIG.DATA_WIDTH {128} CONFIG.ADDR_WIDTH {40} CONFIG.ID_WIDTH {16} CONFIG.ARUSER_WIDTH {16} CONFIG.AWUSER_WIDTH {16} ] [get_bd_intf_ports /AXI_CONTROL]\n"
         file_contents = file_contents + "save_bd_design\n"
@@ -64,7 +65,7 @@ def userApplicationRegionControlInst(tcl_user_app,kern_name_list,kern_prop_list)
     if(num_ctrl_interfaces == 0):
         tcl_user_app.instBlock(
                 {'name':'axi_vip',
-                 'resetns_port':'rst',
+                 'resetns_port':'rstn',
                 'inst':'applicationRegion/axi_vip_ctrl',
                 'clks':['aclk'],
                 'resetns':['aresetn'],
@@ -92,7 +93,7 @@ def userApplicationRegionControlInst(tcl_user_app,kern_name_list,kern_prop_list)
         inc_resetns.append('M01_ARESETN')
         tcl_user_app.instBlock(
             {'name': 'axi_interconnect',
-             'resetns_port': 'rst',
+             'resetns_port': 'rstn',
              'inst': 'applicationRegion/axi_interconnect_ctrl',
              'clks': inc_clks,
              'resetns': inc_resetns,
@@ -103,7 +104,7 @@ def userApplicationRegionControlInst(tcl_user_app,kern_name_list,kern_prop_list)
 
         tcl_user_app.instBlock(
             {'name': 'axi_gpio',
-             'resetns_port': 'rst',
+             'resetns_port': 'rstn',
              'inst': 'applicationRegion/dummy_gpio',
              'clks': ['s_axi_aclk'],
              'resetns': ['s_axi_aresetn'],
@@ -195,7 +196,7 @@ def userApplicationRegionControlInst(tcl_user_app,kern_name_list,kern_prop_list)
 
         tcl_user_app.instBlock(
                 {'name':'axi_interconnect',
-                 'resetns_port': 'rst',
+                 'resetns_port': 'rstn',
                 'inst':'applicationRegion/axi_interconnect_ctrl',
                 'clks':inc_clks,
                 'resetns':inc_resetns,
@@ -388,7 +389,7 @@ def userApplicationRegionMemInstLocal(tcl_user_app):
         tcl_user_app.instBlock(
                 {
                 'name':'axi_interconnect',
-                'resetns_port': 'rst',
+                'resetns_port': 'rstn',
                 'inst': m_axi['kernel_inst']['inst'] + '_' + m_axi['name'] + '_inc_inst',
                 'clks': inc_clks,
                 'resetns': inc_resetns,
@@ -484,7 +485,7 @@ def userApplicationRegionMemInstGlobal(tcl_user_app, shared):
                 {
                 'name':'axi_interconnect',
                 'inst':'applicationRegion/axi_interconnect_mem',
-                'resetns_port': 'rst',
+                'resetns_port': 'rstn',
                 'clks':inc_clks,
                 'resetns':inc_resetns,
                 'properties':properties
@@ -591,7 +592,7 @@ def userApplicationRegionKernelsInst(tcl_user_app):
                     'name': kern['name'],
                     'inst':'applicationRegion/' + instName,
                     'clks': kern['clk'],
-                    'resetns_port': 'rst',
+                    'resetns_port': 'rstn',
                     'resetns': kern['aresetn'],
                     'properties': kern['properties']
                     }
@@ -604,7 +605,7 @@ def userApplicationRegionKernelsInst(tcl_user_app):
                     'name': kern['name'],
                     'inst':'applicationRegion/' + instName,
                     'clks': kern['clk'],
-                    'resetns_port': 'rst',
+                    'resetns_port': 'rstn',
                     'resetns': kern['aresetn']
                     }
                     )
@@ -619,7 +620,7 @@ def userApplicationRegionKernelsInst(tcl_user_app):
                     {
                     'name':'xlconstant',
                     'inst': 'applicationRegion/id_' + str(kern['num']),
-                    'resetns_port': 'rst',
+                    'resetns_port': 'rstn',
                     'properties':['CONFIG.CONST_WIDTH {32}',
                         'CONFIG.CONST_VAL {'+ str(kern['num'])+'}']
                     }
@@ -645,7 +646,7 @@ def userApplicationRegionKernelsInst(tcl_user_app):
                 tcl_user_app.instBlock(
                         {
                         'name':'xlconstant',
-                        'resetns_port': 'rst',
+                        'resetns_port': 'rstn',
                         'inst': 'applicationRegion/' + instName + '_' + const['name'],
                         'properties':['CONFIG.CONST_WIDTH {' + str(const['width']) + '}',
                             ' CONFIG.CONST_VAL {'+ str(const['val']) + '}']
@@ -677,17 +678,19 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                       node object and a handle to the output file)
         sim: I still don't really know what this does, exactly
     """
+    #Untested new addition for dns_ip
 
     # I think this is the BRAM which stores the routing table
     if tcl_user_app.fpga['comm'] != 'none':
         # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
         tcl_user_app.instBlock(
-                {
+            {
                 'name':'blk_mem_gen',
-                'resetns_port': 'rst',
-                'inst':'applicationRegion/blk_mem_switch_rom',
-                }
-                )
+                'resetns_port': 'rstn',
+                'inst':'applicationRegion/blk_mem_switch_rom'
+            }
+        )
+
 
     # The next 250 lines of code are a big if-elif-else statement which generate
     # the correct Galapagos router depending on whether the communication type is
@@ -699,7 +702,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
             'name':'hls:router',
             'inst':'applicationRegion/custom_switch_inst',
             'clks':['ap_clk'],
-            'resetns_port': 'rst',
+            'resetns_port': 'rstn',
             'resetns':['ap_rst_n']
             }
             )
@@ -761,7 +764,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                 'inst':'applicationRegion/custom_switch_inst',
                 'clks':['aclk'],
                 'resetns':['aresetn'],
-                'resetns_port': 'rst'
+                'resetns_port': 'rstn'
                 }
                 )
 
@@ -837,7 +840,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
             'name':'axi_bram_ctrl',
             'inst':'applicationRegion/ctrl_blk_mem_switch_rom',
             'clks':['s_axi_aclk'],
-            'resetns_port': 'rst',
+            'resetns_port': 'rstn',
             'resetns':['s_axi_aresetn']
             }
         )
@@ -848,7 +851,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
             {
             'name':'blk_mem_gen',
             'inst':'applicationRegion/blk_mem_switch_rom_mac',
-            'resetns_port': 'rst',
+            'resetns_port': 'rstn',
             }
         )
 
@@ -858,7 +861,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
             'inst':'applicationRegion/ctrl_blk_mem_switch_rom_mac',
             'clks':['s_axi_aclk'],
             'resetns':['s_axi_aresetn'],
-            'resetns_port': 'rst'
+            'resetns_port': 'rstn'
             }
         )
         tcl_user_app.setProperties('applicationRegion/ctrl_blk_mem_switch_rom_mac', ["CONFIG.SINGLE_PORT_BRAM {1}", "CONFIG.DATA_WIDTH {64}"])
@@ -968,7 +971,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                             'inst':'applicationRegion/input_switch',
                             'clks':['aclk'],
                             'resetns':['aresetn'],
-                            'resetns_port': 'rst',
+                            'resetns_port': 'rstn',
                             'properties':['CONFIG.NUM_SI {1}',
                                 'CONFIG.NUM_MI {' + str(num_slave_s_axis_global) + '}',
                                 'CONFIG.ARG_ON_TLAST {1}',
@@ -985,7 +988,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                         'inst':'applicationRegion/input_switch',
                         'clks':['aclk'],
                         'resetns':['aresetn'],
-                        'resetns_port': 'rst',
+                        'resetns_port': 'rstn',
                         'properties':['CONFIG.NUM_SI {2}',
                             'CONFIG.NUM_MI {' + str(num_slave_s_axis_global) + '}',
                             'CONFIG.HAS_TLAST {1}',
@@ -1019,7 +1022,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                     'lib':'hls',
                     'vendor':'xilinx.com',
                     'inst':'applicationRegion/arbiter',
-                    'resetns_port': 'rst',
+                    'resetns_port': 'rstn',
                     'clks':['ap_clk'],
                     'resetns':['ap_rst_n'],
                     }
@@ -1048,49 +1051,57 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
 
     # Ask how many (global) m_axis connections are in the user app region.
     num_slave_m_axis_global = len(getInterfaces(tcl_user_app.fpga, 'm_axis', 'scope', 'global'))+1
-    if num_slave_m_axis_global == 0:
-        # TODO: CHANGE TO VIP FOR 0 SLAVES
-        tcl_user_app.instBlock(
-                {
-                'name':'axis_switch',
-                'inst':'applicationRegion/input_switch',
-                'clks':['aclk'],
-                'resetns':['aresetn'],
-                'resetns_port': 'rst',
-                'properties':['CONFIG.NUM_SI {2}',
-                    'CONFIG.NUM_MI {' + str(num_slave_s_axis_global) + '}',
-                    'CONFIG.ARB_ON_TLAST {1}']
-                }
-
-                )
-    #instantiate switch only if more than one output
-    elif num_slave_m_axis_global > 1:
-        tcl_user_app.instBlock(
-            {
-                'name':'axis_switch',
-                'inst':'applicationRegion/output_switch',
-                'clks':['aclk'],
-                'resetns_port': 'rst',
-                'resetns':['aresetn']
-            }
-        )
-        #Configure the switch to have 1 slave per kernel, 1 master, that it allows all messages through, and arbitrate on TLAST only.
-        properties = [
-            'CONFIG.NUM_SI {' + str(num_slave_m_axis_global) + '}',
-            'CONFIG.NUM_MI {1}',
-            'CONFIG.HAS_TLAST.VALUE_SRC USER',
-            'CONFIG.M00_AXIS_HIGHTDEST {0xffffffff}'
-        ]
-        tcl_user_app.setProperties('applicationRegion/output_switch',properties)
-        properties = [
-            'CONFIG.HAS_TLAST {1}'
-        ]
-        tcl_user_app.setProperties('applicationRegion/output_switch', properties)
-        properties = [
-            'CONFIG.ARB_ON_MAX_XFERS {0}',
-            'CONFIG.ARB_ON_TLAST {1}'
-        ]
-        tcl_user_app.setProperties('applicationRegion/output_switch', properties)
+    tcl_user_app.instBlock(
+        {
+            'name':'axis_switch',
+            'inst':'applicationRegion/output_switch',
+            'clks':['aclk'],
+            'resetns_port': 'rstn',
+            'resetns':['aresetn']
+        }
+    )
+    tcl_user_app.instBlock(
+        {
+            'name': 'axis_switch',
+            'inst': 'applicationRegion/WAN_switch',
+            'clks': ['aclk'],
+            'resetns_port': 'rstn',
+            'resetns': ['aresetn']
+        }
+    )
+    #Configure the switch to have 1 slave per kernel, 1 master, that it allows all messages through, and arbitrate on TLAST only.
+    properties = [
+        'CONFIG.NUM_SI {' + str(num_slave_m_axis_global) + '}',
+        'CONFIG.NUM_MI {1}',
+        'CONFIG.HAS_TLAST.VALUE_SRC USER',
+        'CONFIG.M00_AXIS_HIGHTDEST {0xffffffff}'
+    ]
+    tcl_user_app.setProperties('applicationRegion/output_switch',properties)
+    properties = [
+        'CONFIG.HAS_TLAST {1}'
+    ]
+    tcl_user_app.setProperties('applicationRegion/output_switch', properties)
+    properties = [
+        'CONFIG.ARB_ON_MAX_XFERS {0}',
+        'CONFIG.ARB_ON_TLAST {1}'
+    ]
+    tcl_user_app.setProperties('applicationRegion/output_switch', properties)
+    properties = [
+        'CONFIG.NUM_SI {' + str(num_slave_m_axis_global) + '}',
+        'CONFIG.NUM_MI {1}',
+        'CONFIG.HAS_TLAST.VALUE_SRC USER',
+        'CONFIG.M00_AXIS_HIGHTDEST {0xffffffff}'
+    ]
+    tcl_user_app.setProperties('applicationRegion/WAN_switch', properties)
+    properties = [
+        'CONFIG.HAS_TLAST {1}'
+    ]
+    tcl_user_app.setProperties('applicationRegion/WAN_switch', properties)
+    properties = [
+        'CONFIG.ARB_ON_MAX_XFERS {0}',
+        'CONFIG.ARB_ON_TLAST {1}'
+    ]
+    tcl_user_app.setProperties('applicationRegion/WAN_switch', properties)
 
 
 
@@ -1164,6 +1175,7 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
                     )
             clk_200_intf_config.append(presufix_port_name + "_MAXIS")
             clk_200_intf_config.append(presufix_port_name + "_SAXIS")
+            clk_200_intf_config.append(presufix_port_name + "_SWAN")
             if s_axis['kernel_inst']['control']:
                 clk_200_intf_config.append(presufix_port_name + "_CONTROL")
                 control_port_names_list.append(str(presufix_port_name))
@@ -1204,6 +1216,7 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
             port_names_list.append(str(s_axis_array[0]['name']))
             clk_200_intf_config.append(str(s_axis_array[0]['name']) + "_MAXIS")
             clk_200_intf_config.append(str(s_axis_array[0]['name']) + "_SAXIS")
+            clk_200_intf_config.append(str(s_axis_array[0]['name']) + "_SWAN")
             if s_axis_array[0]['kernel_inst']['control']:
                 clk_200_intf_config.append(str(s_axis_array[0]['name']) + "_CONTROL")
                 control_port_names_list.append(str(s_axis_array[0]['name']))
@@ -1243,6 +1256,7 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
                 port_names_list.append(str(presufix_port_name))
                 clk_200_intf_config.append(str(presufix_port_name) + "_MAXIS")
                 clk_200_intf_config.append(str(presufix_port_name) + "_SAXIS")
+                clk_200_intf_config.append(str(presufix_port_name) + "_SWAN")
                 if s_axis_array[0]['kernel_inst']['control']:
                     clk_200_intf_config.append(str(presufix_port_name) + "_CONTROL")
                     control_port_names_list.append(str(presufix_port_name))
@@ -1259,6 +1273,7 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
                     'port_name':'S01_AXIS'
                     }
                 )
+
     createTopLevelVerilog(outDir + "/topLevel.v", output_path + "/../middleware/python",port_names_list,control_port_names_list)
     createHierarchyTCL(outDir + "/userkernels.tcl",port_names_list,control_port_names_list)
     kern_name_list= port_names_list
@@ -1276,19 +1291,29 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
         "CONFIG.TID_WIDTH {8}",
         "CONFIG.TUSER_WIDTH {16}"
     ]
+    SWAN_PROPERTIES = [
+        "CONFIG.HAS_TLAST {1}",
+        "CONFIG.HAS_TKEEP {1}",
+        "CONFIG.TDATA_NUM_BYTES {64}",
+        "CONFIG.TDEST_WIDTH {32}",
+        "CONFIG.TUSER_WIDTH {16}"
+    ]
     for idx, m_axis in enumerate(m_axis_array):
         instName = m_axis['kernel_inst']['inst']
         ht_name = instName.split('/')[-1]
         portName = ht_name + "_SAXIS"
+        WANportName = ht_name + "_SWAN"
         tcl_user_app.add_axis_port(portName, 'Slave')
+        tcl_user_app.add_axis_port(WANportName, 'Slave')
         tcl_user_app.setPortProperties(portName, AXIS_PROPERTIES)
+        tcl_user_app.setPortProperties(WANportName, SWAN_PROPERTIES)
         idx_str = "%02d"%(idx+1)
         tcl_user_app.instModule(
             {
                 'name': 'ht_marker',
                 'inst': 'applicationRegion/ht_'+ht_name,
                 'clks': ['clk'],
-                'resetns_port': 'rst',
+                'resetns_port': 'rstn',
                 'resetns': ['resetn']
             }
         )
@@ -1316,7 +1341,19 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
                 'type':'intf',
                 'port_name':'S'+ idx_str + '_AXIS'
                 }
-                )
+            )
+        tcl_user_app.makeConnection(
+            'intf',
+            {
+                'type': 'intf_port',
+                'port_name': WANportName
+            },
+            {
+            'name':'applicationRegion/WAN_switch',
+            'type':'intf',
+            'port_name':'S'+ idx_str + '_AXIS'
+            }
+        )
     if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
         # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
         tcl_user_app.makeConnection(
@@ -1332,8 +1369,42 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
                 'port_name':'stream_in'
             }
         )
-
-
+    # Now handle the WAN Sector
+    tcl_user_app.instBlock(
+        {
+            'name': 'WAN_bridge',
+            'inst': 'applicationRegion/WAN_bridge',
+            'clks': ['aclk'],
+            'resetns': ['aresetn'],
+            'resetns_port': 'rstn',
+        }
+    )
+    tcl_user_app.makeConnection(
+        'intf',
+        {
+            'name': 'applicationRegion/WAN_switch',
+            'type': 'intf',
+            'port_name': 'M00_AXIS'
+        },
+        {
+            'name': 'applicationRegion/WAN_bridge',
+            'type': 'intf',
+            'port_name': 'g2N_input_V'
+        }
+    )
+    tcl_user_app.makeConnection(
+        'intf',
+        {
+            'name': 'applicationRegion/WAN_bridge',
+            'type': 'intf',
+            'port_name': 'g2N_output_V'
+        },
+        {
+            'name': 'network/fetch/dispatcher',
+            'type': 'intf',
+            'port_name': 'rxGalapagosBridge_V'
+        }
+    )
     # Now handle the control interfaces
 
     s_axi_array = getInterfaces(tcl_user_app.fpga, 's_axi', 'scope', 'global')
@@ -1416,7 +1487,7 @@ def add_debug_interfaces(outDir, fpga):
                 'inst':'system_ila_inst',
                 'clks':['clk'],
                 'resetns':['resetn'],
-                'resetns_port': 'rst'
+                'resetns_port': 'rstn'
                 }
                 )
 
@@ -1853,6 +1924,17 @@ def netBridgeConstants(tcl_net):
     """
 
     # these constants are unneeded in raw mode
+    ip_addr = tcl_net.fpga['dns_ip'].split(".")
+    ip_addr_val = (int(ip_addr[0])<<24)|(int(ip_addr[1])<<16)|(int(ip_addr[2])<<8)|(int(ip_addr[3]));
+    tcl_net.instBlock(
+        {
+            'name': 'xlconstant',
+            'resetns_port': 'rstn',
+            'inst': 'dns_server_info',
+            'properties': ['CONFIG.CONST_WIDTH {32}',
+                           ' CONFIG.CONST_VAL {'+str(ip_addr_val)+'}']
+        }
+    )
     if tcl_net.fpga['comm'] != "raw":
         ip_addr = tcl_net.fpga['ip'].split(".")
         #tcl_net.write('addip ip_constant_block network/ip_constant_block_inst\n')
@@ -1863,7 +1945,7 @@ def netBridgeConstants(tcl_net):
                 'vendor':'user.org',
                 'lib':'user',
                 'name':'ip_constant_block',
-                'resetns_port': 'rst',
+                'resetns_port': 'rstn',
                 'inst':'network/ip_constant_block_inst'
                 }
                 )
@@ -1900,7 +1982,7 @@ def netBridgeConstants(tcl_net):
             {
                 'name':'xlconstant',
                 'inst': 'network/node_id',
-                'resetns_port': 'rst',
+                'resetns_port': 'rstn',
                 'properties':[
                     'CONFIG.CONST_WIDTH {8}',
                     'CONFIG.CONST_VAL {' + str(tcl_net.fpga['num']) + '}'
@@ -1969,7 +2051,7 @@ def bridgeConnections(outDir, fpga, sim):
             'inst':'network/galapagos_bridge_inst',
             'vendor':'xilinx.com',
             'lib':'hls',
-            'resetns_port': 'rst',
+            'resetns_port': 'rstn',
             'clks':['ap_clk'],
             'resetns':['ap_rst_n']
         }
@@ -2206,7 +2288,7 @@ def bridgeConnections(outDir, fpga, sim):
                 'vendor': tcl_bridge_connections.fpga['app_bridge']['vendor'],
                 'clks':tcl_bridge_connections.fpga['app_bridge']['clk'],
                 'resetns':tcl_bridge_connections.fpga['app_bridge']['aresetn'],
-                'resetns_port': 'rst'
+                'resetns_port': 'rstn'
                 }
                 )
         if (sim == 1):

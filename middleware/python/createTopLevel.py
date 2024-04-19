@@ -11,6 +11,8 @@ r_fields = ["id","data","resp","last","valid","ready"]
 r_sizes = [16,128,2,1,1,1]
 axis_fields = ["data","keep","dest","id","user","last","valid","ready"]
 axis_sizes = [512,64,24,24,16,1,1,1]
+wan_axis_fields = ["data","keep","dest","user","last","valid","ready"]
+wan_axis_sizes = [512,64,32,16,1,1,1]
 
 axis_base_fields = ["data","keep","last","valid","ready"]
 axis_base_sizes = [512,64,1,1,1]
@@ -87,8 +89,9 @@ def createTopLevelVerilog(target_files, source_dir, kernel_names,control_names):
     for i in control_names:
         dst_file.write(construct_axi_wire("  ", str(i) + "_CONTROL", 16, 128, 40))
     for i in kernel_names:
-        dst_file.write(construct_axis_wire("  ",str(i)+"_MAXIS",512,24,True))
-        dst_file.write(construct_axis_wire("  ",str(i)+"_SAXIS",512,24,True))
+        dst_file.write(construct_axis_wire("  ", str(i) + "_MAXIS", 512, 24, True))
+        dst_file.write(construct_axis_wire("  ", str(i) + "_SAXIS", 512, 24, True))
+        dst_file.write(add_axi_wire_field("  ", str(i) + "_SWAN","t", wan_axis_fields, wan_axis_sizes, 0, 512, 0) + "\n")
     copy_file(dst_file,source_dir+"/../verilog/shellTop_pt2.v")
     dst_file.write(construct_axis_base_defn("    ","M_AXIS","eth_tx",True))
     dst_file.write(construct_axis_base_defn("    ","S_AXIS","eth_rx",False))
@@ -103,14 +106,16 @@ def createTopLevelVerilog(target_files, source_dir, kernel_names,control_names):
             dst_file.write(construct_axi_defn("      ",str(i)+"_CONTROL",str(i)+"_CONTROL",True,True))
         dst_file.write(construct_axis_defn("      ",str(i)+"_MAXIS",str(i)+"_MAXIS",True,True))
         dst_file.write(construct_axis_defn("      ",str(i)+"_SAXIS",str(i)+"_SAXIS",True,False))
+        dst_file.write(add_axi_defn_field("      ",str(i) + "_SWAN",str(i) + "_SWAN","t",wan_axis_fields,False,True)+"\n")
     dst_file.write("    );\n\n\n")
     
     for i in kernel_names:
-        dst_file.write("  //User: "+str(i)+"\n  user_"+str(i)+"_i user_"+str(i)+"_i_i\n    (.rst(rst)\n    ,.CLK(CLK)\n")
+        dst_file.write("  //User: "+str(i)+"\n  user_"+str(i)+"_i user_"+str(i)+"_i_i\n    (.rstn(rstn)\n    ,.CLK(CLK)\n")
         if i in control_names:
             dst_file.write(construct_axi_defn("    ",str(i)+"_CONTROL","AXI_CONTROL",True,True))
         dst_file.write(construct_axis_defn("    ",str(i)+"_MAXIS","RX_AXIS",True,True))
         dst_file.write(construct_axis_defn("    ",str(i)+"_SAXIS","TX_AXIS",True,False))
+        dst_file.write(add_axi_defn_field("      ", str(i) + "_SWAN", "TX_WAN_AXIS", "t", wan_axis_fields, False, True) + "\n")
         dst_file.write("    );\n\n\n")
     dst_file.write("  endmodule")
     dst_file.close()

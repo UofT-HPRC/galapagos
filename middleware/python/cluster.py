@@ -105,7 +105,6 @@ class cluster(abstractDict):
         self.packet_id = 0
         self.packet_user = 0
 
-
         if(mode=='file'):
             top_dict = self.getDict(kernel_file)['cluster']
         else:
@@ -155,6 +154,7 @@ class cluster(abstractDict):
         else:
             logical_dict = kernel_file['cluster']['kernel']
             map_dict = map_file['cluster']['node']
+        dns_ip_address = self.getDict(map_file)['cluster']['dns']
 
 
         self.kernels = []
@@ -247,6 +247,7 @@ class cluster(abstractDict):
             # data formats
             node_inst['kernel'] = []
             node_inst['kernel_map'] = {}
+            node_inst['dns_ip']=dns_ip_address
             #
             for kmap_node in node_dict['kernel']:
                 for kern_idx, kern in enumerate(self.kernels):

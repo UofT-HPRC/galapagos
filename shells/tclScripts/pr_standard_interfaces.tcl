@@ -3,13 +3,13 @@ if {[info exists HUNDREDG]} {
     set_property CONFIG.FREQ_HZ 199498000 [get_bd_ports CLK]
     create_bd_port -dir I -type clk CLK300
     set_property CONFIG.FREQ_HZ 322265625 [get_bd_ports CLK300]
-    create_bd_port -dir I -type rst rst
-    create_bd_port -dir I -type rst rst300
-    set_property CONFIG.POLARITY ACTIVE_LOW [get_bd_ports rst]
-    set_property CONFIG.POLARITY ACTIVE_LOW [get_bd_ports rst300]
+    create_bd_port -dir I -type rst rstn
+    create_bd_port -dir I -type rst rstn300
+    set_property CONFIG.POLARITY ACTIVE_LOW [get_bd_ports rstn]
+    set_property CONFIG.POLARITY ACTIVE_LOW [get_bd_ports rstn300]
     startgroup
-    set_property CONFIG.ASSOCIATED_RESET {rst} [get_bd_ports /CLK]
-    set_property CONFIG.ASSOCIATED_RESET {rst300} [get_bd_ports /CLK300]
+    set_property CONFIG.ASSOCIATED_RESET {rstn} [get_bd_ports /CLK]
+    set_property CONFIG.ASSOCIATED_RESET {rstn300} [get_bd_ports /CLK300]
     endgroup
 } else {
     create_bd_port -dir I -type clk CLK
