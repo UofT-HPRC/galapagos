@@ -27,3 +27,4 @@
 
 # How Galapagos Writes TCL
 - TCL script to generate PR region is written using Python scripts inside the `middleware/python` folder. Check the README there for details.
+- TCL script to generate Shell is already pre-written (it stays the same regardless of user choices). The TCL scripts are found in 
