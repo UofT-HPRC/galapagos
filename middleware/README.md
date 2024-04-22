@@ -26,5 +26,9 @@
 - Add a call in the Middleware Makefile's `clean` function to the `clean` function in the IP Makefile. This ensures all your IP is cleaned when all IP is cleaned.
 
 # How Galapagos Writes TCL
-- TCL script to generate PR region is written using Python scripts inside the `middleware/python` folder. Check the README there for details.
-- TCL script to generate Shell is already pre-written (it stays the same regardless of user choices). The TCL scripts are found in 
+- TCL script to generate PR block diagram (PR Script) is written using Python functions inside the `middleware/python` folder. Check the README there for details.
+  - TCL script to generate Network region (Network Script) is pre-written, in `middleware/tclScripts/pr_udp100_bridge.tcl`. The Python scripts insert a `source middleware/tclScripts/pr_udp100_bridge.tcl` command at the start of the PR Script.
+  - Multiple Network Scripts are available, depending on user preference (TCP, ethernet bridges, etc). 
+  - Python functions then fill the rest of the PR Script with instructions to build and connect the Application Region.
+  - Python functions will alter the Application Region based on what Network type the user has selected. 
+- TCL script to generate Shell (Shell Script) is already pre-written. The Shell Script
