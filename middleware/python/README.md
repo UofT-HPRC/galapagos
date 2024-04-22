@@ -21,3 +21,7 @@ This folder contains Python scripts used to demonstrate the framework, and the P
 
 # tclMeFile API
 - Full details are found in the `tclMe.py` file
+
+# Useful Tips and Tricks
+- TCL script that creates the network is added by `makeTCLFiles`
+- The TCL that creates the user kernel block diagrams is written `tclFileGenerator.py/createHierarchyTCL`, which is called by `tclFileGenerator.py/userApplicationRegionKernelConnectSwitches`
