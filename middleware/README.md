@@ -27,13 +27,16 @@
 
 # How Galapagos Writes TCL
 - TCL script to generate PR block diagram (PR Script) is written using Python functions inside the `middleware/python` folder. Check the README there for details.
-  - TCL script to generate PR block diagram's ports is pre-written, in `shells/tclScripts/pr_standard_interfaces.tcl`. The Python functions insert a `source shells/tclScripts/pr_standard_interfaces.tcl` command at the start of the PR Script.
-  - TCL script to generate Network region (Network Script) is pre-written, in `middleware/tclScripts/pr_udp100_bridge.tcl`. The Python scripts insert a `source middleware/tclScripts/pr_udp100_bridge.tcl` command at the start of the PR Script.
-  - Multiple Network Scripts are available, depending on user preference (TCP, ethernet bridges, etc). 
-  - Python functions then fill the rest of the PR Script with instructions to build and connect the Application Region.
-  - Python functions will alter the Application Region based on what Network type the user has selected. 
+    - TCL script to generate PR block diagram's ports is pre-written, in `shells/tclScripts/pr_standard_interfaces.tcl`. The Python functions insert a `source shells/tclScripts/pr_standard_interfaces.tcl` command at the start of the PR Script.
+- TCL script to generate Network region (Network Script) is pre-written, in `middleware/tclScripts/pr_udp100_bridge.tcl`. The Python scripts insert a `source middleware/tclScripts/pr_udp100_bridge.tcl` command at the start of the PR Script.
+    - Multiple Network Scripts are available, depending on user preference (TCP, ethernet bridges, etc). 
+    - Python functions then fill the rest of the PR Script with instructions to build and connect the Application Region.
+    - Python functions will alter the Application Region based on what Network type the user has selected. 
 - TCL script to generate Shell (Shell Script) is already pre-written. The Shell Script is found in `shells/${board_name}/tclScripts/shell_bd.tcl`.
-  - Each supported Xilinx board has its own custom Shell Script.
-  - Some boards have a `shells/${board_name}/tclScripts/shell_prologue.tcl` script that runs before `shell_bd.tcl`. This adds parameters and sets project settings. 
-  - This Shell Script is called during `createCluster.sh` to build the Shell.
-- 
+    - Each supported Xilinx board has its own custom Shell Script.
+    - Some boards have a `shells/${board_name}/tclScripts/shell_prologue.tcl` script that runs before `shell_bd.tcl`. This adds parameters and sets project settings. 
+    - This Shell Script is called during `createCluster.sh` to build the Shell.
+- TCL script to generate block diagrams for each of the user's kernels (`userkernels.tcl`) is written using Python functions inside the `middleware/python` folder. Check the README there for details.
+    - For each user kernel, a hard-coded set of TCL instructions is written to `userkernels.tcl`.
+    - These instructions create the block diagram, and add interface ports for the user to hook their kernels to (eg. RX_AXIS, TX_AXIS, etc)
+- Top-Level 
