@@ -34,4 +34,5 @@
   - Python functions will alter the Application Region based on what Network type the user has selected. 
 - TCL script to generate Shell (Shell Script) is already pre-written. The Shell Script is found in `shells/${board_name}/tclScripts/shell_bd.tcl`.
   - Each supported Xilinx board has its own custom Shell Script.
+  - Some boards have a `shells/${board_name}/tclScripts/shell_prologue.tcl` script that runs before `shell_bd.tcl`. This adds parameters and sets project settings. 
   - This Shell Script is called during `createCluster.sh` to build the Shell. 
