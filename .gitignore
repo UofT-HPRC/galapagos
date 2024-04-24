@@ -10,3 +10,4 @@ vivado.jou
 vitis_hls.log
 vivado_hls.log
 middleware/python/.idea/*
+*.swp

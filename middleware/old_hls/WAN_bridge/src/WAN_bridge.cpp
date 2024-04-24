@@ -36,6 +36,7 @@ void WAN_bridge(
 			old_packet = gp_to_net(packetin);
 			packetout.data = get_header(packetin.dest, packetin.user);
 			packetout.keep = KEEP_ALL;
+            packetout.user = packetin.user;
 			packetout.last = 0;
 			g2N_output.write(packetout);
 			stage = 1;
