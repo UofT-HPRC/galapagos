@@ -349,7 +349,7 @@ def buildControlToNBSwitch(tcl_user_app, path, num_ctrl_instances):
         path (str): Which data path the switch will connect to ('LAN', 'WAN', or 'KIP')
         num_ctrl_instances (int): Number of inputs to the switch
     """
-    switch_name = "applicationRegion/ctrl_to_nb_" + path + "_switch"
+    switch_name = "applicationRegion/control/ctrl_to_nb_" + path + "_switch"
     tcl_user_app.instBlock(
         {
             'name':'axis_switch',
@@ -393,7 +393,7 @@ def buildControlAPIInst(tcl_user_app, kernel_id, kernel_dict, axil_addr_width, h
         has_reliability (bool): Does the user want to use reliability?
         rel_timeout (int): Number of cycles that the reliability module will wait before sending a re-transmission
     """
-    hierarchy_name = "applicationRegion/control_api_inst_%d" % (kernel_id)
+    hierarchy_name = "applicationRegion/control/control_api_inst_%d" % (kernel_id)
     tcl_user_app.createHierarchy(hierarchy_name)
     # Kernel ID
     tcl_user_app.instBlock(
@@ -668,6 +668,8 @@ def userApplicationRegionControlInst(tcl_user_app):
     num_ctrl_instances = len(ctrl_kernel_dict)
     # Only build components if there are control instances specified
     if num_ctrl_instances > 0:
+        hierarchy_name = 'applicationRegion/control'
+        tcl_user_app.createHierarchy(hierarchy_name)
         # In some cases, a list of keys sorted in ascending order will be useful
         kernel_ids_ascending_order = getSortedListofKeys(ctrl_kernel_dict)
         # 1. Build Control API hierarchies
@@ -677,7 +679,7 @@ def userApplicationRegionControlInst(tcl_user_app):
         tcl_user_app.instBlock(
             {
                 'name': 'xlconstant',
-                'inst':  'applicationRegion/LAN_port_number',
+                'inst':  hierarchy_name + '/LAN_port_number',
                 'properties': [ 
                                 'CONFIG.CONST_WIDTH {16}',
                                 'CONFIG.CONST_VAL {' + str(LAN_PORT_NUMBER) + '}'
@@ -687,7 +689,7 @@ def userApplicationRegionControlInst(tcl_user_app):
         tcl_user_app.instBlock(
             {
                 'name': 'xlconstant',
-                'inst':  'applicationRegion/KIP_port_number',
+                'inst':  hierarchy_name + '/KIP_port_number',
                 'properties': [ 
                                 'CONFIG.CONST_WIDTH {16}',
                                 'CONFIG.CONST_VAL {' + str(KIP_PORT_NUMBER) + '}'
@@ -702,7 +704,7 @@ def userApplicationRegionControlInst(tcl_user_app):
         tcl_user_app.instBlock(
             {
                 'name': 'LAN_local_formatter',
-                'inst':  'applicationRegion/LAN_local_formatter_0',
+                'inst':  hierarchy_name + '/LAN_local_formatter_0',
                 'clks': ['i_clk'],
                 'resetns': ['i_ap_rst_n'],
                 'resetns_port': 'rst'
@@ -712,7 +714,7 @@ def userApplicationRegionControlInst(tcl_user_app):
         tcl_user_app.instBlock(
             {
                 'name': 'KIP_router',
-                'inst':  'applicationRegion/KIP_router_0',
+                'inst':  hierarchy_name + '/KIP_router_0',
                 'clks': ['i_clk'],
                 'resetns': ['i_ap_rst_n'],
                 'resetns_port': 'rst'
@@ -721,7 +723,7 @@ def userApplicationRegionControlInst(tcl_user_app):
         tcl_user_app.instBlock(
             {
                 'name': 'KIP_local_formatter',
-                'inst':  'applicationRegion/KIP_local_formatter_0',
+                'inst':  hierarchy_name + '/KIP_local_formatter_0',
                 'clks': ['i_clk'],
                 'resetns': ['i_ap_rst_n'],
                 'resetns_port': 'rst'
@@ -732,7 +734,7 @@ def userApplicationRegionControlInst(tcl_user_app):
         tcl_user_app.instBlock(
             {
                 'name':'axis_switch',
-                'inst': 'applicationRegion/ctrl_from_nb_switch',
+                'inst': hierarchy_name + '/ctrl_from_nb_switch',
                 'clks':['aclk'],
                 'resetns_port': 'rst',
                 'resetns':['aresetn']
@@ -744,20 +746,20 @@ def userApplicationRegionControlInst(tcl_user_app):
             'CONFIG.NUM_MI {' + str(num_ctrl_instances) + '}',
             'CONFIG.HAS_TLAST.VALUE_SRC USER'
         ]
-        tcl_user_app.setProperties('applicationRegion/ctrl_from_nb_switch',properties)
+        tcl_user_app.setProperties(hierarchy_name + '/ctrl_from_nb_switch',properties)
         properties = [
             'CONFIG.HAS_TLAST {1}'
         ]
-        tcl_user_app.setProperties('applicationRegion/ctrl_from_nb_switch', properties)
+        tcl_user_app.setProperties(hierarchy_name + '/ctrl_from_nb_switch', properties)
         properties = [
             'CONFIG.ARB_ON_MAX_XFERS {0}',
             'CONFIG.ARB_ON_TLAST {1}',
             'CONFIG.ARB_ALGORITHM {1}'
         ]
-        tcl_user_app.setProperties('applicationRegion/ctrl_from_nb_switch', properties)
+        tcl_user_app.setProperties(hierarchy_name + '/ctrl_from_nb_switch', properties)
         # Configure Switch Routing: Lowest index kernel connects to port 0, second lowest to port 1, etc.
         setSwitchManagerPortRouting(tcl_user_app, 
-                                    'applicationRegion/ctrl_from_nb_switch', 
+                                    hierarchy_name + '/ctrl_from_nb_switch', 
                                     kernel_ids_ascending_order
                                     )        
         # 3. Create AXI-Lite block diagram ports (to be connected to kernels) and connect them to Control API instances
@@ -767,7 +769,7 @@ def userApplicationRegionControlInst(tcl_user_app):
             kernel_dict = ctrl_kernel_dict[kernel_id]
             ctrl_kernel_type = kernel_dict['control_type']
             presuffix_port_name = kernel_dict['inst']
-            kernel_axil_net_converter_name = 'applicationRegion/control_api_inst_%d/anc' % (kernel_id)
+            kernel_axil_net_converter_name = hierarchy_name + '/control_api_inst_%d/anc' % (kernel_id)
             if ctrl_kernel_type == 'm_axil' or ctrl_kernel_type == 'both':
                 # Everything is relative to user. Control Kernel's M_AXIL will connect to PR's M_AXIL port, which connects to S_AXIL port of network converter
                 axil_port_name = presuffix_port_name + '_M_AXIL'
@@ -820,7 +822,7 @@ def userApplicationRegionControlInst(tcl_user_app):
         # Connect all control instances to IP Address and Ports
         # Only need to connect to ANC module because ANC and RPM IP addresses are already wired together in buildControlAPIInst
         for kernel_id in ctrl_kernel_dict.keys():
-            sink_kernel = 'applicationRegion/control_api_inst_%d/anc' % (kernel_id)
+            sink_kernel = hierarchy_name + '/control_api_inst_%d/anc' % (kernel_id)
             tcl_user_app.makeConnection(
                 'net', 
                 {
@@ -838,7 +840,7 @@ def userApplicationRegionControlInst(tcl_user_app):
                 'net', 
                 {
                     'type': 'pin',
-                    'name': 'applicationRegion/KIP_port_number',
+                    'name': hierarchy_name + '/KIP_port_number',
                     'port_name': 'dout'
                 },
                 {
@@ -852,13 +854,13 @@ def userApplicationRegionControlInst(tcl_user_app):
             # Inbound/Outbound pathway: Lowest index kernel connects to port 0, second lowest to port 1, etc.
             for i in range(0, num_ctrl_instances):
                 kernel_id = kernel_ids_ascending_order[i]
-                hierarchy_name = 'applicationRegion/control_api_inst_%d' % (kernel_id)
+                ctrl_api_hierarchy_name = hierarchy_name + '/control_api_inst_%d' % (kernel_id)
                 if has_reliability:
-                    kern_name = hierarchy_name + '/rpm'
+                    kern_name = ctrl_api_hierarchy_name + '/rpm'
                     inbound_port = 'from_nb'
                     outbound_port_prefix = 'to_nb_'
                 else:
-                    kern_name = hierarchy_name + '/anc'
+                    kern_name = ctrl_api_hierarchy_name + '/anc'
                     inbound_port = 'from_network_bridge'
                     outbound_port_prefix = 'to_'
                 if i < 10:
@@ -872,7 +874,7 @@ def userApplicationRegionControlInst(tcl_user_app):
                         'intf', 
                         {
                             'type': 'intf',
-                            'name': 'applicationRegion/ctrl_from_nb_switch',
+                            'name': hierarchy_name + '/ctrl_from_nb_switch',
                             'port_name': inbound_switch_port
                         },
                         {
@@ -892,7 +894,7 @@ def userApplicationRegionControlInst(tcl_user_app):
                         },
                         {
                             'type': 'intf',
-                            'name': 'applicationRegion/ctrl_to_nb_' + path + '_switch',
+                            'name': hierarchy_name + '/ctrl_to_nb_' + path + '_switch',
                             'port_name': outbound_switch_port
                         }
                     )
@@ -901,7 +903,7 @@ def userApplicationRegionControlInst(tcl_user_app):
                 'intf', 
                 {
                     'type': 'intf',
-                    'name': 'applicationRegion/ctrl_to_nb_LAN_switch',
+                    'name': hierarchy_name + '/ctrl_to_nb_LAN_switch',
                     'port_name': 'M00_AXIS'
                 },
                 {
@@ -915,25 +917,25 @@ def userApplicationRegionControlInst(tcl_user_app):
                 'intf', 
                 {
                     'type': 'intf',
-                    'name': 'applicationRegion/ctrl_to_nb_KIP_switch',
+                    'name': hierarchy_name + '/ctrl_to_nb_KIP_switch',
                     'port_name': 'M00_AXIS'
                 },
                 {
                     'type': 'intf',
-                    'name': 'applicationRegion/KIP_router_0',
+                    'name': hierarchy_name + '/KIP_router_0',
                     'port_name': 'from_kernels'
                 }
             )
         # Path Case 2: Only 1 Control API Instance on this board, connect directly to outputs beyond the switch
         else:
             kernel_id = kernel_ids_ascending_order[0]
-            hierarchy_name = 'applicationRegion/control_api_inst_%d' % (kernel_id)
+            ctrl_api_hierarchy_name = hierarchy_name + '/control_api_inst_%d' % (kernel_id)
             if has_reliability:
-                kern_name = hierarchy_name + '/rpm'
+                kern_name = ctrl_api_hierarchy_name + '/rpm'
                 inbound_port = 'from_nb'
                 outbound_port_prefix = 'to_nb_'
             else:
-                kern_name = hierarchy_name + '/anc'
+                kern_name = ctrl_api_hierarchy_name + '/anc'
                 inbound_port = 'from_network_bridge'
                 outbound_port_prefix = 'to_'
             # Single kernel inbound pathway
@@ -941,7 +943,7 @@ def userApplicationRegionControlInst(tcl_user_app):
                 'intf', 
                 {
                     'type': 'intf',
-                    'name': 'applicationRegion/ctrl_from_nb_switch',
+                    'name': hierarchy_name + '/ctrl_from_nb_switch',
                     'port_name': 'M00_AXIS'
                 },
                 {
@@ -960,7 +962,7 @@ def userApplicationRegionControlInst(tcl_user_app):
                 },
                 {
                     'type': 'intf',
-                    'name': 'applicationRegion/output_switch',
+                    'name': hierarchy_name + '/output_switch',
                     'port_name': 'S00_AXIS'
                 }
             )
@@ -974,7 +976,7 @@ def userApplicationRegionControlInst(tcl_user_app):
                 },
                 {
                     'type': 'intf',
-                    'name': 'applicationRegion/KIP_router_0',
+                    'name': hierarchy_name + '/KIP_router_0',
                     'port_name': 'from_kernels'
                 }
             )
@@ -988,7 +990,7 @@ def userApplicationRegionControlInst(tcl_user_app):
             },
             {
                 'type': 'pin',
-                'name': 'applicationRegion/KIP_router_0',
+                'name': hierarchy_name + '/KIP_router_0',
                 'port_name': 'i_local_ip_address'
             }
         )
@@ -996,12 +998,12 @@ def userApplicationRegionControlInst(tcl_user_app):
             'intf', 
             {
                 'type': 'intf',
-                'name': 'applicationRegion/KIP_router_0',
+                'name': hierarchy_name + '/KIP_router_0',
                 'port_name': 'to_rx_nb'
             },
             {
                 'type': 'intf',
-                'name': 'applicationRegion/KIP_local_formatter_0',
+                'name': hierarchy_name + '/KIP_local_formatter_0',
                 'port_name': 'from_router'
             }
         )
@@ -1010,12 +1012,12 @@ def userApplicationRegionControlInst(tcl_user_app):
             'intf', 
             {
                 'type': 'intf',
-                'name': 'applicationRegion/KIP_local_formatter_0',
+                'name': hierarchy_name + '/KIP_local_formatter_0',
                 'port_name': 'to_kernels'
             },
             {
                 'type': 'intf',
-                'name': 'applicationRegion/ctrl_from_nb_switch',
+                'name': hierarchy_name + '/ctrl_from_nb_switch',
                 'port_name': 'S00_AXIS'
             }
         )
@@ -1029,7 +1031,7 @@ def userApplicationRegionControlInst(tcl_user_app):
             },
             {
                 'type': 'pin',
-                'name': 'applicationRegion/LAN_local_formatter_0',
+                'name': hierarchy_name + '/LAN_local_formatter_0',
                 'port_name': 'i_local_ip_address'
             }
         )
@@ -1037,12 +1039,12 @@ def userApplicationRegionControlInst(tcl_user_app):
             'net', 
             {
                 'type': 'pin',
-                'name': 'applicationRegion/LAN_port_number',
+                'name': hierarchy_name + '/LAN_port_number',
                 'port_name': 'dout'
             },
             {
                 'type': 'pin',
-                'name': 'applicationRegion/LAN_local_formatter_0',
+                'name': hierarchy_name + '/LAN_local_formatter_0',
                 'port_name': 'i_LAN_port_number'
             }
         )
@@ -1055,7 +1057,7 @@ def userApplicationRegionControlInst(tcl_user_app):
             },
             {
                 'type': 'intf',
-                'name': 'applicationRegion/LAN_local_formatter_0',
+                'name': hierarchy_name + '/LAN_local_formatter_0',
                 'port_name': 'from_router'
             }
         )
@@ -1063,12 +1065,12 @@ def userApplicationRegionControlInst(tcl_user_app):
             'intf', 
             {
                 'type': 'intf',
-                'name': 'applicationRegion/LAN_local_formatter_0',
+                'name': hierarchy_name + '/LAN_local_formatter_0',
                 'port_name': 'to_switch'
             },
             {
                 'type': 'intf',
-                'name': 'applicationRegion/ctrl_from_nb_switch',
+                'name': hierarchy_name + '/ctrl_from_nb_switch',
                 'port_name': 'S01_AXIS'
             }
         )
@@ -1079,7 +1081,7 @@ def userApplicationRegionControlInst(tcl_user_app):
             # Case 1: User is using M_AXIL port (AXI-Lite to Network Converter is subordinate)
             if kernel_dict['control_type'] == 'm_axil' or kernel_dict['control_type'] == 'both':
                 manager = kernel_dict['inst'] + "_M_AXIL" # User kernel's M_AXIL port
-                ctrl_api_inst = 'applicationRegion/control_api_inst_%d/anc' % (kernel_id)
+                ctrl_api_inst = hierarchy_name + '/control_api_inst_%d/anc' % (kernel_id)
                 inst_port = 'S_AXIL'
                 base = 'reg0' # That's just what it says in Vivado
                 tcl_user_app.assign_address(ctrl_api_inst, inst_port, base)
@@ -1093,7 +1095,7 @@ def userApplicationRegionControlInst(tcl_user_app):
                 tcl_user_app.set_address_properties(ctrl_api_inst, inst_port, base, manager, **prop)
             # Case 2: User is using S_AXIL port (User kernel is subordinate)
             if kernel_dict['control_type'] == 's_axil' or kernel_dict['control_type'] == 'both':
-                manager = 'applicationRegion/control_api_inst_%d/anc/M_AXIL' % (kernel_id)
+                manager = hierarchy_name + '/control_api_inst_%d/anc/M_AXIL' % (kernel_id)
                 # In this case, we supply the name of the PR AXI-Lite port that will be connected to the kernel
                 subordinate_port = kernel_dict['inst'] + '_S_AXIL'
                 base = 'Reg' # That's just what it says in Vivado
@@ -3389,11 +3391,12 @@ def bridgeConnections(outDir, fpga, sim,is_gw):
             # Connect control KIP outbound path to network
             ctrl_kernel_dict = makeControlKernelDictionary(tcl_bridge_connections, 'num')
             num_ctrl_instances = len(ctrl_kernel_dict)
+            control_hierarchy_name = 'applicationRegion/control'
             if num_ctrl_instances > 0:
                 tcl_bridge_connections.makeConnection(
                     'net',
                     {
-                        'name':'applicationRegion/KIP_port_number',
+                        'name': control_hierarchy_name + '/KIP_port_number',
                         'type':'pin',
                         'port_name':'dout'
                     },
@@ -3406,7 +3409,7 @@ def bridgeConnections(outDir, fpga, sim,is_gw):
                 tcl_bridge_connections.makeConnection(
                     'intf',
                     {
-                        'name':'applicationRegion/KIP_router_0',
+                        'name': control_hierarchy_name + '/KIP_router_0',
                         'type':'intf',
                         'port_name':'to_gs'
                     },
@@ -3568,7 +3571,7 @@ def bridgeConnections(outDir, fpga, sim,is_gw):
                         'port_name':'M_AXIS'
                         },
                         {
-                        'name':'applicationRegion/ctrl_from_nb_switch',
+                        'name': control_hierarchy_name + '/ctrl_from_nb_switch',
                         'type':'intf',
                         'port_name':'S02_AXIS'
                         }
