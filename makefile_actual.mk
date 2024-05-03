@@ -49,6 +49,10 @@ hlsmiddleware:
 	mkdir -p $(GALAPAGOS_PATH)/hlsBuild
 	$(MAKE) -C $(MIDDLEWARE_DIR) hlsmiddleware
 
+ctrlmiddleware:
+	mkdir -p $(GALAPAGOS_PATH)/ctrlBuild
+	$(MAKE) -C $(MIDDLEWARE_DIR) ctrlmiddleware
+
 clean:
 	$(MAKE) -C $(MIDDLEWARE_DIR) clean
 	$(MAKE) -C $(SHELLS_DIR) clean

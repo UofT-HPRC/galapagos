@@ -5,7 +5,7 @@ proc getPresetInfo {} {
 
 proc validate_preset {IPINST} { return true }
 
-
+# To add AXI ports, set CONFIG.PSU__USE__M_AXI_GP0 {X} to 1
 proc apply_preset {IPINST} {
   return [dict create \
     CONFIG.PSU__PSS_REF_CLK__FREQMHZ {33.333}  \
@@ -148,7 +148,7 @@ proc apply_preset {IPINST} {
     CONFIG.PSU__UART1__PERIPHERAL__ENABLE {1}  \
     CONFIG.PSU__UART1__PERIPHERAL__IO {MIO 20 .. 21}  \
     CONFIG.PSU__UART1__MODEM__ENABLE {0}  \
-    CONFIG.PSU__USE__M_AXI_GP0 {1}  \
+    CONFIG.PSU__USE__M_AXI_GP0 {0}  \
     CONFIG.PSU__MAXIGP0__DATA_WIDTH {128}  \
     CONFIG.PSU__USE__M_AXI_GP1 {0}  \
     CONFIG.PSU__MAXIGP1__DATA_WIDTH {128}  \

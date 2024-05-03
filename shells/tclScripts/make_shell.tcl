@@ -116,6 +116,7 @@ set_property ip_repo_paths [list \
   $top_path/hlsBuild/$top_board \
   $top_path/gulfstream/$top_board \
   $top_shells/shell_ips \
+  $top_path/ctrlBuild \
   userIP] [current_project]
 
 # Rebuild user ip_repo's index before adding any source files

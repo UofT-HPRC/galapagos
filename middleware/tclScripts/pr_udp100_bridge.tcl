@@ -169,5 +169,30 @@ connect_bd_net [get_bd_ports CLK300] [get_bd_pins network/fetch_clock_converter/
 connect_bd_net [get_bd_ports rstn300] [get_bd_pins network/fetch_clock_converter/s_axis_aresetn]
 connect_bd_net [get_bd_ports CLK] [get_bd_pins network/fetch_clock_converter/m_axis_aclk]
 
-
 connect_bd_intf_net [get_bd_intf_pins network/network_bridge_inst/axis_clock_converter_1/S_AXIS] [get_bd_intf_pins network/network_bridge_udp/txGalapagosBridge]
+
+################################################################################
+# Control API
+################################################################################
+# Add Control API kernels
+create_bd_cell -type ip -vlnv uoft-hprc:control_api:control_rx_network_bridge network/ctrl_rx_nb
+# CDC FIFOs
+create_bd_cell -type ip -vlnv xilinx.com:ip:axis_data_fifo network/ctrl_to_nb_KIP_CDC
+set_property -dict [list CONFIG.FIFO_DEPTH {16} CONFIG.IS_ACLK_ASYNC {1}] [get_bd_cells network/ctrl_to_nb_KIP_CDC]
+create_bd_cell -type ip -vlnv xilinx.com:ip:axis_data_fifo network/ctrl_from_nb_CDC
+set_property -dict [list CONFIG.FIFO_DEPTH {16} CONFIG.IS_ACLK_ASYNC {1}] [get_bd_cells network/ctrl_from_nb_CDC]
+# Make internal connections
+# Control RX Network Bridge
+connect_bd_net [get_bd_pins network/CLK300] [get_bd_pins network/ctrl_rx_nb/i_clk]
+connect_bd_net [get_bd_pins network/rst300] [get_bd_pins network/ctrl_rx_nb/i_ap_rst_n]
+connect_bd_intf_net [get_bd_intf_pins network/direct_ip_rx_switch/M01_AXIS] [get_bd_intf_pins network/ctrl_rx_nb/from_receptionist]
+connect_bd_intf_net [get_bd_intf_pins network/ctrl_rx_nb/to_ctrl] [get_bd_intf_pins network/ctrl_from_nb_CDC/S_AXIS]
+# CDC FIFO from Application Region to Network
+connect_bd_net [get_bd_pins network/CLK] [get_bd_pins network/ctrl_to_nb_KIP_CDC/s_axis_aclk]
+connect_bd_net [get_bd_pins network/rst] [get_bd_pins network/ctrl_to_nb_KIP_CDC/s_axis_aresetn]
+connect_bd_net [get_bd_pins network/CLK300] [get_bd_pins network/ctrl_to_nb_KIP_CDC/m_axis_aclk]
+connect_bd_intf_net [get_bd_intf_pins network/ctrl_to_nb_KIP_CDC/M_AXIS] [get_bd_intf_pins network/direct_ip_switch/S00_AXIS]
+# CDC FIFO from Network to Application Region
+connect_bd_net [get_bd_pins network/CLK300] [get_bd_pins network/ctrl_from_nb_CDC/s_axis_aclk]
+connect_bd_net [get_bd_pins network/rst300] [get_bd_pins network/ctrl_from_nb_CDC/s_axis_aresetn]
+connect_bd_net [get_bd_pins network/CLK] [get_bd_pins network/ctrl_from_nb_CDC/m_axis_aclk]

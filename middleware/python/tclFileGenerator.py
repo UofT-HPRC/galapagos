@@ -228,254 +228,858 @@ def createHierarchyTCL(project_name,outFile,kernel_properties,ctrl_ports_list, u
             hier_file.validate()
         hier_file.save()
     hier_file.close()
+# DEPRECATED BUT HAS CONTROL STUFF
+#TODO: Merge
+# def createHierarchyTCL(outFile,kernel_names,ctrl_kernel_dict, axil_addr_width=64):
+#     """
+#     Creates the TCL script that builds the block diagrams for the user kernels. Adds interface ports based on user preferences
+    
+#     Args:
+#         outFile (string): Name of the TCL script
+#         kernel_names (list): List of kernel instance names (eg. ['kernel_1_inst_1', 'kernel_1_inst_3', 'kernel_1_inst_5'] means building block diagrams for each kernel
+#         ctrl_kernel_dict (dict): Dictionary indexed by kernel instance name. Each dictionary entry consists of a dictionary of 2 entries:
+#             'inst': Instance name of the kernel, with 'applicationRegion' removed
+#             'control_type': 'm_axil', 's_axil', or 'both' 
+#     """
+#     dst_file = open(outFile, "w")
+#     for kern in kernel_names:
+#         file_contents = ""
+#         file_contents = file_contents +"create_bd_design \"user_"+str(kern)+"_i\"\n"
+#         file_contents = file_contents + "create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 RX_AXIS\n"
+#         file_contents = file_contents + "create_bd_intf_port -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 TX_AXIS\n"
+#         file_contents = file_contents + "create_bd_intf_port -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 TX_WAN_AXIS\n"
+#         file_contents = file_contents + "create_bd_port -dir I -type clk -freq_hz 199498000 CLK\n"
+#         file_contents = file_contents + "create_bd_port -dir I -type rst rstn\nset_property CONFIG.ASSOCIATED_RESET {rstn} [get_bd_ports /CLK]\n"
+#         file_contents = file_contents + "set_property -dict [ list CONFIG.HAS_TKEEP {1} CONFIG.HAS_TLAST {1} CONFIG.TDEST_WIDTH {24} CONFIG.TDATA_NUM_BYTES {64} CONFIG.TID_WIDTH {24} CONFIG.TUSER_WIDTH {16} ] [get_bd_intf_ports /RX_AXIS]\n"
+#         if kern in ctrl_kernel_dict:
+#             kernel_dict = ctrl_kernel_dict[kern]
+#             if kernel_dict['control_type'] == 'm_axil' or kernel_dict['control_type'] == 'both':
+#                 file_contents = file_contents + "create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 M_AXIL\n"
+#                 file_contents = file_contents + "set_property -dict [ list CONFIG.PROTOCOL {AXI4LITE} CONFIG.ADDR_WIDTH %d CONFIG.CLK_DOMAIN {CLK} CONFIG.FREQ_HZ {200000000} CONFIG.HAS_BURST {0} CONFIG.HAS_CACHE {0} CONFIG.HAS_LOCK {0} CONFIG.HAS_PROT {0} CONFIG.HAS_QOS {0} CONFIG.HAS_REGION {0} CONFIG.HAS_RRESP {0} CONFIG.NUM_READ_OUTSTANDING {1} CONFIG.NUM_WRITE_OUTSTANDING {1} ] [get_bd_intf_ports /M_AXIL]\n" % (axil_addr_width)
+#             if kernel_dict['control_type'] == 's_axil' or kernel_dict['control_type'] == 'both':
+#                 file_contents = file_contents + "create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 S_AXIL\n"
+#                 file_contents = file_contents + "set_property -dict [ list CONFIG.PROTOCOL {AXI4LITE} CONFIG.ADDR_WIDTH %d CONFIG.CLK_DOMAIN {CLK} CONFIG.FREQ_HZ {200000000} CONFIG.HAS_BURST {0} CONFIG.HAS_CACHE {0} CONFIG.HAS_LOCK {0} CONFIG.HAS_PROT {0} CONFIG.HAS_QOS {0} CONFIG.HAS_REGION {0} CONFIG.HAS_RRESP {0} CONFIG.NUM_READ_OUTSTANDING {1} CONFIG.NUM_WRITE_OUTSTANDING {1} ] [get_bd_intf_ports /S_AXIL]\n" % (axil_addr_width)
+#         # Assign interface ports to clocks
+#         file_contents = file_contents + "set_property CONFIG.ASSOCIATED_BUSIF {RX_AXIS:TX_AXIS"
+#         if kern in ctrl_kernel_dict:
+#             kernel_dict = ctrl_kernel_dict[kern]
+#             if kernel_dict['control_type'] == 'm_axil' or kernel_dict['control_type'] == 'both':
+#                 file_contents = file_contents + ":M_AXIL"
+#             if kernel_dict['control_type'] == 's_axil' or kernel_dict['control_type'] == 'both':
+#                 file_contents = file_contents + ":S_AXIL"
+#         file_contents = file_contents + "} [get_bd_ports /CLK]\n"
+#         file_contents = file_contents + "save_bd_design\n"
+#         dst_file.write(file_contents)
 
-def userApplicationRegionControlInst(tcl_user_app,kern_name_list,kern_prop_list):
+def makeControlKernelDictionary(tcl_user_app, index):
     """
-    Connects the AXI control interface from the shell (through an AXI interconnect)
-    to the various kernels in this FPGA (provided they declared control interfaces
-    in the logical file).
+    Makes a dictionary of control kernels (ctrl_kernel_dict). ctrl_kernel_dict is indexed by "index" (chosen by user). The function identifies all control-enabled kernels inside tcl_user_app. For each entry, it creates a dictionary entry consisting of a 2-element dictionary (kernel_dict).
+    Each kernel_dict consists of 2 entries:
+        'inst': Instance name of the kernel, with 'applicationRegion' removed
+        'control_type': 'm_axil', 's_axil', or 'both' 
+    Eg. ctrl_kernel_dict = {
+                                1: {'inst': 'kernel_1_inst_1', 'control_type': 'm_axil'},
+                                6: {'inst': 'kernel_1_inst_6', 'control_type': 'm_axil'}
+                            }
+    Args:
+        input_dict(dict): dictionary whose keys are all integers
+        index(str): What to index the dictionary by ('num' or 'inst')
+
+    """
+    ctrl_kernel_dict = {}
+    for kernel in tcl_user_app.fpga['kernel']:
+        if kernel['control'] is True:
+            instance_name = kernel['inst'].split('/')[-1] # Remove applicationRegion
+            # ctrl_kernel_dict indexed by kernel ID or instance name
+            if index == 'num':
+                ctrl_kernel_dict[int(kernel['num'])] = {
+                                                        'inst': instance_name, 
+                                                        'control_type': kernel['control_type']
+                                                    }
+            elif index == 'inst':
+                ctrl_kernel_dict[instance_name] = {
+                                                        'inst': instance_name, 
+                                                        'control_type': kernel['control_type']
+                                                    }
+    return ctrl_kernel_dict
+
+def getSortedListofKeys(input_dict):
+    """
+    Sorts the dictionary keys into ascending order.
+    
+    Args:
+        input_dict(dict): dictionary whose keys are all integers
+    """
+    keys_list = []
+    for key in input_dict:
+        keys_list.append(int(key))
+    keys_list.sort()
+    return keys_list
+
+def setSwitchManagerPortRouting(tcl_user_app, switch_name, tdest_list):
+    """
+    Connects the manager ports of the specified switch to the TDESTs in the tdest_list. This happens in ascending order of the list eg. if tdest_list is [3 6 2 5] M00_AXIS will be connected to 3, M01_AXIS connected to 6, etc.
+    
+    Args:
+        tcl_user_app (string): pathname of the module eg. applicationRegion/blk_mem_switch_rom
+    """
+    num_tdest = len(tdest_list)
+    properties = []
+    for i in range(0, num_tdest):
+        if i < 10:
+            manager_port = 'M0' + str(i)
+        else:
+            manager_port = 'M' + str(i)
+        tdest_str = "0x{:08x}".format(tdest_list[i])
+        base_tdest_setting = 'CONFIG.' + manager_port + '_AXIS_BASETDEST {' + tdest_str + '}'
+        properties.append(base_tdest_setting)
+        high_tdest_setting = 'CONFIG.' + manager_port + '_AXIS_HIGHTDEST {' + tdest_str + '}'
+        properties.append(high_tdest_setting)
+    tcl_user_app.setProperties(switch_name, properties)
+
+def buildControlToNBSwitch(tcl_user_app, path, num_ctrl_instances):
+    switch_name = "applicationRegion/ctrl_to_nb_" + path + "_switch"
+    tcl_user_app.instBlock(
+        {
+            'name':'axis_switch',
+            'inst': switch_name,
+            'clks':['aclk'],
+            'resetns_port': 'rst',
+            'resetns':['aresetn']
+        }
+    )
+    #Configure the switch to have 1 slave per kernel, 1 master, that it allows all messages through, and arbitrate on TLAST only.
+    properties = [
+        'CONFIG.NUM_SI {' + str(num_ctrl_instances) + '}',
+        'CONFIG.NUM_MI {1}',
+        'CONFIG.HAS_TLAST.VALUE_SRC USER',
+        'CONFIG.M00_AXIS_HIGHTDEST {0xffffffff}'
+    ]
+    tcl_user_app.setProperties(switch_name,properties)
+    properties = [
+        'CONFIG.HAS_TLAST {1}'
+    ]
+    tcl_user_app.setProperties(switch_name, properties)
+    properties = [
+        'CONFIG.ARB_ON_MAX_XFERS {0}',
+        'CONFIG.ARB_ON_TLAST {1}'
+    ]
+    tcl_user_app.setProperties(switch_name, properties)
+
+def buildControlAPIInst(tcl_user_app, kernel_id, kernel_dict, axil_addr_width, has_wstrb=True, has_reliability=True, rel_timeout=500):
+    """
+    Builds an instance of the Control API hierarchy for a kernel, and performs all internal connections
+
+    Args:
+        tcl_user_app: a tclMe object (which contains references to the FPGA's
+                      node object and a handle to the output file)
+        kernel_id(int):
+        kernel_dict(dict): Dictionary consisting of 2 entries:
+                'inst': Instance name of the kernel, with 'applicationRegion' removed
+                'control_type': 'm_axil', 's_axil', or 'both' 
+
+    """
+    hierarchy_name = "applicationRegion/control_api_inst_%d" % (kernel_id)
+    tcl_user_app.createHierarchy(hierarchy_name)
+    # Kernel ID
+    tcl_user_app.instBlock(
+        {
+            'name': 'xlconstant',
+            'inst':  hierarchy_name + '/kernel_id',
+            'properties': [ 
+                            'CONFIG.CONST_WIDTH {8}',
+                            'CONFIG.CONST_VAL {' + str(kernel_id) + '}'
+                          ]
+        }
+    )
+    # Add AXI-Lite to Network Converter and connect to Kernel ID
+    tcl_user_app.instBlock(
+        {
+            'name': 'axi_lite_to_network_converter',
+            'inst':  hierarchy_name + '/anc',
+            'clks': ['i_clk'],
+            'resetns': ['i_ap_rst_n'],
+            'resetns_port': 'rst',
+            'properties': [ 
+                            'CONFIG.AXI_LITE_ADDR_WIDTH {' + str(axil_addr_width) + '}',
+                            'CONFIG.AXI_LITE_WSTRB_ENABLED {' + str(has_wstrb) + '}'
+                          ]
+        }
+    )
+    tcl_user_app.makeConnection(
+        'net', 
+        {
+            'type': 'pin',
+            'name': hierarchy_name + '/kernel_id',
+            'port_name': 'dout'
+        },
+        {
+            'type': 'pin',
+            'name': hierarchy_name + '/anc',
+            'port_name': 'i_kernel_id'
+        }
+    )
+    # If the control type is only 'm_axil' or 's_axil', connect the unused AXIL ports to 0
+    if kernel_dict['control_type'] != 'both':
+        tcl_user_app.instBlock(
+            {
+                'name': 'xlconstant',
+                'inst':  hierarchy_name + '/const_0',
+                'properties': [ 
+                                'CONFIG.CONST_WIDTH {1}',
+                                'CONFIG.CONST_VAL {0}'
+                            ]
+            }
+        )
+        # Case 1: in 'm_axil' mode M_AXIL port of control is unused
+        if kernel_dict['control_type'] == 'm_axil':
+            port_name = 'M_AXIL_'
+            pin_names = ['awready', 'wready', 'bvalid', 'arready', 'rvalid']
+        else:
+            port_name = 'S_AXIL_'
+            pin_names = ['awvalid', 'wvalid', 'bready', 'arvalid', 'rready']
+        for pin_name in pin_names:
+            tcl_user_app.makeConnection(
+                'net', 
+                {
+                    'type': 'pin',
+                    'name': hierarchy_name + '/const_0',
+                    'port_name': 'dout'
+                },
+                {
+                    'type': 'pin',
+                    'name': hierarchy_name + '/anc',
+                    'port_name': port_name + pin_name
+                }
+            )
+
+    # If Reliability is selected, build Reliability Protocol Module and connect to the AXI-Lite to Network Converter
+    if has_reliability:
+        tcl_user_app.instBlock(
+            {
+                'name': 'reliability_protocol_module',
+                'inst':  hierarchy_name + '/rpm',
+                'clks': ['i_clk'],
+                'resetns': ['i_ap_rst_n'],
+                'resetns_port': 'rst',
+                'properties': [ 
+                                'CONFIG.IS_WAN_RX {false}',
+                                'CONFIG.PUBREC_TIMEOUT {' + str(rel_timeout) + '}',
+                                'CONFIG.PUBCOMP_TIMEOUT {' + str(rel_timeout) + '}'
+                              ]
+            }
+        )
+        tcl_user_app.makeConnection(
+            'net', 
+            {
+                'type': 'pin',
+                'name': hierarchy_name + '/kernel_id',
+                'port_name': 'dout'
+            },
+            {
+                'type': 'pin',
+                'name': hierarchy_name + '/rpm',
+                'port_name': 'i_kernel_id'
+            }
+        )
+        # Connect IP Address and Control Port Number to AXI-Lite to Network Converter. That way only ANC needs to be connected to the outside world
+        tcl_user_app.makeConnection(
+            'net', 
+            {
+                'type': 'pin',
+                'name': hierarchy_name + '/anc',
+                'port_name': 'i_kernel_ip_address'
+            },
+            {
+                'type': 'pin',
+                'name': hierarchy_name + '/rpm',
+                'port_name': 'i_kernel_ip_address'
+            }
+        )
+        tcl_user_app.makeConnection(
+            'net', 
+            {
+                'type': 'pin',
+                'name': hierarchy_name + '/anc',
+                'port_name': 'i_control_port_number'
+            },
+            {
+                'type': 'pin',
+                'name': hierarchy_name + '/rpm',
+                'port_name': 'i_KIP_port_number'
+            }
+        )
+        # Connect Reliability Protocol Module to AXI-Lite to Network Converter    
+        tcl_user_app.makeConnection(
+            'intf', 
+            {
+                'type': 'intf',
+                'name': hierarchy_name + '/anc',
+                'port_name': 'to_LAN'
+            },
+            {
+                'type': 'intf',
+                'name': hierarchy_name + '/rpm',
+                'port_name': 'from_ctrl_LAN'
+            }
+        )
+        tcl_user_app.makeConnection(
+            'intf', 
+            {
+                'type': 'intf',
+                'name': hierarchy_name + '/anc',
+                'port_name': 'to_WAN'
+            },
+            {
+                'type': 'intf',
+                'name': hierarchy_name + '/rpm',
+                'port_name': 'from_ctrl_WAN'
+            }
+        )
+        tcl_user_app.makeConnection(
+            'intf', 
+            {
+                'type': 'intf',
+                'name': hierarchy_name + '/anc',
+                'port_name': 'to_KIP'
+            },
+            {
+                'type': 'intf',
+                'name': hierarchy_name + '/rpm',
+                'port_name': 'from_ctrl_KIP'
+            }
+        )
+        tcl_user_app.makeConnection(
+            'intf', 
+            {
+                'type': 'intf',
+                'name': hierarchy_name + '/rpm',
+                'port_name': 'to_ctrl'
+            },
+            {
+                'type': 'intf',
+                'name': hierarchy_name + '/anc',
+                'port_name': 'from_network_bridge'
+            }
+        )
+
+def setControlAXILPortProperties(tcl_user_app, port_name, axil_addr_width):
+    properties = [
+        'CONFIG.PROTOCOL AXI4LITE',
+        'CONFIG.ADDR_WIDTH ' + str(axil_addr_width),
+        'CONFIG.CLK_DOMAIN CLK',
+        'CONFIG.FREQ_HZ 200000000',
+        'CONFIG.HAS_BURST 0',
+        'CONFIG.HAS_CACHE 0',
+        'CONFIG.HAS_LOCK 0',
+        'CONFIG.HAS_PROT 0',
+        'CONFIG.HAS_QOS 0',
+        'CONFIG.HAS_REGION 0',
+        'CONFIG.HAS_RRESP 0',
+        'CONFIG.NUM_READ_OUTSTANDING 1',
+        'CONFIG.NUM_WRITE_OUTSTANDING 1'
+    ]
+    tcl_user_app.setPortProperties(port_name, properties)
+
+def getMaxAddressRangeByWidth(addr_width):
+    """
+    Figures out the maximum address range possible (starting from 0) based on address width. 
+    Vivado segments address ranges every 10 bits, using K, M, G, etc. Eg. for 64-bit address width, returns '16E'. 
+
+    Helpful guide:
+    10 bit address = (2^10) 1K entries
+    20 bit address = (2^20) 1M entries
+    30 bit address = (2^30) 1G entries
+    40 bit address = (2^40) 1T entries
+    50 bit address = (2^50) 1P entries
+    60 bit address = (2^60) 1E entries
+
+    Address widths in these entries use remaining bits as multipliers (eg. 52-bit address = 1P * 2 bit remainder = 4P)
+    Args:
+        addr_width(int): address width
+    """
+    addr_unit = ''
+    addr_multiplier = 0
+    if addr_width >= 60:
+        addr_unit = 'E'
+        multiplier_exponent = addr_width - 60
+    elif addr_width >= 50:
+        addr_unit = 'P'
+        multiplier_exponent = addr_width - 50
+    elif addr_width >= 40:
+        addr_unit = 'T'
+        multiplier_exponent = addr_width - 40
+    elif addr_width >= 30:
+        addr_unit = 'G'
+        multiplier_exponent = addr_width - 30
+    elif addr_width >= 20:
+        addr_unit = 'M'
+        multiplier_exponent = addr_width - 20
+    elif addr_width >= 10:
+        addr_unit = 'K'
+        multiplier_exponent = addr_width - 10
+    else:
+        # Edge case: below 1K just write the full number
+        addr_unit = ''
+        multiplier_exponent = addr_width
+    addr_multiplier = str(2**multiplier_exponent)
+    return addr_multiplier + addr_unit
+
+def userApplicationRegionControlInst(tcl_user_app):
+    """
+    Builds the infrastructure needed to send control messages to and from user kernels
 
     Args:
         tcl_user_app: a tclMe object (which contains references to the FPGA's
                       node object and a handle to the output file)
     """
-    #initialize axi_control_interface interconnect slave side (1 slave)
-
-    num_ctrl_interfaces = len(getInterfaces(tcl_user_app.fpga, 's_axi', 'scope', 'global'))
-    # extra interfaces for the memories containing addresses in this mode
-    num_ctrl_interfaces = num_ctrl_interfaces + len(kern_name_list)
-    if tcl_user_app.fpga['comm'] == 'raw':
-        num_ctrl_interfaces = num_ctrl_interfaces + 2
-
-    #make dummy bram for control interface if no control interfaces
-    properties = ['CONFIG.PROTOCOL AXI4']
-    tcl_user_app.setPortProperties('S_AXI_CONTROL', properties)
-    properties = ['CONFIG.ADDR_WIDTH {40}',
-                  'CONFIG.DATA_WIDTH {128}',
-                  'CONFIG.ARUSER_WIDTH {16}',
-                  'CONFIG.AWUSER_WIDTH {16}',
-                  'CONFIG.ID_WIDTH {16}'
-                  ]
-    slave_axim_properties = ['CONFIG.ADDR_WIDTH {40}',
-                  'CONFIG.DATA_WIDTH {128}'
-                  ]
-    tcl_user_app.setPortProperties('S_AXI_CONTROL',properties)
-    if(num_ctrl_interfaces == 0):
-        inc_clks = ['aclk']
-        inc_resetns = ['aresetn']
+    # Parameters
+    LAN_PORT_NUMBER = 32768
+    KIP_PORT_NUMBER = 32769
+    has_wstrb = True
+    has_reliability = True
+    rel_timeout = 500
+    axil_addr_width = 64
+    # Construct kernel dictionary indexed by kernel ID. 
+    ctrl_kernel_dict = makeControlKernelDictionary(tcl_user_app, "num")
+    num_ctrl_instances = len(ctrl_kernel_dict)
+    # Only build components if there are control instances specified
+    if num_ctrl_instances > 0:
+        # In some cases, a list of keys sorted in ascending order will be useful
+        kernel_ids_ascending_order = getSortedListofKeys(ctrl_kernel_dict)
+        # 1. Build Control API hierarchies
+        for kernel_id in ctrl_kernel_dict.keys():
+            buildControlAPIInst(tcl_user_app, kernel_id, ctrl_kernel_dict[kernel_id], axil_addr_width, has_wstrb, has_reliability, rel_timeout)
+        # 2. Build control infrastructure in Application Region
         tcl_user_app.instBlock(
-            {'name': 'smartconnect',
-             'resetns_port': 'rstn',
-             'inst': 'applicationRegion/axi_interconnect_ctrl',
-             'clks': inc_clks,
-             'resetns': inc_resetns,
-             'properties': ['CONFIG.NUM_SI {1}',
-                            'CONFIG.NUM_MI {1}']
-             }
-        )
-
-        tcl_user_app.instBlock(
-            {'name': 'axi_gpio',
-             'resetns_port': 'rstn',
-             'inst': 'applicationRegion/dummy_gpio',
-             'clks': ['s_axi_aclk'],
-             'resetns': ['s_axi_aresetn'],
-             }
-        )
-        tcl_user_app.makeConnection(
-            'intf',
             {
-                'name': None,
-                'type': 'intf_port',
-                'port_name': 'S_AXI_CONTROL'
-            },
-            {'name': 'applicationRegion/axi_interconnect_ctrl',
-             'type': 'intf',
-             'port_name': 'S00_AXI'
-             }
-        )
-        tcl_user_app.makeConnection(
-            'intf',
-            {'name': 'applicationRegion/dummy_gpio',
-             'type': 'intf',
-             'port_name': 'S_AXI'
-             },
-            {'name': 'applicationRegion/axi_interconnect_ctrl',
-             'type': 'intf',
-             'port_name': 'M00_AXI'
-             }
-        )
-        slave_base = "Reg"
-        master = "S_AXI_CONTROL"
-        interconnect_properties = ['CONFIG.S00_HAS_REGSLICE {1}']
-        tcl_user_app.assign_address(
-            'applicationRegion/dummy_gpio',
-            'S_AXI',
-            'Reg'
-        )
-        tcl_user_app.setProperties('applicationRegion/axi_interconnect_ctrl', interconnect_properties)
-    elif (num_ctrl_interfaces == 1):
-        inc_clks = ['aclk']
-        inc_resetns = ['aresetn']
-        tcl_user_app.instBlock(
-            {'name': 'smartconnect',
-             'resetns_port': 'rstn',
-             'inst': 'applicationRegion/axi_interconnect_ctrl',
-             'clks': inc_clks,
-             'resetns': inc_resetns,
-             'properties': ['CONFIG.NUM_SI {1}',
-                            'CONFIG.NUM_MI {2}']
-             }
-        )
-
-        tcl_user_app.instBlock(
-            {'name': 'axi_gpio',
-             'resetns_port': 'rstn',
-             'inst': 'applicationRegion/dummy_gpio',
-             'clks': ['s_axi_aclk'],
-             'resetns': ['s_axi_aresetn'],
-             }
-        )
-        tcl_user_app.makeConnection(
-            'intf',
-            {
-                'name': None,
-                'type': 'intf_port',
-                'port_name': 'S_AXI_CONTROL'
-            },
-            {'name': 'applicationRegion/axi_interconnect_ctrl',
-             'type': 'intf',
-             'port_name': 'S00_AXI'
-             }
-        )
-        tcl_user_app.makeConnection(
-            'intf',
-            {'name': 'applicationRegion/dummy_gpio',
-             'type': 'intf',
-             'port_name': 'S_AXI'
-             },
-            {'name': 'applicationRegion/axi_interconnect_ctrl',
-             'type': 'intf',
-             'port_name': 'M01_AXI'
-             }
-        )
-        slave_base = "Reg"
-        master = "S_AXI_CONTROL"
-        kern = kern_name_list[0]
-        port_name = kern + "_CONTROL"
-        tcl_user_app.add_axi4_port(port_name, 'Master')
-        tcl_user_app.setPortProperties(port_name, slave_axim_properties)
-        inc_index_str = "M00_AXI"
-        tcl_user_app.makeConnection(
-            'intf',
-            {'name': 'applicationRegion/axi_interconnect_ctrl',
-             'type': 'intf',
-             'port_name': inc_index_str
-             },
-            {
-                'name': None,
-                'type': 'intf_port',
-                'port_name': port_name
+                'name': 'xlconstant',
+                'inst':  'applicationRegion/LAN_port_number',
+                'properties': [ 
+                                'CONFIG.CONST_WIDTH {16}',
+                                'CONFIG.CONST_VAL {' + str(LAN_PORT_NUMBER) + '}'
+                            ]
             }
         )
-        tcl_user_app.assign_address(
-            None,
-            port_name,
-            'Reg'
-        )
-        tcl_user_app.assign_address(
-            'applicationRegion/dummy_gpio',
-            'S_AXI',
-            'Reg'
-        )
-        kern = kern_name_list[0]
-        prop = kern_prop_list[0]
-        slave_port = kern + "_CONTROL"
-        property = {'range': '4K'}
-        tcl_user_app.set_address_properties(None, slave_port, slave_base, master, **property)
-        property = {'offset': prop[1]}
-        tcl_user_app.set_address_properties(None, slave_port, slave_base, master, **property)
-        property = {'range': prop[0]}
-        tcl_user_app.set_address_properties(None, slave_port, slave_base, master, **property)
-    else:
-        #tcl_user_app.instBlock(
-        #        {'name':'smartconnect',
-        #        'inst':'applicationRegion/axi_interconnect_ctrl',
-        #        'clks':['aclk'],
-        #        'resetns':['aresetn'],
-        #        'properties':['CONFIG.NUM_SI {1}',
-        #            'CONFIG.NUM_MI {' + str(num_ctrl_interfaces) + '}']
-        #        }
-        #        )
-        #
-
-        inc_clks = ['aclk']
-        inc_resetns = ['aresetn']
-        for inc_index in range(0, num_ctrl_interfaces):
-            inc_index_str = "%02d"%inc_index
-            inc_clks.append('M' + inc_index_str + '_ACLK')
-            inc_resetns.append('M' + inc_index_str + '_ARESETN')
-
         tcl_user_app.instBlock(
-                {'name':'smartconnect',
-                 'resetns_port': 'rstn',
-                'inst':'applicationRegion/axi_interconnect_ctrl',
-                'clks':inc_clks,
-                'resetns':inc_resetns,
-                'properties':['CONFIG.NUM_SI {1}',
-                    'CONFIG.NUM_MI {' + str(num_ctrl_interfaces) + '}']
-                }
-                )
-        tcl_user_app.makeConnection(
-                    'intf',
+            {
+                'name': 'xlconstant',
+                'inst':  'applicationRegion/KIP_port_number',
+                'properties': [ 
+                                'CONFIG.CONST_WIDTH {16}',
+                                'CONFIG.CONST_VAL {' + str(KIP_PORT_NUMBER) + '}'
+                            ]
+            }
+        )
+        # If there are multiple control instances, build switches for outbound control packets
+        if num_ctrl_instances > 1:
+            for path in ["LAN", "WAN", "KIP"]:
+                buildControlToNBSwitch(tcl_user_app, path, num_ctrl_instances)
+        # Build infrastructure for local LAN path
+        tcl_user_app.instBlock(
+            {
+                'name': 'LAN_local_formatter',
+                'inst':  'applicationRegion/LAN_local_formatter_0',
+                'clks': ['i_clk'],
+                'resetns': ['i_ap_rst_n'],
+                'resetns_port': 'rst'
+            }
+        )
+        # Build infrastructure for local KIP path
+        tcl_user_app.instBlock(
+            {
+                'name': 'KIP_router',
+                'inst':  'applicationRegion/KIP_router_0',
+                'clks': ['i_clk'],
+                'resetns': ['i_ap_rst_n'],
+                'resetns_port': 'rst'
+            }
+        )
+        tcl_user_app.instBlock(
+            {
+                'name': 'KIP_local_formatter',
+                'inst':  'applicationRegion/KIP_local_formatter_0',
+                'clks': ['i_clk'],
+                'resetns': ['i_ap_rst_n'],
+                'resetns_port': 'rst'
+            }
+        )
+        # Build infrastructure for inbound packets
+        # This switch is needed even if there is only 1 control kernel, because local and remote inbound packets converge here
+        tcl_user_app.instBlock(
+            {
+                'name':'axis_switch',
+                'inst': 'applicationRegion/ctrl_from_nb_switch',
+                'clks':['aclk'],
+                'resetns_port': 'rst',
+                'resetns':['aresetn']
+            }
+        )
+        # Configure the switch to have 1 Manager per kernel, 3 subordinates, and arbitrate on TLAST only.
+        properties = [
+            'CONFIG.NUM_SI {3}',
+            'CONFIG.NUM_MI {' + str(num_ctrl_instances) + '}',
+            'CONFIG.HAS_TLAST.VALUE_SRC USER'
+        ]
+        tcl_user_app.setProperties('applicationRegion/ctrl_from_nb_switch',properties)
+        properties = [
+            'CONFIG.HAS_TLAST {1}'
+        ]
+        tcl_user_app.setProperties('applicationRegion/ctrl_from_nb_switch', properties)
+        properties = [
+            'CONFIG.ARB_ON_MAX_XFERS {0}',
+            'CONFIG.ARB_ON_TLAST {1}',
+            'CONFIG.ARB_ALGORITHM {1}'
+        ]
+        tcl_user_app.setProperties('applicationRegion/ctrl_from_nb_switch', properties)
+        # Configure Switch Routing: Lowest index kernel connects to port 0, second lowest to port 1, etc.
+        setSwitchManagerPortRouting(tcl_user_app, 
+                                    'applicationRegion/ctrl_from_nb_switch', 
+                                    kernel_ids_ascending_order
+                                    )        
+        # 3. Create AXI-Lite block diagram ports (to be connected to kernels) and connect them to Control API instances
+        # These ports are not created in Application Region, but are in the PR block diagram
+        ctrl_axi_lite_ports = [] # Used to assign each port to 200MHz clock
+        for kernel_id in ctrl_kernel_dict.keys():
+            kernel_dict = ctrl_kernel_dict[kernel_id]
+            ctrl_kernel_type = kernel_dict['control_type']
+            presuffix_port_name = kernel_dict['inst']
+            kernel_axil_net_converter_name = 'applicationRegion/control_api_inst_%d/anc' % (kernel_id)
+            if ctrl_kernel_type == 'm_axil' or ctrl_kernel_type == 'both':
+                # Everything is relative to user. Control Kernel's M_AXIL will connect to PR's M_AXIL port, which connects to S_AXIL port of network converter
+                axil_port_name = presuffix_port_name + '_M_AXIL'
+                tcl_user_app.add_axi4_port(axil_port_name, 'Slave')
+                setControlAXILPortProperties(tcl_user_app, axil_port_name, axil_addr_width)
+                tcl_user_app.makeConnection(
+                    'intf', 
                     {
-                    'name':None,
-                    'type':'intf_port',
-                    'port_name':'S_AXI_CONTROL'
+                        'type': 'intf_port',
+                        'port_name': axil_port_name
                     },
-                    {'name':'applicationRegion/axi_interconnect_ctrl',
-                    'type':'intf',
-                    'port_name':'S00_AXI'
+                    {
+                        'type': 'intf',
+                        'name': kernel_axil_net_converter_name,
+                        'port_name': 'S_AXIL'
                     }
-                    )
-        master_port_index = num_ctrl_interfaces - len(kern_name_list)
-        slave_base = "Reg"
-        master = "S_AXI_CONTROL"
-        for kern_num in range(len(kern_name_list)):
-            kern = kern_name_list[kern_num]
-            port_name = kern + "_CONTROL"
-            tcl_user_app.add_axi4_port(port_name, 'Master')
-            tcl_user_app.setPortProperties(port_name, slave_axim_properties)
-            inc_index_str = "M"+"%02d" % master_port_index +"_AXI"
+                )
+                ctrl_axi_lite_ports.append(axil_port_name)
+            if ctrl_kernel_type == 's_axil' or ctrl_kernel_type == 'both':
+                # Everything is relative to user. Control Kernel's S_AXIL will connect to PR's S_AXIL port, which connects to M_AXIL port of network converter
+                axil_port_name = presuffix_port_name + '_S_AXIL'
+                tcl_user_app.add_axi4_port(axil_port_name, 'Master')
+                setControlAXILPortProperties(tcl_user_app, axil_port_name, axil_addr_width)
+                tcl_user_app.makeConnection(
+                    'intf', 
+                    {
+                        'type': 'intf',
+                        'name': kernel_axil_net_converter_name,
+                        'port_name': 'M_AXIL'
+                    },
+                    {
+                        'type': 'intf_port',
+                        'port_name': axil_port_name
+                    }
+                )
+                ctrl_axi_lite_ports.append(axil_port_name)
+        # Assign all AXI-Lite ports to 200 MHz clock
+        tcl_user_app.setInterfacesCLK("CLK", ctrl_axi_lite_ports)
+        # # Configure ARM processor link
+        # properties = ['CONFIG.PROTOCOL AXI4']
+        # tcl_user_app.setPortProperties('S_AXI_CONTROL', properties)
+        # properties = ['CONFIG.ADDR_WIDTH {40}',
+        #             'CONFIG.DATA_WIDTH {128}',
+        #             'CONFIG.ARUSER_WIDTH {16}',
+        #             'CONFIG.AWUSER_WIDTH {16}',
+        #             'CONFIG.ID_WIDTH {16}'
+        #             ]
+        # tcl_user_app.setPortProperties('S_AXI_CONTROL', properties)
+        # 4. Connect Control API Instances to inbound/outbound paths
+        # Connect all control instances to IP Address and Ports
+        # Only need to connect to ANC module because ANC and RPM IP addresses are already wired together in buildControlAPIInst
+        for kernel_id in ctrl_kernel_dict.keys():
+            sink_kernel = 'applicationRegion/control_api_inst_%d/anc' % (kernel_id)
             tcl_user_app.makeConnection(
-                'intf',
-                {'name': 'applicationRegion/axi_interconnect_ctrl',
-                 'type': 'intf',
-                 'port_name': inc_index_str
-                 },
+                'net', 
                 {
-                    'name': None,
-                    'type': 'intf_port',
-                    'port_name': port_name
+                    'type': 'pin',
+                    'name': 'network/ip_constant_block_inst',
+                    'port_name': 'ip'
+                },
+                {
+                    'type': 'pin',
+                    'name': sink_kernel,
+                    'port_name': 'i_kernel_ip_address'
                 }
             )
-            tcl_user_app.assign_address(
-                None,
-                port_name,
-                'Reg'
+            tcl_user_app.makeConnection(
+                'net', 
+                {
+                    'type': 'pin',
+                    'name': 'applicationRegion/KIP_port_number',
+                    'port_name': 'dout'
+                },
+                {
+                    'type': 'pin',
+                    'name': sink_kernel,
+                    'port_name': 'i_control_port_number'
+                }
             )
-            master_port_index = master_port_index + 1
-        for kern_num in range(len(kern_name_list)):
-            kern = kern_name_list[kern_num]
-            prop = kern_prop_list[kern_num]
-            slave_port = kern + "_CONTROL"
-            property = {'range': '4K'}
-            tcl_user_app.set_address_properties(None, slave_port, slave_base, master, **property)
-            property = {'offset': prop[1]}
-            tcl_user_app.set_address_properties(None, slave_port, slave_base, master, **property)
-            property = {'range': prop[0]}
-            tcl_user_app.set_address_properties(None, slave_port, slave_base, master, **property)
-
+        # Path Case 1: Multiple Control API Instances on the same device
+        if num_ctrl_instances > 1:
+            # Inbound/Outbound pathway: Lowest index kernel connects to port 0, second lowest to port 1, etc.
+            for i in range(0, num_ctrl_instances):
+                kernel_id = kernel_ids_ascending_order[i]
+                hierarchy_name = 'applicationRegion/control_api_inst_%d' % (kernel_id)
+                if has_reliability:
+                    kern_name = hierarchy_name + '/rpm'
+                    inbound_port = 'from_nb'
+                    outbound_port_prefix = 'to_nb_'
+                else:
+                    kern_name = hierarchy_name + '/anc'
+                    inbound_port = 'from_network_bridge'
+                    outbound_port_prefix = 'to_'
+                if i < 10:
+                    inbound_switch_port = 'M0' + str(i) + '_AXIS'
+                    outbound_switch_port = 'S0' + str(i) + '_AXIS'
+                else:
+                    inbound_switch_port = 'M' + str(i) + '_AXIS'
+                    outbound_switch_port = 'S' + str(i) + '_AXIS'
+                # Inbound pathway
+                tcl_user_app.makeConnection(
+                        'intf', 
+                        {
+                            'type': 'intf',
+                            'name': 'applicationRegion/ctrl_from_nb_switch',
+                            'port_name': inbound_switch_port
+                        },
+                        {
+                            'type': 'intf',
+                            'name': kern_name,
+                            'port_name': inbound_port
+                        }
+                    )
+                # Connect all 3 output interface ports to switches
+                for path in ["LAN", "WAN", "KIP"]:
+                    tcl_user_app.makeConnection(
+                        'intf', 
+                        {
+                            'type': 'intf',
+                            'name': kern_name,
+                            'port_name': outbound_port_prefix + path
+                        },
+                        {
+                            'type': 'intf',
+                            'name': 'applicationRegion/ctrl_to_nb_' + path + '_switch',
+                            'port_name': outbound_switch_port
+                        }
+                    )
+            # Connect output switches to outbound pathways
+            tcl_user_app.makeConnection(
+                'intf', 
+                {
+                    'type': 'intf',
+                    'name': 'applicationRegion/ctrl_to_nb_LAN_switch',
+                    'port_name': 'M00_AXIS'
+                },
+                {
+                    'type': 'intf',
+                    'name': 'applicationRegion/output_switch',
+                    'port_name': 'S00_AXIS'
+                }
+            )
+            # TODO: Connect NB WAN switch
+            tcl_user_app.makeConnection(
+                'intf', 
+                {
+                    'type': 'intf',
+                    'name': 'applicationRegion/ctrl_to_nb_KIP_switch',
+                    'port_name': 'M00_AXIS'
+                },
+                {
+                    'type': 'intf',
+                    'name': 'applicationRegion/KIP_router_0',
+                    'port_name': 'from_kernels'
+                }
+            )
+        # Path Case 2: Only 1 Control API Instance on this board, connect directly to outputs beyond the switch
+        else:
+            kernel_id = kernel_ids_ascending_order[0]
+            hierarchy_name = 'applicationRegion/control_api_inst_%d' % (kernel_id)
+            if has_reliability:
+                kern_name = hierarchy_name + '/rpm'
+                inbound_port = 'from_nb'
+                outbound_port_prefix = 'to_nb_'
+            else:
+                kern_name = hierarchy_name + '/anc'
+                inbound_port = 'from_network_bridge'
+                outbound_port_prefix = 'to_'
+            # Single kernel inbound pathway
+            tcl_user_app.makeConnection(
+                'intf', 
+                {
+                    'type': 'intf',
+                    'name': 'applicationRegion/ctrl_from_nb_switch',
+                    'port_name': 'M00_AXIS'
+                },
+                {
+                    'type': 'intf',
+                    'name': kern_name,
+                    'port_name': inbound_port
+                }
+            )
+            # Single kernel outbound pathway
+            tcl_user_app.makeConnection(
+                'intf', 
+                {
+                    'type': 'intf',
+                    'name': kern_name,
+                    'port_name': outbound_port_prefix + 'LAN'
+                },
+                {
+                    'type': 'intf',
+                    'name': 'applicationRegion/output_switch',
+                    'port_name': 'S00_AXIS'
+                }
+            )
+            # TODO: Connect NB WAN switch
+            tcl_user_app.makeConnection(
+                'intf', 
+                {
+                    'type': 'intf',
+                    'name': kern_name,
+                    'port_name': outbound_port_prefix + 'KIP'
+                },
+                {
+                    'type': 'intf',
+                    'name': 'applicationRegion/KIP_router_0',
+                    'port_name': 'from_kernels'
+                }
+            )
+        # 5. Connect KIP path to Galapagos infrastructure
+        tcl_user_app.makeConnection(
+            'net', 
+            {
+                'type': 'pin',
+                'name': 'network/ip_constant_block_inst',
+                'port_name': 'ip'
+            },
+            {
+                'type': 'pin',
+                'name': 'applicationRegion/KIP_router_0',
+                'port_name': 'i_local_ip_address'
+            }
+        )
+        tcl_user_app.makeConnection(
+            'intf', 
+            {
+                'type': 'intf',
+                'name': 'applicationRegion/KIP_router_0',
+                'port_name': 'to_rx_nb'
+            },
+            {
+                'type': 'intf',
+                'name': 'applicationRegion/KIP_local_formatter_0',
+                'port_name': 'from_router'
+            }
+        )
+        # KIP Local Connection (KIP Remote Connection connected in bridgeConnections)
+        tcl_user_app.makeConnection(
+            'intf', 
+            {
+                'type': 'intf',
+                'name': 'applicationRegion/KIP_local_formatter_0',
+                'port_name': 'to_kernels'
+            },
+            {
+                'type': 'intf',
+                'name': 'applicationRegion/ctrl_from_nb_switch',
+                'port_name': 'S00_AXIS'
+            }
+        )
+        # 6. Connect local LAN path to Galapagos infrastructure
+        tcl_user_app.makeConnection(
+            'net', 
+            {
+                'type': 'pin',
+                'name': 'network/ip_constant_block_inst',
+                'port_name': 'ip'
+            },
+            {
+                'type': 'pin',
+                'name': 'applicationRegion/LAN_local_formatter_0',
+                'port_name': 'i_local_ip_address'
+            }
+        )
+        tcl_user_app.makeConnection(
+            'net', 
+            {
+                'type': 'pin',
+                'name': 'applicationRegion/LAN_port_number',
+                'port_name': 'dout'
+            },
+            {
+                'type': 'pin',
+                'name': 'applicationRegion/LAN_local_formatter_0',
+                'port_name': 'i_LAN_port_number'
+            }
+        )
+        tcl_user_app.makeConnection(
+            'intf', 
+            {
+                'type': 'intf',
+                'name': 'applicationRegion/custom_switch_inst',
+                'port_name': 'ctrl_out_switch'
+            },
+            {
+                'type': 'intf',
+                'name': 'applicationRegion/LAN_local_formatter_0',
+                'port_name': 'from_router'
+            }
+        )
+        tcl_user_app.makeConnection(
+            'intf', 
+            {
+                'type': 'intf',
+                'name': 'applicationRegion/LAN_local_formatter_0',
+                'port_name': 'to_switch'
+            },
+            {
+                'type': 'intf',
+                'name': 'applicationRegion/ctrl_from_nb_switch',
+                'port_name': 'S01_AXIS'
+            }
+        )
+        # 7. Assign Control instances AXI-Lite addresses
+        for kernel_id in ctrl_kernel_dict.keys():
+            kernel_dict = ctrl_kernel_dict[kernel_id]
+            # Addresses are assigned to AXI-Lite subordinates.
+            # Case 1: User is using M_AXIL port (AXI-Lite to Network Converter is subordinate)
+            if kernel_dict['control_type'] == 'm_axil' or kernel_dict['control_type'] == 'both':
+                manager = kernel_dict['inst'] + "_M_AXIL" # User kernel's M_AXIL port
+                ctrl_api_inst = 'applicationRegion/control_api_inst_%d/anc' % (kernel_id)
+                inst_port = 'S_AXIL'
+                base = 'reg0' # That's just what it says in Vivado
+                tcl_user_app.assign_address(ctrl_api_inst, inst_port, base)
+                # Set range and offset to be all possible bits
+                # Range is based on AXIL_ADDRESS width
+                ctrl_api_inst = "anc"
+                prop = {'offset': "0x0000"}
+                tcl_user_app.set_address_properties(ctrl_api_inst, inst_port, base, manager, **prop)
+                address_range = getMaxAddressRangeByWidth(axil_addr_width)
+                prop = {'range': address_range}
+                tcl_user_app.set_address_properties(ctrl_api_inst, inst_port, base, manager, **prop)
+            # Case 2: User is using S_AXIL port (User kernel is subordinate)
+            if kernel_dict['control_type'] == 's_axil' or kernel_dict['control_type'] == 'both':
+                manager = 'applicationRegion/control_api_inst_%d/anc/M_AXIL' % (kernel_id)
+                # In this case, we supply the name of the PR AXI-Lite port that will be connected to the kernel
+                subordinate_port = kernel_dict['inst'] + '_S_AXIL'
+                base = 'Reg' # That's just what it says in Vivado
+                tcl_user_app.assign_address(None, subordinate_port, base)
+                prop = {'offset': "0x0000"}
+                tcl_user_app.set_address_properties(None, subordinate_port, base, manager, **prop)
+                address_range = getMaxAddressRangeByWidth(axil_addr_width)
+                prop = {'range': address_range}
+                tcl_user_app.set_address_properties(None, subordinate_port, base, manager, **prop)
 
 def getInterfaces(fpga, intf, flag = None, scope = None):
     """
@@ -1571,6 +2175,15 @@ def userApplicationRegionDDR(tcl_user_app, outDir, output_path):
                 }
             )
 
+    # Now connect the Galapagos router through the input switch into all of
+    # the s_axis interfaces
+    port_names_list=[]
+    # clk_200_intf_config = ['S_AXI_CONTROL']
+    clk_200_intf_config = []
+    clk_300_intf_config = ['S_AXIS', 'M_AXIS']
+    # Case 1: More than 1 kernel input stream on this node
+    if len(s_axis_array) > 1:
+        if(sim == 1):
             tcl_user_app.makeConnection(
                 'intf',
                 {
@@ -1725,6 +2338,8 @@ def userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, 
                 )
             clk_200_intf_config.append(presufix_port_name + "_MAXIS")
             clk_200_intf_config.append(presufix_port_name + "_SAXIS")
+            #TODO: MERGE THis
+            # START OF RECONFIGURABLE
             if s_axis['kernel_inst']['wan_enabled'][0]:
                 clk_200_intf_config.append(presufix_port_name + "_SWAN")
             if s_axis['kernel_inst']['control']:
@@ -1760,6 +2375,10 @@ def userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, 
                                           'id_port': s_axis['kernel_inst']['id_port']
                                           })
                 print('type is not defined for kernel '+str(s_axis['kernel_inst']['inst'])+', assuming open\n')
+            # END OF RECONFIGURABLE, START OF CONTROL
+            clk_200_intf_config.append(presufix_port_name + "_SWAN")
+            port_names_list.append(str(presufix_port_name))
+            # END OF CONTROL
 
         # custom_switch_inst only exists without raw
         if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
@@ -1900,9 +2519,12 @@ def userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, 
                         'applicationRegion/custom_switch_inst',
                         1
                     )
-    createTopLevelVerilog(outDir + "/topLevel.v", output_path + "/../middleware/python",kernel_properties,control_port_names_list,tcl_user_app.fpga,is_gw)
-    createHierarchyTCL(project_name,outDir + "/userkernels",kernel_properties,control_port_names_list,tcl_user_app.fpga['ip_folder'],tcl_user_app.fpga,is_gw,outDir,api_info,CAMILO_TEMP_DEBUG)
+    ctrl_kernel_dict = makeControlKernelDictionary(tcl_user_app, 'inst') 
+    createTopLevelVerilog(outDir + "/topLevel.v", output_path + "/../middleware/python",kernel_properties,ctrl_kernel_dict,tcl_user_app.fpga,is_gw)
+    createHierarchyTCL(project_name,outDir + "/userkernels",kernel_properties,ctrl_kernel_dict,tcl_user_app.fpga['ip_folder'],tcl_user_app.fpga,is_gw,outDir,api_info,CAMILO_TEMP_DEBUG)
     m_axis_array = getInterfaces(tcl_user_app.fpga, 'm_axis', 'scope', 'global')
+    kern_name_list= port_names_list
+
 
     # Now connect all m_axis interfaces through the output switch into the
     # Galapagos router
@@ -2197,44 +2819,40 @@ def userApplicationRegionAssignAddresses(tcl_user_app):
         # if shared:
             # tcl_user_app.set_address_properties(None, 'S_AXI_MEM_1', 'Reg', master, **properties)
 
+    # #global s_axi
+    # s_axi_array = getInterfaces(tcl_user_app.fpga, 's_axi', 'scope', 'global')
+    # master = 'S_AXI_CONTROL'
 
+    # # set up the address space for the memories that were added in raw mode
+    # if tcl_user_app.fpga['comm'] == 'raw':
+    #     slave_inst = "applicationRegion/ctrl_blk_mem_switch_rom"
+    #     slave_port = "S_AXI"
+    #     slave_base = "Mem0"
+    #     tcl_user_app.assign_address(slave_inst, slave_port, slave_base)
+    #     slave_inst = "ctrl_blk_mem_switch_rom"
+    #     # range is done first because if offset is done first, depending on the range, it can be misaligned
+    #     prop = {'range': '4K'}
+    #     tcl_user_app.set_address_properties(slave_inst, slave_port, slave_base, master, **prop)
+    #     prop = {'offset': "0x0000"}
+    #     tcl_user_app.set_address_properties(slave_inst, slave_port, slave_base, master, **prop)
+    #     slave_inst = "applicationRegion/ctrl_blk_mem_switch_rom_mac"
+    #     tcl_user_app.assign_address(slave_inst, slave_port, slave_base)
+    #     slave_inst = "ctrl_blk_mem_switch_rom_mac"
+    #     prop = {'range': '4K'}
+    #     tcl_user_app.set_address_properties(slave_inst, slave_port, slave_base, master, **prop)
+    #     prop = {'offset': "0x1000"}
+    #     tcl_user_app.set_address_properties(slave_inst, slave_port, slave_base, master, **prop)
 
-
-
-
-    #global s_axi
-    s_axi_array = getInterfaces(tcl_user_app.fpga, 's_axi', 'scope', 'global')
-    master = 'S_AXI_CONTROL'
-    # set up the address space for the memories that were added in raw mode
-    if tcl_user_app.fpga['comm'] == 'raw':
-        slave_inst = "applicationRegion/ctrl_blk_mem_switch_rom"
-        slave_port = "S_AXI"
-        slave_base = "Mem0"
-        tcl_user_app.assign_address(slave_inst, slave_port, slave_base)
-        slave_inst = "ctrl_blk_mem_switch_rom"
-        # range is done first because if offset is done first, depending on the range, it can be misaligned
-        prop = {'range': '4K'}
-        tcl_user_app.set_address_properties(slave_inst, slave_port, slave_base, master, **prop)
-        prop = {'offset': "0x0000"}
-        tcl_user_app.set_address_properties(slave_inst, slave_port, slave_base, master, **prop)
-        slave_inst = "applicationRegion/ctrl_blk_mem_switch_rom_mac"
-        tcl_user_app.assign_address(slave_inst, slave_port, slave_base)
-        slave_inst = "ctrl_blk_mem_switch_rom_mac"
-        prop = {'range': '4K'}
-        tcl_user_app.set_address_properties(slave_inst, slave_port, slave_base, master, **prop)
-        prop = {'offset': "0x1000"}
-        tcl_user_app.set_address_properties(slave_inst, slave_port, slave_base, master, **prop)
-
-    for global_s_axi in s_axi_array:
-        slave_inst = global_s_axi['kernel_inst']['inst']
-        slave_inst, slave_port, slave_base, properties = getSlaveAddressInfo(global_s_axi)
-        tcl_user_app.assign_address(slave_inst, slave_port, slave_base)
-        if 'offset' in properties:
-            prop = {'offset': properties['offset']}
-            tcl_user_app.set_address_properties(slave_inst, slave_port, slave_base, master, **prop)
-        if 'range' in properties:
-            prop = {'range': properties['range']}
-            tcl_user_app.set_address_properties(slave_inst, slave_port, slave_base, master, **prop)
+    # for global_s_axi in s_axi_array:
+    #     slave_inst = global_s_axi['kernel_inst']['inst']
+    #     slave_inst, slave_port, slave_base, properties = getSlaveAddressInfo(global_s_axi)
+    #     tcl_user_app.assign_address(slave_inst, slave_port, slave_base)
+    #     if 'offset' in properties:
+    #         prop = {'offset': properties['offset']}
+    #         tcl_user_app.set_address_properties(slave_inst, slave_port, slave_base, master, **prop)
+    #     if 'range' in properties:
+    #         prop = {'range': properties['range']}
+    #         tcl_user_app.set_address_properties(slave_inst, slave_port, slave_base, master, **prop)
 
 
 
@@ -2745,9 +3363,62 @@ def bridgeConnections(outDir, fpga, sim,is_gw):
                     instName = m_axis_array[0]['kernel_inst']['inst']
                     tcl_custom.tprint('set CUSTOM_kernel_out ' + instName + '/' + m_axis_array[0]['name'])
                     tcl_custom.tprint('set CUSTOM_kernels_stream_out 1')
+            # Connect control KIP outbound path to network
+            ctrl_kernel_dict = makeControlKernelDictionary(tcl_bridge_connections, 'num')
+            num_ctrl_instances = len(ctrl_kernel_dict)
+            if num_ctrl_instances > 0:
+                tcl_bridge_connections.makeConnection(
+                    'net',
+                    {
+                        'name':'applicationRegion/KIP_port_number',
+                        'type':'pin',
+                        'port_name':'dout'
+                    },
+                    {
+                        'name':'network/ctrl_rx_nb',
+                        'type':'pin',
+                        'port_name':'i_CTRL_KIP_port_number'
+                    }
+                )
+                tcl_bridge_connections.makeConnection(
+                    'intf',
+                    {
+                        'name':'applicationRegion/KIP_router_0',
+                        'type':'intf',
+                        'port_name':'to_gs'
+                    },
+                    {
+                        'name':'network/ctrl_to_nb_KIP_CDC',
+                        'type':'intf',
+                        'port_name':'S_AXIS'
+                    }
+                )
+            # Edge case: No control instances are used, tie off KIP path to 0
+            else:
+                tcl_bridge_connections.instBlock(
+                    {
+                        'name': 'xlconstant',
+                        'inst':  'network/const_0',
+                        'properties': [ 
+                                        'CONFIG.CONST_WIDTH {1}',
+                                        'CONFIG.CONST_VAL {0}'
+                                    ]
+                    }
+                )
+                tcl_bridge_connections.makeConnection(
+                    'net', 
+                    {
+                        'type': 'pin',
+                        'name': 'network/const_0',
+                        'port_name': 'dout'
+                    },
+                    {
+                        'type': 'pin',
+                        'name': 'network/ctrl_to_nb_KIP_CDC',
+                        'port_name': 's_axis_tvalid'
+                    }
+                )
         else:
-
-
             # depending on the number of slaves, either connect the network to a switch or the slave
             s_axis_array = getInterfaces(tcl_bridge_connections.fpga, 's_axis', 'scope', 'global')
             if len(s_axis_array) > 1:
@@ -2864,6 +3535,46 @@ def bridgeConnections(outDir, fpga, sim,is_gw):
                             )
                 if "custom" in tcl_bridge_connections.fpga:
                     tcl_custom.tprint('set CUSTOM_net_in network/galapagos_bridge_inst/n2G_output')
+                # Connect control inbound path to kernels
+                if num_ctrl_instances > 0:
+                    tcl_bridge_connections.makeConnection(
+                        'intf',
+                        {
+                        'name':'network/ctrl_from_nb_CDC',
+                        'type':'intf',
+                        'port_name':'M_AXIS'
+                        },
+                        {
+                        'name':'applicationRegion/ctrl_from_nb_switch',
+                        'type':'intf',
+                        'port_name':'S02_AXIS'
+                        }
+                    )
+                # Edge case: No control instances are used, tie off path to 0
+                else:
+                    tcl_bridge_connections.instBlock(
+                        {
+                            'name': 'xlconstant',
+                            'inst':  'network/const_1',
+                            'properties': [ 
+                                            'CONFIG.CONST_WIDTH {1}',
+                                            'CONFIG.CONST_VAL {1}'
+                                        ]
+                        }
+                    )
+                    tcl_bridge_connections.makeConnection(
+                        'net', 
+                        {
+                            'type': 'pin',
+                            'name': 'network/const_1',
+                            'port_name': 'dout'
+                        },
+                        {
+                            'type': 'pin',
+                            'name': 'network/ctrl_from_nb_CDC',
+                            'port_name': 'm_axis_tready'
+                        }
+                    )
             else: #sim == 1
                 tcl_bridge_connections.makeConnection(
                         'intf',

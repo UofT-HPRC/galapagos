@@ -1,5 +1,6 @@
 import os
 import math
+# AXI Interface
 aw_fields = ["id","addr","len","size","burst","lock","cache","prot","user","qos","region","valid","ready"]
 aw_sizes = [16,40,8,3,2,1,4,3,16,4,4,1,1]
 w_fields = ["data","strb","last","valid","ready"]
@@ -10,6 +11,18 @@ ar_fields = ["id","addr","len","size","burst","lock","cache","prot","user","qos"
 ar_sizes = [16,40,8,3,2,1,4,3,16,4,4,1,1]
 r_fields = ["id","data","resp","last","valid","ready"]
 r_sizes = [16,128,2,1,1,1]
+# AXI-Lite Interface
+axi_lite_aw_fields = ["addr","valid","ready"]
+axi_lite_aw_sizes = [64,1,1]
+axi_lite_w_fields = ["data","strb","valid","ready"]
+axi_lite_w_sizes = [32,4,1,1]
+axi_lite_b_fields = ["resp","valid","ready"]
+axi_lite_b_sizes = [2,1,1]
+axi_lite_ar_fields = ["addr","valid","ready"]
+axi_lite_ar_sizes = [64,1,1]
+axi_lite_r_fields = ["data","valid","ready"]
+axi_lite_r_sizes = [32,1,1]
+# AXI-Stream Interface
 axis_fields = ["data","keep","dest","id","user","last","valid","ready"]
 axis_sizes = [512,64,24,24,16,1,1,1]
 wan_axis_fields = ["data","keep","dest","user","last","valid","ready"]
@@ -81,6 +94,27 @@ def construct_axi_defn(preamble,name,portname,has_id,has_user):
     result_str=result_str+add_axi_defn_field(preamble,name,portname,"b",b_fields,has_id,False)
     result_str=result_str+add_axi_defn_field(preamble,name,portname,"ar",ar_fields,has_id,has_user)
     result_str=result_str+add_axi_defn_field(preamble,name,portname,"r",r_fields,has_id,False)
+    return(result_str+"\n") 
+
+def construct_axi_lite_wire(preamble,name,data_size,addr_size):
+    """
+        Creates all main and side-channel signals for an AXI-Lite interface. Turns M_AXIL into:
+        wire [63:0] M_AXIL_awaddr;
+        wire [0:0] M_AXIL_awvalid;
+        ...
+
+        Args:
+            preamble(string): How much to indent each line (eg. for 4 spaces use "    ")
+            name(string): Name of the interface (eg. M_AXIL)
+            data_size(int): Allows user to override the data size specified in fields above
+            addr_size(int): Allows user to override the address size specified in fields above
+    """
+    # No IDs used in AXI-Lite, set width to 0
+    result_str=add_axi_wire_field(preamble,name,"aw",axi_lite_aw_fields,axi_lite_aw_sizes,0,data_size,addr_size)
+    result_str=result_str+add_axi_wire_field(preamble,name,"w",axi_lite_w_fields,axi_lite_w_sizes,0,data_size,addr_size)
+    result_str=result_str+add_axi_wire_field(preamble,name,"b",axi_lite_b_fields,axi_lite_b_sizes,0,data_size,addr_size)
+    result_str=result_str+add_axi_wire_field(preamble,name,"ar",axi_lite_ar_fields,axi_lite_ar_sizes,0,data_size,addr_size)
+    result_str=result_str+add_axi_wire_field(preamble,name,"r",axi_lite_r_fields,axi_lite_r_sizes,0,data_size,addr_size)
     return(result_str+"\n")
 
 ### changes for ddr - Charles
@@ -122,6 +156,27 @@ def construct_ddr_axi_defn(preamble,name,portname,has_id,has_user):
     return(result_str+"\n")
 ###
 
+    
+def construct_axi_lite_defn(preamble,name,portname):
+    """
+        Connects the wire "name" to a port called "portname". Eg. construct_axi_lite_defn(" ", "M_AXIL", "eth_tx") results in:
+        .eth_tx_awaddr(M_AXIL_awaddr),
+        .eth_tx_awvalid(M_AXIL_awvalid),
+        ...
+
+        Args:
+            preamble(string): How much to indent each line (eg. for 4 spaces use "    ")
+            name(string): Name of the wire (eg. M_AXIL)
+            portname(string): Name of the port (eg. eth_tx)
+    """
+    # AXI-Lite has no IDs or User fields, so set them to 0
+    result_str=add_axi_defn_field(preamble,name,portname,"aw",axi_lite_aw_fields,False,False)
+    result_str=result_str+add_axi_defn_field(preamble,name,portname,"w",axi_lite_w_fields,False,False)
+    result_str=result_str+add_axi_defn_field(preamble,name,portname,"b",axi_lite_b_fields,False,False)
+    result_str=result_str+add_axi_defn_field(preamble,name,portname,"ar",axi_lite_ar_fields,False,False)
+    result_str=result_str+add_axi_defn_field(preamble,name,portname,"r",axi_lite_r_fields,False,False)
+    return(result_str+"\n")
+
 def construct_axis_wire(preamble,name,data_size,id_size, has_ready):
     if has_ready:
         return(add_axi_wire_field(preamble,name,"t",axis_fields,axis_sizes,id_size,data_size,0)+"\n")
@@ -145,7 +200,16 @@ def copy_file(dest_fp,src_filename):
     dest_fp.write(src_file.read())
     src_file.close()
 
-def createTopLevelVerilog(target_files, source_dir, kernel_properties,control_names,fpga,is_gw):
+def createTopLevelVerilog(target_files, source_dir, kernel_properties,ctrl_kernel_dict,fpga,is_gw):
+    """
+        Generates the top-level Verilog file for the Vivado project. This file instantiates the PR, Shell, and User Kernel block diagrams. This kernel also makes the connections between the block diagrams.
+
+        Args:
+            
+            ctrl_kernel_dict (dict): Dictionary indexed by kernel instance name. Each dictionary entry consists of a dictionary of 2 entries:
+                'inst': Instance name of the kernel, with 'applicationRegion' removed
+                'control_type': 'm_axil', 's_axil', or 'both' 
+    """
     dst_file = open(target_files,"w")
     if fpga['board'] in ('u200','u250','u280'):
         copy_file(dst_file, source_dir + "/../verilog/shellTop_pt1_u2xx.v")
@@ -156,6 +220,7 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,control_na
 
     dst_file.write(construct_axis_wire("  ","M_AXIS",512,0,True))
     dst_file.write(construct_axis_wire("  ","S_AXIS",512,0,False))
+    # RECONFIGURABLE STARTS HERE
     if fpga.has_control:
         dst_file.write(construct_axi_wire("  ","S_AXI_CONTROL",16,128,40))
         for CN in control_names:
@@ -232,6 +297,52 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,control_na
             dst_file.write(add_axi_defn_field("      ", str(name) + "_SWAN", props['wan_name'][0], "t", wan_axis_fields, False, True) + "\n")
         if is_gw:
             dst_file.write(add_axi_defn_field("      ","Direct_port","Direct_port","t",["data","keep","user","last","valid","ready"],0,1))
+    # dst_file.write(construct_axi_wire("  ","S_AXI_CONTROL",16,128,40))
+    # RECONFIGURABLE ENDS HERE, CONTROL STARTS HERE
+    for kern in ctrl_kernel_dict:
+        kernel_dict = ctrl_kernel_dict[kern]
+        if kernel_dict['control_type'] == 'm_axil' or kernel_dict['control_type'] == 'both':
+            dst_file.write(construct_axi_lite_wire("  ", kern+"_M_AXIL",32,64))
+        if kernel_dict['control_type'] == 's_axil' or kernel_dict['control_type'] == 'both':
+            dst_file.write(construct_axi_lite_wire("  ", kern+"_S_AXIL",32,64))
+    for i in kernel_names:
+        dst_file.write(construct_axis_wire("  ", str(i) + "_MAXIS", 512, 24, True))
+        dst_file.write(construct_axis_wire("  ", str(i) + "_SAXIS", 512, 24, True))
+        dst_file.write(add_axi_wire_field("  ", str(i) + "_SWAN","t", wan_axis_fields, wan_axis_sizes, 0, 512, 0) + "\n")
+    # Instantiate the Shell
+    copy_file(dst_file,source_dir+"/../verilog/shellTop_pt2.v")
+    dst_file.write(construct_axis_base_defn("    ","M_AXIS","eth_tx",True))
+    dst_file.write(construct_axis_base_defn("    ","S_AXIS","eth_rx",False))
+    # dst_file.write(construct_axi_defn("    ","S_AXI_CONTROL","S_AXI_CONTROL",True,True))
+    # Instantiate PR
+    copy_file(dst_file,source_dir+"/../verilog/shellTop_pt3.v")
+    dst_file.write(construct_axis_base_defn("    ","M_AXIS","M_AXIS",True))
+    dst_file.write(construct_axis_base_defn("    ","S_AXIS","S_AXIS",False))
+    # dst_file.write(construct_axi_defn("    ","S_AXI_CONTROL","S_AXI_CONTROL",True,True))
+    for i in kernel_names:
+        dst_file.write("\n\n    //User: "+str(i)+"\n")
+        if i in ctrl_kernel_dict:
+            kernel_dict = ctrl_kernel_dict[i]
+            if kernel_dict['control_type'] == 'm_axil' or kernel_dict['control_type'] == 'both':
+                dst_file.write(construct_axi_lite_defn("    ",str(i)+"_M_AXIL",str(i)+"_M_AXIL"))
+            if kernel_dict['control_type'] == 's_axil' or kernel_dict['control_type'] == 'both':
+                dst_file.write(construct_axi_lite_defn("    ",str(i)+"_S_AXIL",str(i)+"_S_AXIL"))
+        dst_file.write(construct_axis_defn("    ",str(i)+"_MAXIS",str(i)+"_MAXIS",True,True))
+        dst_file.write(construct_axis_defn("    ",str(i)+"_SAXIS",str(i)+"_SAXIS",True,False))
+        dst_file.write(add_axi_defn_field("      ",str(i) + "_SWAN",str(i) + "_SWAN","t",wan_axis_fields,False,True)+"\n")
+    dst_file.write("    );\n\n\n")
+    # Instantiate User Kernels
+    for i in kernel_names:
+        dst_file.write("  //User: "+str(i)+"\n  user_"+str(i)+"_i user_"+str(i)+"_i_i\n    (.rst(rst)\n    ,.CLK(CLK)\n")
+        if i in ctrl_kernel_dict:
+            kernel_dict = ctrl_kernel_dict[i]
+            if kernel_dict['control_type'] == 'm_axil' or kernel_dict['control_type'] == 'both':
+                dst_file.write(construct_axi_lite_defn("    ",str(i)+"_M_AXIL","M_AXIL"))
+            if kernel_dict['control_type'] == 's_axil' or kernel_dict['control_type'] == 'both':
+                dst_file.write(construct_axi_lite_defn("    ",str(i)+"_S_AXIL","S_AXIL"))
+        dst_file.write(construct_axis_defn("    ",str(i)+"_MAXIS","RX_AXIS",True,True))
+        dst_file.write(construct_axis_defn("    ",str(i)+"_SAXIS","TX_AXIS",True,False))
+        dst_file.write(add_axi_defn_field("      ", str(i) + "_SWAN", "TX_WAN_AXIS", "t", wan_axis_fields, False, True) + "\n")
         dst_file.write("    );\n\n\n")
     dst_file.write("  endmodule")
     dst_file.close()

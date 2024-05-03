@@ -75,8 +75,8 @@ class kernel(abstractDict):
             'control_range',
             'ddr',
             'ddr_size',
-            'ddr_id_width'
-
+            'ddr_id_width',
+            'control_type'
         )
 
 
