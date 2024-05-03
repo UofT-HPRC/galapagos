@@ -19,7 +19,7 @@ void sender(
   pkt_sent=packets_sent_cnt;
   if (!pkt_out.full() && (run == 1))
   {
-    temp_data.data.range(511,448) = packets_sent_cnt;
+    temp_data.data.range(511,448) = flit_count *8;
     temp_data.data.range(447,384) = flit_count *8+1;
     temp_data.data.range(383,320) = flit_count *8+2;
     temp_data.data.range(319,256) = flit_count *8+3;

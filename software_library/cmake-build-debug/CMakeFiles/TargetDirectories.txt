@@ -1,0 +1,3 @@
+/home/savi/Desktop/Reconfigurable_Galapagos/baseline_galapagos/reconfigurable/implementing_WAN1/galapagos/kernels_sw/cmake-build-debug/CMakeFiles/kernels_sw.dir
+/home/savi/Desktop/Reconfigurable_Galapagos/baseline_galapagos/reconfigurable/implementing_WAN1/galapagos/kernels_sw/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/savi/Desktop/Reconfigurable_Galapagos/baseline_galapagos/reconfigurable/implementing_WAN1/galapagos/kernels_sw/cmake-build-debug/CMakeFiles/rebuild_cache.dir
