@@ -282,9 +282,9 @@ def makeControlKernelDictionary(tcl_user_app, index):
                                 6: {'inst': 'kernel_1_inst_6', 'control_type': 'm_axil'}
                             }
     Args:
-        input_dict(dict): dictionary whose keys are all integers
+        tcl_user_app: a tclMe object (which contains references to the FPGA's
+                      node object and a handle to the output file)
         index(str): What to index the dictionary by ('num' or 'inst')
-
     """
     ctrl_kernel_dict = {}
     for kernel in tcl_user_app.fpga['kernel']:
@@ -321,7 +321,10 @@ def setSwitchManagerPortRouting(tcl_user_app, switch_name, tdest_list):
     Connects the manager ports of the specified switch to the TDESTs in the tdest_list. This happens in ascending order of the list eg. if tdest_list is [3 6 2 5] M00_AXIS will be connected to 3, M01_AXIS connected to 6, etc.
     
     Args:
-        tcl_user_app (string): pathname of the module eg. applicationRegion/blk_mem_switch_rom
+        tcl_user_app: a tclMe object (which contains references to the FPGA's
+                      node object and a handle to the output file)
+        switch_name (str): Instance name of the switch eg. 'applicationRegion/input_switch'
+        tdest_list (list): List of TDESTS which will be connected to the switch
     """
     num_tdest = len(tdest_list)
     properties = []
@@ -338,6 +341,14 @@ def setSwitchManagerPortRouting(tcl_user_app, switch_name, tdest_list):
     tcl_user_app.setProperties(switch_name, properties)
 
 def buildControlToNBSwitch(tcl_user_app, path, num_ctrl_instances):
+    """
+    Creates a single output switch for control kernels. This switch is used to aggregate all Control IP instances' signals for a data path. Eg. this switch will sit between Control API kernels and the LAN router, collecting all LAN messages from the Control API instances.    
+    Args:
+        tcl_user_app: a tclMe object (which contains references to the FPGA's
+                      node object and a handle to the output file)
+        path (str): Which data path the switch will connect to ('LAN', 'WAN', or 'KIP')
+        num_ctrl_instances (int): Number of inputs to the switch
+    """
     switch_name = "applicationRegion/ctrl_to_nb_" + path + "_switch"
     tcl_user_app.instBlock(
         {
@@ -373,11 +384,14 @@ def buildControlAPIInst(tcl_user_app, kernel_id, kernel_dict, axil_addr_width, h
     Args:
         tcl_user_app: a tclMe object (which contains references to the FPGA's
                       node object and a handle to the output file)
-        kernel_id(int):
-        kernel_dict(dict): Dictionary consisting of 2 entries:
+        kernel_id (int): The ID of the kernel that this instance will be connected to
+        kernel_dict (dict): Dictionary consisting of 2 entries:
                 'inst': Instance name of the kernel, with 'applicationRegion' removed
                 'control_type': 'm_axil', 's_axil', or 'both' 
-
+        axil_addr_width (int): Width of the AXI-Lite Address channels
+        has_wstrb (bool): Does the AXI-Lite WDATA interface have WSTRB enabled?
+        has_reliability (bool): Does the user want to use reliability?
+        rel_timeout (int): Number of cycles that the reliability module will wait before sending a re-transmission
     """
     hierarchy_name = "applicationRegion/control_api_inst_%d" % (kernel_id)
     tcl_user_app.createHierarchy(hierarchy_name)
@@ -564,6 +578,15 @@ def buildControlAPIInst(tcl_user_app, kernel_id, kernel_dict, axil_addr_width, h
         )
 
 def setControlAXILPortProperties(tcl_user_app, port_name, axil_addr_width):
+    """
+    Sets an external AXI port up for AXI-Lite communications. This involves switching the port to AXI-Lite, specifying Address width, and which side-channel signals will be included.
+
+    Args:
+        tcl_user_app: a tclMe object (which contains references to the FPGA's
+                      node object and a handle to the output file)
+        port_name (str): Name of the AXI interface port
+        axil_addr_width (int): Width of the AXI-Lite Address channels
+    """
     properties = [
         'CONFIG.PROTOCOL AXI4LITE',
         'CONFIG.ADDR_WIDTH ' + str(axil_addr_width),

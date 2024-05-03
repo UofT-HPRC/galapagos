@@ -205,7 +205,9 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,ctrl_kerne
         Generates the top-level Verilog file for the Vivado project. This file instantiates the PR, Shell, and User Kernel block diagrams. This kernel also makes the connections between the block diagrams.
 
         Args:
-            
+            target_files (str): Path to the top-level Verilog file
+            source_dir (str):
+            kernel_names (list): List of kernel instance names eg. ['kernel_1_inst_2', 'kernel_1_inst_3']
             ctrl_kernel_dict (dict): Dictionary indexed by kernel instance name. Each dictionary entry consists of a dictionary of 2 entries:
                 'inst': Instance name of the kernel, with 'applicationRegion' removed
                 'control_type': 'm_axil', 's_axil', or 'both' 
