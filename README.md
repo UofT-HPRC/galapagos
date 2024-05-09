@@ -13,10 +13,6 @@ The Galapagos framework has been tested using Python 3.7.10, please have it inst
 To run tutorial refer to instructions in [this README](https://github.com/UofT-HPRC/galapagos/blob/master/docker/README.md)
 
 ## First-Time Setup
-### What you need before starting
-1. Please see Prerequisites
-
-### Steps
 1. If not installed already, follow the steps here to install Python 3.7.10 as Python 3.7 (follow `altinstall` step): [https://github.com/UofT-HPRC/tpdp/blob/main/configuring_server/new_students/README.md#install-a-specific-version-of-python](https://github.com/UofT-HPRC/tpdp/blob/main/configuring_server/new_students/README.md#install-a-specific-version-of-python)
 2. We recommend creating a Python virtual environment. Create one by running: `python3.7 -m venv /path/to/venv`
 	1. Eg. `python3.7 -m venv ./python_venv_3_7_10`
