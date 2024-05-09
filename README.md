@@ -11,6 +11,25 @@ Both the Docker Container and native install requires Xilinx Vivado to be instal
 
 To run tutorial refer to instructions in [this README](https://github.com/UofT-HPRC/galapagos/blob/master/docker/README.md)
 
+## First-Time Setup
+### What you need before starting
+
+### Steps
+1. If not installed already, follow the steps here to install Python 3.7.10 as Python 3.7 (follow `altinstall` step): [https://github.com/UofT-HPRC/tpdp/blob/main/configuring_server/new_students/README.md#install-a-specific-version-of-python](https://github.com/UofT-HPRC/tpdp/blob/main/configuring_server/new_students/README.md#install-a-specific-version-of-python)
+2. We recommend creating a Python virtual environment. Create one by running: `python3.7 -m venv /path/to/venv`
+	1. Eg. `python3.7 -m venv ./python_venv_3_7_10`
+ 	2. This creates a folder (python_venv_3_7_10) which contains the virtual environment (venv folder)
+4. Enter the virtual environment by running `source /path/to/venv/bin/activate`
+	1. Eg. `source ./python_venv_3_7_10/bin/activate`
+6. Install the following dependencies: `pip3 install wheel pyfiglet regex PyInquirer`
+	1. If pip gives a timeout error, follow the instructions here: [https://github.com/UofT-HPRC/tpdp/blob/main/configuring_server/new_students/README.md#pip-error-ssl-timeout](https://github.com/UofT-HPRC/tpdp/blob/main/configuring_server/new_students/README.md#pip-error-ssl-timeout)
+7. In this folder (`galapagos`) run `source build.sh`.
+	1. This sets several environment variables which are used by the Galapagos framework
+9. Now you should be ready to go! To test your framework, run the following:
+	1. ```
+		make test
+		source projects/test_proj/createCluster.sh
+		```
 
 ## Initial Setup for Native Install
 
