@@ -6,6 +6,7 @@ Welcome to the Galapagos Hardware Stack.
 
 Both the Docker Container and native install requires Xilinx Vivado to be installed. Current versions supported are 2018.1, 2018.2, 2018.3, 2019.1
 
+The Galapagos framework has been tested using Python 3.7.10, please have it installed.
 
 ## Docker Jupyter Tutorial
 
@@ -13,6 +14,7 @@ To run tutorial refer to instructions in [this README](https://github.com/UofT-H
 
 ## First-Time Setup
 ### What you need before starting
+1. Please see Prerequisites
 
 ### Steps
 1. If not installed already, follow the steps here to install Python 3.7.10 as Python 3.7 (follow `altinstall` step): [https://github.com/UofT-HPRC/tpdp/blob/main/configuring_server/new_students/README.md#install-a-specific-version-of-python](https://github.com/UofT-HPRC/tpdp/blob/main/configuring_server/new_students/README.md#install-a-specific-version-of-python)
@@ -21,7 +23,7 @@ To run tutorial refer to instructions in [this README](https://github.com/UofT-H
  	2. This creates a folder (python_venv_3_7_10) which contains the virtual environment (venv folder)
 4. Enter the virtual environment by running `source /path/to/venv/bin/activate`
 	1. Eg. `source ./python_venv_3_7_10/bin/activate`
-6. Install the following dependencies: `pip3 install wheel pyfiglet regex PyInquirer`
+6. Install the following dependencies: `pip3 install wheel pyfiglet regex PyInquirer xmltodict`
 	1. If pip gives a timeout error, follow the instructions here: [https://github.com/UofT-HPRC/tpdp/blob/main/configuring_server/new_students/README.md#pip-error-ssl-timeout](https://github.com/UofT-HPRC/tpdp/blob/main/configuring_server/new_students/README.md#pip-error-ssl-timeout)
 7. In this folder (`galapagos`) run `source build.sh`.
 	1. This sets several environment variables which are used by the Galapagos framework
