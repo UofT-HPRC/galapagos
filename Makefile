@@ -38,6 +38,9 @@ hlsmiddleware:
 oldhls:
 	mkdir -p $(GALAPAGOS_PATH)/oldhlsBuild
 	$(MAKE) -C $(MIDDLEWARE_DIR) oldhls
+test:
+	$(MAKE) PROJECTNAME="test_proj" clean
+	$(MAKE) PROJECTNAME="test_proj" LOGICALFILE=$(GALAPAGOS_PATH)/userIP/logical_wan.xml MAPFILE=$(GALAPAGOS_PATH)/userIP/map_wan.xml
 
 clean:
 	$(MAKE) -C $(MIDDLEWARE_DIR) clean
