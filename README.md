@@ -25,9 +25,9 @@ To run tutorial refer to instructions in [this README](https://github.com/UofT-H
 	1. Eg. `source ./python_venv_3_7_10/bin/activate`
 6. Install the following dependencies: `pip3 install wheel pyfiglet regex PyInquirer xmltodict`
 	1. If pip gives a timeout error, follow the instructions here: [https://github.com/UofT-HPRC/tpdp/blob/main/configuring_server/new_students/README.md#pip-error-ssl-timeout](https://github.com/UofT-HPRC/tpdp/blob/main/configuring_server/new_students/README.md#pip-error-ssl-timeout)
-7. In this folder (`galapagos`) run `source build.sh`.
+7. In this directory (`galapagos`) run `source build.sh`.
 	1. This sets several environment variables which are used by the Galapagos framework
-9. Now you should be ready to go! To test your framework, run the following:
+9. Now you should be ready to go! To test your framework, run the following in this directory:
 	1. ```
 		make test
 		source projects/test_proj/createCluster.sh
