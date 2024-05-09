@@ -13,7 +13,7 @@ The Galapagos framework has been tested using Python 3.7.10, please have it inst
 To run tutorial refer to instructions in [this README](https://github.com/UofT-HPRC/galapagos/blob/master/docker/README.md)
 
 ## First-Time Setup
-1. If not installed already, follow the steps here to install Python 3.7.10 as Python 3.7 (follow `altinstall` step): [https://github.com/UofT-HPRC/tpdp/blob/main/configuring_server/new_students/README.md#install-a-specific-version-of-python](https://github.com/UofT-HPRC/tpdp/blob/main/configuring_server/new_students/README.md#install-a-specific-version-of-python)
+1. If not installed already, follow the steps to install Python 3.7.10 as Python 3.7 (follow `altinstall` step): [https://github.com/UofT-HPRC/tpdp/blob/main/configuring_server/new_students/README.md#install-a-specific-version-of-python](https://github.com/UofT-HPRC/tpdp/blob/main/configuring_server/new_students/README.md#install-a-specific-version-of-python)
 2. We recommend creating a Python virtual environment. Create one by running: `python3.7 -m venv /path/to/venv`
 	1. Eg. `python3.7 -m venv ./python_venv_3_7_10`
  	2. This creates a folder (python_venv_3_7_10) which contains the virtual environment (venv folder)
@@ -28,6 +28,18 @@ To run tutorial refer to instructions in [this README](https://github.com/UofT-H
 		make test
 		source projects/test_proj/createCluster.sh
 		```
+## Compile a Galapagos Project
+## What you need before starting
+1. A logical file describing your project's kernels
+2. A map file describing how your kernels are distributed on devices
+
+## Steps
+1. If using a virtual environment, enter it by running `source /path/to/venv/bin/activate`
+	1. Eg. `source ./python_venv_3_7_10/bin/activate`
+2. Initialize environment variables by running: `source build.sh`
+3. Compile the Vivado HLS IPs and generate TCL scripts by running: `make PROJECTNAME="<project_name>" LOGICALFILE=</path/to/logical/file> MAPFILE=</path/to/map/file>`
+4. Use the TCL scripts to generate Vivado projects by running: `source projects/<project_name>/createCluster.sh`
+
 
 ## Initial Setup for Native Install
 
