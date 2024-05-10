@@ -4,38 +4,36 @@ using namespace std;
 #include "kern.hpp"
 // IDs of kernels
 #define dS 0
-#define mA 1
-#define mB 2
-#define dR 3
-
-bool printer = true;
-
+#define sender_kern 1
+#define receiver_kern 2
+#define fpga_kern 3
+#define num_flits 10
+#define flit_size 64 //Bytes
 void data_sender(short id, galapagos_interface *in, galapagos_interface *out)
 {
 #pragma HLS INTERFACE axis register both port = out
 #pragma HLS INTERFACE axis register both port = in
-    // ap_uint<512> numberA("0700000000000000000000000000000000", 16);
     for (int pkt_cnt=0; pkt_cnt<1; pkt_cnt++)
     {
-        char packet[64*10];
-        for (int flit_cnt=0; flit_cnt<10; flit_cnt++)
+        char packet[flit_size*num_flits];
+        for (int flit_cnt=0; flit_cnt<num_flits; flit_cnt++)
         {
             for (int slot=0; slot<8; slot++)
             {
                 uint64_t val = flit_cnt*8+slot;
-                packet[flit_cnt*64+slot*8+0]=val%256;
-                packet[flit_cnt*64+slot*8+1]=(val>>8)%256;
-                packet[flit_cnt*64+slot*8+2]=(val>>16)%256;
-                packet[flit_cnt*64+slot*8+3]=(val>>24)%256;
-                packet[flit_cnt*64+slot*8+4]=(val>>32)%256;
-                packet[flit_cnt*64+slot*8+5]=(val>>40)%256;
-                packet[flit_cnt*64+slot*8+6]=(val>>48)%256;
-                packet[flit_cnt*64+slot*8+7]=(val>>56)%256;
+                packet[flit_cnt*flit_size+slot*8+0]=val%256;
+                packet[flit_cnt*flit_size+slot*8+1]=(val>>8)%256;
+                packet[flit_cnt*flit_size+slot*8+2]=(val>>16)%256;
+                packet[flit_cnt*flit_size+slot*8+3]=(val>>24)%256;
+                packet[flit_cnt*flit_size+slot*8+4]=(val>>32)%256;
+                packet[flit_cnt*flit size+slot*8+5]=(val>>40)%256;
+                packet[flit_cnt*flit_size+slot*8+6]=(val>>48)%256;
+                packet[flit_cnt*flit_size+slot*8+7]=(val>>56)%256;
             }
         }
         printf("Sending packet # %d\n",pkt_cnt);
         // data
-        out->packet_write(packet, 10, 3, 1);
+        out->packet_write(packet, num_flits, fpga_kern, sender_kern);
     }
 }
 

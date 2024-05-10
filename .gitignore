@@ -3,6 +3,7 @@ vivado.*
 hlsBuild/*
 oldhlsBuild/*
 projects/*
+kernels_sw/*
 my_init.sh
 vivado_*
 vivado.log
