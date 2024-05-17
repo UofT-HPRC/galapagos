@@ -41,7 +41,7 @@ To run tutorial refer to instructions in [this README](https://github.com/UofT-H
 3. Compile the Vivado HLS IPs and generate TCL scripts by running: `make PROJECTNAME="<project_name>" LOGICALFILE=</path/to/logical/file> MAPFILE=</path/to/map/file>`
 4. Use the TCL scripts to generate Vivado projects by running: `source projects/<project_name>/createCluster.sh`
 5. At this point, Galapagos will have created one Vivado project for each FPGA declared in your map file. Each FPGA's Vivado project will contain a block diagram for each kernel mapped to it. The number in each block diagram is the ID of the kernel that the block diagram represents. For example, the Vivado project below has block diagrams generated for kernels 3 and 4 in the cluster.
-	1. ![Galapagos Vivado Project](https://github.com/UofT-HPRC/galapagos/blob/reconfigurable/fig/galapagos_vivado_project.png)
+	1. ![Galapagos Vivado Project](https://github.com/UofT-HPRC/galapagos/blob/reconfigurable/fig/galapagos_vivado_project.PNG)
 6. In all of your Vivado projects, open up the kernel block diagrams and construct your kernels. The following connections will be provided for you:
 	1. `CLK`: Clock pin
  	2. `rst`: Active-low reset
