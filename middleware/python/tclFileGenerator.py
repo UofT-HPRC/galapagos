@@ -355,7 +355,7 @@ def buildControlToNBSwitch(tcl_user_app, path, num_ctrl_instances):
             'name':'axis_switch',
             'inst': switch_name,
             'clks':['aclk'],
-            'resetns_port': 'rst',
+            'resetns_port': 'rstn',
             'resetns':['aresetn']
         }
     )
@@ -413,7 +413,7 @@ def buildControlAPIInst(tcl_user_app, kernel_id, kernel_dict, axil_addr_width, h
             'inst':  hierarchy_name + '/anc',
             'clks': ['i_clk'],
             'resetns': ['i_ap_rst_n'],
-            'resetns_port': 'rst',
+            'resetns_port': 'rstn',
             'properties': [ 
                             'CONFIG.AXI_LITE_ADDR_WIDTH {' + str(axil_addr_width) + '}',
                             'CONFIG.AXI_LITE_WSTRB_ENABLED {' + str(has_wstrb) + '}'
@@ -475,7 +475,7 @@ def buildControlAPIInst(tcl_user_app, kernel_id, kernel_dict, axil_addr_width, h
                 'inst':  hierarchy_name + '/rpm',
                 'clks': ['i_clk'],
                 'resetns': ['i_ap_rst_n'],
-                'resetns_port': 'rst',
+                'resetns_port': 'rstn',
                 'properties': [ 
                                 'CONFIG.IS_WAN_RX {false}',
                                 'CONFIG.PUBREC_TIMEOUT {' + str(rel_timeout) + '}',
@@ -707,7 +707,7 @@ def userApplicationRegionControlInst(tcl_user_app):
                 'inst':  hierarchy_name + '/LAN_local_formatter_0',
                 'clks': ['i_clk'],
                 'resetns': ['i_ap_rst_n'],
-                'resetns_port': 'rst'
+                'resetns_port': 'rstn'
             }
         )
         # Build infrastructure for local KIP path
@@ -717,7 +717,7 @@ def userApplicationRegionControlInst(tcl_user_app):
                 'inst':  hierarchy_name + '/KIP_router_0',
                 'clks': ['i_clk'],
                 'resetns': ['i_ap_rst_n'],
-                'resetns_port': 'rst'
+                'resetns_port': 'rstn'
             }
         )
         tcl_user_app.instBlock(
@@ -726,7 +726,7 @@ def userApplicationRegionControlInst(tcl_user_app):
                 'inst':  hierarchy_name + '/KIP_local_formatter_0',
                 'clks': ['i_clk'],
                 'resetns': ['i_ap_rst_n'],
-                'resetns_port': 'rst'
+                'resetns_port': 'rstn'
             }
         )
         # Build infrastructure for inbound packets
@@ -736,7 +736,7 @@ def userApplicationRegionControlInst(tcl_user_app):
                 'name':'axis_switch',
                 'inst': hierarchy_name + '/ctrl_from_nb_switch',
                 'clks':['aclk'],
-                'resetns_port': 'rst',
+                'resetns_port': 'rstn',
                 'resetns':['aresetn']
             }
         )

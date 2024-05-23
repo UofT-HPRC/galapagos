@@ -184,12 +184,12 @@ set_property -dict [list CONFIG.FIFO_DEPTH {16} CONFIG.IS_ACLK_ASYNC {1}] [get_b
 # Make internal connections
 # Control RX Network Bridge
 connect_bd_net [get_bd_pins network/CLK300] [get_bd_pins network/ctrl_rx_nb/i_clk]
-connect_bd_net [get_bd_pins network/rst300] [get_bd_pins network/ctrl_rx_nb/i_ap_rst_n]
+connect_bd_net [get_bd_pins network/rstn300] [get_bd_pins network/ctrl_rx_nb/i_ap_rst_n]
 connect_bd_intf_net [get_bd_intf_pins network/direct_ip_rx_switch/M01_AXIS] [get_bd_intf_pins network/ctrl_rx_nb/from_receptionist]
 connect_bd_intf_net [get_bd_intf_pins network/ctrl_rx_nb/to_ctrl] [get_bd_intf_pins network/ctrl_from_nb_CDC/S_AXIS]
 # CDC FIFO from Application Region to Network
 connect_bd_net [get_bd_pins network/CLK] [get_bd_pins network/ctrl_to_nb_KIP_CDC/s_axis_aclk]
-connect_bd_net [get_bd_pins network/rst] [get_bd_pins network/ctrl_to_nb_KIP_CDC/s_axis_aresetn]
+connect_bd_net [get_bd_pins network/rstn] [get_bd_pins network/ctrl_to_nb_KIP_CDC/s_axis_aresetn]
 connect_bd_net [get_bd_pins network/CLK300] [get_bd_pins network/ctrl_to_nb_KIP_CDC/m_axis_aclk]
 connect_bd_intf_net [get_bd_intf_pins network/ctrl_to_nb_KIP_CDC/M_AXIS] [get_bd_intf_pins network/direct_ip_switch/S00_AXIS]
 # CDC FIFO from Network to Application Region

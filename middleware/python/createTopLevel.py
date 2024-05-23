@@ -335,7 +335,7 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,ctrl_kerne
     dst_file.write("    );\n\n\n")
     # Instantiate User Kernels
     for i in kernel_names:
-        dst_file.write("  //User: "+str(i)+"\n  user_"+str(i)+"_i user_"+str(i)+"_i_i\n    (.rst(rst)\n    ,.CLK(CLK)\n")
+        dst_file.write("  //User: "+str(i)+"\n  user_"+str(i)+"_i user_"+str(i)+"_i_i\n    (.rstn(rstn)\n    ,.CLK(CLK)\n")
         if i in ctrl_kernel_dict:
             kernel_dict = ctrl_kernel_dict[i]
             if kernel_dict['control_type'] == 'm_axil' or kernel_dict['control_type'] == 'both':
