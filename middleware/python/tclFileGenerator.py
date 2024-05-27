@@ -44,7 +44,7 @@ def createHierarchyTCL(outFile,kernel_properties,ctrl_ports_list, user_repo):
             file_contents = file_contents + "create_bd_intf_port -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 "+wannam+"\n"
         file_contents = file_contents + "create_bd_port -dir I -type clk -freq_hz 199498000 "+clkname+"\n"
         file_contents = file_contents + "create_bd_port -dir I -type rst "+rstname+"\nset_property CONFIG.ASSOCIATED_RESET {"+rstname+"} [get_bd_ports /"+clkname+"]\n"
-        file_contents = file_contents + "set_property -dict [ list CONFIG.HAS_TKEEP {1} CONFIG.HAS_TLAST {1} CONFIG.TDEST_WIDTH {24} CONFIG.TDATA_NUM_BYTES {64} CONFIG.TID_WIDTH {24} CONFIG.TUSER_WIDTH {16} ] [get_bd_intf_ports /"+Sname+"]\n"
+        file_contents = file_contents + "set_property -dict [ list CONFIG.HAS_TKEEP {1} CONFIG.HAS_TLAST {1} CONFIG.TDEST_WIDTH {24} CONFIG.TDATA_NUM_BYTES {64} CONFIG.TID_WIDTH {24} CONFIG.TUSER_WIDTH {8} ] [get_bd_intf_ports /"+Sname+"]\n"
         if prop['type'] == 'ip':
             file_contents=file_contents + "addip :" + name + " userIPinstance\n"
         elif (prop['type'] == 'verilog'):
@@ -1413,7 +1413,7 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
         "CONFIG.TDATA_NUM_BYTES {64}",
         "CONFIG.TDEST_WIDTH {8}",
         "CONFIG.TID_WIDTH {8}",
-        "CONFIG.TUSER_WIDTH {16}"
+        "CONFIG.TUSER_WIDTH {8}"
     ]
     SWAN_PROPERTIES = [
         "CONFIG.HAS_TLAST {1}",
