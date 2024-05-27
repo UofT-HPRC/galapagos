@@ -109,13 +109,16 @@ This takes two files (refer to LOGICALFILE, MAPFILE defined in the Makefile) and
 ```
 `<clusterNumber>` inumerates this cluster within the Laniakea framework
 `<packet>` is added for future extensions, currently it must match the above
-`<userIPPath>` is the location of the repository containing all your IPs and verilogs you wish to be inserted. Verilogs must be in the in the described folder, not within subdirectories.
-In verilog mode kernelName must be the name of your top level verilog function, and the verilog must be locaten in <userIPPath>/kernelName.v (e.g., kernel matrix would be in matrix.v using the module matrix as top level)
-In IP mode kernelName must be the name of the IP.
+`<userIPPath>` is the location of the repository containing all your IPs and source files you wish to be inserted. Unpackaged files must be in the in the described folder, not within subdirectories.
 The `<num>` tag refers to the unique ID of a kernel. <br/>
 The `<rep>` refers to the number of times to repeat a kernel. The IDs are of repeated kernels are increased sequentially. <br/>
-The `<type>` can be open, ip, or verilog specifying if you want an open block design to add your work in, a packaged ip inserted, or a verilog file. The name of the ip must exactly match the kernel name if in ip mode. The name of the verilog file and the top level module must match the name in verilog mode.
-The `<clk>` refers to the name of the clock interface, this will be tied to the clock in the Hypervisor. <br/
+The `<type>` can be open, ip, vhdl, system_verilog, or verilog specifying if you want an open block design to add your work in, a packaged ip inserted, or a vhdl system verilog or verilog file. 
+    In IP mode, the name of the ip must exactly match the kernel name. 
+    In verilog mode the file must be named <name>.v, and the top level module must be <name>, where <name> is the kernelName. 
+    In system verilog mode the file must be named <name>.sv, and the top level module must be <name>, where <name> is the kernelName. 
+    In vhdl mode the file must be named <name>.vhdl, and the top level module must be <name>, where <name> is the kernelName.
+    In Open mode, the block design is just called kernelName_inst<inst_num> where inst_num inumerates the number of copies of that kernel
+The `<clk>` refers to the name of the clock interface, this will be tied to the clock in the Hypervisor. <br/>
 The `<aresetn>` refers to the name of the reset interface, this will be tied to the clock in the Hypervisor (negative edge triggered). <br/>
 The `<id_port>` refers to the port name in the kernel that will be tied to a constant with the value of the unique kernel ID. (optional) <br/>
 The `<s_axis>` and `<m_axis>` are the names of the axi stream ports on the IP. Port name _NONE specifies you wish for that port to be tied off/ unused. In Open mode, this specifies the name of that port in the open block design.<scope> is for a future extension and for now must be global

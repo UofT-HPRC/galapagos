@@ -47,8 +47,14 @@ def createHierarchyTCL(outFile,kernel_properties,ctrl_ports_list, user_repo):
         file_contents = file_contents + "set_property -dict [ list CONFIG.HAS_TKEEP {1} CONFIG.HAS_TLAST {1} CONFIG.TDEST_WIDTH {24} CONFIG.TDATA_NUM_BYTES {64} CONFIG.TID_WIDTH {24} CONFIG.TUSER_WIDTH {16} ] [get_bd_intf_ports /"+Sname+"]\n"
         if prop['type'] == 'ip':
             file_contents=file_contents + "addip :" + name + " userIPinstance\n"
-        elif prop['type'] == 'verilog':
+        elif (prop['type'] == 'verilog'):
             file_contents = file_contents + "add_files -norecurse " + user_repo + "/" + name + ".v\nupdate_compile_order -fileset sources_1\n"
+            file_contents = file_contents + "create_bd_cell -type module -reference " + name + " userIPinstance\n"
+        elif (prop['type'] == 'vhdl'):
+            file_contents = file_contents + "add_files -norecurse " + user_repo + "/" + name + ".vhdl\nupdate_compile_order -fileset sources_1\n"
+            file_contents = file_contents + "create_bd_cell -type module -reference " + name + " userIPinstance\n"
+        elif (prop['type'] == 'system_verilog'):
+            file_contents = file_contents + "add_files -norecurse " + user_repo + "/" + name + ".sv\nupdate_compile_order -fileset sources_1\n"
             file_contents = file_contents + "create_bd_cell -type module -reference " + name + " userIPinstance\n"
         if prop['type'] != 'open':
             file_contents = file_contents + "connect_bd_intf_net [get_bd_intf_ports " + Sname + "] [get_bd_intf_pins userIPinstance/" + Sname + "]\n"
@@ -57,6 +63,7 @@ def createHierarchyTCL(outFile,kernel_properties,ctrl_ports_list, user_repo):
                 file_contents = file_contents + "connect_bd_intf_net [get_bd_intf_ports " + wannam + "] [get_bd_intf_pins userIPinstance/" + wannam + "]\n"
             file_contents = file_contents + "connect_bd_net [get_bd_ports " + clkname + "] [get_bd_pins userIPinstance/" + clkname + "]\n"
             file_contents = file_contents + "connect_bd_net [get_bd_ports " + rstname + "] [get_bd_pins userIPinstance/" + rstname + "]\n"
+            file_contents = file_contents + "validate_bd_design\n"
         file_contents = file_contents + "save_bd_design\n"
         dst_file.write(file_contents)
 
@@ -1249,7 +1256,8 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
                                       'clock_name': s_axis['kernel_inst']['clk'][0],
                                       'reset_name': s_axis['kernel_inst']['aresetn'][0],
                                       'wan_enabled': s_axis['kernel_inst']['wan_enabled'],
-                                      'wan_name': s_axis['kernel_inst']['wan_name']
+                                      'wan_name': s_axis['kernel_inst']['wan_name'],
+                                      'id': s_axis['kernel_inst']['num']
                                       })
             if ('type' in s_axis['kernel_inst']):
                 print('type of \"'+str(s_axis['kernel_inst']['name'])+'\" is defined as\n'+str(s_axis['kernel_inst']['type']))
@@ -1261,7 +1269,8 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
                                           'clock_name': s_axis['kernel_inst']['clk'][0],
                                           'reset_name': s_axis['kernel_inst']['aresetn'][0],
                                           'wan_enabled': s_axis['kernel_inst']['wan_enabled'],
-                                          'wan_name': s_axis['kernel_inst']['wan_name']
+                                          'wan_name': s_axis['kernel_inst']['wan_name'],
+                                          'id': s_axis['kernel_inst']['num']
                                           })
                 print('type is not defined for kernel '+str(s_axis['kernel_inst']['inst'])+', assuming open\n')
 
@@ -1303,7 +1312,8 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
                                       'clock_name': s_axis_array[0]['kernel_inst']['clk'][0],
                                       'reset_name': s_axis_array[0]['kernel_inst']['aresetn'][0],
                                       'wan_enabled': s_axis_array[0]['kernel_inst']['wan_enabled'],
-                                      'wan_name': s_axis_array[0]['kernel_inst']['wan_name']
+                                      'wan_name': s_axis_array[0]['kernel_inst']['wan_name'],
+                                      'id': s_axis_array[0]['kernel_inst']['num']
                                       })
             clk_200_intf_config.append(str(s_axis_array[0]['name']) + "_MAXIS")
             clk_200_intf_config.append(str(s_axis_array[0]['name']) + "_SAXIS")
@@ -1360,7 +1370,8 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
                                               'clock_name': s_axis_array[0]['kernel_inst']['clk'][0],
                                               'reset_name': s_axis_array[0]['kernel_inst']['aresetn'][0],
                                               'wan_enabled': s_axis_array[0]['kernel_inst']['wan_enabled'],
-                                              'wan_name': s_axis_array[0]['kernel_inst']['wan_name']
+                                              'wan_name': s_axis_array[0]['kernel_inst']['wan_name'],
+                                              'id': s_axis_array[0]['kernel_inst']['num']
                                               })
                     print('type of \"' + str(s_axis_array[0]['kernel_inst']['name']) + '\" is defined as\n' + str(s_axis_array[0]['kernel_inst']['type']))
                 else:
@@ -1372,7 +1383,8 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
                                               'clock_name': s_axis_array[0]['kernel_inst']['clk'][0],
                                               'reset_name': s_axis_array[0]['kernel_inst']['aresetn'][0],
                                               'wan_enabled': s_axis_array[0]['kernel_inst']['wan_enabled'],
-                                              'wan_name': s_axis_array[0]['kernel_inst']['wan_name']
+                                              'wan_name': s_axis_array[0]['kernel_inst']['wan_name'],
+                                              'id': s_axis_array[0]['kernel_inst']['num']
                                               })
                     print('type is not defined for kernel ' + str(s_axis_array[0]['kernel_inst']['inst']) + ', assuming open\n')
                 tcl_user_app.makeConnection(
@@ -1420,40 +1432,18 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
         tcl_user_app.setPortProperties(portName, AXIS_PROPERTIES)
         tcl_user_app.setPortProperties(WANportName, SWAN_PROPERTIES)
         idx_str = "%02d"%(idx+1)
-        tcl_user_app.instModule(
-            {
-                'name': 'ht_marker',
-                'inst': 'applicationRegion/ht_'+ht_name,
-                'clks': ['clk'],
-                'resetns_port': 'rstn',
-                'resetns': ['resetn']
-            }
-        )
         tcl_user_app.makeConnection(
             'intf',
             {
                 'type': 'intf_port',
                 'port_name': portName
             },
-            {
-                'name': 'applicationRegion/ht_'+ht_name,
-                'type': 'intf',
-                'port_name': 'usr'
-            }
-        )
-        tcl_user_app.makeConnection(
-                'intf',
-                {
-                'name': 'applicationRegion/ht_' + ht_name,
-                'type': 'intf',
-                'port_name': 'gal'
-                },
                 {
                 'name':'applicationRegion/output_switch',
                 'type':'intf',
                 'port_name':'S'+ idx_str + '_AXIS'
                 }
-            )
+        )
         tcl_user_app.makeConnection(
             'intf',
             {

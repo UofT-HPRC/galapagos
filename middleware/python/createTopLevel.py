@@ -22,6 +22,22 @@ def add_axi_defn_field(preamble,name,portname,cat,field,has_id,has_user):
         if ((field[i] != "id") or has_id) and ((field[i] != "user") or has_user):
             result_str = result_str + preamble+",."+portname+"_"+cat+field[i]+"("+name+"_"+cat+field[i]+")\n"
     return result_str + "\n";
+def add_axi_defn_field_set_user(preamble,name,portname,cat,field,has_id,user):
+    result_str = ""
+    for i in range (len(field)):
+        if(field[i] == "user"):
+            result_str = result_str + preamble + ",." + portname + "_" + cat + "user(" + str(user) + ")\n"
+        elif ((field[i] != "id") or has_id):
+            result_str = result_str + preamble+",."+portname+"_"+cat+field[i]+"("+name+"_"+cat+field[i]+")\n"
+    return result_str + "\n";
+def add_axi_defn_field_set_id(preamble,name,portname,cat,field,id,has_user):
+    result_str = ""
+    for i in range (len(field)):
+        if (field[i] == 'id'):
+            result_str = result_str + preamble + ",." + portname + "_" + cat + field[i] + "(" + str(id)+ ")\n"
+        elif  ((field[i] != "user") or has_user):
+            result_str = result_str + preamble+",."+portname+"_"+cat+field[i]+"("+name+"_"+cat+field[i]+")\n"
+    return result_str + "\n";
 def add_axim_masked_field(preamble,name,portname,cat,field,has_id,has_user):
     result_str = ""
     for i in range (len(field)):
@@ -68,11 +84,11 @@ def construct_axis_wire(preamble,name,data_size,id_size, has_ready):
     else:
         return(add_axi_wire_field(preamble,name,"t",axis_fields[:-1],axis_sizes[:-1],id_size,data_size,0)+"\n")
     
-def construct_axis_defn(preamble,name,portname, has_ready,has_user):
+def construct_axis_defn(preamble,name,portname, has_ready,has_user,has_id):
     if has_ready:
-        return(add_axi_defn_field(preamble,name,portname,"t",axis_fields,True,has_user)+"\n")
+        return(add_axi_defn_field(preamble,name,portname,"t",axis_fields,has_id,has_user)+"\n")
     else:
-        return(add_axi_defn_field(preamble,name,portname,"t",axis_fields[:-1],True,has_user)+"\n")
+        return(add_axi_defn_field(preamble,name,portname,"t",axis_fields[:-1],has_id,has_user)+"\n")
 
 def construct_axis_base_defn(preamble,name,portname, has_ready):
     if has_ready:
@@ -111,10 +127,10 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,control_na
         dst_file.write("\n\n    //User: "+str(name)+"\n")
         if name in control_names:
             dst_file.write(construct_axi_defn("      ",str(name)+"_CONTROL",str(name)+"_CONTROL",True,True))
-        dst_file.write(construct_axis_defn("      ",str(name)+"_MAXIS",str(name)+"_MAXIS",True,True))
-        dst_file.write(construct_axis_defn("      ",str(name)+"_SAXIS",str(name)+"_SAXIS",True,False))
+        dst_file.write(construct_axis_defn("      ",str(name)+"_MAXIS",str(name)+"_MAXIS",True,True,True))
+        dst_file.write(add_axi_defn_field_set_id("      ",str(name)+"_SAXIS",str(name)+"_SAXIS","t",axis_fields,props['id'],False))
         if props['wan_enabled'][0]:
-            dst_file.write(add_axi_defn_field("      ",str(name) + "_SWAN",str(name) + "_SWAN","t",wan_axis_fields,False,True)+"\n")
+            dst_file.write(add_axi_defn_field_set_user("      ",str(name) + "_SWAN",str(name) + "_SWAN","t",wan_axis_fields,False,0)+"\n")
         else:
             dst_file.write(
                 add_axim_masked_field("      ", str(name) + "_SWAN", str(name) + "_SWAN", "t", wan_axis_fields, False,
@@ -127,13 +143,14 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,control_na
         Mname=props['master_name']
         clkname = props['clock_name']
         rstname = props['reset_name']
+
         dst_file.write("  //User: "+str(name)+"\n  user_"+str(name)+"_i user_"+str(name)+"_i_i\n    (."+rstname+"(rstn)\n    ,."+clkname+"(CLK)\n")
         if name in control_names:
             dst_file.write(construct_axi_defn("    ",str(name)+"_CONTROL","AXI_CONTROL",True,True))
-        dst_file.write(construct_axis_defn("    ",str(name)+"_MAXIS",Sname,True,True))
-        dst_file.write(construct_axis_defn("    ",str(name)+"_SAXIS",Mname,True,False))
+        dst_file.write(construct_axis_defn("    ",str(name)+"_MAXIS",Sname,True,True,True))
+        dst_file.write(construct_axis_defn("    ",str(name)+"_SAXIS",Mname,True,False,False))
         if props['wan_enabled'][0]:
-            dst_file.write(add_axi_defn_field("      ", str(name) + "_SWAN", wan_nam, "t", wan_axis_fields, False, True) + "\n")
+            dst_file.write(add_axi_defn_field("      ", str(name) + "_SWAN", props['wan_name'][0], "t", wan_axis_fields, False, True) + "\n")
         dst_file.write("    );\n\n\n")
     dst_file.write("  endmodule")
     dst_file.close()
