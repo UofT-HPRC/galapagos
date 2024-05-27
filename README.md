@@ -4,13 +4,9 @@ Welcome to the Galapagos Hardware Stack.
 
 ## Prerequisites
 
-Both the Docker Container and native install requires Xilinx Vivado to be installed. Current versions supported are 2018.1, 2018.2, 2018.3, 2019.1
+Both the Docker Container and native install requires Xilinx Vivado to be installed. Current versions supported are 2018.1, 2018.2, 2018.3, 2019.1, 2019.3
 
 The Galapagos framework has been tested using Python 3.7.10, please have it installed.
-
-## Docker Jupyter Tutorial
-
-To run tutorial refer to instructions in [this README](https://github.com/UofT-HPRC/galapagos/blob/master/docker/README.md)
 
 ## First-Time Setup
 1. If not installed already, follow the steps to install Python 3.7.10 as Python 3.7 (follow `altinstall` step): [https://github.com/UofT-HPRC/tpdp/blob/main/configuring_server/new_students/README.md#install-a-specific-version-of-python](https://github.com/UofT-HPRC/tpdp/blob/main/configuring_server/new_students/README.md#install-a-specific-version-of-python)
@@ -86,43 +82,44 @@ This takes two files (refer to LOGICALFILE, MAPFILE defined in the Makefile) and
 
 ### LOGICALFILE
 
-The cluster is described in a LOGICALFILE with no notion of the mappings. 
-The following is an example kernel from the logical file:
 ```
- <kernel> kernelName
-	<num> 1 </num>
+<cluster>
+<packet>
+        <data> 512 </data>
+        <keep> 64 </keep>
+        <last> 1 </last>
+</packet>
+<kernel> kernelName
+        <num> 1 </num>
         <rep> 1 </rep>
         <clk> nameOfClockPort </clk>
-        <id_port> nameOfIDport </id_port>
         <aresetn> nameOfResetPort </aresetn>
+        <type> type </type>
+        <control> FALSE </control>
         <s_axis>
+            <scope> global </scope>
             <name> nameOfInputStreamInterface </name>
-	    <scope> scope </scope>
         </s_axis>
         <m_axis>
+            <scope> global </scope>
             <name> nameOfOutputStreamInterface </name>
-	    <scope> scope </scope>
-            <debug/>
         </m_axis>
-        <s_axi>
-            <name> nameofControlInterface </name>
-	    <scope> scope </scope>
-        </s_axi>
-        <m_axi>
-            <name> nameOfMemoryInterface </name>
-	    <scope> scope </scope>
-        </m_axi>
 </kernel>
+</cluster>
 ```
-
+`<clusterNumber>` inumerates this cluster within the Laniakea framework
+`<packet>` is added for future extensions, currently it must match the above
+`<userIPPath>` is the location of the repository containing all your IPs and verilogs you wish to be inserted. Verilogs must be in the in the described folder, not within subdirectories.
+In verilog mode kernelName must be the name of your top level verilog function, and the verilog must be locaten in <userIPPath>/kernelName.v (e.g., kernel matrix would be in matrix.v using the module matrix as top level)
+In IP mode kernelName must be the name of the IP.
 The `<num>` tag refers to the unique ID of a kernel. <br/>
 The `<rep>` refers to the number of times to repeat a kernel. The IDs are of repeated kernels are increased sequentially. <br/>
+The `<type>` can be open, ip, or verilog specifying if you want an open block design to add your work in, a packaged ip inserted, or a verilog file. The name of the ip must exactly match the kernel name if in ip mode. The name of the verilog file and the top level module must match the name in verilog mode.
 The `<clk>` refers to the name of the clock interface, this will be tied to the clock in the Hypervisor. <br/
 The `<aresetn>` refers to the name of the reset interface, this will be tied to the clock in the Hypervisor (negative edge triggered). <br/>
 The `<id_port>` refers to the port name in the kernel that will be tied to a constant with the value of the unique kernel ID. (optional) <br/>
-The `<s_axi>` refers to a port from that would be of the `s_axi` interface. If the scope is `global` then this will connect to the control interface (can be either PCIe or ARM, depending on the board). For a local scope, you can specify the `master` which would be another `m_axi` interface that is of `local` scope. <br/>
-The `<m_axi>` refers to a port that would be of the `m_axi` interface. If it's of `global` scope then it will tie to the off-chip memory, else it will connect to an `s_axi` interface that is of `local` scope. <br/>
-The `<s_axis>` and `<m_axis>` is similar to that of the above interfaces, except that is is the AXI stream. `global` scope ties to the networking port, `local` can connect to each other. <br/>
+The `<s_axis>` and `<m_axis>` are the names of the axi stream ports on the IP. Port name _NONE specifies you wish for that port to be tied off/ unused. In Open mode, this specifies the name of that port in the open block design.<scope> is for a future extension and for now must be global
+`global` scope ties to the networking port, `local` can connect to each other. <br/>
 
 
 ### MAPFILE

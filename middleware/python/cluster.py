@@ -154,11 +154,24 @@ class cluster(abstractDict):
         else:
             logical_dict = kernel_file['cluster']['kernel']
             map_dict = map_file['cluster']['node']
-        dns_ip_address = self.getDict(map_file)['cluster']['dns']
-
-
+        if "dns" in self.getDict(map_file)['cluster']:
+            dns_ip_address = self.getDict(map_file)['cluster']['dns']
+        else:
+            dns_ip_address = ''
+        if "userIpPath" in self.getDict(kernel_file)['cluster']:
+            user_ip_folder = self.getDict(kernel_file)['cluster']['userIpPath']
+        else:
+            user_ip_folder = ''
+        print('User IP Folder is :')
+        print(user_ip_folder)
         self.kernels = []
         for kern_dict in logical_dict:
+            if (('wan' in kern_dict) and (kern_dict['wan']['enabled'].lower()== 'true')):
+                kern_dict['wan_enabled'] = True
+                kern_dict['wan_name'] = kern_dict['wan']['name']
+            else:
+                kern_dict['wan_enabled'] = False
+                kern_dict['wan_name'] = ""
             kern_dict['name'] = kern_dict['#text']
             # Number of repetitions of this kernel
             if 'rep' in kern_dict:
@@ -224,10 +237,10 @@ class cluster(abstractDict):
                     #print("kernelONE object " + str(self.kernels[len(self.kernels) - 1].data))
                     #print("Appending " + str(kern_dict_local['inst']))
                     self.kernels.append(kernel(**kern_dict_local))
-                    print("Finished appending")
 
 
             else:
+                kern_dict_local = copy.deepcopy(kern_dict)
                 kern_dict_local['rep'] = 1
                 kern_dict_local['num'] = int(kern_dict_local['num'])
                 self.kernels.append(kernel(**kern_dict_local))
@@ -248,6 +261,7 @@ class cluster(abstractDict):
             node_inst['kernel'] = []
             node_inst['kernel_map'] = {}
             node_inst['dns_ip']=dns_ip_address
+            node_inst['ip_folder']=user_ip_folder
             #
             for kmap_node in node_dict['kernel']:
                 for kern_idx, kern in enumerate(self.kernels):

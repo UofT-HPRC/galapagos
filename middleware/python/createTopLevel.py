@@ -22,7 +22,12 @@ def add_axi_defn_field(preamble,name,portname,cat,field,has_id,has_user):
         if ((field[i] != "id") or has_id) and ((field[i] != "user") or has_user):
             result_str = result_str + preamble+",."+portname+"_"+cat+field[i]+"("+name+"_"+cat+field[i]+")\n"
     return result_str + "\n";
-
+def add_axim_masked_field(preamble,name,portname,cat,field,has_id,has_user):
+    result_str = ""
+    for i in range (len(field)):
+        if ((field[i] != "id") or has_id) and ((field[i] != "user") or has_user) and (field[i]!='ready'):
+            result_str = result_str + preamble+",."+portname+"_"+cat+field[i]+"(0)\n"
+    return result_str + "\n";
 def add_axi_wire_field(preamble,name,cat,field,size,id,data,addr):
     result_str = ""
     for i in range(len(field)):
@@ -80,18 +85,19 @@ def copy_file(dest_fp,src_filename):
     dest_fp.write(src_file.read())
     src_file.close()
 
-def createTopLevelVerilog(target_files, source_dir, kernel_names,control_names):
+def createTopLevelVerilog(target_files, source_dir, kernel_properties,control_names):
     dst_file = open(target_files,"w")
     copy_file(dst_file,source_dir+"/../verilog/shellTop_pt1.v")
     dst_file.write(construct_axis_wire("  ","M_AXIS",512,0,True))
     dst_file.write(construct_axis_wire("  ","S_AXIS",512,0,False))
     dst_file.write(construct_axi_wire("  ","S_AXI_CONTROL",16,128,40))
-    for i in control_names:
-        dst_file.write(construct_axi_wire("  ", str(i) + "_CONTROL", 16, 128, 40))
-    for i in kernel_names:
-        dst_file.write(construct_axis_wire("  ", str(i) + "_MAXIS", 512, 24, True))
-        dst_file.write(construct_axis_wire("  ", str(i) + "_SAXIS", 512, 24, True))
-        dst_file.write(add_axi_wire_field("  ", str(i) + "_SWAN","t", wan_axis_fields, wan_axis_sizes, 0, 512, 0) + "\n")
+    for CN in control_names:
+        dst_file.write(construct_axi_wire("  ", str(CN) + "_CONTROL", 16, 128, 40))
+    for props in kernel_properties:
+        name=props['inst']
+        dst_file.write(construct_axis_wire("  ", str(name) + "_MAXIS", 512, 24, True))
+        dst_file.write(construct_axis_wire("  ", str(name) + "_SAXIS", 512, 24, True))
+        dst_file.write(add_axi_wire_field("  ", str(name) + "_SWAN","t", wan_axis_fields, wan_axis_sizes, 0, 512, 0) + "\n")
     copy_file(dst_file,source_dir+"/../verilog/shellTop_pt2.v")
     dst_file.write(construct_axis_base_defn("    ","M_AXIS","eth_tx",True))
     dst_file.write(construct_axis_base_defn("    ","S_AXIS","eth_rx",False))
@@ -100,22 +106,34 @@ def createTopLevelVerilog(target_files, source_dir, kernel_names,control_names):
     dst_file.write(construct_axis_base_defn("    ","M_AXIS","M_AXIS",True))
     dst_file.write(construct_axis_base_defn("    ","S_AXIS","S_AXIS",False))
     dst_file.write(construct_axi_defn("    ","S_AXI_CONTROL","S_AXI_CONTROL",True,True))
-    for i in kernel_names:
-        dst_file.write("\n\n    //User: "+str(i)+"\n")
-        if i in control_names:
-            dst_file.write(construct_axi_defn("      ",str(i)+"_CONTROL",str(i)+"_CONTROL",True,True))
-        dst_file.write(construct_axis_defn("      ",str(i)+"_MAXIS",str(i)+"_MAXIS",True,True))
-        dst_file.write(construct_axis_defn("      ",str(i)+"_SAXIS",str(i)+"_SAXIS",True,False))
-        dst_file.write(add_axi_defn_field("      ",str(i) + "_SWAN",str(i) + "_SWAN","t",wan_axis_fields,False,True)+"\n")
+    for props in kernel_properties:
+        name=props['inst']
+        dst_file.write("\n\n    //User: "+str(name)+"\n")
+        if name in control_names:
+            dst_file.write(construct_axi_defn("      ",str(name)+"_CONTROL",str(name)+"_CONTROL",True,True))
+        dst_file.write(construct_axis_defn("      ",str(name)+"_MAXIS",str(name)+"_MAXIS",True,True))
+        dst_file.write(construct_axis_defn("      ",str(name)+"_SAXIS",str(name)+"_SAXIS",True,False))
+        if props['wan_enabled'][0]:
+            dst_file.write(add_axi_defn_field("      ",str(name) + "_SWAN",str(name) + "_SWAN","t",wan_axis_fields,False,True)+"\n")
+        else:
+            dst_file.write(
+                add_axim_masked_field("      ", str(name) + "_SWAN", str(name) + "_SWAN", "t", wan_axis_fields, False,
+                                   True) + "\n")
     dst_file.write("    );\n\n\n")
     
-    for i in kernel_names:
-        dst_file.write("  //User: "+str(i)+"\n  user_"+str(i)+"_i user_"+str(i)+"_i_i\n    (.rstn(rstn)\n    ,.CLK(CLK)\n")
-        if i in control_names:
-            dst_file.write(construct_axi_defn("    ",str(i)+"_CONTROL","AXI_CONTROL",True,True))
-        dst_file.write(construct_axis_defn("    ",str(i)+"_MAXIS","RX_AXIS",True,True))
-        dst_file.write(construct_axis_defn("    ",str(i)+"_SAXIS","TX_AXIS",True,False))
-        dst_file.write(add_axi_defn_field("      ", str(i) + "_SWAN", "TX_WAN_AXIS", "t", wan_axis_fields, False, True) + "\n")
+    for props in kernel_properties:
+        name=props['inst']
+        Sname=props['slave_name']
+        Mname=props['master_name']
+        clkname = props['clock_name']
+        rstname = props['reset_name']
+        dst_file.write("  //User: "+str(name)+"\n  user_"+str(name)+"_i user_"+str(name)+"_i_i\n    (."+rstname+"(rstn)\n    ,."+clkname+"(CLK)\n")
+        if name in control_names:
+            dst_file.write(construct_axi_defn("    ",str(name)+"_CONTROL","AXI_CONTROL",True,True))
+        dst_file.write(construct_axis_defn("    ",str(name)+"_MAXIS",Sname,True,True))
+        dst_file.write(construct_axis_defn("    ",str(name)+"_SAXIS",Mname,True,False))
+        if props['wan_enabled'][0]:
+            dst_file.write(add_axi_defn_field("      ", str(name) + "_SWAN", wan_nam, "t", wan_axis_fields, False, True) + "\n")
         dst_file.write("    );\n\n\n")
     dst_file.write("  endmodule")
     dst_file.close()
