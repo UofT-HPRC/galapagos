@@ -4,7 +4,7 @@ Welcome to the Galapagos Hardware Stack.
 
 ## Prerequisites
 
-Both the Docker Container and native install requires Xilinx Vivado to be installed. Current versions supported are 2018.1, 2018.2, 2018.3, 2019.1
+Both the Docker Container and native install requires Xilinx Vivado to be installed. Currently Galapagos requires Vivado and Vitis HLS 2023.1, and Vivado 2018.3 to be installed.
 
 The Galapagos framework has been tested using Python 3.7.10, please have it installed.
 
