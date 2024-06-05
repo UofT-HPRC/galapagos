@@ -192,5 +192,5 @@ The `<autorun>` can only be True if none of the kernels are `open`. When True, t
 
 `<dns>` indicates the IP address of the DNS node in the laneakea supercluster
   
-For an example refer to `galapagos/userIP/*.xml`
+For an example refer to `galapagos/xml_examples`
 
