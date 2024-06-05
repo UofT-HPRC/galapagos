@@ -4,7 +4,8 @@ Welcome to the Galapagos Hardware Stack.
 
 ## Prerequisites
 
-Both the Docker Container and native install requires Xilinx Vivado to be installed. Current versions supported are 2018.1, 2018.2, 2018.3, 2019.1, 2019.3
+
+Both the Docker Container and native install requires Xilinx Vivado to be installed. Currently Galapagos requires Vivado and Vitis HLS 2023.1, and Vivado 2018.3 to be installed.
 
 The Galapagos framework has been tested using Python 3.7.10, please have it installed.
 
@@ -28,13 +29,24 @@ The Galapagos framework has been tested using Python 3.7.10, please have it inst
 ## What you need before starting
 1. A logical file describing your project's kernels
 2. A map file describing how your kernels are distributed on devices
-
+	1. NOTE: Currently Galapagos requires a minimum of 2 declared devices (nodes). If you only want to use one node, create a dummy kernel in your logical file, and create a CPU node in your map file that hosts the kernel (for details on how to create a CPU node, see the map files in the userIP folder).
+ 
 ## Steps
 1. If using a virtual environment, enter it by running `source /path/to/venv/bin/activate`
 	1. Eg. `source ./python_venv_3_7_10/bin/activate`
 2. Initialize environment variables by running: `source build.sh`
 3. Compile the Vivado HLS IPs and generate TCL scripts by running: `make PROJECTNAME="<project_name>" LOGICALFILE=</path/to/logical/file> MAPFILE=</path/to/map/file>`
 4. Use the TCL scripts to generate Vivado projects by running: `source projects/<project_name>/createCluster.sh`
+5. At this point, Galapagos will have created one Vivado project for each FPGA declared in your map file. Each FPGA's Vivado project will contain a block diagram for each kernel mapped to it. The number in each block diagram is the ID of the kernel that the block diagram represents. For example, the Vivado project below has block diagrams generated for kernels 3 and 4 in the cluster.
+	1. ![Galapagos Vivado Project](https://github.com/UofT-HPRC/galapagos/blob/reconfigurable/fig/galapagos_vivado_project.PNG)
+6. In all of your Vivado projects, open up the kernel block diagrams and construct your kernels. The following connections will be provided for you:
+	1. `CLK`: Clock pin
+ 	2. `rst`: Active-low reset
+ 	1. `RX_AXIS`: Input AXI-Stream port. AXI-Stream LAN messages sent to this kernel will arrive through this port.
+ 	2. `TX_AXIS`: Output AXI-Stream port. AXI-Stream LAN messages that this kernel sends must be sent through this port.
+  	3. `TX_WAN_AXIS`: Output AXI-Stream port. AXI-Stream WAN messages that this kernel sends must be sent through this port.
+  	4. `S_AXIL`: Input AXI-Lite port created if `control`-`s_axil/both` is selected in the Logical File. AXI-Lite messages sent using the control protocol will arrive through this port. 
+  	3. `M_AXIL`: Output AXI-Lite port created if `control`-`m_axil/both` is selected in the Logical File. AXI-Lite control messages that this kernel sends must be sent through this port. 
 
 
 ## Initial Setup for Native Install
