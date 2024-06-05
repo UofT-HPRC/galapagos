@@ -31,8 +31,6 @@ def createHierarchyTCL(outFile,kernel_properties,ctrl_ports_list, user_repo):
         rstname = prop['reset_name']
         wanena = prop['wan_enabled'][0]
         wannam = prop['wan_name'][0]
-        print(wanena)
-        print(wannam)
         file_contents = ""
         file_contents = file_contents +"create_bd_design \"user_"+str(kern)+"_i\"\n"
         if kern in ctrl_ports_list:
@@ -56,7 +54,9 @@ def createHierarchyTCL(outFile,kernel_properties,ctrl_ports_list, user_repo):
         elif (prop['type'] == 'system_verilog'):
             file_contents = file_contents + "add_files -norecurse " + user_repo + "/" + name + ".sv\nupdate_compile_order -fileset sources_1\n"
             file_contents = file_contents + "create_bd_cell -type module -reference " + name + " userIPinstance\n"
-        if prop['type'] != 'open':
+        elif (prop['type'] == 'tcl'):
+            file_contents = file_contents + "source " + user_repo + "/" + name + ".tcl\n"
+        if ((prop['type'] != 'open') and (prop['type'] != 'tcl')):
             file_contents = file_contents + "connect_bd_intf_net [get_bd_intf_ports " + Sname + "] [get_bd_intf_pins userIPinstance/" + Sname + "]\n"
             file_contents = file_contents + "connect_bd_intf_net [get_bd_intf_ports " + Mname + "] [get_bd_intf_pins userIPinstance/" + Mname + "]\n"
             if wanena:

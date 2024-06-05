@@ -96,8 +96,6 @@ def map_s2s(fpga_db, kernel_db, input_logical, input_map, output_map_file_name):
             output_map["cluster"]["node"][curr_node]['lut'] = node['lut'] - kern['lut']
 
 
-    print("floating kernels are " + str(floating_kernels))
-
     while(len(floating_kernels) > 0):
         max_kern_del = -1
         for float_idx, floating_kernel in enumerate(floating_kernels):
@@ -185,7 +183,6 @@ def map_s2s(fpga_db, kernel_db, input_logical, input_map, output_map_file_name):
                     raise
 
     #print(kernel_list)
-    print(kernel_db)
     f_csv = open("resources.csv", "w")
     f_csv.write("FPGA,Kernel_Num,Layers,FF,LUT,DSP,URAM,BRAM_ADDR_BITS,BRAM_DATA_BITS,BRAM_MB\n")
 
