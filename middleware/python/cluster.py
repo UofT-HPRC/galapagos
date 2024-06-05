@@ -250,7 +250,12 @@ class cluster(abstractDict):
         # Now deal with nodes (i.e. a CPU or an FPGA)
         self.nodes = []
         for node_inst in map_dict:
-            if(int(node_inst['kernel'])==0):
+            print(node_inst['kernel'])
+            if type(node_inst['kernel']) is list:
+                for element in node_inst['kernel']:
+                    if (int(element)==0):
+                        raise ValueError("There can not be any nodes pointing to kernel 0")
+            elif(int(node_inst['kernel'])==0):
                 raise ValueError("There can not be any nodes pointing to kernel 0")
         map0=OrderedDict([('type','sw'),('kernel','0'),('mac','00:00:00:00:00:00'),('ip','0.0.0.0')])
         map_dict.insert(0,map0)
