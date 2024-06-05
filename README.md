@@ -96,41 +96,58 @@ This takes two files (refer to LOGICALFILE, MAPFILE defined in the Makefile) and
 
 ```
 <cluster>
-<packet>
-        <data> 512 </data>
-        <keep> 64 </keep>
-        <last> 1 </last>
-</packet>
-<kernel> kernelName
-        <num> 1 </num>
-        <rep> 1 </rep>
-        <clk> nameOfClockPort </clk>
-        <aresetn> nameOfResetPort </aresetn>
-        <type> type </type>
-        <control> FALSE </control>
-        <s_axis>
-            <scope> global </scope>
-            <name> nameOfInputStreamInterface </name>
-        </s_axis>
-        <m_axis>
-            <scope> global </scope>
-            <name> nameOfOutputStreamInterface </name>
-        </m_axis>
-</kernel>
+	<clusterNumber> 1 </clusterNumber>
+	<userIpPath> /home/user/test/ip_repo </userIpPath>
+	<kernel> kernelName
+	        <num> 1 </num>
+	        <rep> 2 </rep>
+	        <clk> nameOfClockPort </clk>
+	        <aresetn> nameOfResetPort </aresetn>
+	        <type> verilog </type>
+	        <control> TRUE </control>
+		<control_range> 2k </control_range>
+	        <s_axis>
+	            <scope> global </scope>
+	            <name> nameOfInputStreamInterface </name>
+	        </s_axis>
+	        <m_axis>
+	            <scope> global </scope>
+	            <name> nameOfOutputStreamInterface </name>
+	        </m_axis>
+	</kernel>
+	<kernel> otherKernelName
+	        <num> 1 </num>
+	        <rep> 2 </rep>
+	        <clk> nameOfClockPort </clk>
+	        <aresetn> nameOfResetPort </aresetn>
+	        <type> open </type>
+	        <control> FALSE </control>
+	        <s_axis>
+	            <scope> global </scope>
+	            <name> nameOfInputStreamInterface </name>
+	        </s_axis>
+	        <m_axis>
+	            <scope> global </scope>
+	            <name> nameOfOutputStreamInterface </name>
+	        </m_axis>
+	</kernel>
 </cluster>
 ```
 `<clusterNumber>` inumerates this cluster within the Laniakea framework
 `<packet>` is added for future extensions, currently it must match the above
 `<userIPPath>` is the location of the repository containing all your IPs and source files you wish to be inserted. Unpackaged files must be in the in the described folder, not within subdirectories.
-The `<num>` tag refers to the unique ID of a kernel. <br/>
-The `<rep>` refers to the number of times to repeat a kernel. The IDs are of repeated kernels are increased sequentially. <br/>
-The `<type>` can be open, ip, vhdl, system_verilog, or verilog specifying if you want an open block design to add your work in, a packaged ip inserted, or a vhdl system verilog or verilog file. 
+The `<num>` tag refers to the unique ID of a kernel. IDs must start at 1 and be consecutive <br/>
+The `<rep>` field is optional (default 1), refers to the number of times to repeat a kernel. The IDs are of repeated kernels are increased sequentially. <br/>
+The `<type>` can be open, ip, vhdl, system_verilog, tcl, or verilog specifying if you want an open block design to add your work in, a packaged ip inserted, or a vhdl system verilog or verilog file. 
     In IP mode, the name of the ip must exactly match the kernel name. 
     In verilog mode the file must be named <name>.v, and the top level module must be <name>, where <name> is the kernelName. 
     In system verilog mode the file must be named <name>.sv, and the top level module must be <name>, where <name> is the kernelName. 
     In vhdl mode the file must be named <name>.vhdl, and the top level module must be <name>, where <name> is the kernelName.
+    In tcl mode, The tcl file located at `<userIPPath>`/`<name>`.tcl will be run inside the open block design 
     In Open mode, the block design is just called kernelName_inst<inst_num> where inst_num inumerates the number of copies of that kernel
 The `<clk>` refers to the name of the clock interface, this will be tied to the clock in the Hypervisor. <br/>
+The `<control>` refers to whether an AXI Lite control interface is required. <br/>
+The `<control_range>` refers to the range of the interface. Only required when control is TRUE <br/>
 The `<aresetn>` refers to the name of the reset interface, this will be tied to the clock in the Hypervisor (negative edge triggered). <br/>
 The `<id_port>` refers to the port name in the kernel that will be tied to a constant with the value of the unique kernel ID. (optional) <br/>
 The `<s_axis>` and `<m_axis>` are the names of the axi stream ports on the IP. Port name _NONE specifies you wish for that port to be tied off/ unused. In Open mode, this specifies the name of that port in the open block design.<scope> is for a future extension and for now must be global
@@ -140,25 +157,40 @@ The `<s_axis>` and `<m_axis>` are the names of the axi stream ports on the IP. P
 ### MAPFILE
 
 The cluster is described in a MAPFILE with no notion of the mappings.  <br/>
-The following is an example kernel from the map file:
+The following is an example map file:
 
 ```
-<node>
-        <board> adm-8k5-debug </board>
-        <comm> eth </comm>
-        <type> hw </type>
+
+<cluster>
+    <node>
+        <type> sw </type>
         <kernel> 1 </kernel>
+        <mac>  0c:c4:7a:88:c0:47 </mac>
+        <ip> 10.1.2.101 </ip>
+    </node>
+    <node>
+        <type> hw </type>
         <kernel> 2 </kernel>
-        <kernel> 3 </kernel>
-        <mac_addr>  fa:16:3e:55:ca:02 </mac_addr>
-        <ip_addr> 10.1.2.102 </ip_addr>
-</node>
-
+	<kernel> 3 </kernel>
+        <mac>  fa:16:3e:55:ca:08 </mac>
+        <ip> 10.1.9.208 </ip>
+        <board> sidewinder </board>
+        <comm> udp </comm>
+        <autorun> True </autorun>
+    </node>
+    <dns> 10.1.9.109 </dns>
+</cluster>
 ```
+The `<type>` is the type of device used. Currently supported is sw for a CPU node or sw for a hardware node
+The `<kernel>` refers to the unique kernel ID that you wish to put on this node. You can repeat this tag if an FPGA or CPU has multiple kernels in the same device  <br/>
+The `<mac>` and `<ip>` refer to the device's ip address and mac address respectively
 
+For type hw nodes, the following is also required:
 The `<board>` tag refers to the FPGA board you wish to use for this particular node. <br/>
-The `<kernel>` refers to the unique kernel ID that you wish to put on this node.  <br/>
+The `<com>` tag refers to whether the node is using the tcp or the udp protocol
+The `<autorun>` can only be True if none of the kernels are `open`. When True, the scripts will automatically run synthesis, implementation, and bitstream generation on the device.
 
+`<dns>` indicates the IP address of the DNS node in the laneakea supercluster
   
-For an example refer to `galapagos/middleware/python/tests/conf0/configuration_files/*`
+For an example refer to `galapagos/xml_examples`
 
