@@ -5,6 +5,7 @@ import copy
 import tclFileGenerator
 from abstractDict import abstractDict
 from kernel import kernel
+from collections import OrderedDict
 from node import node
 import os
 import socket, struct
@@ -154,82 +155,93 @@ class cluster(abstractDict):
         else:
             logical_dict = kernel_file['cluster']['kernel']
             map_dict = map_file['cluster']['node']
-        dns_ip_address = self.getDict(map_file)['cluster']['dns']
-
-
+        if "dns" in self.getDict(map_file)['cluster']:
+            dns_ip_address = self.getDict(map_file)['cluster']['dns']
+        else:
+            dns_ip_address = ''
+        if "userIpPath" in self.getDict(kernel_file)['cluster']:
+            user_ip_folder = self.getDict(kernel_file)['cluster']['userIpPath']
+        else:
+            user_ip_folder = ''
         self.kernels = []
+        for log_inst in logical_dict:
+            if(int(log_inst['num'])==0):
+                raise ValueError("There can not be any nodes pointing to kernel 0")
+        axis_array = OrderedDict([('scope','global'),('name','fakename')])
+        kern0=OrderedDict([('#text','garbage'),('type','open'),('num','0'),('control','false'),('clk','clk'),('aresetn','aresetn'),('s_axis',axis_array),('m_axis',axis_array)])
+        logical_dict.insert(0, kern0)
         for kern_dict in logical_dict:
+            if (('wan' in kern_dict) and (kern_dict['wan']['enabled'].lower()== 'true')):
+                kern_dict['wan_enabled'] = True
+                kern_dict['wan_name'] = kern_dict['wan']['name']
+            else:
+                kern_dict['wan_enabled'] = False
+                kern_dict['wan_name'] = ""
             kern_dict['name'] = kern_dict['#text']
             # Number of repetitions of this kernel
-            if 'rep' in kern_dict:
-                # Automatically gives sequential numbers
-                base_num = int(kern_dict['num'])
-                for i in range(0, int(kern_dict['rep'])):
-                    kern_dict_local = copy.deepcopy(kern_dict)
-                    # Set number for this kernel instance
-                    kern_dict_local['num'] = base_num + i
+            if 'rep' not in kern_dict:
+                kern_dict['rep']='1'
+            # Automatically gives sequential numbers
+            base_num = int(kern_dict['num'])
+            for i in range(0, int(kern_dict['rep'])):
+                kern_dict_local = copy.deepcopy(kern_dict)
+                # Set number for this kernel instance
+                kern_dict_local['num'] = base_num + i
 
-                    # This code is setting some mysterious values inside the
-                    # dictionary, which probably get used by another function?
-                    # Otherwise, I have no idea what this is doing...
+                # This code is setting some mysterious values inside the
+                # dictionary, which probably get used by another function?
+                # Otherwise, I have no idea what this is doing...
 
-                    # (This is a guess) Naif mentioned that you can hook up local
-                    # AXI full/lite connections between your kernels (unrelated to
-                    # Galapagos's router, network bridge, etc.). This must be the
-                    # code that handles it
-                    # What the heck is with all these conversions to and from strings?
-                    if 's_axi' in kern_dict_local:
-                        # If more than one <s_axi> tag is present...
-                        if type(kern_dict_local['s_axi']) == type([]):
-                            for s_axi_idx, s_axi in enumerate(kern_dict_local['s_axi']):
-                                if s_axi['scope'] == 'local':
-                                    kern_dict_local['s_axi'][s_axi_idx]['master']['num'] = str(i + base_num)
-                        else:
-                            if kern_dict_local['s_axi']['scope'] == 'local':
-                                kern_dict_local['s_axi']['master']['num'] = str( i + int(kern_dict_local['s_axi']['master']['num']))
-                                #print("i is " +  str( i ))
-                                #print("updating master port to " +  str( int(kern_dict_local['s_axi']['master']['num'])))
-
-
-
-                    #print('kern_dict_local ' + str(kern_dict_local))
-                    # (This is a guess) Naif mentioned that you can hook up local
-                    # AXI stream connections between your kernels (unrelated to
-                    # Galapagos's router, network bridge, etc.). This must be the
-                    # code that handles it
-                    if 's_axis' in kern_dict_local:
-                        if type(kern_dict_local['s_axis']) == type([]):
-                            for s_axis_idx, s_axis in enumerate(kern_dict_local['s_axis']):
-                                if s_axis['scope'] == 'local':
-                                    kern_dict_local['s_axis'][s_axis_idx]['master']['node'] = str(i + int(s_axis['master']['node']))
-                        else:
-                            if kern_dict_local['s_axis']['scope'] == 'local':
-                                kern_dict_local['s_axis']['master']['node'] = str( i + int(kern_dict_local['s_axis']['master']['node']))
-
-                    if 'wire_slave' in kern_dict_local:
-                        if type(kern_dict_local['wire_slave']) == type([]):
-                            for slave_idx, slave in enumerate(kern_dict_local['wire_slave']):
-                                kern_dict_local['wire_slave'][slave_idx]['master']['node'] = str(i + int(slave['master']['node']))
-                        else:
-                            kern_dict_local['wire_slave']['master']['node'] = str(i + int(kern_dict_local['wire_slave']['master']['node']))
+                # (This is a guess) Naif mentioned that you can hook up local
+                # AXI full/lite connections between your kernels (unrelated to
+                # Galapagos's router, network bridge, etc.). This must be the
+                # code that handles it
+                # What the heck is with all these conversions to and from strings?
+                if 's_axi' in kern_dict_local:
+                    # If more than one <s_axi> tag is present...
+                    if type(kern_dict_local['s_axi']) == type([]):
+                        for s_axi_idx, s_axi in enumerate(kern_dict_local['s_axi']):
+                            if s_axi['scope'] == 'local':
+                                kern_dict_local['s_axi'][s_axi_idx]['master']['num'] = str(i + base_num)
+                    else:
+                        if kern_dict_local['s_axi']['scope'] == 'local':
+                            kern_dict_local['s_axi']['master']['num'] = str( i + int(kern_dict_local['s_axi']['master']['num']))
+                            #print("i is " +  str( i ))
+                            #print("updating master port to " +  str( int(kern_dict_local['s_axi']['master']['num'])))
 
 
 
+                #print('kern_dict_local ' + str(kern_dict_local))
+                # (This is a guess) Naif mentioned that you can hook up local
+                # AXI stream connections between your kernels (unrelated to
+                # Galapagos's router, network bridge, etc.). This must be the
+                # code that handles it
+                if 's_axis' in kern_dict_local:
+                    if type(kern_dict_local['s_axis']) == type([]):
+                        for s_axis_idx, s_axis in enumerate(kern_dict_local['s_axis']):
+                            if s_axis['scope'] == 'local':
+                                kern_dict_local['s_axis'][s_axis_idx]['master']['node'] = str(i + int(s_axis['master']['node']))
+                    else:
+                        if kern_dict_local['s_axis']['scope'] == 'local':
+                            kern_dict_local['s_axis']['master']['node'] = str( i + int(kern_dict_local['s_axis']['master']['node']))
+
+                if 'wire_slave' in kern_dict_local:
+                    if type(kern_dict_local['wire_slave']) == type([]):
+                        for slave_idx, slave in enumerate(kern_dict_local['wire_slave']):
+                            kern_dict_local['wire_slave'][slave_idx]['master']['node'] = str(i + int(slave['master']['node']))
+                    else:
+                        kern_dict_local['wire_slave']['master']['node'] = str(i + int(kern_dict_local['wire_slave']['master']['node']))
 
 
 
-                    # This basically copies the dictionary parsed from the <kernel> tags into another dictionary,
-                    # but it does also check the fields to make sure they're all valid and that no mandatory info
-                    # is missing
-                    #print("kernelONE object " + str(self.kernels[len(self.kernels) - 1].data))
-                    #print("Appending " + str(kern_dict_local['inst']))
-                    self.kernels.append(kernel(**kern_dict_local))
-                    print("Finished appending")
 
 
-            else:
-                kern_dict_local['rep'] = 1
-                kern_dict_local['num'] = int(kern_dict_local['num'])
+
+                # This basically copies the dictionary parsed from the <kernel> tags into another dictionary,
+                # but it does also check the fields to make sure they're all valid and that no mandatory info
+                # is missing
+                #print("kernelONE object " + str(self.kernels[len(self.kernels) - 1].data))
+                #print("Appending " + str(kern_dict_local['inst']))
                 self.kernels.append(kernel(**kern_dict_local))
         ## Dumps kernel info to the screen (printf debugging)
         #for kern in self.kernels:
@@ -237,6 +249,11 @@ class cluster(abstractDict):
 
         # Now deal with nodes (i.e. a CPU or an FPGA)
         self.nodes = []
+        for node_inst in map_dict:
+            if(int(node_inst['kernel'])==0):
+                raise ValueError("There can not be any nodes pointing to kernel 0")
+        map0=OrderedDict([('type','sw'),('kernel','0'),('mac','00:00:00:00:00:00'),('ip','0.0.0.0')])
+        map_dict.insert(0,map0)
         for node_idx, node_dict in enumerate(map_dict):
             # This basically copies the dictionary parsed from the <node> tags into another dictionary,
             # but it does also check the fields to make sure they're all valid and that no mandatory info
@@ -248,6 +265,8 @@ class cluster(abstractDict):
             node_inst['kernel'] = []
             node_inst['kernel_map'] = {}
             node_inst['dns_ip']=dns_ip_address
+            node_inst['ip_folder']=user_ip_folder
+            no_open = True
             #
             for kmap_node in node_dict['kernel']:
                 for kern_idx, kern in enumerate(self.kernels):
@@ -265,6 +284,15 @@ class cluster(abstractDict):
                         # know what this does if the user doesn't specify them.
                         self.kernels[kern_idx]['mac'] = node_inst['mac']
                         self.kernels[kern_idx]['ip'] = node_inst['ip']
+                        if kern['type'] == 'open':
+                            no_open=False
+
+            if ( ('autorun' in node_inst) and ((node_inst['autorun'].lower())=="true")):
+                if (no_open == False):
+                    raise ValueError("You can't autorun on an open kernel")
+                node_inst['make_bit'] = True
+            else:
+                node_inst['make_bit'] = False
             # Why even bother making <num> a required field in <node> if we're
             # just gonna overwrite it anyway?
             node_inst['num'] = node_idx
@@ -404,7 +432,11 @@ class cluster(abstractDict):
 
                 #currently only making flattened bitstreams
                 globalConfigFile.write("galapagos-update-board " + node_obj['board'] + "\n")
-                globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + self.name +  " --start_synth 0" + "\n")
+                if node_obj['make_bit']:
+                    globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + self.name +  " --start_synth 1" + "\n")
+                else:
+                    globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + self.name +  " --start_synth 0" + "\n")
+
 #                globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + output_path + '/' + self.name " & \n")
 #                globalSimFile.write("vivado -mode gui -source tclScripts/createSim.tcl -tclargs " + node_obj['board'] + " " + self.name + " " + str(node_idx) + "\n")
 

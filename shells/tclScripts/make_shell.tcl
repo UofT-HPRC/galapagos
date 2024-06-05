@@ -306,5 +306,3 @@ if { $start_synth != 0 } {
     file mkdir $project_path/$project_name.sdk
     file copy -force $project_path/$project_name.runs/impl_1/shellTop.sysdef $project_path/$project_name.sdk/shellTop.hdf
 }
-#source ./tclScripts/synth_impl.tcl
-#close_project
