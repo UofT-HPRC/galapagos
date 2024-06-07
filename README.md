@@ -171,8 +171,6 @@ The `<id_port>` refers to the port name in the kernel that will be tied to a con
 
 The `<s_axis>` and `<m_axis>` are the names of the axi stream ports on the IP. In Open mode, this specifies the name of that port in the open block design.<scope> is for a future extension and for now must be global
 
-`global` scope ties to the networking port, `local` can connect to each other. <br/>
-
 
 ### MAPFILE
 
