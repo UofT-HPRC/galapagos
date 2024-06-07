@@ -133,12 +133,17 @@ This takes two files (refer to LOGICALFILE, MAPFILE defined in the Makefile) and
 	</kernel>
 </cluster>
 ```
-`<clusterNumber>` inumerates this cluster within the Laniakea framework
-`<packet>` is added for future extensions, currently it must match the above
+`<clusterNumber>` enumerates this cluster within the Laniakea framework
+
 `<userIPPath>` is the location of the repository containing all your IPs and source files you wish to be inserted. Unpackaged files must be in the in the described folder, not within subdirectories.
+
 The `<num>` tag refers to the unique ID of a kernel. IDs must start at 1 and be consecutive <br/>
+
 The `<rep>` field is optional (default 1), refers to the number of times to repeat a kernel. The IDs are of repeated kernels are increased sequentially. <br/>
-The `<type>` can be open, ip, vhdl, system_verilog, tcl, verilog, cpp_viv, or cpp_vit specifying if you want an open block design to add your work in, a packaged ip inserted, or a vhdl system verilog or verilog file, or a cpp file to be interpreted by vivado_hls (cpp_viv) or by vitis_hls (cpp_vit) 
+
+The `<type>` can be sw, open, ip, vhdl, system_verilog, tcl, verilog, cpp_viv, or cpp_vit specifying if you want an open block design to add your work in, a packaged ip inserted, or a vhdl system verilog or verilog file, or a cpp file to be interpreted by vivado_hls (cpp_viv) or by vitis_hls (cpp_vit) 
+
+    In sw mode, the kernel is a software lib-galagos kernel
 
     In IP mode, the name of the ip must exactly match the kernel name. 
     
@@ -172,6 +177,7 @@ The `<s_axis>` and `<m_axis>` are the names of the axi stream ports on the IP. I
 ### MAPFILE
 
 The cluster is described in a MAPFILE with no notion of the mappings.  <br/>
+
 The following is an example map file:
 
 ```
@@ -196,13 +202,20 @@ The following is an example map file:
     <dns> 10.1.9.109 </dns>
 </cluster>
 ```
-The `<type>` is the type of device used. Currently supported is sw for a CPU node or sw for a hardware node
+The `<type>` is the type of device used. Currently supported is sw for a CPU node or hw for a hardware node
+
 The `<kernel>` refers to the unique kernel ID that you wish to put on this node. You can repeat this tag if an FPGA or CPU has multiple kernels in the same device  <br/>
+
 The `<mac>` and `<ip>` refer to the device's ip address and mac address respectively
 
+
+
 For type hw nodes, the following is also required:
+
 The `<board>` tag refers to the FPGA board you wish to use for this particular node. <br/>
+
 The `<com>` tag refers to whether the node is using the tcp or the udp protocol
+
 The `<autorun>` can only be True if none of the kernels are `open`. When True, the scripts will automatically run synthesis, implementation, and bitstream generation on the device.
 
 `<dns>` indicates the IP address of the DNS node in the laneakea supercluster
