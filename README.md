@@ -143,7 +143,7 @@ The `<rep>` field is optional (default 1), refers to the number of times to repe
 
 The `<type>` can be sw, open, ip, vhdl, system_verilog, tcl, verilog, cpp_viv, or cpp_vit specifying if you want an open block design to add your work in, a packaged ip inserted, or a vhdl system verilog or verilog file, or a cpp file to be interpreted by vivado_hls (cpp_viv) or by vitis_hls (cpp_vit) 
 
-    In sw mode, the kernel is a software lib-galagos kernel
+    In sw mode, the kernel is a software lib-galapagos kernel
 
     In IP mode, the name of the ip must exactly match the kernel name. 
     
