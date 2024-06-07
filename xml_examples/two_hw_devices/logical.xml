@@ -2,29 +2,28 @@
 <cluster>
     <clusterNumber> 1 </clusterNumber>
     <userIpPath>/home/savi/Desktop/imperial/imperial_ip_repo2</userIpPath>
-    <kernel> test_core 
-        <type> tcl </type>
-        <num> 2 </num>
+    <kernel> viv_test_core 
+        <type> cpp_viv </type>
+        <num> 1 </num>
         <control> False </control>
-        <control_range> 4k </control_range>
         <clk> ap_clk </clk>
         <s_axis>
             <scope> global </scope>
-            <name> in_r </name>
+            <name> in_data </name>
         </s_axis>
         <m_axis>
             <scope> global </scope>
-            <name> out_r </name>
+            <name> out_data </name>
         </m_axis>
         <wan>
-            <enabled> True </enabled>
+            <enabled> False </enabled>
             <name> laniakea_wan </name>
         </wan>
         <aresetn> ap_rst_n </aresetn>
     </kernel>
         <kernel> test_core 
-        <num> 1 </num>
-        <type> tcl </type>
+        <num> 2 </num>
+        <type> open </type>
         <control> False </control>
         <control_range> 4k </control_range>
         <clk> ap_clk </clk>

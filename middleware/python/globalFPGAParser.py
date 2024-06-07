@@ -2,7 +2,6 @@ import getopt, sys
 import os
 from cluster import cluster
 
-
 try:
     opts, args = getopt.getopt(sys.argv[1:],"", ["logicalFile=", "mapFile=", "projectName=", "sim=", "path="])
 except:
@@ -33,7 +32,6 @@ print("Project Name: " + projectName)
 if path is None:
     path = str(os.environ.get('GALAPAGOS_PATH'))+ "/projects"
 print("Output path: " + path)
-
 
 cluster_inst = cluster(projectName, logicalFile, mapFile)
 cluster_inst.processMemoryBus()

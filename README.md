@@ -138,13 +138,14 @@ This takes two files (refer to LOGICALFILE, MAPFILE defined in the Makefile) and
 `<userIPPath>` is the location of the repository containing all your IPs and source files you wish to be inserted. Unpackaged files must be in the in the described folder, not within subdirectories.
 The `<num>` tag refers to the unique ID of a kernel. IDs must start at 1 and be consecutive <br/>
 The `<rep>` field is optional (default 1), refers to the number of times to repeat a kernel. The IDs are of repeated kernels are increased sequentially. <br/>
-The `<type>` can be open, ip, vhdl, system_verilog, tcl, or verilog specifying if you want an open block design to add your work in, a packaged ip inserted, or a vhdl system verilog or verilog file. 
+The `<type>` can be open, ip, vhdl, system_verilog, tcl, verilog, cpp_viv, or cpp_vit specifying if you want an open block design to add your work in, a packaged ip inserted, or a vhdl system verilog or verilog file, or a cpp file to be interpreted by vivado_hls (cpp_viv) or by vitis_hls (cpp_vit) 
     In IP mode, the name of the ip must exactly match the kernel name. 
     In verilog mode the file must be named <name>.v, and the top level module must be <name>, where <name> is the kernelName. 
     In system verilog mode the file must be named <name>.sv, and the top level module must be <name>, where <name> is the kernelName. 
     In vhdl mode the file must be named <name>.vhdl, and the top level module must be <name>, where <name> is the kernelName.
     In tcl mode, The tcl file located at `<userIPPath>`/`<name>`.tcl will be run inside the open block design 
     In Open mode, the block design is just called kernelName_inst<inst_num> where inst_num inumerates the number of copies of that kernel
+    In cpp_viv or cpp_vit mode, the code must be contained to one file located at `<userIPPath>`/`<name>`.cpp with the main function being called <name>, where <name> is the kernelName.
 The `<clk>` refers to the name of the clock interface, this will be tied to the clock in the Hypervisor. <br/>
 The `<control>` refers to whether an AXI Lite control interface is required. <br/>
 The `<control_range>` refers to the range of the interface. Only required when control is TRUE <br/>

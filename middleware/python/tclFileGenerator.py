@@ -1,16 +1,15 @@
 #!/usr/bin/python
 import copy
-import sys
+
 import subprocess
 import os
 from tclMe import tclMeFile
-import string
+
 from createTopLevel import createTopLevelVerilog
 """
 Most of these functions are called (directly or indirectly) by makeTclFiles.
 Each one takes care of one self-contained part of the TCL file generation.
 """
-
 #interfaces constant
 #creates the standard interfaces, same for all fpgas
 
@@ -18,10 +17,12 @@ def createHierarchyTCL(outFile,kernel_properties,ctrl_ports_list, user_repo):
     dst_file = open(outFile, "w")
     has_attached = False
     for prop in kernel_properties:
-        if ((prop['type'] == 'ip')):
+        if ((prop['type'] == 'ip') or (prop['type'] == 'cpp_vit') or (prop['type'] == 'cpp_viv') ):
             has_attached = True
     if has_attached:
-        dst_file.write("set_property ip_repo_paths {"+user_repo+"} [current_fileset]\nupdate_ip_catalog -rebuild -scan_changes\n")
+        dst_file.write("set existing_ip_repo_path [ get_property ip_repo_paths [current_project] ]\n")
+        dst_file.write("set addition_ip_repo_path "+user_repo+"\nset new_ip_repo_path \"${existing_ip_repo_path} ${addition_ip_repo_path}\"\n")
+        dst_file.write("set_property ip_repo_paths $new_ip_repo_path [current_project]\nupdate_ip_catalog -rebuild -scan_changes\n")
     for prop in kernel_properties:
         kern = prop['inst']
         name = prop['name']
@@ -56,6 +57,24 @@ def createHierarchyTCL(outFile,kernel_properties,ctrl_ports_list, user_repo):
             file_contents = file_contents + "create_bd_cell -type module -reference " + name + " userIPinstance\n"
         elif (prop['type'] == 'tcl'):
             file_contents = file_contents + "source " + user_repo + "/" + name + ".tcl\n"
+        elif ((prop['type'] == 'cpp_vit') or (prop['type'] == 'cpp_viv')):
+            cwd = os.getcwd()
+            print(user_repo + "/__galapagos_autogen/"+name)
+            subprocess.run(["mkdir",user_repo + "/__galapagos_autogen/"+name])
+            subprocess.run(["cp", user_repo+"/"+name+".cpp", user_repo + "/__galapagos_autogen/"+name+"/"+name+".cpp"])
+            os.chdir(user_repo + "/__galapagos_autogen/"+name)
+            tcl_file = open(user_repo + "/__galapagos_autogen/"+name+"/"+name+".tcl", "w")
+            tcl_file.write("set part_name $::env(GALAPAGOS_PART)\n")
+            tcl_file.write("open_project "+name+"\nset_top "+name+"\nopen_solution \"solution1\"\nset_part ${part_name}\n")
+            tcl_file.write("add_files "+ user_repo + "/__galapagos_autogen/"+name+"/"+name+".cpp\n")
+            tcl_file.write("create_clock -period 199.498000MHz -name default\ncsynth_design\nexport_design -format ip_catalog\nclose_project\nquit\n")
+            tcl_file.close()
+            if (prop['type'] == 'cpp_vit'):
+                subprocess.run(["vitis_hls",user_repo + "/__galapagos_autogen/"+name+"/"+name+".tcl"])
+            else:
+                subprocess.run(["vivado_hls", user_repo + "/__galapagos_autogen/" + name + "/" + name + ".tcl"])
+            os.chdir(cwd)
+            file_contents = file_contents + "addip :" + name + " userIPinstance\n"
         if ((prop['type'] != 'open') and (prop['type'] != 'tcl')):
             file_contents = file_contents + "connect_bd_intf_net [get_bd_intf_ports " + Sname + "] [get_bd_intf_pins userIPinstance/" + Sname + "]\n"
             file_contents = file_contents + "connect_bd_intf_net [get_bd_intf_ports " + Mname + "] [get_bd_intf_pins userIPinstance/" + Mname + "]\n"
