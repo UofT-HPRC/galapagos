@@ -1,6 +1,4 @@
-import threading
-import warnings
-import shutil
+
 import copy
 import tclFileGenerator
 from abstractDict import abstractDict
@@ -10,8 +8,8 @@ from node import node
 import os
 import socket, struct
 import glob
-import time
-import inspect
+import subprocess
+
 def memory_sort_and_validate(memories):
     #Process the size
     #Returns an array of arrays containing
@@ -161,6 +159,8 @@ class cluster(abstractDict):
             dns_ip_address = ''
         if "userIpPath" in self.getDict(kernel_file)['cluster']:
             user_ip_folder = self.getDict(kernel_file)['cluster']['userIpPath']
+            subprocess.run(["rm", "-rf", user_ip_folder + "/__galapagos_autogen"])
+            subprocess.run(["mkdir", user_ip_folder + "/__galapagos_autogen"])
         else:
             user_ip_folder = ''
         self.kernels = []
