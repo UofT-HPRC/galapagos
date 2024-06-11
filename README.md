@@ -197,7 +197,6 @@ The following is an example map file:
         <comm> udp </comm>
         <autorun> True </autorun>
     </node>
-    <dns> 10.1.9.109 </dns>
 </cluster>
 ```
 The `<type>` is the type of device used. Currently supported is sw for a CPU node or hw for a hardware node
@@ -216,7 +215,5 @@ The `<com>` tag refers to whether the node is using the tcp or the udp protocol
 
 The `<autorun>` can only be True if none of the kernels are `open`. When True, the scripts will automatically run synthesis, implementation, and bitstream generation on the device.
 
-`<dns>` indicates the IP address of the DNS node in the laneakea supercluster
-  
 For an example refer to `galapagos/xml_examples`
 
