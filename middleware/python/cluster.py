@@ -156,7 +156,7 @@ class cluster(abstractDict):
         if "dns" in self.getDict(map_file)['cluster']:
             dns_ip_address = self.getDict(map_file)['cluster']['dns']
         else:
-            dns_ip_address = ''
+            dns_ip_address = '0.0.0.0'
         if "userIpPath" in self.getDict(kernel_file)['cluster']:
             user_ip_folder = self.getDict(kernel_file)['cluster']['userIpPath']
             subprocess.run(["rm", "-rf", user_ip_folder + "/__galapagos_autogen"])
