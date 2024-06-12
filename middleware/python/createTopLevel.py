@@ -145,10 +145,13 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,control_na
         rstname = props['reset_name']
 
         dst_file.write("  //User: "+str(name)+"\n  user_"+str(name)+"_i user_"+str(name)+"_i_i\n    (."+rstname+"(rstn)\n    ,."+clkname+"(CLK)\n")
+        if props['has_id']:
+            dst_file.write("    ,."+props['id_port']+"("+str(props['id'])+")\n")
         if name in control_names:
             dst_file.write(construct_axi_defn("    ",str(name)+"_CONTROL","AXI_CONTROL",True,True))
         dst_file.write(construct_axis_defn("    ",str(name)+"_MAXIS",Sname,True,True,True))
         dst_file.write(construct_axis_defn("    ",str(name)+"_SAXIS",Mname,True,False,False))
+
         if props['wan_enabled'][0]:
             dst_file.write(add_axi_defn_field("      ", str(name) + "_SWAN", props['wan_name'][0], "t", wan_axis_fields, False, True) + "\n")
         dst_file.write("    );\n\n\n")

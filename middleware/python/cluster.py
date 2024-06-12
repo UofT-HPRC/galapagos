@@ -96,69 +96,20 @@ class cluster(abstractDict):
         self.name = name
         self.kernel_file = kernel_file
 
-        #placeholder defaults so functions still work
-        self.packet_data = 64
-        self.packet_dest = 8
-        self.packet_keep = 0
-        self.packet_last = 0
-        self.packet_id = 0
-        self.packet_user = 0
-
         if(mode=='file'):
             top_dict = self.getDict(kernel_file)['cluster']
+            top_map = self.getDict(map_file)['cluster']
         else:
             top_dict = kernel_file['cluster']
 
-
-        # The user may optionally specify a packet description in <packet> tags
-        # Note: it would be nice if Python had some notion of strong typing,
-        # since it would make it easier to deal with the user giving the wrong
-        # format for the arguments in the XML/JSON file
-        if 'packet' in top_dict:
-            packet = top_dict['packet']
-            if 'data' in packet:
-                self.packet_data = packet['data']
-            if 'keep' in packet:
-                self.packet_keep = packet['keep']
-            if 'last' in packet:
-                self.packet_last = packet['last']
-            if 'id' in packet:
-                self.packet_id = packet['id']
-            if 'user' in packet:
-                self.packet_user = packet['user']
-
-            galapagos_path = str(os.environ.get('GALAPAGOS_PATH'))
-
-            #f = open(galapagos_path + '/middleware/include/packet_size.h', 'w')
-            #f.write("#ifndef PACKET_SIZE_H\n#define PACKET_SIZE_H\n")
-            #f.write("# define PACKET_DATA_LENGTH " + str(self.packet_data) + '\n')
-            #if self.packet_keep:
-            #    self.packet_keep = int(self.packet_data)/8
-            #    f.write("# define PACKET_KEEP_LENGTH " + str(int(self.packet_keep)) + '\n')
-            #if self.packet_last:
-            #    f.write("# define PACKET_LAST\n")
-            #if self.packet_id:
-            #    f.write("# define PACKET_ID_LENGTH " + str(self.packet_id) + '\n')
-            #if self.packet_user:
-            #    f.write("# define PACKET_USER_LENGTH " + str(self.packet_user) + '\n')
-            #else:
-            #    f.write("# define PACKET_USER_LENGTH 16\n")
-            #if self.packet_dest:
-            #    f.write("# define PACKET_DEST_LENGTH " + str(self.packet_dest) + '\n')
-            #f.write("#endif\n")
-
-        if(mode=='file'):
-            logical_dict = self.getDict(kernel_file)['cluster']['kernel']
-            map_dict = self.getDict(map_file)['cluster']['node']
-        else:
-            logical_dict = kernel_file['cluster']['kernel']
-            map_dict = map_file['cluster']['node']
-        if "dns" in self.getDict(map_file)['cluster']:
-            dns_ip_address = self.getDict(map_file)['cluster']['dns']
+        logical_dict = top_dict['kernel']
+        map_dict = top_map['node']
+        if "dns" in top_map:
+            dns_ip_address = top_map['dns']
         else:
             dns_ip_address = '0.0.0.0'
-        if "userIpPath" in self.getDict(kernel_file)['cluster']:
-            user_ip_folder = self.getDict(kernel_file)['cluster']['userIpPath']
+        if "userIpPath" in top_dict:
+            user_ip_folder = top_dict['userIpPath']
             subprocess.run(["rm", "-rf", user_ip_folder + "/__galapagos_autogen"])
             subprocess.run(["mkdir", user_ip_folder + "/__galapagos_autogen"])
         else:
@@ -186,6 +137,10 @@ class cluster(abstractDict):
             for i in range(0, int(kern_dict['rep'])):
                 kern_dict_local = copy.deepcopy(kern_dict)
                 # Set number for this kernel instance
+                if 'id_port' in kern_dict_local:
+                    kern_dict_local['has_id_port'] = True
+                else:
+                    kern_dict_local['has_id_port'] = False
                 kern_dict_local['num'] = base_num + i
 
                 # This code is setting some mysterious values inside the
@@ -321,16 +276,42 @@ class cluster(abstractDict):
     def writeClusterTCL(self, output_path, sim):
         #tclFileThreads = []
         for node_idx, node in enumerate(self.nodes):
+
             #tclFileThreads.append(threading.Thread(target=tclFileGenerator.makeTCLFiles, args=(node,self.name, output_path, sim)))
-            if node['type'] == 'hw':
+            if node_idx == 0:
+                continue
+            elif node['type'] == 'hw':
                 #tclFileThreads.append(threading.Thread(target=tclFileGenerator.makeTCLFiles, args=(node,self.name, output_path, sim)))
                 #tclFileThreads[len(tclFileThreads)-1].start()
                 tclFileGenerator.makeTCLFiles(node, self.name, output_path, sim)
+            elif node['type']=='sw':
+                tclFileGenerator.makeSWFile(node,self.name, output_path,self.getListOfKernelIPs())
+
 #        for thread in tclFileThreads:
 #            thread.join()
 
 
+    def getListOfKernelIPs(self):
 
+        kernelIndex = 0
+        #iterate through kernels in order of tdest, populating the ipaddress at that location
+        maxKernelIndex = 0
+        for kern in self.kernels:
+            if kern['num'] > maxKernelIndex:
+                maxKernelIndex = kern['num']
+        list_inst = []
+        for currIndex in range(0, maxKernelIndex + 1):
+            found = 0
+
+            for kern in self.kernels:
+                if currIndex == int(kern['num']):
+                    found = 1
+                    list_inst.append(kern['ip'])
+            if found==0:
+                list_inst.append('1.1.1.1')
+                break
+        print(list_inst)
+        return(list_inst)
     #make COE to intialize BRAM of all IP addresses
     def writeBRAMFile(self, output_path, addr_type):
         if addr_type == 'mac':
@@ -426,7 +407,9 @@ class cluster(abstractDict):
         globalConfigFile.write("cd " + str(os.environ.get('GALAPAGOS_PATH')) + "\n")
         for node_idx, node_obj in enumerate(self.nodes):
             #only need vivado project for hw nodes
-            if node_obj['type'] == 'hw':
+            if node_idx == 0:
+                continue
+            elif node_obj['type'] == 'hw':
                 dirName = output_path + '/' + self.name + '/' + str(node_idx)
 
                 if os.path.exists(dirName):
@@ -434,16 +417,20 @@ class cluster(abstractDict):
                     for f in fileList:
                         os.remove(f)
                 os.makedirs(dirName, exist_ok=True)
-
                 #currently only making flattened bitstreams
                 globalConfigFile.write("galapagos-update-board " + node_obj['board'] + "\n")
                 if node_obj['make_bit']:
                     globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + self.name +  " --start_synth 1" + "\n")
                 else:
                     globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + self.name +  " --start_synth 0" + "\n")
+            elif node_obj['type'] == 'sw':
+                dirName = output_path + '/' + self.name + '/' + str(node_idx)
+                if os.path.exists(dirName):
+                    subprocess.run(['rm','-r',dirName])
+                os.makedirs(dirName, exist_ok=True)
+                subprocess.run(['cp', '-r', output_path+'/../middleware/sw/.',dirName+"/"])
+        globalConfigFile.close()
 
-#                globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + output_path + '/' + self.name " & \n")
-#                globalSimFile.write("vivado -mode gui -source tclScripts/createSim.tcl -tclargs " + node_obj['board'] + " " + self.name + " " + str(node_idx) + "\n")
 
 
 
