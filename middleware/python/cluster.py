@@ -9,7 +9,7 @@ import os
 import socket, struct
 import glob
 import subprocess
-
+multi_slr_boards = ['u200','u250','u280']
 def memory_sort_and_validate(memories):
     #Process the size
     #Returns an array of arrays containing
@@ -95,7 +95,6 @@ class cluster(abstractDict):
         """
         self.name = name
         self.kernel_file = kernel_file
-
         if(mode=='file'):
             top_dict = self.getDict(kernel_file)['cluster']
             top_map = self.getDict(map_file)['cluster']
@@ -205,13 +204,20 @@ class cluster(abstractDict):
         # Now deal with nodes (i.e. a CPU or an FPGA)
         self.nodes = []
         for node_inst in map_dict:
-            print(node_inst['kernel'])
-            if type(node_inst['kernel']) is list:
-                for element in node_inst['kernel']:
-                    if (int(element)==0):
-                        raise ValueError("There can not be any nodes pointing to kernel 0")
-            elif(int(node_inst['kernel'])==0):
-                raise ValueError("There can not be any nodes pointing to kernel 0")
+            if node_inst['board'] in multi_slr_boards:
+                if type(node_inst['kernel']) is list:
+                    for element in node_inst['kernel']:
+                        if (int(element['num'])==0):
+                            raise ValueError("There can not be any nodes pointing to kernel 0")
+                elif(int(node_inst['kernel']['num'])==0):
+                    raise ValueError("There can not be any nodes pointing to kernel 0")
+            else:
+                if type(node_inst['kernel']) is list:
+                    for element in node_inst['kernel']:
+                        if (int(element)==0):
+                            raise ValueError("There can not be any nodes pointing to kernel 0")
+                elif(int(node_inst['kernel'])==0):
+                    raise ValueError("There can not be any nodes pointing to kernel 0")
         map0=OrderedDict([('type','sw'),('kernel','0'),('mac','00:00:00:00:00:00'),('ip','0.0.0.0')])
         map_dict.insert(0,map0)
         for node_idx, node_dict in enumerate(map_dict):
@@ -227,25 +233,54 @@ class cluster(abstractDict):
             node_inst['dns_ip']=dns_ip_address
             node_inst['ip_folder']=user_ip_folder
             no_open = True
+            if node_inst['board'] in multi_slr_boards:
+                node_inst['multi_slr'] = True
+                node_inst['slr_mappings'] = \
+                    {'SLR2': { 'kernel' : [], 'distance': 0, 'name': 'SLR2' },
+                     'SLR1': { 'kernel' : [], 'distance': 2, 'name': 'SLR1' },
+                     'SLR0': {'kernel': [], 'distance': 4, 'name': 'SLR0'}
+                    }
+            else:
+                node_inst['multi_slr'] = False
             #
-            for kmap_node in node_dict['kernel']:
-                for kern_idx, kern in enumerate(self.kernels):
-                    # Perform linear search through self.kernels (the array of
-                    # kernel objects we just built) to find the one matching
-                    # this number
-                    if int(kern['num']) == int(kmap_node):
-                        # Instead of having numbers in node_inst['kernel'], have
-                        # pointers to our properly parsed kernel objects
-                        node_inst['kernel_map'][kern['num']] = len(node_inst['kernel'])
-                        node_inst['kernel'].append(kern)
-                        # At the same time, append mac and ip information to each
-                        # kernel object? Not sure why we have to do this. By the
-                        # way, mac and ip are optional fields in node, so I don't
-                        # know what this does if the user doesn't specify them.
-                        self.kernels[kern_idx]['mac'] = node_inst['mac']
-                        self.kernels[kern_idx]['ip'] = node_inst['ip']
-                        if kern['type'] == 'open':
-                            no_open=False
+            if node_inst['multi_slr']:
+                if not (type(node_dict['kernel']) is list):
+                    node_dict['kernel']=[node_dict['kernel']]
+                for kmap_node in node_dict['kernel']:
+                    for kern_idx, kern in enumerate(self.kernels):
+                        # Perform linear search through self.kernels (the array of
+                        # kernel objects we just built) to find the one matching
+                        # this number
+                        if int(kern['num']) == int(kmap_node['num']):
+                            # Instead of having numbers in node_inst['kernel'], have
+                            # pointers to our properly parsed kernel objects
+                            node_inst['kernel_map'][kern['num']] = len(node_inst['kernel'])
+                            node_inst['kernel'].append(kern)
+                            # At the same time, append mac and ip information to each
+                            # kernel object? Not sure why we have to do this. By the
+                            # way, mac and ip are optional fields in node, so I don't
+                            # know what this does if the user doesn't specify them.
+                            self.kernels[kern_idx]['mac'] = node_inst['mac']
+                            self.kernels[kern_idx]['ip'] = node_inst['ip']
+                            if kern['type'] == 'open':
+                                no_open=False
+                            node_inst['slr_mappings'][kmap_node['slr']]['kernel'].append(kern)
+            else:
+                for kmap_node in node_dict['kernel']:
+                    for kern_idx, kern in enumerate(self.kernels):
+                        if int(kern['num']) == int(kmap_node):
+                            # Instead of having numbers in node_inst['kernel'], have
+                            # pointers to our properly parsed kernel objects
+                            node_inst['kernel_map'][kern['num']] = len(node_inst['kernel'])
+                            node_inst['kernel'].append(kern)
+                            # At the same time, append mac and ip information to each
+                            # kernel object? Not sure why we have to do this. By the
+                            # way, mac and ip are optional fields in node, so I don't
+                            # know what this does if the user doesn't specify them.
+                            self.kernels[kern_idx]['mac'] = node_inst['mac']
+                            self.kernels[kern_idx]['ip'] = node_inst['ip']
+                            if kern['type'] == 'open':
+                                no_open=False
 
             if ( ('autorun' in node_inst) and ((node_inst['autorun'].lower())=="true")):
                 if (no_open == False):

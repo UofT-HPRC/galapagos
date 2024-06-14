@@ -1244,6 +1244,7 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
 
         # For each s_axis connection
         for idx, s_axis in enumerate(s_axis_array):
+            print(s_axis)
             instName = s_axis['kernel_inst']['inst']
             presufix_port_name = instName.split('/')[-1]
             portName = presufix_port_name+"_MAXIS"
@@ -1367,6 +1368,7 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
         else:
             # there's no input switch in this case
             if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
+                print(s_axis_array[0])
                 instName = s_axis_array[0]['kernel_inst']['inst']
                 presufix_port_name = instName.split('/')[-1]
                 portName = presufix_port_name+ "_MAXIS"
