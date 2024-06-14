@@ -235,11 +235,13 @@ class cluster(abstractDict):
             no_open = True
             if node_inst['board'] in multi_slr_boards:
                 node_inst['multi_slr'] = True
-                node_inst['slr_mappings'] = \
-                    {'SLR2': { 'kernel' : [], 'distance': 0, 'name': 'SLR2' },
-                     'SLR1': { 'kernel' : [], 'distance': 2, 'name': 'SLR1' },
-                     'SLR0': {'kernel': [], 'distance': 4, 'name': 'SLR0'}
+                if node_inst['board'] == 'u200':
+                    node_inst['slr_mappings'] = \
+                        {'SLR2': { 'kernel' : [], 'distance': 0, 'name': 'pb_slr2','clockregion': 'CLOCKREGION_X0Y10:CLOCKREGION_X5Y14'},
+                         'SLR1': { 'kernel' : [], 'distance': 2, 'name': 'pb_slr1','clockregion': 'CLOCKREGION_X0Y5:CLOCKREGION_X5Y9' },
+                         'SLR0': {'kernel': [], 'distance': 4, 'name': 'pb_slr0','clockregion': 'CLOCKREGION_X0Y0:CLOCKREGION_X5Y4'}
                     }
+                    node_inst['main_slr'] = 'pb_slr2'
             else:
                 node_inst['multi_slr'] = False
             #

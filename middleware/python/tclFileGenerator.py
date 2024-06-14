@@ -1244,7 +1244,6 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
 
         # For each s_axis connection
         for idx, s_axis in enumerate(s_axis_array):
-            print(s_axis)
             instName = s_axis['kernel_inst']['inst']
             presufix_port_name = instName.split('/')[-1]
             portName = presufix_port_name+"_MAXIS"
@@ -1368,7 +1367,6 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
         else:
             # there's no input switch in this case
             if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
-                print(s_axis_array[0])
                 instName = s_axis_array[0]['kernel_inst']['inst']
                 presufix_port_name = instName.split('/')[-1]
                 portName = presufix_port_name+ "_MAXIS"
@@ -2016,6 +2014,26 @@ def userApplicationLocalConnections(tcl_user_app):
                         'port_name': wire_slave['name']
                         }
                         )
+def userApplicationRegionMultiSLR(tcl_user_app, mappings,outDir,main_slr):
+    print(mappings)
+    ec_file = open(outDir+"/extra_constraints.xdc","w")
+    tcl_user_app.tprint_raw('add_files -fileset constrs_1 -norecurse '+outDir+'/extra_constraints.xdc')
+    for region in mappings:
+        active = False
+        if mappings[region]['name']== main_slr:
+            active = True
+            ec_file.write('create_pblock ' + mappings[region]['name']+'\n')
+            ec_file.write('add_cells_to_pblock [get_pblocks ' + mappings[region]['name'] + '] [get_cells -quiet [list')
+            ec_file.write(' shell_i pr_i')
+        elif mappings[region]['kernel'] != []:
+            active = True
+            ec_file.write('create_pblock '+mappings[region]['name']+'\n')
+            ec_file.write('add_cells_to_pblock [get_pblocks ' + mappings[region]['name'] + '] [get_cells -quiet [list')
+        for kernel_inst in mappings[region]['kernel']:
+            port_name = kernel_inst['name'] + "_inst_" + str(kernel_inst['num'])+'_i'
+            ec_file.write(' '+port_name)
+        if active:
+            ec_file.write(']]\nresize_pblock [get_pblocks ' + mappings[region]['name'] + '] -add {'+mappings[region]['clockregion']+"}\n\n\n")
 
 def userApplicationRegion(outDir,output_path, fpga, sim):
     """
@@ -2044,6 +2062,8 @@ def userApplicationRegion(outDir,output_path, fpga, sim):
     userApplicationRegionControlInst(tcl_user_app,control_name_list,control_prop_list)
     tcl_user_app.setInterfacesCLK("CLK",clk_200_int)
     tcl_user_app.setInterfacesCLK("CLK300", clk_300_int)
+    if fpga['multi_slr']:
+        userApplicationRegionMultiSLR(tcl_user_app,fpga['slr_mappings'],outDir, fpga['main_slr'])
     tcl_user_app.close()
     #return num_debug_interfaces
 
