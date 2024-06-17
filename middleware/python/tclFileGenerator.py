@@ -60,6 +60,7 @@ def createHierarchyTCL(outFile,kernel_properties,ctrl_ports_list, user_repo):
         elif (prop['type'] == 'tcl'):
             file_contents = file_contents + "source " + user_repo + "/" + name + ".tcl\n"
         elif ((prop['type'] == 'cpp_vit') or (prop['type'] == 'cpp_viv')):
+            file_contents = file_contents + "addip :" + name + " userIPinstance\n"
             cwd = os.getcwd()
             print(user_repo + "/__galapagos_autogen/"+name)
             subprocess.run(["mkdir",user_repo + "/__galapagos_autogen/"+name])
@@ -76,7 +77,6 @@ def createHierarchyTCL(outFile,kernel_properties,ctrl_ports_list, user_repo):
             else:
                 subprocess.run(["vivado_hls", user_repo + "/__galapagos_autogen/" + name + "/" + name + ".tcl"])
             os.chdir(cwd)
-            file_contents = file_contents + "addip :" + name + " userIPinstance\n"
         if ((prop['type'] != 'open') and (prop['type'] != 'tcl')):
             file_contents = file_contents + "connect_bd_intf_net [get_bd_intf_ports " + Sname + "] [get_bd_intf_pins userIPinstance/" + Sname + "]\n"
             file_contents = file_contents + "connect_bd_intf_net [get_bd_intf_ports " + Mname + "] [get_bd_intf_pins userIPinstance/" + Mname + "]\n"

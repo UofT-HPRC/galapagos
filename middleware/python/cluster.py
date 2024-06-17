@@ -84,7 +84,7 @@ class cluster(abstractDict):
             print("Unhandled exetension for " + file_name)
             return None
 
-    def __init__(self, name, kernel_file, map_file, mode='file'):
+    def __init__(self, name, kernel_file, map_file, supercluster, mode='file'):
         """
         Initializes the cluster object using logical file and mapping file
 
@@ -95,20 +95,21 @@ class cluster(abstractDict):
         """
         self.name = name
         self.kernel_file = kernel_file
+
         if(mode=='file'):
-            top_dict = self.getDict(kernel_file)['cluster']
+            top_kern = self.getDict(kernel_file)['cluster']
             top_map = self.getDict(map_file)['cluster']
         else:
-            top_dict = kernel_file['cluster']
-
-        logical_dict = top_dict['kernel']
+            top_kern = kernel_file['cluster']
+            top_map = map_file['cluster']
+        logical_dict = top_kern['kernel']
         map_dict = top_map['node']
         if "dns" in top_map:
             dns_ip_address = top_map['dns']
         else:
             dns_ip_address = '0.0.0.0'
-        if "userIpPath" in top_dict:
-            user_ip_folder = top_dict['userIpPath']
+        if "userIpPath" in top_kern:
+            user_ip_folder = top_kern['userIpPath']
             subprocess.run(["rm", "-rf", user_ip_folder + "/__galapagos_autogen"])
             subprocess.run(["mkdir", user_ip_folder + "/__galapagos_autogen"])
         else:
@@ -472,20 +473,3 @@ class cluster(abstractDict):
                 os.makedirs(dirName, exist_ok=True)
                 subprocess.run(['cp', '-r', output_path+'/../middleware/sw/.',dirName+"/"])
         globalConfigFile.close()
-
-
-
-
-if __name__=='__main__':
-
-    #logical_file = 'hwMiddleware/packetSwitch/tests/conf0/logical.xml'
-    #map_file = 'hwMiddleware/packetSwitch/tests/conf0/map.xml'
-    path = '/home/tarafdar/workDir/galapagos/projects'
-    logical_file = '/home/tarafdar/workDir/aegean/examples/resnet50/logical_aegean.json'
-    map_file = '/home/tarafdar/workDir/aegean/examples/resnet50/map_aegean.json'
-    cluster_inst = cluster('naif', logical_file, map_file)
-    cluster_inst.makeProjectClusterScript(path)
-    cluster_inst.writeClusterTCL(path, 0)
-    cluster_inst.writeBRAMFile(path, 'mac')
-    cluster_inst.writeBRAMFile(path, 'ip')
-
