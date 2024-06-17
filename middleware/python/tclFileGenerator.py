@@ -1252,8 +1252,7 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
             # the Galapagos router; there is an AXI stream switch IP between
             # the router and the kernel(s) )
             tcl_user_app.add_axis_port(portName, 'Master')
-            tcl_user_app.makeConnection(
-                'intf',
+            tcl_user_app.makeBufferedIntfConnection(
                 {
                     'name':'applicationRegion/input_switch',
                     'type':'intf',
@@ -1262,7 +1261,9 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
                 {
                     'type':'intf_port',
                     'port_name':portName
-                }
+                },
+                portName,
+                int(s_axis['kernel_inst']['distance'])
             )
             clk_200_intf_config.append(presufix_port_name + "_MAXIS")
             clk_200_intf_config.append(presufix_port_name + "_SAXIS")
@@ -1372,8 +1373,7 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
                 portName = presufix_port_name+ "_MAXIS"
                 tcl_user_app.add_axis_port(portName, 'Master')
                 # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
-                tcl_user_app.makeConnection(
-                    'intf',
+                tcl_user_app.makeBufferedIntfConnection(
                     {
                     'name':'applicationRegion/input_switch',
                     'type':'intf',
@@ -1381,7 +1381,9 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
                     },
                     {'type':'intf_port',
                     'port_name': portName
-                    }
+                    },
+                    portName,
+                    int(s_axis_array[0]['kernel_inst']['distance'])
                 )
                 clk_200_intf_config.append(str(presufix_port_name) + "_MAXIS")
                 clk_200_intf_config.append(str(presufix_port_name) + "_SAXIS")
@@ -1465,8 +1467,8 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
         tcl_user_app.setPortProperties(portName, AXIS_PROPERTIES)
         tcl_user_app.setPortProperties(WANportName, SWAN_PROPERTIES)
         idx_str = "%02d"%(idx+1)
-        tcl_user_app.makeConnection(
-            'intf',
+
+        tcl_user_app.makeBufferedIntfConnection(
             {
                 'type': 'intf_port',
                 'port_name': portName
@@ -1475,10 +1477,11 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
                 'name':'applicationRegion/output_switch',
                 'type':'intf',
                 'port_name':'S'+ idx_str + '_AXIS'
-                }
+                },
+            portName,
+            int(m_axis['kernel_inst']['distance'])
         )
-        tcl_user_app.makeConnection(
-            'intf',
+        tcl_user_app.makeBufferedIntfConnection(
             {
                 'type': 'intf_port',
                 'port_name': WANportName
@@ -1487,7 +1490,9 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
             'name':'applicationRegion/WAN_switch',
             'type':'intf',
             'port_name':'S'+ idx_str + '_AXIS'
-            }
+            },
+            WANportName,
+            int(m_axis['kernel_inst']['distance'])
         )
     if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
         # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
@@ -2017,14 +2022,14 @@ def userApplicationLocalConnections(tcl_user_app):
 def userApplicationRegionMultiSLR(tcl_user_app, mappings,outDir,main_slr):
     print(mappings)
     ec_file = open(outDir+"/extra_constraints.xdc","w")
-    tcl_user_app.tprint_raw('add_files -fileset constrs_1 -norecurse '+outDir+'/extra_constraints.xdc')
+    tcl_user_app.addConstraints(outDir+'/extra_constraints.xdc')
     for region in mappings:
         active = False
         if mappings[region]['name']== main_slr:
             active = True
             ec_file.write('create_pblock ' + mappings[region]['name']+'\n')
             ec_file.write('add_cells_to_pblock [get_pblocks ' + mappings[region]['name'] + '] [get_cells -quiet [list')
-            ec_file.write(' shell_i pr_i')
+            ec_file.write(' shell_i pr_i/applicationRegion pr_i/network')
         elif mappings[region]['kernel'] != []:
             active = True
             ec_file.write('create_pblock '+mappings[region]['name']+'\n')

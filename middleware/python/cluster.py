@@ -235,6 +235,9 @@ class cluster(abstractDict):
             no_open = True
             if node_inst['board'] in multi_slr_boards:
                 node_inst['multi_slr'] = True
+                #Specify the Multi SLR settings
+                #distance is the number of reg slices to do the crossing
+                #clockregion specifies that clock region setting for each of the slices
                 if node_inst['board'] == 'u200':
                     node_inst['slr_mappings'] = \
                         {'SLR2': { 'kernel' : [], 'distance': 0, 'name': 'pb_slr2','clockregion': 'CLOCKREGION_X0Y10:CLOCKREGION_X5Y14'},
@@ -257,6 +260,7 @@ class cluster(abstractDict):
                             # Instead of having numbers in node_inst['kernel'], have
                             # pointers to our properly parsed kernel objects
                             node_inst['kernel_map'][kern['num']] = len(node_inst['kernel'])
+                            kern['distance'] = node_inst['slr_mappings'][kmap_node['slr']]['distance']
                             node_inst['kernel'].append(kern)
                             # At the same time, append mac and ip information to each
                             # kernel object? Not sure why we have to do this. By the
@@ -273,6 +277,7 @@ class cluster(abstractDict):
                         if int(kern['num']) == int(kmap_node):
                             # Instead of having numbers in node_inst['kernel'], have
                             # pointers to our properly parsed kernel objects
+                            kern['distance']=0
                             node_inst['kernel_map'][kern['num']] = len(node_inst['kernel'])
                             node_inst['kernel'].append(kern)
                             # At the same time, append mac and ip information to each
