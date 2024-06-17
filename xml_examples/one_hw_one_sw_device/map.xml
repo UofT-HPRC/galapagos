@@ -11,9 +11,8 @@
         <comm> udp </comm>
         <type> hw </type>
         <kernel> 2 </kernel>
-        <autorun> True </autorun>
+        <autorun> False </autorun>
         <mac>  fa:16:3e:55:ca:08 </mac>
         <ip> 10.1.9.208 </ip>
     </node>
-    <dns> 10.1.9.109 </dns>
 </cluster>

@@ -1,4 +1,3 @@
-import warnings
 from abstractDict import abstractDict
 from app_bridge import appBridge
 

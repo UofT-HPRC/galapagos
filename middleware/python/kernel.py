@@ -1,4 +1,3 @@
-import warnings
 from abstractDict import abstractDict
 
 class kernel(abstractDict):
@@ -54,6 +53,7 @@ class kernel(abstractDict):
             's_axis',
             'm_axis',
             'wan',
+            'has_id_port',
             'wan_enabled',
             'wan_name',
             'm_axis',

@@ -66,7 +66,8 @@ class tclMeFile():
             source (string): Full pathname of another TCL file
         """
         self.tprint('source ' + source)
-
+    def addConstraints(self,file_path):
+        self.tprint('add_files -fileset constrs_1 -norecurse '+file_path)
     def setInterfacesCLK(self,clk_name,intfs):
         self.tprint("set_property CONFIG.ASSOCIATED_BUSIF {",'')
         first_config = True
@@ -147,6 +148,38 @@ class tclMeFile():
                 for reset_name in ip['resetns']:
                     self.tprint(
                         'connect_bd_net [get_bd_ports ARESETN] [get_bd_pins ' + ip['inst'] + '/' + reset_name + ']')
+
+    def makeBufferedIntfConnection(self,source,sink,name,distance):
+        cur_source = source
+        for i in range(distance):
+            self.instBlock(
+                {
+                    'name': 'axis_register_slice',
+                    'inst': name+"reg_"+str(i),
+                    'clks': ['aclk'],
+                    'resetns_port': 'rstn',
+                    'resetns': ['aresetn']
+                }
+            )
+            self.makeConnection(
+                'intf',
+                cur_source,
+                {
+                    'name': name+"reg_"+str(i),
+                    'type': 'intf',
+                    'port_name': 'S_AXIS'
+                }
+            )
+            cur_source = {
+                'name': name + "reg_" + str(i),
+                'type': 'intf',
+                'port_name': 'M_AXIS'
+            }
+        self.makeConnection(
+            'intf',
+            cur_source,
+            sink
+        )
 
     def makeConnection(self, conn_type, source, sink):
         if conn_type == 'net':

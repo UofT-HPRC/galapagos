@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cluster>
-    <clusterNumber> 1 </clusterNumber>
     <userIpPath>/home/savi/Desktop/imperial/imperial_ip_repo2</userIpPath>
     <kernel> viv_test_core 
         <type> open </type>
         <num> 1 </num>
+        <id_port> USR_id_port </id_port>
         <control> False </control>
         <clk> ap_clk </clk>
         <s_axis>

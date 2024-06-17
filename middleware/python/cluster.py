@@ -9,7 +9,7 @@ import os
 import socket, struct
 import glob
 import subprocess
-
+multi_slr_boards = ['u200','u250','u280']
 def memory_sort_and_validate(memories):
     #Process the size
     #Returns an array of arrays containing
@@ -137,6 +137,10 @@ class cluster(abstractDict):
             for i in range(0, int(kern_dict['rep'])):
                 kern_dict_local = copy.deepcopy(kern_dict)
                 # Set number for this kernel instance
+                if 'id_port' in kern_dict_local:
+                    kern_dict_local['has_id_port'] = True
+                else:
+                    kern_dict_local['has_id_port'] = False
                 kern_dict_local['num'] = base_num + i
 
                 # This code is setting some mysterious values inside the
@@ -201,13 +205,20 @@ class cluster(abstractDict):
         # Now deal with nodes (i.e. a CPU or an FPGA)
         self.nodes = []
         for node_inst in map_dict:
-            print(node_inst['kernel'])
-            if type(node_inst['kernel']) is list:
-                for element in node_inst['kernel']:
-                    if (int(element)==0):
-                        raise ValueError("There can not be any nodes pointing to kernel 0")
-            elif(int(node_inst['kernel'])==0):
-                raise ValueError("There can not be any nodes pointing to kernel 0")
+            if node_inst['board'] in multi_slr_boards:
+                if type(node_inst['kernel']) is list:
+                    for element in node_inst['kernel']:
+                        if (int(element['num'])==0):
+                            raise ValueError("There can not be any nodes pointing to kernel 0")
+                elif(int(node_inst['kernel']['num'])==0):
+                    raise ValueError("There can not be any nodes pointing to kernel 0")
+            else:
+                if type(node_inst['kernel']) is list:
+                    for element in node_inst['kernel']:
+                        if (int(element)==0):
+                            raise ValueError("There can not be any nodes pointing to kernel 0")
+                elif(int(node_inst['kernel'])==0):
+                    raise ValueError("There can not be any nodes pointing to kernel 0")
         map0=OrderedDict([('type','sw'),('kernel','0'),('mac','00:00:00:00:00:00'),('ip','0.0.0.0')])
         map_dict.insert(0,map0)
         for node_idx, node_dict in enumerate(map_dict):
@@ -223,25 +234,61 @@ class cluster(abstractDict):
             node_inst['dns_ip']=dns_ip_address
             node_inst['ip_folder']=user_ip_folder
             no_open = True
+            if node_inst['board'] in multi_slr_boards:
+                node_inst['multi_slr'] = True
+                #Specify the Multi SLR settings
+                #distance is the number of reg slices to do the crossing
+                #clockregion specifies that clock region setting for each of the slices
+                if node_inst['board'] == 'u200':
+                    node_inst['slr_mappings'] = \
+                        {'SLR2': { 'kernel' : [], 'distance': 0, 'name': 'pb_slr2','clockregion': 'CLOCKREGION_X0Y10:CLOCKREGION_X5Y14'},
+                         'SLR1': { 'kernel' : [], 'distance': 2, 'name': 'pb_slr1','clockregion': 'CLOCKREGION_X0Y5:CLOCKREGION_X5Y9' },
+                         'SLR0': {'kernel': [], 'distance': 4, 'name': 'pb_slr0','clockregion': 'CLOCKREGION_X0Y0:CLOCKREGION_X5Y4'}
+                    }
+                    node_inst['main_slr'] = 'pb_slr2'
+            else:
+                node_inst['multi_slr'] = False
             #
-            for kmap_node in node_dict['kernel']:
-                for kern_idx, kern in enumerate(self.kernels):
-                    # Perform linear search through self.kernels (the array of
-                    # kernel objects we just built) to find the one matching
-                    # this number
-                    if int(kern['num']) == int(kmap_node):
-                        # Instead of having numbers in node_inst['kernel'], have
-                        # pointers to our properly parsed kernel objects
-                        node_inst['kernel_map'][kern['num']] = len(node_inst['kernel'])
-                        node_inst['kernel'].append(kern)
-                        # At the same time, append mac and ip information to each
-                        # kernel object? Not sure why we have to do this. By the
-                        # way, mac and ip are optional fields in node, so I don't
-                        # know what this does if the user doesn't specify them.
-                        self.kernels[kern_idx]['mac'] = node_inst['mac']
-                        self.kernels[kern_idx]['ip'] = node_inst['ip']
-                        if kern['type'] == 'open':
-                            no_open=False
+            if node_inst['multi_slr']:
+                if not (type(node_dict['kernel']) is list):
+                    node_dict['kernel']=[node_dict['kernel']]
+                for kmap_node in node_dict['kernel']:
+                    for kern_idx, kern in enumerate(self.kernels):
+                        # Perform linear search through self.kernels (the array of
+                        # kernel objects we just built) to find the one matching
+                        # this number
+                        if int(kern['num']) == int(kmap_node['num']):
+                            # Instead of having numbers in node_inst['kernel'], have
+                            # pointers to our properly parsed kernel objects
+                            node_inst['kernel_map'][kern['num']] = len(node_inst['kernel'])
+                            kern['distance'] = node_inst['slr_mappings'][kmap_node['slr']]['distance']
+                            node_inst['kernel'].append(kern)
+                            # At the same time, append mac and ip information to each
+                            # kernel object? Not sure why we have to do this. By the
+                            # way, mac and ip are optional fields in node, so I don't
+                            # know what this does if the user doesn't specify them.
+                            self.kernels[kern_idx]['mac'] = node_inst['mac']
+                            self.kernels[kern_idx]['ip'] = node_inst['ip']
+                            if kern['type'] == 'open':
+                                no_open=False
+                            node_inst['slr_mappings'][kmap_node['slr']]['kernel'].append(kern)
+            else:
+                for kmap_node in node_dict['kernel']:
+                    for kern_idx, kern in enumerate(self.kernels):
+                        if int(kern['num']) == int(kmap_node):
+                            # Instead of having numbers in node_inst['kernel'], have
+                            # pointers to our properly parsed kernel objects
+                            kern['distance']=0
+                            node_inst['kernel_map'][kern['num']] = len(node_inst['kernel'])
+                            node_inst['kernel'].append(kern)
+                            # At the same time, append mac and ip information to each
+                            # kernel object? Not sure why we have to do this. By the
+                            # way, mac and ip are optional fields in node, so I don't
+                            # know what this does if the user doesn't specify them.
+                            self.kernels[kern_idx]['mac'] = node_inst['mac']
+                            self.kernels[kern_idx]['ip'] = node_inst['ip']
+                            if kern['type'] == 'open':
+                                no_open=False
 
             if ( ('autorun' in node_inst) and ((node_inst['autorun'].lower())=="true")):
                 if (no_open == False):
@@ -272,16 +319,42 @@ class cluster(abstractDict):
     def writeClusterTCL(self, output_path, sim):
         #tclFileThreads = []
         for node_idx, node in enumerate(self.nodes):
+
             #tclFileThreads.append(threading.Thread(target=tclFileGenerator.makeTCLFiles, args=(node,self.name, output_path, sim)))
-            if node['type'] == 'hw':
+            if node_idx == 0:
+                continue
+            elif node['type'] == 'hw':
                 #tclFileThreads.append(threading.Thread(target=tclFileGenerator.makeTCLFiles, args=(node,self.name, output_path, sim)))
                 #tclFileThreads[len(tclFileThreads)-1].start()
                 tclFileGenerator.makeTCLFiles(node, self.name, output_path, sim)
+            elif node['type']=='sw':
+                tclFileGenerator.makeSWFile(node,self.name, output_path,self.getListOfKernelIPs())
+
 #        for thread in tclFileThreads:
 #            thread.join()
 
 
+    def getListOfKernelIPs(self):
 
+        kernelIndex = 0
+        #iterate through kernels in order of tdest, populating the ipaddress at that location
+        maxKernelIndex = 0
+        for kern in self.kernels:
+            if kern['num'] > maxKernelIndex:
+                maxKernelIndex = kern['num']
+        list_inst = []
+        for currIndex in range(0, maxKernelIndex + 1):
+            found = 0
+
+            for kern in self.kernels:
+                if currIndex == int(kern['num']):
+                    found = 1
+                    list_inst.append(kern['ip'])
+            if found==0:
+                list_inst.append('1.1.1.1')
+                break
+        print(list_inst)
+        return(list_inst)
     #make COE to intialize BRAM of all IP addresses
     def writeBRAMFile(self, output_path, addr_type):
         if addr_type == 'mac':
@@ -377,7 +450,9 @@ class cluster(abstractDict):
         globalConfigFile.write("cd " + str(os.environ.get('GALAPAGOS_PATH')) + "\n")
         for node_idx, node_obj in enumerate(self.nodes):
             #only need vivado project for hw nodes
-            if node_obj['type'] == 'hw':
+            if node_idx == 0:
+                continue
+            elif node_obj['type'] == 'hw':
                 dirName = output_path + '/' + self.name + '/' + str(node_idx)
 
                 if os.path.exists(dirName):
@@ -385,11 +460,16 @@ class cluster(abstractDict):
                     for f in fileList:
                         os.remove(f)
                 os.makedirs(dirName, exist_ok=True)
-
                 #currently only making flattened bitstreams
                 globalConfigFile.write("galapagos-update-board " + node_obj['board'] + "\n")
                 if node_obj['make_bit']:
                     globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + self.name +  " --start_synth 1" + "\n")
                 else:
                     globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + self.name +  " --start_synth 0" + "\n")
-
+            elif node_obj['type'] == 'sw':
+                dirName = output_path + '/' + self.name + '/' + str(node_idx)
+                if os.path.exists(dirName):
+                    subprocess.run(['rm','-r',dirName])
+                os.makedirs(dirName, exist_ok=True)
+                subprocess.run(['cp', '-r', output_path+'/../middleware/sw/.',dirName+"/"])
+        globalConfigFile.close()

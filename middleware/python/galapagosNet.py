@@ -1,11 +1,6 @@
 import sys
 import os
 
-
-import math
-import inspect
-
-
 from sonar.testbench import Testbench, Module, TestVector, Thread
 from sonar.interfaces import AXIS
 from sonar.generators import Ethernet

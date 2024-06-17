@@ -14,6 +14,8 @@ find_family () {
     FPGA_family='Virtex'
   elif [[ $FPGA_family == '7' ]]; then
     FPGA_family='7series'
+  elif [[ $FPGA_family == 'u' ]]; then
+    FPGA_family='useries'
   else
     FPGA_family="${part:2:2}"
     if [[ $FPGA_family != 'zu' ]]; then
@@ -27,6 +29,8 @@ find_family () {
       FPGA_type='Kintex'
     elif [[ $FPGA_type == 'v' ]]; then
       FPGA_type='Virtex'
+    elif [[ $FPGA_type == 'u' ]]; then
+      FPGA_type='u'
     elif [[ $FPGA_type == 'z' ]]; then
       FPGA_type='Zynq'
     else
@@ -117,11 +121,7 @@ fi
 
 vitisPath_append=$vitisPath/$vitisVersion
 
-if [ "$board_name" == "sidewinder"  ]; then
-    interfaceBandwidth="100G"
-else
-    interfaceBandwidth="10G"
-fi
+interfaceBandwidth="100G"
 
 {
   echo "export GALAPAGOS_PATH=$repoPath"
@@ -172,6 +172,16 @@ galapagos-update-board() {
   elif [[ \$1 == "adm-8k5-debug" ]]; then
     partName=xcku115-flva1517-2-e
     board="NULL"
+  elif [[ \$1 == "u200" ]]; then
+    partName=xcu200-fsgd2104-2-e
+    board="NULL"
+  elif [[ \$1 == "u250" ]]; then
+    partName=xcu250-figd2104-2l-e
+    board="NULL"
+  elif [[ \$1 == "adm-8k5-debug" ]]; then
+    partName=xcu280-fsvh2892-2l-e
+    board="NULL"
+ 
   else
     echo "Unknown board \$1 specified. No changes made to galapagos"
     return 1
