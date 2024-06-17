@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<api>
+    <port>
+        <num> 1 </num>
+        <type> direct </type>
+        <target> 2 </target>
+    </port>
+    <port>
+        <num> 2 </num>
+        <type> broadcast </type>
+        <target> 1 </target>
+        <target> 2 </target>
+    </port>
+    <port>
+        <num> 3 </num>
+        <type> Memory </type>
+        <target> 1 </target>
+        <address> A0000000 </address>
+    </port>
+</api>
+
 <cluster>
-    <clusterNumber> 1 </clusterNumber>
     <userIpPath>/home/savi/Desktop/imperial/imperial_ip_repo2</userIpPath>
     <kernel> viv_test_core 
         <type> open </type>

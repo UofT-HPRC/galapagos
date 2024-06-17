@@ -84,7 +84,7 @@ class cluster(abstractDict):
             print("Unhandled exetension for " + file_name)
             return None
 
-    def __init__(self, name, kernel_file, map_file, mode='file'):
+    def __init__(self, name, kernel_file, map_file, supercluster, mode='file'):
         """
         Initializes the cluster object using logical file and mapping file
 
@@ -96,69 +96,20 @@ class cluster(abstractDict):
         self.name = name
         self.kernel_file = kernel_file
 
-        #placeholder defaults so functions still work
-        self.packet_data = 64
-        self.packet_dest = 8
-        self.packet_keep = 0
-        self.packet_last = 0
-        self.packet_id = 0
-        self.packet_user = 0
-
         if(mode=='file'):
-            top_dict = self.getDict(kernel_file)['cluster']
+            top_kern = self.getDict(kernel_file)['cluster']
+            top_map = self.getDict(map_file)['cluster']
         else:
-            top_dict = kernel_file['cluster']
-
-
-        # The user may optionally specify a packet description in <packet> tags
-        # Note: it would be nice if Python had some notion of strong typing,
-        # since it would make it easier to deal with the user giving the wrong
-        # format for the arguments in the XML/JSON file
-        if 'packet' in top_dict:
-            packet = top_dict['packet']
-            if 'data' in packet:
-                self.packet_data = packet['data']
-            if 'keep' in packet:
-                self.packet_keep = packet['keep']
-            if 'last' in packet:
-                self.packet_last = packet['last']
-            if 'id' in packet:
-                self.packet_id = packet['id']
-            if 'user' in packet:
-                self.packet_user = packet['user']
-
-            galapagos_path = str(os.environ.get('GALAPAGOS_PATH'))
-
-            #f = open(galapagos_path + '/middleware/include/packet_size.h', 'w')
-            #f.write("#ifndef PACKET_SIZE_H\n#define PACKET_SIZE_H\n")
-            #f.write("# define PACKET_DATA_LENGTH " + str(self.packet_data) + '\n')
-            #if self.packet_keep:
-            #    self.packet_keep = int(self.packet_data)/8
-            #    f.write("# define PACKET_KEEP_LENGTH " + str(int(self.packet_keep)) + '\n')
-            #if self.packet_last:
-            #    f.write("# define PACKET_LAST\n")
-            #if self.packet_id:
-            #    f.write("# define PACKET_ID_LENGTH " + str(self.packet_id) + '\n')
-            #if self.packet_user:
-            #    f.write("# define PACKET_USER_LENGTH " + str(self.packet_user) + '\n')
-            #else:
-            #    f.write("# define PACKET_USER_LENGTH 16\n")
-            #if self.packet_dest:
-            #    f.write("# define PACKET_DEST_LENGTH " + str(self.packet_dest) + '\n')
-            #f.write("#endif\n")
-
-        if(mode=='file'):
-            logical_dict = self.getDict(kernel_file)['cluster']['kernel']
-            map_dict = self.getDict(map_file)['cluster']['node']
+            top_kern = kernel_file['cluster']
+            top_map = map_file['cluster']
+        logical_dict = top_kern['kernel']
+        map_dict = top_map['node']
+        if "dns" in top_map:
+            dns_ip_address = top_map['dns']
         else:
-            logical_dict = kernel_file['cluster']['kernel']
-            map_dict = map_file['cluster']['node']
-        if "dns" in self.getDict(map_file)['cluster']:
-            dns_ip_address = self.getDict(map_file)['cluster']['dns']
-        else:
-            dns_ip_address = ''
-        if "userIpPath" in self.getDict(kernel_file)['cluster']:
-            user_ip_folder = self.getDict(kernel_file)['cluster']['userIpPath']
+            dns_ip_address = '0.0.0.0'
+        if "userIpPath" in top_kern:
+            user_ip_folder = top_kern['userIpPath']
             subprocess.run(["rm", "-rf", user_ip_folder + "/__galapagos_autogen"])
             subprocess.run(["mkdir", user_ip_folder + "/__galapagos_autogen"])
         else:
@@ -441,22 +392,4 @@ class cluster(abstractDict):
                     globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + self.name +  " --start_synth 1" + "\n")
                 else:
                     globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + self.name +  " --start_synth 0" + "\n")
-
-#                globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + output_path + '/' + self.name " & \n")
-#                globalSimFile.write("vivado -mode gui -source tclScripts/createSim.tcl -tclargs " + node_obj['board'] + " " + self.name + " " + str(node_idx) + "\n")
-
-
-
-if __name__=='__main__':
-
-    #logical_file = 'hwMiddleware/packetSwitch/tests/conf0/logical.xml'
-    #map_file = 'hwMiddleware/packetSwitch/tests/conf0/map.xml'
-    path = '/home/tarafdar/workDir/galapagos/projects'
-    logical_file = '/home/tarafdar/workDir/aegean/examples/resnet50/logical_aegean.json'
-    map_file = '/home/tarafdar/workDir/aegean/examples/resnet50/map_aegean.json'
-    cluster_inst = cluster('naif', logical_file, map_file)
-    cluster_inst.makeProjectClusterScript(path)
-    cluster_inst.writeClusterTCL(path, 0)
-    cluster_inst.writeBRAMFile(path, 'mac')
-    cluster_inst.writeBRAMFile(path, 'ip')
 

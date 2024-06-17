@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cluster>
+    <node>
+        <board> sidewinder </board>
+        <comm> udp </comm>
+        <type> hw </type>
+        <kernel> 1 </kernel>
+        <autorun> False </autorun>
+        <mac> 0c:c4:7a:88:bd:83  </mac>
+        <ip> 10.1.9.209 </ip>
+    </node>
+    <node>
+        <board> sidewinder </board>
+        <comm> udp </comm>
+        <type> hw </type>
+        <kernel> 2 </kernel>
+        <autorun> False </autorun>
+        <mac>  fa:16:3e:55:ca:08 </mac>
+        <ip> 10.1.9.208 </ip>
+    </node>
+    <dns> 10.1.9.109 </dns>
+</cluster>

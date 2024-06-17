@@ -1,0 +1,13 @@
+<superCluster>
+    <cluster>
+        <num> 1 </num>
+        <logicalFile> /home/savi/Desktop/imperial/reautomating/galapagos/xml_examples/laniakea_2_hw_2_clusters/logical.xml </logicalFile>
+        <mapFile> /home/savi/Desktop/imperial/reautomating/galapagos/xml_examples/laniakea_2_hw_2_clusters/map.xml </mapFile>
+    </cluster>
+
+    <cluster>
+        <num> 2 </num>
+        <logicalFile>/home/savi/Desktop/imperial/reautomating/galapagos/xml_examples/laniakea_2_hw_2_clusters/logical.xml </logicalFile>
+        <mapFile> /home/savi/Desktop/imperial/reautomating/galapagos/xml_examples/laniakea_2_hw_2_clusters/map.xml </mapFile>
+    </cluster>
+</superCluster>
