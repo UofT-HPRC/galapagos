@@ -1,4 +1,3 @@
-import warnings
 from abstractDict import abstractDict
 
 class kernel(abstractDict):

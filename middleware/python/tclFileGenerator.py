@@ -2088,7 +2088,7 @@ def netBridgeConstants(tcl_net):
         {
             'name': 'xlconstant',
             'resetns_port': 'rstn',
-            'inst': 'dns_server_info',
+            'inst': 'network/dns_server_info',
             'properties': ['CONFIG.CONST_WIDTH {32}',
                            ' CONFIG.CONST_VAL {'+str(ip_addr_val)+'}']
         }
