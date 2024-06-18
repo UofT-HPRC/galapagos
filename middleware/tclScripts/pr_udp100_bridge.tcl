@@ -2,7 +2,7 @@
 #create_bd_cell -type hier network
 source $top_path/middleware/tclScripts/pr_fetch_bypass.tcl
 
-connect_bd_net [get_bd_pins dns_server_info/dout] [get_bd_pins network/fetch/dns_addr]
+connect_bd_net [get_bd_pins network/dns_server_info/dout] [get_bd_pins network/fetch/dns_addr]
 
 set netBridge_from_app S_AXIS 
 set netBridge_to_app M_AXIS
