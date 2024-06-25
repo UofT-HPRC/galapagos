@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cluster>
     <node>
-        <board> sidewinder </board>
+        <board> u200 </board>
         <comm> udp </comm>
         <type> hw </type>
-        <kernel> 1 </kernel>
+        <kernel> 
+          <num> 1 </num>
+          <slr> SLR1 </slr>
+        </kernel>
         <autorun> False </autorun>
         <mac> 0c:c4:7a:88:bd:83  </mac>
         <ip> 10.1.9.209 </ip>
