@@ -8,7 +8,6 @@
     </node>
     <node>
         <board> sidewinder </board>
-        <part> xczu19eg-ffvc1760-2-i </part>
         <comm> udp </comm>
         <type> hw </type>
         <kernel> 2 </kernel>

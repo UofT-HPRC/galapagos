@@ -10,6 +10,7 @@ import socket, struct
 import glob
 import subprocess
 multi_slr_boards = ['u200','u250','u280']
+board_pairs={'sidewinder':'xczu19eg-ffvc1760-2-i','u200':'xcu200-fsgd2104-2-e','u250':'xcu250-figd2104-2l-e','u280':'xcu280-fsvh2892-2l-e'}
 def memory_sort_and_validate(memories):
     #Process the size
     #Returns an array of arrays containing
@@ -226,6 +227,8 @@ class cluster(abstractDict):
             # but it does also check the fields to make sure they're all valid and that no mandatory info
             # is missing
             node_inst = node(**node_dict)
+            if ((node_inst['type']=='hw') and ('part' not in node_inst)):
+                node_inst['part']=board_pairs[node_inst['board']]
 
             # I'm fairly sure these next few lines of code are just converting
             # data formats
@@ -461,7 +464,6 @@ class cluster(abstractDict):
                         os.remove(f)
                 os.makedirs(dirName, exist_ok=True)
                 #currently only making flattened bitstreams
-                globalConfigFile.write("galapagos-update-board " + node_obj['board'] + "\n")
                 if node_obj['make_bit']:
                     globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + "  --board " + node_obj['board'] + "  --part "+ node_obj['part'] + " --dir " + self.name +  " --start_synth 1" + "\n")
                 else:
