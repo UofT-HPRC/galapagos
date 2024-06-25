@@ -161,7 +161,7 @@ out_file = open("my_init.sh", "w")
 
 out_file.write("source "+answers['viv_hls_dir'] +"/2018.3/settings64.sh\n" )
 
-out_file.write("source init.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['hls_dir'] + ' 2023.1 2023.1 ' + answers['par_name'] + ' ' + answers['boa_name'] +'\n')
+out_file.write("source init_install.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['hls_dir'] + ' 2023.1 2023.1 ' + answers['par_name'] + ' ' + answers['boa_name'] +'\n')
 
 out_file.write("make oldhls\n")
 out_file.write("make hlsmiddleware\n")
@@ -177,7 +177,7 @@ while ((answer == "yes") or (answer == "y")):
   answers['boa_name'] = str(input()).strip().lower()
   out_file.write("source "+answers['viv_hls_dir'] +"/2018.3/settings64.sh\n" )
 
-  out_file.write("source init.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['hls_dir'] + ' 2023.1 2023.1 ' + answers['par_name'] + ' ' + answers['boa_name'] +'\n')
+  out_file.write("source init_install.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['hls_dir'] + ' 2023.1 2023.1 ' + answers['par_name'] + ' ' + answers['boa_name'] +'\n')
 
   out_file.write("make oldhls\n")
   out_file.write("make hlsmiddleware\n")

@@ -22,7 +22,7 @@ HLSMIDDLEWARE_DIR = $(GALAPAGOS_PATH)/middleware/hls
 
 .PHONY: middleware
 
-all: oldhls hlsmiddleware middleware
+all: middleware
 
 example_shell:
 	mkdir -p $(GALAPAGOS_PATH)/projects
@@ -36,7 +36,7 @@ laniakea_middleware: ${CLUSTERFILE} guard-CLUSTERFILE guard-PROJECTNAME
 	mkdir -p $(GALAPAGOS_PATH)/projects
 	$(MAKE) -C $(MIDDLEWARE_DIR) laniakea_middleware
 
-laniakea: oldhls hlsmiddleware laniakea_middleware
+laniakea: laniakea_middleware
 
 hlsmiddleware:
 	mkdir -p $(GALAPAGOS_PATH)/hlsBuild

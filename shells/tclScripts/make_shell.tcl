@@ -22,6 +22,8 @@ if { $::argc > 0 } {
     set option [string trim [lindex $::argv $i]]
     switch -regexp -- $option {
       "--project_name" { incr i; set project_name [lindex $::argv $i] }
+      "--part" { incr i; set current_part [lindex $::argv $i] }
+      "--board" { incr i; set current_board [lindex $::argv $i] }
       "--pr_tcl" { incr i; set pr_tcl [lindex $::argv $i] }
       "--start_synth" { incr i; set start_synth [lindex $::argv $i] }
       "--dir" { incr i; set default_dir [lindex $::argv $i] }
@@ -45,22 +47,15 @@ set orig_proj_dir "[file normalize "projects/$project_name"]"
 if { [info exists ::env(GALAPAGOS_PATH)] } {
   set top_path ${::env(GALAPAGOS_PATH)}
   set top_shells ${::env(GALAPAGOS_PATH)}/shells
-  set top_part ${::env(GALAPAGOS_PART)}
-  set top_board ${::env(GALAPAGOS_BOARD_NAME)}
   set vivado_version ${::env(GALAPAGOS_VITIS_VERSION)}
-  if { [info exists ::env(GALAPAGOS_BOARD)] } {
-    set top_board_part ${::env(GALAPAGOS_BOARD)}
-  }
-} else {
+  } else {
   set top_path ${::env(SHELLS_PATH)}
   set top_shells $top_path 
-  set top_part ${::env(SHELLS_PART)}
-  set top_board ${::env(SHELLS_BOARD_NAME)}
   set vivado_version ${::env(SHELLS_VITIS_VERSION)}
-  if { [info exists ::env(SHELLS_BOARD)] } {
-    set top_board_part ${::env(SHELLS_BOARD)}
   }
-}
+
+set top_part $current_part
+set top_board $current_board
 
 set shell_path $top_shells/$top_board
 
@@ -117,8 +112,8 @@ if {[string equal [get_filesets -quiet sources_1] ""]} {
 set obj [get_filesets sources_1]
 # set_property ip_repo_paths {hlsIP_adm-8k5 shells/shell_ips userIP} [current_project]
 set_property ip_repo_paths [list \
-  $top_path/hlsBuild \
-  $top_path/oldhlsBuild \
+  $top_path/hlsBuild/$top_board \
+  $top_path/oldhlsBuild/$top_board \
   $top_shells/shell_ips \
   userIP] [current_project]
 

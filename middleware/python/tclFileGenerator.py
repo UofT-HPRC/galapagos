@@ -13,7 +13,7 @@ Each one takes care of one self-contained part of the TCL file generation.
 #interfaces constant
 #creates the standard interfaces, same for all fpgas
 
-def createHierarchyTCL(outFile,kernel_properties,ctrl_ports_list, user_repo):
+def createHierarchyTCL(outFile,kernel_properties,ctrl_ports_list, user_repo,part):
     dst_file = open(outFile, "w")
     has_attached = False
     for prop in kernel_properties:
@@ -67,7 +67,7 @@ def createHierarchyTCL(outFile,kernel_properties,ctrl_ports_list, user_repo):
             subprocess.run(["cp", user_repo+"/"+name+".cpp", user_repo + "/__galapagos_autogen/"+name+"/"+name+".cpp"])
             os.chdir(user_repo + "/__galapagos_autogen/"+name)
             tcl_file = open(user_repo + "/__galapagos_autogen/"+name+"/"+name+".tcl", "w")
-            tcl_file.write("set part_name $::env(GALAPAGOS_PART)\n")
+            tcl_file.write("set part_name "+part+"\n")
             tcl_file.write("open_project "+name+"\nset_top "+name+"\nopen_solution \"solution1\"\nset_part ${part_name}\n")
             tcl_file.write("add_files "+ user_repo + "/__galapagos_autogen/"+name+"/"+name+".cpp\n")
             tcl_file.write("create_clock -period 199.498000MHz -name default\ncsynth_design\nexport_design -format ip_catalog\nclose_project\nquit\n")
@@ -1218,7 +1218,6 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
     # dict (under the 'kernel_inst' key).
     s_axis_array = getInterfaces(tcl_user_app.fpga, 's_axis', 'scope', 'global')
 
-
     # Now connect the Galapagos router through the input switch into all of
     # the s_axis interfaces
     kernel_properties=[]
@@ -1435,7 +1434,7 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
                     }
                 )
     createTopLevelVerilog(outDir + "/topLevel.v", output_path + "/../middleware/python",kernel_properties,control_port_names_list)
-    createHierarchyTCL(outDir + "/userkernels.tcl",kernel_properties,control_port_names_list,tcl_user_app.fpga['ip_folder'])
+    createHierarchyTCL(outDir + "/userkernels.tcl",kernel_properties,control_port_names_list,tcl_user_app.fpga['ip_folder'],tcl_user_app.fpga['part'])
     m_axis_array = getInterfaces(tcl_user_app.fpga, 'm_axis', 'scope', 'global')
 
     # Now connect all m_axis interfaces through the output switch into the

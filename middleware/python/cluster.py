@@ -205,7 +205,7 @@ class cluster(abstractDict):
         # Now deal with nodes (i.e. a CPU or an FPGA)
         self.nodes = []
         for node_inst in map_dict:
-            if node_inst['board'] in multi_slr_boards:
+            if (('board' in node_inst) and (node_inst['board'] in multi_slr_boards)):
                 if type(node_inst['kernel']) is list:
                     for element in node_inst['kernel']:
                         if (int(element['num'])==0):
@@ -234,7 +234,7 @@ class cluster(abstractDict):
             node_inst['dns_ip']=dns_ip_address
             node_inst['ip_folder']=user_ip_folder
             no_open = True
-            if node_inst['board'] in multi_slr_boards:
+            if (('board' in node_inst) and (node_inst['board'] in multi_slr_boards)):
                 node_inst['multi_slr'] = True
                 #Specify the Multi SLR settings
                 #distance is the number of reg slices to do the crossing
@@ -463,9 +463,9 @@ class cluster(abstractDict):
                 #currently only making flattened bitstreams
                 globalConfigFile.write("galapagos-update-board " + node_obj['board'] + "\n")
                 if node_obj['make_bit']:
-                    globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + self.name +  " --start_synth 1" + "\n")
+                    globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + "  --board " + node_obj['board'] + "  --part "+ node_obj['part'] + " --dir " + self.name +  " --start_synth 1" + "\n")
                 else:
-                    globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + self.name +  " --start_synth 0" + "\n")
+                    globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + "  --board " + node_obj['board'] + "  --part "+ node_obj['part'] + " --dir " + self.name +  " --start_synth 0" + "\n")
             elif node_obj['type'] == 'sw':
                 dirName = output_path + '/' + self.name + '/' + str(node_idx)
                 if os.path.exists(dirName):
