@@ -10,7 +10,7 @@ import socket, struct
 import glob
 import subprocess
 multi_slr_boards = ['u200','u250','u280']
-board_pairs={'sidewinder':'xczu19eg-ffvc1760-2-i','u200':'xcu200-fsgd2104-2-e','u250':'xcu250-figd2104-2l-e','u280':'xcu280-fsvh2892-2l-e'}
+board_pairs={'sidewinder':'xczu19eg-ffvc1760-2-i','vck5000':'xcvc1902-vsvd1760-2mp-e-s','u200':'xcu200-fsgd2104-2-e','u250':'xcu250-figd2104-2l-e','u280':'xcu280-fsvh2892-2l-e'}
 def memory_sort_and_validate(memories):
     #Process the size
     #Returns an array of arrays containing

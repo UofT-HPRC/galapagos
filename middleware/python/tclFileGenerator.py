@@ -2169,7 +2169,10 @@ def netBridgeConstants(tcl_net):
         tcl_net.tprint('set ip_gateway ' + '0x{0:0{1}X}'.format(int(ip_addr[0]),2) +'0x{0:0{1}X}'.format(int(ip_addr[1]),2)[2:] + '0x{0:0{1}X}'.format(int(ip_addr[2]),2)[2:]   + '0x{0:0{1}X}'.format(0,2)[2:]   )
         tcl_net.tprint('set mac_addr 0x' + tcl_net.fpga['mac'].replace(":","")    )
         tcl_net.tprint('set net_mask 0xFFFF0000')
-        tcl_net.addSource(galapagos_path + '/middleware/tclScripts/pr_udp100_bridge.tcl')
+        if tcl_net.fpga['board'] == 'vck5000':
+            tcl_net.addSource(galapagos_path + '/middleware/tclScripts/pr_udp100_vck_bridge.tcl')
+        else:
+            tcl_net.addSource(galapagos_path + '/middleware/tclScripts/pr_udp100_bridge.tcl')
 
 
 def netBridge(outDir, fpga):
