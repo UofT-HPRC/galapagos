@@ -36,5 +36,5 @@ module shellTop
   wire [3:0]qsfp1_4x_grx_n;
   wire [3:0]qsfp1_4x_grx_p;
   wire [3:0]qsfp1_4x_gtx_n;
-  wire [3:0]qsfp1_4x_gtx_;
+  wire [3:0]qsfp1_4x_gtx_p;
 
