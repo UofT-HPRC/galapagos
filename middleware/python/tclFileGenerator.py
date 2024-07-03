@@ -1433,7 +1433,7 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
                     'port_name':'S01_AXIS'
                     }
                 )
-    createTopLevelVerilog(outDir + "/topLevel.v", output_path + "/../middleware/python",kernel_properties,control_port_names_list)
+    createTopLevelVerilog(outDir + "/topLevel.v", output_path + "/../middleware/python",kernel_properties,control_port_names_list,tcl_user_app.fpga['board'])
     createHierarchyTCL(outDir + "/userkernels.tcl",kernel_properties,control_port_names_list,tcl_user_app.fpga['ip_folder'],tcl_user_app.fpga['part'])
     m_axis_array = getInterfaces(tcl_user_app.fpga, 'm_axis', 'scope', 'global')
 

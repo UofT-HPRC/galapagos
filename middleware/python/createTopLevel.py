@@ -101,9 +101,14 @@ def copy_file(dest_fp,src_filename):
     dest_fp.write(src_file.read())
     src_file.close()
 
-def createTopLevelVerilog(target_files, source_dir, kernel_properties,control_names):
+def createTopLevelVerilog(target_files, source_dir, kernel_properties,control_names,board_name):
     dst_file = open(target_files,"w")
-    copy_file(dst_file,source_dir+"/../verilog/shellTop_pt1.v")
+    print("Part_name")
+    print(board_name)
+    if board_name == 'u200':
+        copy_file(dst_file, source_dir + "/../verilog/shellTop_pt1_u200.v")
+    else:
+        copy_file(dst_file, source_dir + "/../verilog/shellTop_pt1.v")
     dst_file.write(construct_axis_wire("  ","M_AXIS",512,0,True))
     dst_file.write(construct_axis_wire("  ","S_AXIS",512,0,False))
     dst_file.write(construct_axi_wire("  ","S_AXI_CONTROL",16,128,40))
@@ -114,7 +119,10 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,control_na
         dst_file.write(construct_axis_wire("  ", str(name) + "_MAXIS", 512, 24, True))
         dst_file.write(construct_axis_wire("  ", str(name) + "_SAXIS", 512, 24, True))
         dst_file.write(add_axi_wire_field("  ", str(name) + "_SWAN","t", wan_axis_fields, wan_axis_sizes, 0, 512, 0) + "\n")
-    copy_file(dst_file,source_dir+"/../verilog/shellTop_pt2.v")
+    if board_name == 'u200':
+        copy_file(dst_file, source_dir + "/../verilog/shellTop_pt2_u200.v")
+    else:
+        copy_file(dst_file, source_dir + "/../verilog/shellTop_pt2.v")
     dst_file.write(construct_axis_base_defn("    ","M_AXIS","eth_tx",True))
     dst_file.write(construct_axis_base_defn("    ","S_AXIS","eth_rx",False))
     dst_file.write(construct_axi_defn("    ","S_AXI_CONTROL","S_AXI_CONTROL",True,True))
