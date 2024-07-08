@@ -41,9 +41,7 @@ laniakea: laniakea_middleware
 hlsmiddleware:
 	mkdir -p $(GALAPAGOS_PATH)/hlsBuild
 	$(MAKE) -C $(MIDDLEWARE_DIR) hlsmiddleware
-oldhls:
-	mkdir -p $(GALAPAGOS_PATH)/oldhlsBuild
-	$(MAKE) -C $(MIDDLEWARE_DIR) oldhls
+
 test:
 	$(MAKE) PROJECTNAME="test_proj" clean
 	$(MAKE) PROJECTNAME="test_proj" LOGICALFILE=$(GALAPAGOS_PATH)/userIP/logical_wan.xml MAPFILE=$(GALAPAGOS_PATH)/userIP/map_wan.xml

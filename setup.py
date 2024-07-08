@@ -92,9 +92,9 @@ if(args.viv_hls_dir == ''):
 else:
     viv_hls_dir = args.viv_hls_dir
 
-vitis_ver = '2022.3'
+vitis_ver = '2022.2'
 
-hls_ver = '2022.3'
+hls_ver = '2022.2'
 
 
 
@@ -117,16 +117,14 @@ print('ENVIRONMENT VARIABLES SET:')
 env_var = {'GALAPAGOS_PATH': answers['galapagos_dir'],
            'GALAPAGOS_VITIS_PATH' : answers['vitis_dir'],
            'GALAPAGOS_HLS_PATH' : answers['hls_dir'],
-           'GALAPAGOS_VITIS_VERSION' : '2023.1',
-           'GALAPAGOS_HLS_VERSION' : '2023.1',
-           'GALAPAGOS_VIV_HLS_VERSION' : '2018.3',
+           'GALAPAGOS_VITIS_VERSION' : '2022.2',
+           'GALAPAGOS_HLS_VERSION' : '2022.2'
         }
 
 pprint(env_var)
 
 out_file = open("my_init.sh", "w") 
 
-out_file.write("source "+answers['viv_hls_dir'] +"/2018.3/settings64.sh\n" )
 print("Galapagos requires boards to be installed in order to be used.\nThis process takes 20 minutes but only needs do be done once per board per project.\n Do you wish to install a board at this time?(Y/N)\n")
 invalid = True
 answer = str(input()).strip().lower()
@@ -135,7 +133,7 @@ while invalid:
   if ((answer == "yes") or (answer == "y")):
     while ((answer == "yes") or (answer == "y")):
       print('What is the board name you want to install? or type CANCEL to cancel board instalation\n')
-      print('options: sidewinder, u200, u250, u280')
+      print('options: sidewinder, u200, u250, u280, vck5000')
       board_name = str(input()).strip().lower()
       running = True
       if board_name == "cancel":
@@ -143,8 +141,7 @@ while invalid:
         print("aborting board install, just installing parameters")
         out_file.close()
         out_file = open("my_init.sh","w")
-        out_file.write("source "+answers['viv_hls_dir'] +"/2018.3/settings64.sh\n" )
-        out_file.write("source init_params.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['hls_dir'] + ' 2023.1 2023.1 ' + '\n')
+        out_file.write("source init_params.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['hls_dir'] + ' 2022.2 2022.2 ' + '\n')
         answer = "n"
       elif board_name == "sidewinder":
         answers['boa_name'] = 'sidewinder'
@@ -170,9 +167,8 @@ while invalid:
         if ((confirmation == "no") or (confirmation == "n")):
           running = False
       if running:
-        out_file.write("source init.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['hls_dir'] + ' 2023.1 2023.1 ' + answers['par_name'] + ' ' + answers['boa_name'] +'\n')
+        out_file.write("source init.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['hls_dir'] + ' 2022.2 2022.2 ' + answers['par_name'] + ' ' + answers['boa_name'] +'\n')
 
-        out_file.write("make oldhls\n")
         out_file.write("make hlsmiddleware\n")
         print("Are there other boards you wish to install in this project? (Y/N)")
         answer = str(input()).strip().lower()
@@ -180,7 +176,7 @@ while invalid:
           print("invalid answer, please enter y or n")
           answer = str(input()).strip().lower()
   elif ((answer == "no") or (answer == "n")):
-    out_file.write("source init_params.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['hls_dir'] + ' 2023.1 2023.1 ' + '\n')
+    out_file.write("source init_params.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['hls_dir'] + ' 2022.2 2022.2 ' + '\n')
   else:
     print("<"+answer + "> is invalid, please enter y or n")
 out_file.close()

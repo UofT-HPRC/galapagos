@@ -64,8 +64,8 @@ connect_bd_intf_net [get_bd_intf_pins network/fetch_clock_converter/M_AXIS] -bou
 connect_bd_intf_net [get_bd_intf_pins network/direct_ip_switch/M00_AXIS] [get_bd_intf_pins network/fifo_gulf/S_AXIS]
 connect_bd_intf_net [get_bd_intf_pins network/network_bridge_udp_1_0/lbTxDataOut] [get_bd_intf_pins network/direct_ip_switch/S01_AXIS]
 connect_bd_intf_net [get_bd_intf_pins network/fetch/Net_TX] [get_bd_intf_pins network/direct_ip_switch/S02_AXIS]
-connect_bd_intf_net [get_bd_intf_pins network/fifo_gulf/M_AXIS] [get_bd_intf_pins network/gulf_input_switch_0/in_network_V]
-connect_bd_intf_net [get_bd_intf_pins network/gulf_input_switch_0/out_V] [get_bd_intf_pins network/axis_endianness_conv_1/s_axis]
+connect_bd_intf_net [get_bd_intf_pins network/fifo_gulf/M_AXIS] [get_bd_intf_pins network/gulf_input_switch_0/in_network]
+connect_bd_intf_net [get_bd_intf_pins network/gulf_input_switch_0/out_r] [get_bd_intf_pins network/axis_endianness_conv_1/s_axis]
 connect_bd_intf_net [get_bd_intf_pins network/axis_endianness_conv_1/m_axis] [get_bd_intf_pins network/GULF_Stream_0/payload_from_user]
 connect_bd_net [get_bd_ports CLK300] [get_bd_pins network/axis_endianness_conv_0/clk]
 connect_bd_net [get_bd_ports CLK300] [get_bd_pins network/axis_endianness_conv_1/clk]
@@ -74,23 +74,21 @@ connect_bd_net [get_bd_pins network/GULF_Stream_0/remote_ip_rx] [get_bd_pins net
 connect_bd_net [get_bd_pins network/GULF_Stream_0/remote_port_rx] [get_bd_pins network/receptionist/src_prt]
 connect_bd_net [get_bd_pins network/GULF_Stream_0/local_port_rx] [get_bd_pins network/receptionist/dst_prt]
 
-#connect_bd_net [get_bd_pins network/network_bridge_udp_1_0/remote_ip_tx] [get_bd_pins network/GULF_Stream_0/remote_ip_tx]
-#connect_bd_net [get_bd_pins network/network_bridge_udp_1_0/arp_status_V] [get_bd_pins network/GULF_Stream_0/arp_status]
 connect_bd_net [get_bd_ports CLK300] [get_bd_pins network/GULF_Stream_0/clk]
 connect_bd_net [get_bd_ports CLK300] [get_bd_pins network/network_bridge_udp_1_0/ap_clk]
-connect_bd_net [get_bd_ports CLK300] [get_bd_pins network/gulf_input_switch_0/aclk]
+connect_bd_net [get_bd_ports CLK300] [get_bd_pins network/gulf_input_switch_0/ap_clk]
 
 
-connect_bd_net [get_bd_pins network/gulf_input_switch_0/out_ip_V] [get_bd_pins network/GULF_Stream_0/remote_ip_tx]
-connect_bd_net [get_bd_pins network/gulf_input_switch_0/out_dest_prt_V] [get_bd_pins network/GULF_Stream_0/remote_port_tx]
-connect_bd_net [get_bd_pins network/gulf_input_switch_0/out_source_prt_V] [get_bd_pins network/GULF_Stream_0/local_port_tx]
+connect_bd_net [get_bd_pins network/gulf_input_switch_0/out_ip] [get_bd_pins network/GULF_Stream_0/remote_ip_tx]
+connect_bd_net [get_bd_pins network/gulf_input_switch_0/out_dest_prt] [get_bd_pins network/GULF_Stream_0/remote_port_tx]
+connect_bd_net [get_bd_pins network/gulf_input_switch_0/out_source_prt] [get_bd_pins network/GULF_Stream_0/local_port_tx]
 
 create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic network/not_aresetn
 set_property -dict [list CONFIG.C_OPERATION {not} CONFIG.LOGO_FILE {data/sym_notgate.png}] [get_bd_cells network/not_aresetn]
 connect_bd_net [get_bd_ports rstn300] [get_bd_pins network/not_aresetn/Op1]
 connect_bd_net [get_bd_pins network/GULF_Stream_0/rst] [get_bd_pins network/not_aresetn/Res]
 connect_bd_net [get_bd_ports rstn300] [get_bd_pins network/network_bridge_udp_1_0/ap_rst_n]
-connect_bd_net [get_bd_ports rstn300] [get_bd_pins network/gulf_input_switch_0/aresetn]
+connect_bd_net [get_bd_ports rstn300] [get_bd_pins network/gulf_input_switch_0/ap_rst_n]
 
 connect_bd_net [get_bd_ports CLK300] [get_bd_pins network/direct_ip_rx_switch/aclk]
 connect_bd_net [get_bd_ports rstn300] [get_bd_pins network/direct_ip_rx_switch/aresetn]

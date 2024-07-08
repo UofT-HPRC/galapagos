@@ -122,12 +122,10 @@ def userApplicationRegionControlInst(tcl_user_app,kern_name_list,kern_prop_list)
                   ]
     tcl_user_app.setPortProperties('S_AXI_CONTROL',properties)
     if(num_ctrl_interfaces == 0):
-        inc_clks = ['ACLK', 'S00_ACLK']
-        inc_resetns = ['ARESETN', 'S00_ARESETN']
-        inc_clks.append('M00_ACLK')
-        inc_resetns.append('M00_ARESETN')
+        inc_clks = ['aclk']
+        inc_resetns = ['aresetn']
         tcl_user_app.instBlock(
-            {'name': 'axi_interconnect',
+            {'name': 'smartconnect',
              'resetns_port': 'rstn',
              'inst': 'applicationRegion/axi_interconnect_ctrl',
              'clks': inc_clks,
@@ -178,14 +176,10 @@ def userApplicationRegionControlInst(tcl_user_app,kern_name_list,kern_prop_list)
         )
         tcl_user_app.setProperties('applicationRegion/axi_interconnect_ctrl', interconnect_properties)
     elif (num_ctrl_interfaces == 1):
-        inc_clks = ['ACLK', 'S00_ACLK']
-        inc_resetns = ['ARESETN', 'S00_ARESETN']
-        inc_clks.append('M00_ACLK')
-        inc_resetns.append('M00_ARESETN')
-        inc_clks.append('M01_ACLK')
-        inc_resetns.append('M01_ARESETN')
+        inc_clks = ['aclk']
+        inc_resetns = ['aresetn']
         tcl_user_app.instBlock(
-            {'name': 'axi_interconnect',
+            {'name': 'smartconnect',
              'resetns_port': 'rstn',
              'inst': 'applicationRegion/axi_interconnect_ctrl',
              'clks': inc_clks,
@@ -228,14 +222,11 @@ def userApplicationRegionControlInst(tcl_user_app,kern_name_list,kern_prop_list)
         )
         slave_base = "Reg"
         master = "S_AXI_CONTROL"
-        interconnect_properties = ['CONFIG.S00_HAS_REGSLICE {1}']
         kern = kern_name_list[0]
         port_name = kern + "_CONTROL"
         tcl_user_app.add_axi4_port(port_name, 'Master')
         tcl_user_app.setPortProperties(port_name, slave_axim_properties)
         inc_index_str = "M00_AXI"
-        properties_str = "CONFIG.M00_HAS_REGSLICE {4}"
-        interconnect_properties.append(properties_str)
         tcl_user_app.makeConnection(
             'intf',
             {'name': 'applicationRegion/axi_interconnect_ctrl',
@@ -258,7 +249,6 @@ def userApplicationRegionControlInst(tcl_user_app,kern_name_list,kern_prop_list)
             'S_AXI',
             'Reg'
         )
-        tcl_user_app.setProperties('applicationRegion/axi_interconnect_ctrl', interconnect_properties)
         kern = kern_name_list[0]
         prop = kern_prop_list[0]
         slave_port = kern + "_CONTROL"
@@ -280,15 +270,15 @@ def userApplicationRegionControlInst(tcl_user_app,kern_name_list,kern_prop_list)
         #        )
         #
 
-        inc_clks = ['ACLK', 'S00_ACLK']
-        inc_resetns = ['ARESETN', 'S00_ARESETN']
+        inc_clks = ['aclk']
+        inc_resetns = ['aresetn']
         for inc_index in range(0, num_ctrl_interfaces):
             inc_index_str = "%02d"%inc_index
             inc_clks.append('M' + inc_index_str + '_ACLK')
             inc_resetns.append('M' + inc_index_str + '_ARESETN')
 
         tcl_user_app.instBlock(
-                {'name':'axi_interconnect',
+                {'name':'smartconnect',
                  'resetns_port': 'rstn',
                 'inst':'applicationRegion/axi_interconnect_ctrl',
                 'clks':inc_clks,
@@ -312,15 +302,12 @@ def userApplicationRegionControlInst(tcl_user_app,kern_name_list,kern_prop_list)
         master_port_index = num_ctrl_interfaces - len(kern_name_list)
         slave_base = "Reg"
         master = "S_AXI_CONTROL"
-        interconnect_properties = ['CONFIG.S00_HAS_REGSLICE {1}']
         for kern_num in range(len(kern_name_list)):
             kern = kern_name_list[kern_num]
             port_name = kern + "_CONTROL"
             tcl_user_app.add_axi4_port(port_name, 'Master')
             tcl_user_app.setPortProperties(port_name, slave_axim_properties)
             inc_index_str = "M"+"%02d" % master_port_index +"_AXI"
-            properties_str = "CONFIG.M"+"%02d" % master_port_index + "_HAS_REGSLICE {4}"
-            interconnect_properties.append(properties_str)
             tcl_user_app.makeConnection(
                 'intf',
                 {'name': 'applicationRegion/axi_interconnect_ctrl',
@@ -339,7 +326,6 @@ def userApplicationRegionControlInst(tcl_user_app,kern_name_list,kern_prop_list)
                 'Reg'
             )
             master_port_index = master_port_index + 1
-        tcl_user_app.setProperties('applicationRegion/axi_interconnect_ctrl', interconnect_properties)
         for kern_num in range(len(kern_name_list)):
             kern = kern_name_list[kern_num]
             prop = kern_prop_list[kern_num]
@@ -471,8 +457,8 @@ def userApplicationRegionMemInstLocal(tcl_user_app):
     for m_axi in m_axi_array:
         s_axi_array = getSlaveInterfaces(tcl_user_app.fpga, 's_axi', m_axi)
 
-        inc_clks = ['ACLK', 'S00_ACLK']
-        inc_resetns = ['ARESETN', 'S00_ARESETN']
+        inc_clks = ['aclk']
+        inc_resetns = ['aresetn']
         for inc_index in range(0, len(s_axi_array)):
             inc_index_str = "%02d"%inc_index
             inc_clks.append('M' + inc_index_str + '_ACLK')
@@ -481,7 +467,7 @@ def userApplicationRegionMemInstLocal(tcl_user_app):
 
         tcl_user_app.instBlock(
                 {
-                'name':'axi_interconnect',
+                'name':'smartconnect',
                 'resetns_port': 'rstn',
                 'inst': m_axi['kernel_inst']['inst'] + '_' + m_axi['name'] + '_inc_inst',
                 'clks': inc_clks,
@@ -530,13 +516,11 @@ def userApplicationRegionMemInstGlobal(tcl_user_app, shared):
     """
     num_mem_interfaces = len(getInterfaces(tcl_user_app.fpga, 'm_axi', 'scope',  'global'))
 
-    inc_clks = ['ACLK', 'M00_ACLK']
-    inc_resetns = ['ARESETN', 'M00_ARESETN']
+    inc_clks = ['aclk']
+    inc_resetns = ['aresetn']
     if (num_mem_interfaces > 0):
         if shared:
             properties = ['CONFIG.NUM_MI {2}']
-            inc_clks.append('M01_ACLK')
-            inc_resetns.append('M01_ARESETN')
         else:
             properties = ['CONFIG.NUM_MI {1}']
 
@@ -560,10 +544,6 @@ def userApplicationRegionMemInstGlobal(tcl_user_app, shared):
 #                )
 
 #AXI INTERCONNECT
-        for inc_index in range(0, num_mem_interfaces):
-            inc_index_str = "%02d"%inc_index
-            inc_clks.append('S' + inc_index_str + '_ACLK')
-            inc_resetns.append('S' + inc_index_str + '_ARESETN')
 
         # print('axi interconnect mem properties ' + str(properties))
 
@@ -576,7 +556,7 @@ def userApplicationRegionMemInstGlobal(tcl_user_app, shared):
         # if enable_AXI_mem_interconnect:
         tcl_user_app.instBlock(
                 {
-                'name':'axi_interconnect',
+                'name':'smartconnect',
                 'inst':'applicationRegion/axi_interconnect_mem',
                 'resetns_port': 'rstn',
                 'clks':inc_clks,
@@ -707,6 +687,7 @@ def userApplicationRegionKernelsInst(tcl_user_app):
        #         tcl_user_app.setProperties('applicationRegion/' + instName, properties)
 
         #instantiate and connect constant for id
+        '''
         if (kern['id_port'] != None):
             tcl_user_app.instBlock(
                     {
@@ -717,7 +698,6 @@ def userApplicationRegionKernelsInst(tcl_user_app):
                         'CONFIG.CONST_VAL {'+ str(kern['num'])+'}']
                     }
                     )
-            '''
             tcl_user_app.makeConnection(
                     'net',
                         {
@@ -731,7 +711,7 @@ def userApplicationRegionKernelsInst(tcl_user_app):
                         'port_name':kern['id_port']
                         }
                         )
-            '''
+        '''
         if kern['const'] != None:
             for const in kern['const']:
                 #print(const)
@@ -773,11 +753,14 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
     #Untested new addition for dns_ip
 
     # I think this is the BRAM which stores the routing table
+    mem_to_use = 'blk_mem_gen'
+    if tcl_user_app.fpga['board']== 'vck5000':
+        mem_to_use = 'emb_mem_gen'
     if tcl_user_app.fpga['comm'] != 'none':
         # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
         tcl_user_app.instBlock(
             {
-                'name':'blk_mem_gen',
+                'name':mem_to_use,
                 'resetns_port': 'rstn',
                 'inst':'applicationRegion/blk_mem_switch_rom'
             }
@@ -811,10 +794,22 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                     'CONFIG.use_bram_block {Stand_Alone}',
                     'CONFIG.EN_SAFETY_CKT {true}'
                     ]
+        if tcl_user_app.fpga['board']=='vck5000':
+            #Nour, please correct this
+            properties = ['CONFIG.ENABLE_32BIT_ADDRESS {true}',
+                          'CONFIG.MEMORY_DEPTH {8192}',
+                          'CONFIG.MEMORY_INIT_FILE $top_path/projects/$default_dir/ip.mem',
+                          'CONFIG.MEMORY_OPTIMIZATION {no_mem_opt}',
+                          'CONFIG.MEMORY_TYPE {Single_Port_ROM}',
+                          'CONFIG.USE_MEMORY_BLOCK {Stand_Alone}',
+                          'CONFIG.WRITE_DATA_WIDTH_A {8}',
+                          'CONFIG.READ_LATENCY_A {1}'
+                          ]
 
         tcl_user_app.setProperties('applicationRegion/blk_mem_switch_rom', properties)
-        properties_bram_file = ['CONFIG.Load_Init_File {true}', 'CONFIG.Coe_File $top_path/projects/$default_dir/ip.coe']
-        tcl_user_app.setProperties('applicationRegion/blk_mem_switch_rom', properties_bram_file)
+        if tcl_user_app.fpga['board'] != 'vck5000':
+            properties_bram_file = ['CONFIG.Load_Init_File {true}', 'CONFIG.Coe_File $top_path/projects/$default_dir/ip.coe']
+            tcl_user_app.setProperties('applicationRegion/blk_mem_switch_rom', properties_bram_file)
         # I think this connects the board's local IP to the router (but I don't
         # know why this is needed)
         tcl_user_app.makeConnection(
@@ -854,8 +849,8 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
                 'lib':'hls',
                 'name':'width48router',
                 'inst':'applicationRegion/custom_switch_inst',
-                'clks':['aclk'],
-                'resetns':['aresetn'],
+                'clks':['ap_clk'],
+                'resetns':['ap_rst_n'],
                 'resetns_port': 'rstn'
                 }
                 )
@@ -939,9 +934,10 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
         tcl_user_app.setProperties('applicationRegion/ctrl_blk_mem_switch_rom', ["CONFIG.SINGLE_PORT_BRAM {1}"])
 
         # configures another memory to hold the MAC addresses
+
         tcl_user_app.instBlock(
             {
-            'name':'blk_mem_gen',
+            'name':mem_to_use,
             'inst':'applicationRegion/blk_mem_switch_rom_mac',
             'resetns_port': 'rstn',
             }
@@ -956,25 +952,36 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
             'resetns_port': 'rstn'
             }
         )
-        tcl_user_app.setProperties('applicationRegion/ctrl_blk_mem_switch_rom_mac', ["CONFIG.SINGLE_PORT_BRAM {1}", "CONFIG.DATA_WIDTH {64}"])
-
-        properties =['CONFIG.Memory_Type {Single_Port_ROM}',
-                    'CONFIG.Enable_32bit_Address {true}',
-                    'CONFIG.Use_Byte_Write_Enable {false}',
-                    'CONFIG.Byte_Size {8}',
-                    'CONFIG.Write_Width_A {64}',
-                    'CONFIG.Write_Depth_A {256}',
-                    'CONFIG.Read_Width_A {64}',
-                    'CONFIG.Write_Width_B {64}',
-                    'CONFIG.Read_Width_B {64}',
-                    'CONFIG.Register_PortA_Output_of_Memory_Primitives {false}',
-                    'CONFIG.Use_RSTA_Pin {true}',
-                    'CONFIG.Port_A_Write_Rate {0}',
-                    'CONFIG.use_bram_block {BRAM_Controller}',
-                    'CONFIG.EN_SAFETY_CKT {true}',
-                    'CONFIG.Load_init_file {true}',
-                    'CONFIG.Coe_File $top_path/projects/$default_dir/mac.coe'
-                    ]
+        tcl_user_app.setProperties('applicationRegion/ctrl_blk_mem_switch_rom_mac',
+                                   ["CONFIG.SINGLE_PORT_BRAM {1}", "CONFIG.DATA_WIDTH {64}"])
+        if tcl_user_app.fpga['board'] == 'vck5000':
+            properties = ['CONFIG.MEMORY_DEPTH {256}',
+                          'CONFIG.MEMORY_INIT_FILE $top_path/projects/$default_dir/mac.mem',
+                          'CONFIG.MEMORY_OPTIMIZATION {no_mem_opt}',
+                          'CONFIG.MEMORY_TYPE {Single_Port_ROM}',
+                          'CONFIG.READ_LATENCY_A {1}',
+                          'CONFIG.USE_MEMORY_BLOCK {Stand_Alone}'
+                          'CONFIG.WRITE_DATA_WIDTH_A {64}',
+                          'CONFIG.WRITE_PROTECT {false}'
+                          ]
+        else:
+            properties =['CONFIG.Memory_Type {Single_Port_ROM}',
+                        'CONFIG.Enable_32bit_Address {true}',
+                        'CONFIG.Use_Byte_Write_Enable {false}',
+                        'CONFIG.Byte_Size {8}',
+                        'CONFIG.Write_Width_A {64}',
+                        'CONFIG.Write_Depth_A {256}',
+                        'CONFIG.Read_Width_A {64}',
+                        'CONFIG.Write_Width_B {64}',
+                        'CONFIG.Read_Width_B {64}',
+                        'CONFIG.Register_PortA_Output_of_Memory_Primitives {false}',
+                        'CONFIG.Use_RSTA_Pin {true}',
+                        'CONFIG.Port_A_Write_Rate {0}',
+                        'CONFIG.use_bram_block {BRAM_Controller}',
+                        'CONFIG.EN_SAFETY_CKT {true}',
+                        'CONFIG.Load_init_file {true}',
+                        'CONFIG.Coe_File $top_path/projects/$default_dir/mac.coe'
+                        ]
 
         tcl_user_app.setProperties('applicationRegion/blk_mem_switch_rom_mac', properties)
 
@@ -1513,8 +1520,8 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
         {
             'name': 'WAN_bridge',
             'inst': 'applicationRegion/WAN_bridge',
-            'clks': ['aclk'],
-            'resetns': ['aresetn'],
+            'clks': ['ap_clk'],
+            'resetns': ['ap_rst_n'],
             'resetns_port': 'rstn',
         }
     )
@@ -1528,7 +1535,7 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
         {
             'name': 'applicationRegion/WAN_bridge',
             'type': 'intf',
-            'port_name': 'g2N_input_V'
+            'port_name': 'g2N_input'
         }
     )
     tcl_user_app.makeConnection(
@@ -1536,12 +1543,12 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
         {
             'name': 'applicationRegion/WAN_bridge',
             'type': 'intf',
-            'port_name': 'g2N_output_V'
+            'port_name': 'g2N_output'
         },
         {
             'name': 'network/fetch/dispatcher',
             'type': 'intf',
-            'port_name': 'rxGalapagosBridge_V'
+            'port_name': 'rxGalapagosBridge'
         }
     )
     # Now handle the control interfaces
@@ -2097,10 +2104,9 @@ def netBridgeConstants(tcl_net):
         #tcl_net.write('addip ip_constant_block network/ip_constant_block_inst\n')
 
         # Not sure where this vendor and lib came from
-        tcl_net.instBlock(
+        tcl_net.addVerilog(str(os.environ.get('GALAPAGOS_PATH'))+"/middleware/verilog/ip_constant_block.v")
+        tcl_net.instModule(
                 {
-                'vendor':'user.org',
-                'lib':'user',
                 'name':'ip_constant_block',
                 'resetns_port': 'rstn',
                 'inst':'network/ip_constant_block_inst'
@@ -2125,7 +2131,8 @@ def netBridgeConstants(tcl_net):
                 'CONFIG.C_SUBNET_B3 {0}']
 
         # MAC address
-        properties = properties + ['CONFIG.C_MAC {0x' + tcl_net.fpga['mac'].replace(":","") + '}']
+        mac_int_val = int(tcl_net.fpga['mac'].replace(":","") ,16)
+        properties = properties + ['CONFIG.C_MAC {' + str(mac_int_val) + '}']
 
         tcl_net.setProperties('network/ip_constant_block_inst', properties)
 

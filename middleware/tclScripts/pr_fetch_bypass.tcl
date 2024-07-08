@@ -42,77 +42,77 @@ set_property CONFIG.IS_ACLK_ASYNC {1} [get_bd_cells network/fetch/net_out_clk_co
 
 #Connect Ports
 
-connect_bd_net [get_bd_pins network/fetch/CLK] [get_bd_pins network/fetch/dispatcher/aclk]
+connect_bd_net [get_bd_pins network/fetch/CLK] [get_bd_pins network/fetch/dispatcher/ap_clk]
 connect_bd_net [get_bd_pins network/fetch/CLK] [get_bd_pins network/fetch/main_buffer/s_axis_aclk]
-connect_bd_net [get_bd_pins network/fetch/CLK] [get_bd_pins network/fetch/collector/aclk]
+connect_bd_net [get_bd_pins network/fetch/CLK] [get_bd_pins network/fetch/collector/ap_clk]
 connect_bd_net [get_bd_pins network/fetch/CLK] [get_bd_pins network/fetch/net_out_switch/aclk]
-connect_bd_net [get_bd_pins network/fetch/CLK] [get_bd_pins network/fetch/slow_fetcher/aclk]
-connect_bd_net [get_bd_pins network/fetch/CLK] [get_bd_pins network/fetch/fast_fetcher/aclk]
+connect_bd_net [get_bd_pins network/fetch/CLK] [get_bd_pins network/fetch/slow_fetcher/ap_clk]
+connect_bd_net [get_bd_pins network/fetch/CLK] [get_bd_pins network/fetch/fast_fetcher/ap_clk]
 connect_bd_net [get_bd_pins network/fetch/CLK] [get_bd_pins network/fetch/net_out_clk_conv/s_axis_aclk]
 connect_bd_net [get_bd_pins network/fetch/CLK] [get_bd_pins network/fetch/bin_bypass/s_axis_aclk]
 connect_bd_net [get_bd_pins network/fetch/CLK] [get_bd_pins network/fetch/bin1/s_axis_aclk]
 connect_bd_net [get_bd_pins network/fetch/CLK] [get_bd_pins network/fetch/bin2/s_axis_aclk]
 connect_bd_net [get_bd_pins network/fetch/CLK] [get_bd_pins network/fetch/bin3/s_axis_aclk]
-connect_bd_net [get_bd_pins network/fetch/CLK] [get_bd_pins network/fetch/bin_door_1/aclk]
-connect_bd_net [get_bd_pins network/fetch/CLK] [get_bd_pins network/fetch/bin_door_2/aclk]
-connect_bd_net [get_bd_pins network/fetch/CLK] [get_bd_pins network/fetch/bin_door_3/aclk]
+connect_bd_net [get_bd_pins network/fetch/CLK] [get_bd_pins network/fetch/bin_door_1/ap_clk]
+connect_bd_net [get_bd_pins network/fetch/CLK] [get_bd_pins network/fetch/bin_door_2/ap_clk]
+connect_bd_net [get_bd_pins network/fetch/CLK] [get_bd_pins network/fetch/bin_door_3/ap_clk]
 
-connect_bd_net [get_bd_pins network/fetch/reset] [get_bd_pins network/fetch/dispatcher/aresetn]
+connect_bd_net [get_bd_pins network/fetch/reset] [get_bd_pins network/fetch/dispatcher/ap_rst_n]
 connect_bd_net [get_bd_pins network/fetch/reset] [get_bd_pins network/fetch/main_buffer/s_axis_aresetn]
-connect_bd_net [get_bd_pins network/fetch/reset] [get_bd_pins network/fetch/collector/aresetn]
-connect_bd_net [get_bd_pins network/fetch/reset] [get_bd_pins network/fetch/fast_fetcher/aresetn]
+connect_bd_net [get_bd_pins network/fetch/reset] [get_bd_pins network/fetch/collector/ap_rst_n]
+connect_bd_net [get_bd_pins network/fetch/reset] [get_bd_pins network/fetch/fast_fetcher/ap_rst_n]
 connect_bd_net [get_bd_pins network/fetch/reset] [get_bd_pins network/fetch/bin_bypass/s_axis_aresetn]
 connect_bd_net [get_bd_pins network/fetch/reset] [get_bd_pins network/fetch/net_out_switch/aresetn]
-connect_bd_net [get_bd_pins network/fetch/reset] [get_bd_pins network/fetch/slow_fetcher/aresetn]
+connect_bd_net [get_bd_pins network/fetch/reset] [get_bd_pins network/fetch/slow_fetcher/ap_rst_n]
 connect_bd_net [get_bd_pins network/fetch/reset] [get_bd_pins network/fetch/net_out_clk_conv/s_axis_aresetn]
 connect_bd_net [get_bd_pins network/fetch/reset] [get_bd_pins network/fetch/bin1/s_axis_aresetn]
 connect_bd_net [get_bd_pins network/fetch/reset] [get_bd_pins network/fetch/bin2/s_axis_aresetn]
 connect_bd_net [get_bd_pins network/fetch/reset] [get_bd_pins network/fetch/bin3/s_axis_aresetn]
-connect_bd_net [get_bd_pins network/fetch/reset] [get_bd_pins network/fetch/bin_door_1/aresetn]
-connect_bd_net [get_bd_pins network/fetch/reset] [get_bd_pins network/fetch/bin_door_2/aresetn]
-connect_bd_net [get_bd_pins network/fetch/reset] [get_bd_pins network/fetch/bin_door_3/aresetn]
+connect_bd_net [get_bd_pins network/fetch/reset] [get_bd_pins network/fetch/bin_door_1/ap_rst_n]
+connect_bd_net [get_bd_pins network/fetch/reset] [get_bd_pins network/fetch/bin_door_2/ap_rst_n]
+connect_bd_net [get_bd_pins network/fetch/reset] [get_bd_pins network/fetch/bin_door_3/ap_rst_n]
 
 connect_bd_net [get_bd_pins network/fetch/CLK322] [get_bd_pins network/fetch/net_out_clk_conv/m_axis_aclk]
 
-connect_bd_net [get_bd_pins network/fetch/dns_addr] [get_bd_pins network/fetch/slow_fetcher/ip_server_addr_V]
+connect_bd_net [get_bd_pins network/fetch/dns_addr] [get_bd_pins network/fetch/slow_fetcher/ip_server_addr]
 
 #Connect Interfaces
 
 
 
-connect_bd_intf_net [get_bd_intf_pins network/fetch/g2N_output] [get_bd_intf_pins network/fetch/dispatcher/rxGalapagosBridge_V]
+connect_bd_intf_net [get_bd_intf_pins network/fetch/g2N_output] [get_bd_intf_pins network/fetch/dispatcher/rxGalapagosBridge]
 
-connect_bd_intf_net [get_bd_intf_pins network/fetch/fast_fetcher/to_collector_V] [get_bd_intf_pins network/fetch/collector/fetch_in_V]
+connect_bd_intf_net [get_bd_intf_pins network/fetch/fast_fetcher/to_collector] [get_bd_intf_pins network/fetch/collector/fetch_in]
 
-connect_bd_intf_net [get_bd_intf_pins network/fetch/in_network] [get_bd_intf_pins network/fetch/slow_fetcher/in_network_V]
+connect_bd_intf_net [get_bd_intf_pins network/fetch/in_network] [get_bd_intf_pins network/fetch/slow_fetcher/in_network]
 
-connect_bd_intf_net [get_bd_intf_pins network/fetch/main_buffer/S_AXIS] [get_bd_intf_pins network/fetch/dispatcher/lbTxDataOut_V]
-connect_bd_intf_net [get_bd_intf_pins network/fetch/main_buffer/M_AXIS] [get_bd_intf_pins network/fetch/collector/lbTxDataIn_V]
+connect_bd_intf_net [get_bd_intf_pins network/fetch/main_buffer/S_AXIS] [get_bd_intf_pins network/fetch/dispatcher/lbTxDataOut]
+connect_bd_intf_net [get_bd_intf_pins network/fetch/main_buffer/M_AXIS] [get_bd_intf_pins network/fetch/collector/lbTxDataIn]
 
-connect_bd_intf_net [get_bd_intf_pins network/fetch/slow_fetcher/from_fast_fetch_V] [get_bd_intf_pins network/fetch/fast_fetcher/to_slow_fetch_V]
-connect_bd_intf_net [get_bd_intf_pins network/fetch/slow_fetcher/update_V] [get_bd_intf_pins network/fetch/fast_fetcher/update_V]
+connect_bd_intf_net [get_bd_intf_pins network/fetch/slow_fetcher/from_fast_fetch] [get_bd_intf_pins network/fetch/fast_fetcher/to_slow_fetch]
+connect_bd_intf_net [get_bd_intf_pins network/fetch/slow_fetcher/update] [get_bd_intf_pins network/fetch/fast_fetcher/update]
 
-connect_bd_intf_net [get_bd_intf_pins network/fetch/dispatcher/fetch_out_V_V] [get_bd_intf_pins network/fetch/fast_fetcher/from_dispatch_V_V]
+connect_bd_intf_net [get_bd_intf_pins network/fetch/dispatcher/fetch_out] [get_bd_intf_pins network/fetch/fast_fetcher/from_dispatch]
 
-connect_bd_intf_net [get_bd_intf_pins network/fetch/fast_fetcher/bin1_send_V] [get_bd_intf_pins network/fetch/bin_door_1/fetch_in_V]
-connect_bd_intf_net [get_bd_intf_pins network/fetch/fast_fetcher/bin2_send_V] [get_bd_intf_pins network/fetch/bin_door_2/fetch_in_V]
-connect_bd_intf_net [get_bd_intf_pins network/fetch/fast_fetcher/bin3_send_V] [get_bd_intf_pins network/fetch/bin_door_3/fetch_in_V]
+connect_bd_intf_net [get_bd_intf_pins network/fetch/fast_fetcher/bin1_send] [get_bd_intf_pins network/fetch/bin_door_1/fetch_in]
+connect_bd_intf_net [get_bd_intf_pins network/fetch/fast_fetcher/bin2_send] [get_bd_intf_pins network/fetch/bin_door_2/fetch_in]
+connect_bd_intf_net [get_bd_intf_pins network/fetch/fast_fetcher/bin3_send] [get_bd_intf_pins network/fetch/bin_door_3/fetch_in]
 
-connect_bd_intf_net [get_bd_intf_pins network/fetch/collector/bin_1_V] [get_bd_intf_pins network/fetch/bin1/S_AXIS]
-connect_bd_intf_net [get_bd_intf_pins network/fetch/collector/bin_2_V] [get_bd_intf_pins network/fetch/bin2/S_AXIS]
-connect_bd_intf_net [get_bd_intf_pins network/fetch/collector/bin_3_V] [get_bd_intf_pins network/fetch/bin3/S_AXIS]
+connect_bd_intf_net [get_bd_intf_pins network/fetch/collector/bin_1] [get_bd_intf_pins network/fetch/bin1/S_AXIS]
+connect_bd_intf_net [get_bd_intf_pins network/fetch/collector/bin_2] [get_bd_intf_pins network/fetch/bin2/S_AXIS]
+connect_bd_intf_net [get_bd_intf_pins network/fetch/collector/bin_3] [get_bd_intf_pins network/fetch/bin3/S_AXIS]
 
-connect_bd_intf_net [get_bd_intf_pins network/fetch/bin1/M_AXIS] [get_bd_intf_pins network/fetch/bin_door_1/bin_in_V]
-connect_bd_intf_net [get_bd_intf_pins network/fetch/bin2/M_AXIS] [get_bd_intf_pins network/fetch/bin_door_2/bin_in_V]
-connect_bd_intf_net [get_bd_intf_pins network/fetch/bin3/M_AXIS] [get_bd_intf_pins network/fetch/bin_door_3/bin_in_V]
+connect_bd_intf_net [get_bd_intf_pins network/fetch/bin1/M_AXIS] [get_bd_intf_pins network/fetch/bin_door_1/bin_in]
+connect_bd_intf_net [get_bd_intf_pins network/fetch/bin2/M_AXIS] [get_bd_intf_pins network/fetch/bin_door_2/bin_in]
+connect_bd_intf_net [get_bd_intf_pins network/fetch/bin3/M_AXIS] [get_bd_intf_pins network/fetch/bin_door_3/bin_in]
 
-connect_bd_intf_net [get_bd_intf_pins network/fetch/bin_bypass/S_AXIS] [get_bd_intf_pins network/fetch/collector/lbTxDataOut_V]
+connect_bd_intf_net [get_bd_intf_pins network/fetch/bin_bypass/S_AXIS] [get_bd_intf_pins network/fetch/collector/lbTxDataOut]
 
 connect_bd_intf_net [get_bd_intf_pins network/fetch/net_out_switch/S00_AXIS] [get_bd_intf_pins network/fetch/bin_bypass/M_AXIS]
-connect_bd_intf_net [get_bd_intf_pins network/fetch/net_out_switch/S01_AXIS] [get_bd_intf_pins network/fetch/bin_door_1/lbTxDataOut_V]
-connect_bd_intf_net [get_bd_intf_pins network/fetch/net_out_switch/S02_AXIS] [get_bd_intf_pins network/fetch/bin_door_2/lbTxDataOut_V]
-connect_bd_intf_net [get_bd_intf_pins network/fetch/net_out_switch/S03_AXIS] [get_bd_intf_pins network/fetch/bin_door_3/lbTxDataOut_V]
-connect_bd_intf_net [get_bd_intf_pins network/fetch/net_out_switch/S04_AXIS] [get_bd_intf_pins network/fetch/slow_fetcher/out_network_V]
+connect_bd_intf_net [get_bd_intf_pins network/fetch/net_out_switch/S01_AXIS] [get_bd_intf_pins network/fetch/bin_door_1/lbTxDataOut]
+connect_bd_intf_net [get_bd_intf_pins network/fetch/net_out_switch/S02_AXIS] [get_bd_intf_pins network/fetch/bin_door_2/lbTxDataOut]
+connect_bd_intf_net [get_bd_intf_pins network/fetch/net_out_switch/S03_AXIS] [get_bd_intf_pins network/fetch/bin_door_3/lbTxDataOut]
+connect_bd_intf_net [get_bd_intf_pins network/fetch/net_out_switch/S04_AXIS] [get_bd_intf_pins network/fetch/slow_fetcher/out_network]
 
 connect_bd_intf_net [get_bd_intf_pins network/fetch/net_out_clk_conv/S_AXIS] [get_bd_intf_pins network/fetch/net_out_switch/M00_AXIS]
 connect_bd_intf_net [get_bd_intf_pins network/fetch/net_out_clk_conv/M_AXIS] [get_bd_intf_pins network/fetch/Net_TX]

@@ -39,3 +39,4 @@ set_property -name "xsim.time_unit" -value "ns" -objects $obj
 set_property -name "xsim.trace_limit" -value "65536" -objects $obj
 
 return 0
+

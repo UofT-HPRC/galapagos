@@ -20,9 +20,9 @@ hls_path = $(middleware_path)/hls
 old_hls_path = $(middleware_path)/old_hls
 python_path = $(middleware_path)/python
 
-.PHONY: middleware oldhls
+.PHONY: middleware
 
-all: middleware hlsmiddleware oldhls
+all: middleware hlsmiddleware
 
 middleware: guard-LOGICALFILE guard-MAPFILE guard-PROJECTNAME ${LOGICALFILE} ${MAPFILE}
 	python3.7 ${python_path}/globalFPGAParser.py --logicalFile=${LOGICALFILE} \
@@ -37,9 +37,6 @@ laniakea_middleware: guard-PROJECTNAME guard-CLUSTERFILE ${CLUSTERFILE}
 
 hlsmiddleware:
 	 $(MAKE) -C $(hls_path)
-
-oldhls:
-	$(MAKE) -C $(old_hls_path)
 
 clean: guard-PROJECTNAME
 	 $(MAKE) -C $(hls_path) clean
