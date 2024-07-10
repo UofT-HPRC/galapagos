@@ -2131,9 +2131,11 @@ def netBridgeConstants(tcl_net):
                 'CONFIG.C_SUBNET_B3 {0}']
 
         # MAC address
-        mac_int_val = int(tcl_net.fpga['mac'].replace(":","") ,16)
-        properties = properties + ['CONFIG.C_MAC {' + str(mac_int_val) + '}']
-
+        mac_int_val = tcl_net.fpga['mac'].split(":")
+        if len(mac_int_val)!= 6:
+            raise ValueError("MAC address needs to be 6 octets")
+        for i in range(6):
+            properties = properties + ['CONFIG.C_MAC_B'+str(i)+' {' + str( int(mac_int_val[i], 16 ) ) + '}']
         tcl_net.setProperties('network/ip_constant_block_inst', properties)
 
     # Instantiate the proper netBridge depending on the comm type

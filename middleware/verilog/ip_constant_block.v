@@ -37,13 +37,12 @@ module ip_constant_block
         parameter [7:0] C_SUBNET_B2 = 0,
         parameter [7:0] C_SUBNET_B3 = 0,
         
-        parameter [47:0] C_MAC = 0
-//        parameter [7:0] C_MAC_B0 = 0,
-//        parameter [7:0] C_MAC_B1 = 0,
-//        parameter [7:0] C_MAC_B2 = 0,
-//        parameter [7:0] C_MAC_B3 = 0,
-//        parameter [7:0] C_MAC_B4 = 0,
-//        parameter [7:0] C_MAC_B5 = 0
+        parameter [7:0] C_MAC_B0 = 0,
+        parameter [7:0] C_MAC_B1 = 0,
+        parameter [7:0] C_MAC_B2 = 0,
+        parameter [7:0] C_MAC_B3 = 0,
+        parameter [7:0] C_MAC_B4 = 0,
+        parameter [7:0] C_MAC_B5 = 0
 
     )
     (
@@ -53,7 +52,8 @@ module ip_constant_block
         output [47:0] mac,
         output [47:0] mac_big
     );
-    
+    wire [47:0] C_MAC;
+    assign C_MAC = {C_MAC_B5,C_MAC_B4,C_MAC_B3,C_MAC_B2,C_MAC_B1,C_MAC_B0};
     assign ip = swapBytesIP( {C_IP_B3,C_IP_B2,C_IP_B1,C_IP_B0} );
     assign gateway = swapBytesIP( {C_GATEWAY_B3,C_GATEWAY_B2,C_GATEWAY_B1,C_GATEWAY_B0} );
     assign subnet = swapBytesIP( {C_SUBNET_B3,C_SUBNET_B2,C_SUBNET_B1,C_SUBNET_B0} );
