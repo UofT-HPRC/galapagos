@@ -13,13 +13,13 @@ void WAN_fast_fetch(
 )
 {
 #pragma HLS INTERFACE ap_ctrl_none port=return
-#pragma HLS INTERFACE axis port=from_dispatch
-#pragma HLS INTERFACE axis port=to_collector
-#pragma HLS INTERFACE axis port=to_slow_fetch
-#pragma HLS INTERFACE axis port=bin1_send
-#pragma HLS INTERFACE axis port=bin2_send
-#pragma HLS INTERFACE axis port=bin3_send
-#pragma HLS INTERFACE axis port=update
+#pragma HLS INTERFACE axis port=from_dispatch register_mode=off
+#pragma HLS INTERFACE axis port=to_collector register_mode=off
+#pragma HLS INTERFACE axis port=to_slow_fetch register_mode=off
+#pragma HLS INTERFACE axis port=bin1_send register_mode=off
+#pragma HLS INTERFACE axis port=bin2_send register_mode=off
+#pragma HLS INTERFACE axis port=bin3_send register_mode=off
+#pragma HLS INTERFACE axis port=update register_mode=off
 
     static ip_fetch_state_t core_state = IPF_STATE_IDLE;//FSM State
     state_out = core_state;

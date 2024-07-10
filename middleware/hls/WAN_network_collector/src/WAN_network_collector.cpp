@@ -43,12 +43,12 @@ void WAN_network_collector(
 {
 	#pragma HLS INTERFACE ap_ctrl_none port=return
 	#pragma HLS DATAFLOW
-	#pragma HLS INTERFACE axis port=lbTxDataIn
-	#pragma HLS INTERFACE axis port=lbTxDataOut
-	#pragma HLS INTERFACE axis port=fetch_in
-	#pragma HLS INTERFACE axis port=bin_1
-	#pragma HLS INTERFACE axis port=bin_2
-	#pragma HLS INTERFACE axis port=bin_3
+	#pragma HLS INTERFACE axis port=lbTxDataIn register_mode=off
+	#pragma HLS INTERFACE axis port=lbTxDataOut register_mode=off
+	#pragma HLS INTERFACE axis port=fetch_in register_mode=off
+	#pragma HLS INTERFACE axis port=bin_1 register_mode=off
+	#pragma HLS INTERFACE axis port=bin_2 register_mode=off
+	#pragma HLS INTERFACE axis port=bin_3 register_mode=off
 
 
     static enum sState {TX_IDLE = 0,FORWARD_NET, FORWARD_1, FORWARD_2, FORWARD_3, NET_Wait, F1_Wait, F2_Wait, F3_Wait} sinkState;

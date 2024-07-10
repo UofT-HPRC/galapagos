@@ -9,10 +9,10 @@ void WAN_slow_fetch(
 )
 {
 #pragma HLS INTERFACE ap_ctrl_none port=return
-#pragma HLS INTERFACE axis port=from_fast_fetch
-#pragma HLS INTERFACE axis port=update
-#pragma HLS INTERFACE axis port=in_network
-#pragma HLS INTERFACE axis port=out_network
+#pragma HLS INTERFACE axis port=from_fast_fetch register_mode=off
+#pragma HLS INTERFACE axis port=update register_mode=off
+#pragma HLS INTERFACE axis port=in_network register_mode=off
+#pragma HLS INTERFACE axis port=out_network register_mode=off
 
 	static ip_fetch_state_t core_state = IPF_STATE_IDLE;//State of writing the packet
 	static bin_info bin[3];//Datastructure to hold info on each bin

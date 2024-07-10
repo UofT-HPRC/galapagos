@@ -23,8 +23,8 @@ void network_throttle(
 
 #pragma HLS INTERFACE ap_ctrl_none port=return
 
-#pragma HLS INTERFACE axis port=data_in
-#pragma HLS INTERFACE axis port=data_out
+#pragma HLS INTERFACE axis port=data_in register_mode=off
+#pragma HLS INTERFACE axis port=data_out register_mode=off
 	network_data_t temp_data;
 	static ap_uint<width_of_penalty> accumulated_penalty = 0;
 	static ap_uint<1> active = 0;

@@ -11,7 +11,7 @@ void sender(
 {
 #pragma HLS INTERFACE ap_ctrl_none port=return
 
-#pragma HLS INTERFACE axis port=pkt_out
+#pragma HLS INTERFACE axis port=pkt_out register_mode=off
   network_data_t temp_data;
   static ap_uint<8> flit_count=0;
   static ap_uint<32> packets_sent_cnt = 0;

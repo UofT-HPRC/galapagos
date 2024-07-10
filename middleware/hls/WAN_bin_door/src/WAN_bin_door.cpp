@@ -38,9 +38,9 @@ void WAN_bin_door(
 {
 	#pragma HLS INTERFACE ap_ctrl_none port=return
 	#pragma HLS DATAFLOW
-  #pragma HLS INTERFACE axis port=bin_in
-  #pragma HLS INTERFACE axis port=lbTxDataOut
-  #pragma HLS INTERFACE axis port=fetch_in
+  #pragma HLS INTERFACE axis port=bin_in register_mode=off
+  #pragma HLS INTERFACE axis port=lbTxDataOut register_mode=off
+  #pragma HLS INTERFACE axis port=fetch_in register_mode=off
 
 
     static enum sState {AWAITING_FETCH = 0,FORWARD} sinkState;

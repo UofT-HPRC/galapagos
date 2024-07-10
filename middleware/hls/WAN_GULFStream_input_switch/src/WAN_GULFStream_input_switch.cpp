@@ -17,8 +17,8 @@ void WAN_GULFStream_input_switch(
     gs_input_switch_t * state_out
 ){
 #pragma HLS INTERFACE ap_ctrl_none port=return
-#pragma HLS INTERFACE axis port=in_network
-#pragma HLS INTERFACE axis port=out
+#pragma HLS INTERFACE axis port=in_network register_mode=off
+#pragma HLS INTERFACE axis port=out register_mode=off
 #pragma HLS INTERFACE ap_none port=out_ip
 #pragma HLS INTERFACE ap_none port=out_arp_status
 

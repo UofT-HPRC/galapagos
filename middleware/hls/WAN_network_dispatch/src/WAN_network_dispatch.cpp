@@ -36,9 +36,9 @@ void WAN_network_dispatch(
                  ) {
     #pragma HLS INTERFACE ap_ctrl_none port=return
     #pragma HLS DATAFLOW
-#pragma HLS INTERFACE axis port=rxGalapagosBridge
-#pragma HLS INTERFACE axis port=lbTxDataOut
-#pragma HLS INTERFACE axis port=fetch_out
+#pragma HLS INTERFACE axis port=rxGalapagosBridge register_mode=off
+#pragma HLS INTERFACE axis port=lbTxDataOut register_mode=off
+#pragma HLS INTERFACE axis port=fetch_out register_mode=off
 
     static enum sState {TX_IDLE = 0,FORWARD_REST} sinkState;
     ap_axis_net packet;

@@ -11,7 +11,7 @@ void receiver(
 {
 #pragma HLS INTERFACE ap_ctrl_none port=return
 
-#pragma HLS INTERFACE axis port=pkt_in
+#pragma HLS INTERFACE axis port=pkt_in register_mode=off
   network_data_t temp_data;
   static ap_uint<32> good_reg = 0;
   static ap_uint<32> total_reg = 0;

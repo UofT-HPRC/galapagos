@@ -19,8 +19,8 @@ void WAN_bridge(
 
 #pragma HLS DATAFLOW
 #pragma HLS INTERFACE ap_ctrl_none port=return
-#pragma HLS INTERFACE axis port=g2N_input
-#pragma HLS INTERFACE axis port=g2N_output
+#pragma HLS INTERFACE axis port=g2N_input register_mode=off
+#pragma HLS INTERFACE axis port=g2N_output register_mode=off
 
 	static ap_axis_net old_packet;
 	galapagos_packet packetin;

@@ -97,11 +97,11 @@ void network_bridge_udp_100g(
 #pragma HLS INTERFACE ap_ctrl_none port = return
 #pragma HLS DATAFLOW
 
-#pragma HLS INTERFACE AXIS port = lbRxDataIn
-#pragma HLS INTERFACE AXIS port = lbTxDataOut
-#pragma HLS INTERFACE AXIS port = rxGalapagosBridge
-#pragma HLS INTERFACE AXIS port = txGalapagosBridge
-#pragma HLS INTERFACE bram port = ip_table
+#pragma HLS INTERFACE AXIS port = lbRxDataIn register_mode=off
+#pragma HLS INTERFACE AXIS port = lbTxDataOut register_mode=off
+#pragma HLS INTERFACE AXIS port = rxGalapagosBridge register_mode=off
+#pragma HLS INTERFACE AXIS port = txGalapagosBridge register_mode=off
+#pragma HLS INTERFACE bram port = ip_table register_mode=off
 
     rxPath(lbRxDataIn, txGalapagosBridge);
     txPath(rxGalapagosBridge, lbTxDataOut, ip_table);
