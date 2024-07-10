@@ -24,7 +24,7 @@ void router(
 #pragma HLS INTERFACE axis port = stream_out_switch register_mode=off
 #pragma HLS INTERFACE axis port = stream_out_network register_mode=off
 #pragma HLS INTERFACE axis port = ctrl_out_switch register_mode=off
-#pragma HLS INTERFACE bram port = network_table register_mode=off
+#pragma HLS INTERFACE bram port = network_table
 
     galapagos_packet packetIn;
     galapagos_packet packetOut;

@@ -13,7 +13,7 @@ set_property -name "compxlib.questa_compiled_library_dir" -value "$project_path/
 set_property -name "compxlib.riviera_compiled_library_dir" -value "$project_path/${project_name}.cache/compile_simlib/riviera" -objects $obj
 set_property -name "compxlib.timesim" -value "1" -objects $obj
 set_property -name "compxlib.vcs_compiled_library_dir" -value "$project_path/${project_name}.cache/compile_simlib/vcs" -objects $obj
-set_property -name "compxlib.xsim_compiled_library_dir" -value "" -objects $obj
+#set_property -name "compxlib.xsim_compiled_library_dir" -value "" -objects $obj
 set_property -name "corecontainer.enable" -value "0" -objects $obj
 set_property -name "default_lib" -value "xil_defaultlib" -objects $obj
 set_property -name "dsa.num_compute_units" -value "60" -objects $obj
@@ -33,10 +33,10 @@ set_property -name "source_mgmt_mode" -value "All" -objects $obj
 set_property -name "target_language" -value "Verilog" -objects $obj
 set_property -name "target_simulator" -value "XSim" -objects $obj
 set_property -name "xpm_libraries" -value "XPM_CDC XPM_FIFO XPM_MEMORY" -objects $obj
-set_property -name "xsim.array_display_limit" -value "1024" -objects $obj
-set_property -name "xsim.radix" -value "hex" -objects $obj
-set_property -name "xsim.time_unit" -value "ns" -objects $obj
-set_property -name "xsim.trace_limit" -value "65536" -objects $obj
+#set_property -name "xsim.array_display_limit" -value "1024" -objects $obj
+#set_property -name "xsim.radix" -value "hex" -objects $obj
+#set_property -name "xsim.time_unit" -value "ns" -objects $obj
+#set_property -name "xsim.trace_limit" -value "65536" -objects $obj
 
 return 0
 
