@@ -244,9 +244,24 @@ class cluster(abstractDict):
                 #clockregion specifies that clock region setting for each of the slices
                 if node_inst['board'] == 'u200':
                     node_inst['slr_mappings'] = \
-                        {'SLR2': { 'kernel' : [], 'distance': 0, 'name': 'pb_slr2','clockregion': 'CLOCKREGION_X0Y10:CLOCKREGION_X5Y14'},
-                         'SLR1': { 'kernel' : [], 'distance': 2, 'name': 'pb_slr1','clockregion': 'CLOCKREGION_X0Y5:CLOCKREGION_X5Y9' },
-                         'SLR0': {'kernel': [], 'distance': 4, 'name': 'pb_slr0','clockregion': 'CLOCKREGION_X0Y0:CLOCKREGION_X5Y4'}
+                        {'SLR2': { 'kernel' : [], 'distance': 1, 'name': 'pb_slr2','clockregion': 'CLOCKREGION_X0Y10:CLOCKREGION_X5Y14'},
+                         'SLR1': { 'kernel' : [], 'distance': 3, 'name': 'pb_slr1','clockregion': 'CLOCKREGION_X0Y5:CLOCKREGION_X5Y9' },
+                         'SLR0': {'kernel': [], 'distance': 5, 'name': 'pb_slr0','clockregion': 'CLOCKREGION_X0Y0:CLOCKREGION_X5Y4'}
+                    }
+                    node_inst['main_slr'] = 'pb_slr2'
+                elif node_inst['board'] == 'u250':
+                    node_inst['slr_mappings'] = \
+                        {'SLR2': {'kernel': [], 'distance': 1, 'name': 'pb_slr2','clockregion': 'CLOCKREGION_X0Y10:CLOCKREGION_X5Y14'},
+                         'SLR1': {'kernel': [], 'distance': 3, 'name': 'pb_slr1','clockregion': 'CLOCKREGION_X0Y5:CLOCKREGION_X5Y9' },
+                         'SLR3': {'kernel': [], 'distance': 3, 'name': 'pb_slr3','clockregion': 'CLOCKREGION_X0Y5:CLOCKREGION_X5Y9'},
+                         'SLR0': {'kernel': [], 'distance': 5, 'name': 'pb_slr0','clockregion': 'CLOCKREGION_X0Y0:CLOCKREGION_X5Y4'}
+                    }
+                    node_inst['main_slr'] = 'pb_slr2'
+                elif node_inst['board'] == 'u280':
+                    node_inst['slr_mappings'] = \
+                        {'SLR2': { 'kernel' : [], 'distance': 1, 'name': 'pb_slr2','clockregion': 'CLOCKREGION_X0Y10:CLOCKREGION_X5Y14'},
+                         'SLR1': { 'kernel' : [], 'distance': 3, 'name': 'pb_slr1','clockregion': 'CLOCKREGION_X0Y5:CLOCKREGION_X5Y9' },
+                         'SLR0': {'kernel': [], 'distance': 5, 'name': 'pb_slr0','clockregion': 'CLOCKREGION_X0Y0:CLOCKREGION_X5Y4'}
                     }
                     node_inst['main_slr'] = 'pb_slr2'
             else:
@@ -281,7 +296,7 @@ class cluster(abstractDict):
                         if int(kern['num']) == int(kmap_node):
                             # Instead of having numbers in node_inst['kernel'], have
                             # pointers to our properly parsed kernel objects
-                            kern['distance']=0
+                            kern['distance']=1
                             node_inst['kernel_map'][kern['num']] = len(node_inst['kernel'])
                             node_inst['kernel'].append(kern)
                             # At the same time, append mac and ip information to each

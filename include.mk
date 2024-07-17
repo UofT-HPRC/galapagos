@@ -16,26 +16,13 @@ ifndef GALAPAGOS_HLS_VERSION
 $(error GALAPAGOS_HLS_VERSION is not set)
 endif
 
-ifndef GALAPAGOS_PART
-$(error GALAPAGOS_PART is not set)
-endif
-
 ifndef GALAPAGOS_VITIS_PATH
 $(error GALAPAGOS_VITIS_PATH is not set)
-endif
-
-ifndef GALAPAGOS_BOARD_NAME
-$(error GALAPAGOS_BOARD_NAME is not set)
 endif
 
 ifndef GALAPAGOS_HLS_PATH
 $(error GALAPAGOS_HLS_PATH is not set)
 endif
-
-ifndef GALAPAGOS_PART_FAMILY
-$(error GALAPAGOS_PART_FAMILY is not set)
-endif
-
 
 INCLUDE_UTIL=-I $(GALAPAGOS_PATH)/util/Catch2/single_include/catch2 -I$(GALAPAGOS_PATH)/util/spdlog/include
 
