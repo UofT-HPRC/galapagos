@@ -246,6 +246,21 @@ class cluster(abstractDict):
                          'SLR0': {'kernel': [], 'distance': 5, 'name': 'pb_slr0','clockregion': 'CLOCKREGION_X0Y0:CLOCKREGION_X5Y4'}
                     }
                     node_inst['main_slr'] = 'pb_slr2'
+                elif node_inst['board'] == 'u250':
+                    node_inst['slr_mappings'] = \
+                        {'SLR2': {'kernel': [], 'distance': 1, 'name': 'pb_slr2','clockregion': 'CLOCKREGION_X0Y10:CLOCKREGION_X5Y14'},
+                         'SLR1': {'kernel': [], 'distance': 3, 'name': 'pb_slr1','clockregion': 'CLOCKREGION_X0Y5:CLOCKREGION_X5Y9' },
+                         'SLR3': {'kernel': [], 'distance': 3, 'name': 'pb_slr3','clockregion': 'CLOCKREGION_X0Y5:CLOCKREGION_X5Y9'},
+                         'SLR0': {'kernel': [], 'distance': 5, 'name': 'pb_slr0','clockregion': 'CLOCKREGION_X0Y0:CLOCKREGION_X5Y4'}
+                    }
+                    node_inst['main_slr'] = 'pb_slr2'
+                elif node_inst['board'] == 'u280':
+                    node_inst['slr_mappings'] = \
+                        {'SLR2': { 'kernel' : [], 'distance': 1, 'name': 'pb_slr2','clockregion': 'CLOCKREGION_X0Y10:CLOCKREGION_X5Y14'},
+                         'SLR1': { 'kernel' : [], 'distance': 3, 'name': 'pb_slr1','clockregion': 'CLOCKREGION_X0Y5:CLOCKREGION_X5Y9' },
+                         'SLR0': {'kernel': [], 'distance': 5, 'name': 'pb_slr0','clockregion': 'CLOCKREGION_X0Y0:CLOCKREGION_X5Y4'}
+                    }
+                    node_inst['main_slr'] = 'pb_slr2'
             else:
                 node_inst['multi_slr'] = False
             #
