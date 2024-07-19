@@ -38,7 +38,6 @@ parser = argparse.ArgumentParser(description='Galapagos Menu')
 parser.add_argument("-d", "--dir", help="absolute path where galapagos directory is located", default='')
 parser.add_argument("-vd", "--vit_dir", help="absolute path of vitis", default='')
 parser.add_argument("-hd", "--hls_dir", help="absolute path of vitis_hls", default='')
-parser.add_argument("-ohd", "--viv_hls_dir", help="absolute path of vivado_hls", default='')
 
 args = parser.parse_args()
 
@@ -61,11 +60,6 @@ hls_path_q = {
           'name': 'hls_dir',
           'message': 'What is the directory vitis_hls is located? (default=/mnt/shares/tools/Xilinx/Vitis)',
           }
-viv_hls_path_q = {
-          'type': 'input',
-          'name': 'viv_hls_dir',
-          'message': 'What is the directory vivado_hls is located? (default=/mnt/shares/tools/Xilinx/Vivado)',
-          }
 
 
 
@@ -86,12 +80,6 @@ if(args.hls_dir == ''):
     hls_dir = ''
 else:
     hls_dir = args.hls_dir
-if(args.viv_hls_dir == ''):
-    questions.append(viv_hls_path_q)
-    viv_hls_dir = ''
-else:
-    viv_hls_dir = args.viv_hls_dir
-
 vitis_ver = '2022.2'
 
 hls_ver = '2022.2'
@@ -109,8 +97,6 @@ if answers['vitis_dir'] == '':
 if answers['hls_dir'] == '':
     answers['hls_dir'] = '/mnt/shares/tools/Xilinx/Vitis'
 
-if answers['viv_hls_dir'] == '':
-    answers['viv_hls_dir'] = '/mnt/shares/tools/Xilinx/Vivado'
 
 
 print('ENVIRONMENT VARIABLES SET:')
