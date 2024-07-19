@@ -24,6 +24,7 @@ ifndef GALAPAGOS_HLS_PATH
 $(error GALAPAGOS_HLS_PATH is not set)
 endif
 
+
 INCLUDE_UTIL=-I $(GALAPAGOS_PATH)/util/Catch2/single_include/catch2 -I$(GALAPAGOS_PATH)/util/spdlog/include
 
 # GALAPAGOS_BOARD is not asserted because it's optional to have a board file

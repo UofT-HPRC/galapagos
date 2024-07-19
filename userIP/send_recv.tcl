@@ -17,6 +17,8 @@ addip gpio run_penalty
 addip network_throttle network_throttle
 addip axis_data_fifo in_fifo
 addip axis_data_fifo out_fifo
+addip axis_register_slice inter_hls_reg
+addip axis_register_slice inter_hls_wan_reg
 
 addip sender sender_wan
 addip gpio dest_id_wan
@@ -53,39 +55,41 @@ connect_bd_intf_net -boundary_type upper [get_bd_intf_pins user_interconnect/M05
 connect_bd_intf_net -boundary_type upper [get_bd_intf_pins user_interconnect/M06_AXI] [get_bd_intf_pins run_penalty_wan/S_AXI]
 connect_bd_intf_net -boundary_type upper [get_bd_intf_pins user_interconnect/M07_AXI] [get_bd_intf_pins user_cnt_wan/S_AXI]
 
-connect_bd_intf_net [get_bd_intf_pins sender/pkt_out_V] [get_bd_intf_pins network_throttle/data_in_V]
-connect_bd_intf_net [get_bd_intf_ports in_r] [get_bd_intf_pins in_fifo/S_AXIS]
-connect_bd_intf_net [get_bd_intf_pins in_fifo/M_AXIS] [get_bd_intf_pins receiver/pkt_in_V]
-connect_bd_intf_net [get_bd_intf_pins network_throttle/data_out_V] [get_bd_intf_pins out_fifo/S_AXIS]
-connect_bd_intf_net [get_bd_intf_ports out_r] [get_bd_intf_pins out_fifo/M_AXIS]
+connect_bd_intf_net [get_bd_intf_pins sender/pkt_out] [get_bd_intf_pins inter_hls_reg/S_AXIS]
+connect_bd_intf_net [get_bd_intf_pins inter_hls_reg/M_AXIS] [get_bd_intf_pins network_throttle/data_in]
+connect_bd_intf_net [get_bd_intf_ports in_data] [get_bd_intf_pins in_fifo/S_AXIS]
+connect_bd_intf_net [get_bd_intf_pins in_fifo/M_AXIS] [get_bd_intf_pins receiver/pkt_in]
+connect_bd_intf_net [get_bd_intf_pins network_throttle/data_out] [get_bd_intf_pins out_fifo/S_AXIS]
+connect_bd_intf_net [get_bd_intf_ports out_data] [get_bd_intf_pins out_fifo/M_AXIS]
 
-connect_bd_intf_net [get_bd_intf_pins sender_wan/pkt_out_V] [get_bd_intf_pins network_throttle_wan/data_in_V]
-connect_bd_intf_net [get_bd_intf_pins network_throttle_wan/data_out_V] [get_bd_intf_pins out_fifo_wan/S_AXIS]
+connect_bd_intf_net [get_bd_intf_pins sender_wan/pkt_out] [get_bd_intf_pins inter_hls_wan_reg/S_AXIS]
+connect_bd_intf_net [get_bd_intf_pins inter_hls_wan_reg/M_AXIS] [get_bd_intf_pins network_throttle_wan/data_in]
+connect_bd_intf_net [get_bd_intf_pins network_throttle_wan/data_out] [get_bd_intf_pins out_fifo_wan/S_AXIS]
 connect_bd_intf_net [get_bd_intf_ports laniakea_wan] [get_bd_intf_pins out_fifo_wan/M_AXIS]
 
 
 #connect Ports
 
-connect_bd_net [get_bd_pins dest_id/gpio_io_o] [get_bd_pins sender/dest_prt_V]
-connect_bd_net [get_bd_pins dest_id/gpio2_io_o] [get_bd_pins sender/id_prt_V]
-connect_bd_net [get_bd_pins user_cnt/gpio_io_o] [get_bd_pins sender/user_prt_V]
-connect_bd_net [get_bd_pins user_cnt/gpio2_io_i] [get_bd_pins sender/pkt_sent_V]
+connect_bd_net [get_bd_pins dest_id/gpio_io_o] [get_bd_pins sender/dest_prt]
+connect_bd_net [get_bd_pins dest_id/gpio2_io_o] [get_bd_pins sender/id_prt]
+connect_bd_net [get_bd_pins user_cnt/gpio_io_o] [get_bd_pins sender/user_prt]
+connect_bd_net [get_bd_pins user_cnt/gpio2_io_i] [get_bd_pins sender/pkt_sent]
 
-connect_bd_net [get_bd_pins dest_id_wan/gpio_io_o] [get_bd_pins sender_wan/dest_prt_V]
-connect_bd_net [get_bd_pins dest_id_wan/gpio2_io_o] [get_bd_pins sender_wan/id_prt_V]
-connect_bd_net [get_bd_pins user_cnt_wan/gpio_io_o] [get_bd_pins sender_wan/user_prt_V]
-connect_bd_net [get_bd_pins user_cnt_wan/gpio2_io_i] [get_bd_pins sender_wan/pkt_sent_V]
+connect_bd_net [get_bd_pins dest_id_wan/gpio_io_o] [get_bd_pins sender_wan/dest_prt]
+connect_bd_net [get_bd_pins dest_id_wan/gpio2_io_o] [get_bd_pins sender_wan/id_prt]
+connect_bd_net [get_bd_pins user_cnt_wan/gpio_io_o] [get_bd_pins sender_wan/user_prt]
+connect_bd_net [get_bd_pins user_cnt_wan/gpio2_io_i] [get_bd_pins sender_wan/pkt_sent]
 
-connect_bd_net [get_bd_pins fof_fob/gpio_io_i] [get_bd_pins receiver/fof_V]
-connect_bd_net [get_bd_pins fof_fob/gpio2_io_i] [get_bd_pins receiver/fob_V]
-connect_bd_net [get_bd_pins good_total/gpio_io_i] [get_bd_pins receiver/good_received_V]
-connect_bd_net [get_bd_pins good_total/gpio2_io_i] [get_bd_pins receiver/total_received_V]
+connect_bd_net [get_bd_pins fof_fob/gpio_io_i] [get_bd_pins receiver/fof]
+connect_bd_net [get_bd_pins fof_fob/gpio2_io_i] [get_bd_pins receiver/fob]
+connect_bd_net [get_bd_pins good_total/gpio_io_i] [get_bd_pins receiver/good_received]
+connect_bd_net [get_bd_pins good_total/gpio2_io_i] [get_bd_pins receiver/total_received]
 
-connect_bd_net [get_bd_pins run_penalty/gpio_io_o] [get_bd_pins sender/run_V]
-connect_bd_net [get_bd_pins run_penalty/gpio2_io_o] [get_bd_pins network_throttle/penalty_V]
+connect_bd_net [get_bd_pins run_penalty/gpio_io_o] [get_bd_pins sender/run]
+connect_bd_net [get_bd_pins run_penalty/gpio2_io_o] [get_bd_pins network_throttle/penalty]
 
-connect_bd_net [get_bd_pins run_penalty_wan/gpio_io_o] [get_bd_pins sender_wan/run_V]
-connect_bd_net [get_bd_pins run_penalty_wan/gpio2_io_o] [get_bd_pins network_throttle_wan/penalty_V]
+connect_bd_net [get_bd_pins run_penalty_wan/gpio_io_o] [get_bd_pins sender_wan/run]
+connect_bd_net [get_bd_pins run_penalty_wan/gpio2_io_o] [get_bd_pins network_throttle_wan/penalty]
 
 connect_bd_net [get_bd_ports ap_clk] [get_bd_pins user_interconnect/ACLK]
 connect_bd_net [get_bd_ports ap_clk] [get_bd_pins user_interconnect/S00_ACLK]
@@ -97,22 +101,24 @@ connect_bd_net [get_bd_ports ap_clk] [get_bd_pins user_interconnect/M04_ACLK]
 connect_bd_net [get_bd_ports ap_clk] [get_bd_pins user_interconnect/M05_ACLK]
 connect_bd_net [get_bd_ports ap_clk] [get_bd_pins user_interconnect/M06_ACLK]
 connect_bd_net [get_bd_ports ap_clk] [get_bd_pins user_interconnect/M07_ACLK]
-connect_bd_net [get_bd_ports ap_clk] [get_bd_pins receiver/aclk]
+connect_bd_net [get_bd_ports ap_clk] [get_bd_pins receiver/ap_clk]
 connect_bd_net [get_bd_ports ap_clk] [get_bd_pins dest_id/s_axi_aclk]
 connect_bd_net [get_bd_ports ap_clk] [get_bd_pins user_cnt/s_axi_aclk]
 connect_bd_net [get_bd_ports ap_clk] [get_bd_pins run_penalty/s_axi_aclk]
 connect_bd_net [get_bd_ports ap_clk] [get_bd_pins fof_fob/s_axi_aclk]
 connect_bd_net [get_bd_ports ap_clk] [get_bd_pins good_total/s_axi_aclk]
-connect_bd_net [get_bd_ports ap_clk] [get_bd_pins sender/aclk]
-connect_bd_net [get_bd_ports ap_clk] [get_bd_pins network_throttle/aclk]
+connect_bd_net [get_bd_ports ap_clk] [get_bd_pins sender/ap_clk]
+connect_bd_net [get_bd_ports ap_clk] [get_bd_pins network_throttle/ap_clk]
 connect_bd_net [get_bd_ports ap_clk] [get_bd_pins out_fifo/s_axis_aclk]
 connect_bd_net [get_bd_ports ap_clk] [get_bd_pins in_fifo/s_axis_aclk]
+connect_bd_net [get_bd_ports ap_clk] [get_bd_pins inter_hls_reg/aclk]
+connect_bd_net [get_bd_ports ap_clk] [get_bd_pins inter_hls_wan_reg/aclk]
 
 connect_bd_net [get_bd_ports ap_clk] [get_bd_pins dest_id_wan/s_axi_aclk]
 connect_bd_net [get_bd_ports ap_clk] [get_bd_pins user_cnt_wan/s_axi_aclk]
 connect_bd_net [get_bd_ports ap_clk] [get_bd_pins run_penalty_wan/s_axi_aclk]
-connect_bd_net [get_bd_ports ap_clk] [get_bd_pins sender_wan/aclk]
-connect_bd_net [get_bd_ports ap_clk] [get_bd_pins network_throttle_wan/aclk]
+connect_bd_net [get_bd_ports ap_clk] [get_bd_pins sender_wan/ap_clk]
+connect_bd_net [get_bd_ports ap_clk] [get_bd_pins network_throttle_wan/ap_clk]
 connect_bd_net [get_bd_ports ap_clk] [get_bd_pins out_fifo_wan/s_axis_aclk]
 
 connect_bd_net [get_bd_ports ap_rst_n] [get_bd_pins user_interconnect/ARESETN]
@@ -131,21 +137,24 @@ connect_bd_net [get_bd_ports ap_rst_n] [get_bd_pins in_fifo/s_axis_aresetn]
 connect_bd_net [get_bd_ports ap_rst_n] [get_bd_pins dest_id/s_axi_aresetn]
 connect_bd_net [get_bd_ports ap_rst_n] [get_bd_pins run_penalty/s_axi_aresetn]
 connect_bd_net [get_bd_ports ap_rst_n] [get_bd_pins user_cnt/s_axi_aresetn]
-connect_bd_net [get_bd_ports ap_rst_n] [get_bd_pins receiver/aresetn]
-connect_bd_net [get_bd_ports ap_rst_n] [get_bd_pins sender/aresetn]
-connect_bd_net [get_bd_ports ap_rst_n] [get_bd_pins network_throttle/aresetn]
+connect_bd_net [get_bd_ports ap_rst_n] [get_bd_pins receiver/ap_rst_n]
+connect_bd_net [get_bd_ports ap_rst_n] [get_bd_pins sender/ap_rst_n]
+connect_bd_net [get_bd_ports ap_rst_n] [get_bd_pins network_throttle/ap_rst_n]
 connect_bd_net [get_bd_ports ap_rst_n] [get_bd_pins out_fifo/s_axis_aresetn]
+connect_bd_net [get_bd_ports ap_rst_n] [get_bd_pins inter_hls_reg/aresetn]
+connect_bd_net [get_bd_ports ap_rst_n] [get_bd_pins inter_hls_wan_reg/aresetn]
+
 
 connect_bd_net [get_bd_ports ap_rst_n] [get_bd_pins dest_id_wan/s_axi_aresetn]
 connect_bd_net [get_bd_ports ap_rst_n] [get_bd_pins user_cnt_wan/s_axi_aresetn]
 connect_bd_net [get_bd_ports ap_rst_n] [get_bd_pins run_penalty_wan/s_axi_aresetn]
-connect_bd_net [get_bd_ports ap_rst_n] [get_bd_pins sender_wan/aresetn]
-connect_bd_net [get_bd_ports ap_rst_n] [get_bd_pins network_throttle_wan/aresetn]
+connect_bd_net [get_bd_ports ap_rst_n] [get_bd_pins sender_wan/ap_rst_n]
+connect_bd_net [get_bd_ports ap_rst_n] [get_bd_pins network_throttle_wan/ap_rst_n]
 connect_bd_net [get_bd_ports ap_rst_n] [get_bd_pins out_fifo_wan/s_axis_aresetn]
 
 assign_bd_address
 
-set kernel_number_insert 00
+set kernel_number_insert 80
 
 set_property offset 0xA${kernel_number_insert}00000 [get_bd_addr_segs {AXI_CONTROL/SEG_run_penalty_Reg}]
 set_property offset 0xA${kernel_number_insert}10000 [get_bd_addr_segs {AXI_CONTROL/SEG_dest_id_Reg}]

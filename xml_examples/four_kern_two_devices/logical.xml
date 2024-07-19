@@ -3,7 +3,7 @@
     <clusterNumber> 1 </clusterNumber>
     <userIpPath>/home/savi/Desktop/imperial/imperial_ip_repo2</userIpPath>
     <kernel> test_core2 
-        <type> tcl </type>
+        <type> open </type>
         <num> 3 </num>
         <rep> 2 </rep>
         <control> False </control>
@@ -26,7 +26,7 @@
         <kernel> test_core 
         <num> 1 </num>
         <rep> 2 </rep>
-        <type> tcl </type>
+        <type> open </type>
         <control> False </control>
         <control_range> 4k </control_range>
         <clk> ap_clk </clk>

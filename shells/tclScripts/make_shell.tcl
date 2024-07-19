@@ -243,41 +243,42 @@ set_property "transport_path_delay" "0" $obj
 set_property "xelab.nosort" "1" $obj
 set_property "xelab.unifast" "" $obj
 
-# Create 'synth_1' run (if not found)
-if {[string equal [get_runs -quiet synth_1] ""]} {
-  #create_run -name synth_1 -part xcku115-flva1517-2-e -flow {Vivado Synthesis 2016} -strategy "Vivado Synthesis Defaults" -constrset constrs_1
-  create_run -name synth_1 -part $top_part -flow {Vivado Synthesis 2016} -strategy "Vivado Synthesis Defaults" -constrset constrs_1
-} else {
-  set_property strategy "Vivado Synthesis Defaults" [get_runs synth_1]
-  set_property flow "Vivado Synthesis 2016" [get_runs synth_1]
-}
-set obj [get_runs synth_1]
-set_property "part" $top_part $obj
 
-# Create 'impl_1' run (if not found)
-if {[string equal [get_runs -quiet impl_1] ""]} {
-  #create_run -name impl_1 -part xcku115-flva1517-2-e -flow {Vivado Implementation 2016} -strategy "Vivado Implementation Defaults" -constrset constrs_1 -parent_run synth_1
-  create_run -name impl_1 -part $top_part -flow {Vivado Implementation 2016} -strategy "Vivado Implementation Defaults" -constrset constrs_1 -parent_run synth_1
-} else {
-  set_property strategy "Vivado Implementation Defaults" [get_runs impl_1]
-  set_property flow "Vivado Implementation 2016" [get_runs impl_1]
-}
-set obj [get_runs impl_1]
-set_property "part" $top_part $obj
-set_property "steps.write_bitstream.args.readback_file" "0" $obj
-set_property "steps.write_bitstream.args.verbose" "0" $obj
-
-if { [file exists $shell_path/tclScripts/shell_epilogue.tcl] } {
-  set ret_val [source $shell_path/tclScripts/shell_epilogue.tcl]
-  if { $ret_val != 0 } {
-    puts "Error in shell_epilogue script"
-    return $ret_val
-  }
-}
 save_bd_design
 puts "INFO: Project created:$project_name"
 
 if { $start_synth != 0 } {
+    # Create 'synth_1' run (if not found)
+    if {[string equal [get_runs -quiet synth_1] ""]} {
+      #create_run -name synth_1 -part xcku115-flva1517-2-e -flow {Vivado Synthesis 2016} -strategy "Vivado Synthesis Defaults" -constrset constrs_1
+      create_run -name synth_1 -part $top_part -flow {Vivado Synthesis 2016} -strategy "Vivado Synthesis Defaults" -constrset constrs_1
+    } else {
+      set_property strategy "Vivado Synthesis Defaults" [get_runs synth_1]
+      set_property flow "Vivado Synthesis 2016" [get_runs synth_1]
+    }
+    set obj [get_runs synth_1]
+    set_property "part" $top_part $obj
+
+    # Create 'impl_1' run (if not found)
+    if {[string equal [get_runs -quiet impl_1] ""]} {
+      #create_run -name impl_1 -part xcku115-flva1517-2-e -flow {Vivado Implementation 2016} -strategy "Vivado Implementation Defaults" -constrset constrs_1 -parent_run synth_1
+      create_run -name impl_1 -part $top_part -flow {Vivado Implementation 2016} -strategy "Vivado Implementation Defaults" -constrset constrs_1 -parent_run synth_1
+    } else {
+      set_property strategy "Vivado Implementation Defaults" [get_runs impl_1]
+      set_property flow "Vivado Implementation 2016" [get_runs impl_1]
+    }
+    set obj [get_runs impl_1]
+    set_property "part" $top_part $obj
+    set_property "steps.write_bitstream.args.readback_file" "0" $obj
+    set_property "steps.write_bitstream.args.verbose" "0" $obj
+
+    if { [file exists $shell_path/tclScripts/shell_epilogue.tcl] } {
+      set ret_val [source $shell_path/tclScripts/shell_epilogue.tcl]
+      if { $ret_val != 0 } {
+        puts "Error in shell_epilogue script"
+        return $ret_val
+      }
+    }
     update_compile_order -fileset sources_1
     generate_target all [get_files  $project_path/$project_name.srcs/sources_1/bd/shell/shell.bd]
     export_ip_user_files -of_objects [get_files $project_path/$project_name.srcs/sources_1/bd/shell/shell.bd] -no_script -sync -force -quiet

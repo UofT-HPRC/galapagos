@@ -5,6 +5,7 @@
 #include "ap_int.h"
 #define INTERFACE_100G
 #include "wan_packet_size.h"
+#include "ap_axi_sdata.h"
 
 #define WAN_SRC_PORT            9001
 #define FETCH_DEST_ADDRESS      9001

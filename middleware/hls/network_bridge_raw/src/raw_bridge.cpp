@@ -156,10 +156,10 @@ void raw_bridge(
 {
 #pragma HLS DATAFLOW
 
-#pragma HLS INTERFACE mode=axis port=to_app
-#pragma HLS INTERFACE mode=axis port=from_raw
-#pragma HLS INTERFACE mode=axis port=from_app
-#pragma HLS INTERFACE mode=axis port=to_raw
+#pragma HLS INTERFACE mode=axis port=to_app register_mode=off
+#pragma HLS INTERFACE mode=axis port=from_raw register_mode=off
+#pragma HLS INTERFACE mode=axis port=from_app register_mode=off
+#pragma HLS INTERFACE mode=axis port=to_raw register_mode=off
 /*
 #pragma HLS resource core = AXI4Stream variable = to_app
 #pragma HLS resource core = AXI4Stream variable = from_raw
