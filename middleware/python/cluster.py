@@ -229,9 +229,6 @@ class cluster(abstractDict):
             node_inst = node(**node_dict)
             if ((node_inst['type']=='hw') and ('part' not in node_inst)):
                 node_inst['part']=board_pairs[node_inst['board']]
-
-            # I'm fairly sure these next few lines of code are just converting
-            # data formats
             node_inst['kernel'] = []
             node_inst['kernel_map'] = {}
             node_inst['dns_ip']=dns_ip_address
@@ -244,9 +241,9 @@ class cluster(abstractDict):
                 #clockregion specifies that clock region setting for each of the slices
                 if node_inst['board'] == 'u200':
                     node_inst['slr_mappings'] = \
-                        {'SLR2': { 'kernel' : [], 'distance': 0, 'name': 'pb_slr2','clockregion': 'CLOCKREGION_X0Y10:CLOCKREGION_X5Y14'},
-                         'SLR1': { 'kernel' : [], 'distance': 2, 'name': 'pb_slr1','clockregion': 'CLOCKREGION_X0Y5:CLOCKREGION_X5Y9' },
-                         'SLR0': {'kernel': [], 'distance': 4, 'name': 'pb_slr0','clockregion': 'CLOCKREGION_X0Y0:CLOCKREGION_X5Y4'}
+                        {'SLR2': { 'kernel' : [], 'distance': 1, 'name': 'pb_slr2','clockregion': 'CLOCKREGION_X0Y10:CLOCKREGION_X5Y14'},
+                         'SLR1': { 'kernel' : [], 'distance': 3, 'name': 'pb_slr1','clockregion': 'CLOCKREGION_X0Y5:CLOCKREGION_X5Y9' },
+                         'SLR0': {'kernel': [], 'distance': 5, 'name': 'pb_slr0','clockregion': 'CLOCKREGION_X0Y0:CLOCKREGION_X5Y4'}
                     }
                     node_inst['main_slr'] = 'pb_slr2'
             else:
@@ -281,7 +278,7 @@ class cluster(abstractDict):
                         if int(kern['num']) == int(kmap_node):
                             # Instead of having numbers in node_inst['kernel'], have
                             # pointers to our properly parsed kernel objects
-                            kern['distance']=0
+                            kern['distance']=1
                             node_inst['kernel_map'][kern['num']] = len(node_inst['kernel'])
                             node_inst['kernel'].append(kern)
                             # At the same time, append mac and ip information to each
@@ -308,13 +305,16 @@ class cluster(abstractDict):
     def processMemoryBus(self):
         for i in range(len(self.nodes)):
             memories = []
+            has_control = False
             for j in range(len(self.nodes[i]['kernel'])):
                 if self.nodes[i]['kernel'][j].data['control']:
                     memories.append([j,self.nodes[i]['kernel'][j].data['control_range']])
+                    has_control = True
             ext_memories = memory_sort_and_validate(memories)
             for mem in ext_memories:
                 self.nodes[i]['kernel'][mem[0]].data['control_size'] = mem[1]
                 self.nodes[i]['kernel'][mem[0]].data['control_address'] = mem[2]
+            self.nodes[i].has_control = has_control
 
 
 

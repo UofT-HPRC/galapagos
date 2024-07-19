@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cluster>
     <node>
-        <board> u200 </board>
+        <board> sidewinder </board>
         <comm> udp </comm>
         <type> hw </type>
         <kernel> 
-          <num> 1 </num>
-          <slr> SLR1 </slr>
+          1
         </kernel>
         <autorun> False </autorun>
         <mac> 0c:c4:7a:88:bd:83  </mac>
