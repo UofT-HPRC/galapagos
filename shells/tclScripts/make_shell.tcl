@@ -113,7 +113,7 @@ set obj [get_filesets sources_1]
 # set_property ip_repo_paths {hlsIP_adm-8k5 shells/shell_ips userIP} [current_project]
 set_property ip_repo_paths [list \
   $top_path/hlsBuild/$top_board \
-  $top_path/oldhlsBuild/$top_board \
+  $top_path/gulfstream/$top_board \
   $top_shells/shell_ips \
   userIP] [current_project]
 
