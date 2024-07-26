@@ -56,17 +56,18 @@ class lancluster(abstractDict):
             map_file (string): Filename of XML mapping file
         """
         self.name = name
-
+        self.list_of_clusters = []
         if(mode=='file'):
             topClus = self.getDict(cluster_file)['superCluster']
         else:
             topClus = cluster_file
         for cluster_inst in topClus['cluster']:
-            createGW(cluster_inst['logicalFile'],cluster_inst['mapFile'],path)
+            createGW(cluster_inst['apiFile'],cluster_inst['logicalFile'],cluster_inst['mapFile'],path)
+            self.list_of_clusters.append([cluster_inst['logicalFile'],cluster_inst['mapFile'],name+"_"+str(cluster_inst['num']),True])
         return
-def createGW(logical,map,path):
+def createGW(logical,map,api,path):
     '''
-    creates
+    creates our gateway
     '''
     print(logical)
     print(map)

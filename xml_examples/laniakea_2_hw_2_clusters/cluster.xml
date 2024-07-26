@@ -1,13 +1,15 @@
 <superCluster>
     <cluster>
         <num> 1 </num>
-        <logicalFile> /home/savi/Desktop/imperial/reautomating/galapagos/xml_examples/laniakea_2_hw_2_clusters/logical.xml </logicalFile>
-        <mapFile> /home/savi/Desktop/imperial/reautomating/galapagos/xml_examples/laniakea_2_hw_2_clusters/map.xml </mapFile>
+        <logicalFile> /home/savi/Desktop/imperial/wan/galapagos/xml_examples/laniakea_2_hw_2_clusters/logical.xml </logicalFile>
+        <mapFile> /home/savi/Desktop/imperial/wan/galapagos/xml_examples/laniakea_2_hw_2_clusters/map.xml </mapFile>
+        <apiFile> /home/savi/Desktop/imperial/wan/galapagos/xml_examples/laniakea_2_hw_2_clusters/api.xml </mapFile>
     </cluster>
 
     <cluster>
         <num> 2 </num>
-        <logicalFile>/home/savi/Desktop/imperial/reautomating/galapagos/xml_examples/laniakea_2_hw_2_clusters/logical.xml </logicalFile>
-        <mapFile> /home/savi/Desktop/imperial/reautomating/galapagos/xml_examples/laniakea_2_hw_2_clusters/map.xml </mapFile>
+        <logicalFile>/home/savi/Desktop/imperial/wan/galapagos/xml_examples/laniakea_2_hw_2_clusters/logical.xml </logicalFile>
+        <mapFile> /home/savi/Desktop/imperial/wan/galapagos/xml_examples/laniakea_2_hw_2_clusters/map.xml </mapFile>
+        <apiFile> /home/savi/Desktop/imperial/wan/galapagos/xml_examples/laniakea_2_hw_2_clusters/api.xml </mapFile>
     </cluster>
 </superCluster>

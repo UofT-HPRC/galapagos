@@ -30,7 +30,7 @@ middleware: guard-LOGICALFILE guard-MAPFILE guard-PROJECTNAME ${LOGICALFILE} ${M
 	python3.7 ${python_path}/createTopLevel.py
 
 laniakea_middleware: guard-PROJECTNAME guard-CLUSTERFILE ${CLUSTERFILE}
-	python3.7 ${python_path}/globalFPGAParser.py --clusterFile=${CLUSTERFILE}
+	python3.7 ${python_path}/globalFPGAParser.py --clusterFile=${CLUSTERFILE} --projectName=${PROJECTNAME}
 	python3.7 ${python_path}/createTopLevel.py
 
 
