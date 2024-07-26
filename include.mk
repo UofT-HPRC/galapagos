@@ -20,6 +20,7 @@ ifndef GALAPAGOS_PART
 $(error GALAPAGOS_PART is not set)
 endif
 
+
 ifndef GALAPAGOS_VITIS_PATH
 $(error GALAPAGOS_VITIS_PATH is not set)
 endif

@@ -110,8 +110,8 @@ class cluster(abstractDict):
             dns_ip_address = '0.0.0.0'
         if "userIpPath" in top_kern:
             user_ip_folder = top_kern['userIpPath']
-            subprocess.run(["rm", "-rf", user_ip_folder + "/__galapagos_autogen"])
-            subprocess.run(["mkdir", user_ip_folder + "/__galapagos_autogen"])
+            subprocess.run(["rm", "-rf", user_ip_folder + "/__galapagos_autogen_"+name])
+            subprocess.run(["mkdir", user_ip_folder + "/__galapagos_autogen_"+name])
         else:
             user_ip_folder = ''
         self.kernels = []
@@ -320,12 +320,9 @@ class cluster(abstractDict):
         #tclFileThreads = []
         for node_idx, node in enumerate(self.nodes):
 
-            #tclFileThreads.append(threading.Thread(target=tclFileGenerator.makeTCLFiles, args=(node,self.name, output_path, sim)))
             if node_idx == 0:
                 continue
             elif node['type'] == 'hw':
-                #tclFileThreads.append(threading.Thread(target=tclFileGenerator.makeTCLFiles, args=(node,self.name, output_path, sim)))
-                #tclFileThreads[len(tclFileThreads)-1].start()
                 tclFileGenerator.makeTCLFiles(node, self.name, output_path, sim)
             elif node['type']=='sw':
                 tclFileGenerator.makeSWFile(node,self.name, output_path,self.getListOfKernelIPs())

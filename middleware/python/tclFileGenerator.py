@@ -13,7 +13,7 @@ Each one takes care of one self-contained part of the TCL file generation.
 #interfaces constant
 #creates the standard interfaces, same for all fpgas
 
-def createHierarchyTCL(outFile,kernel_properties,ctrl_ports_list, user_repo):
+def createHierarchyTCL(project_name,outFile,kernel_properties,ctrl_ports_list, user_repo):
     dst_file = open(outFile, "w")
     has_attached = False
     for prop in kernel_properties:
@@ -62,20 +62,19 @@ def createHierarchyTCL(outFile,kernel_properties,ctrl_ports_list, user_repo):
         elif ((prop['type'] == 'cpp_vit') or (prop['type'] == 'cpp_viv')):
             file_contents = file_contents + "addip :" + name + " userIPinstance\n"
             cwd = os.getcwd()
-            print(user_repo + "/__galapagos_autogen/"+name)
-            subprocess.run(["mkdir",user_repo + "/__galapagos_autogen/"+name])
-            subprocess.run(["cp", user_repo+"/"+name+".cpp", user_repo + "/__galapagos_autogen/"+name+"/"+name+".cpp"])
-            os.chdir(user_repo + "/__galapagos_autogen/"+name)
-            tcl_file = open(user_repo + "/__galapagos_autogen/"+name+"/"+name+".tcl", "w")
+            subprocess.run(["mkdir",user_repo + "/__galapagos_autogen_"+project_name+"/"+name])
+            subprocess.run(["cp", user_repo+"/"+name+".cpp", user_repo + "/__galapagos_autogen_"+project_name+"/"+name+"/"+name+".cpp"])
+            os.chdir(user_repo + "/__galapagos_autogen_"+project_name+"/"+name)
+            tcl_file = open(user_repo + "/__galapagos_autogen_"+project_name+"/"+name+"/"+name+".tcl", "w")
             tcl_file.write("set part_name $::env(GALAPAGOS_PART)\n")
             tcl_file.write("open_project "+name+"\nset_top "+name+"\nopen_solution \"solution1\"\nset_part ${part_name}\n")
-            tcl_file.write("add_files "+ user_repo + "/__galapagos_autogen/"+name+"/"+name+".cpp\n")
+            tcl_file.write("add_files "+ user_repo + "/__galapagos_autogen_"+project_name+"/"+name+"/"+name+".cpp\n")
             tcl_file.write("create_clock -period 199.498000MHz -name default\ncsynth_design\nexport_design -format ip_catalog\nclose_project\nquit\n")
             tcl_file.close()
             if (prop['type'] == 'cpp_vit'):
-                subprocess.run(["vitis_hls",user_repo + "/__galapagos_autogen/"+name+"/"+name+".tcl"])
+                subprocess.run(["vitis_hls",user_repo + "/__galapagos_autogen_"+project_name+"/"+name+"/"+name+".tcl"])
             else:
-                subprocess.run(["vivado_hls", user_repo + "/__galapagos_autogen/" + name + "/" + name + ".tcl"])
+                subprocess.run(["vivado_hls", user_repo + "/__galapagos_autogen_"+project_name+"/" + name + "/" + name + ".tcl"])
             os.chdir(cwd)
         if ((prop['type'] != 'open') and (prop['type'] != 'tcl')):
             file_contents = file_contents + "connect_bd_intf_net [get_bd_intf_ports " + Sname + "] [get_bd_intf_pins userIPinstance/" + Sname + "]\n"
@@ -1197,7 +1196,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
 
 
 
-def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app, sim):
+def userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, tcl_user_app, sim):
     """
     Now that the kernels, Galapagos router, and memory controllers are instantiated,
     it's time to connect them all together.
@@ -1435,7 +1434,7 @@ def userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app,
                     }
                 )
     createTopLevelVerilog(outDir + "/topLevel.v", output_path + "/../middleware/python",kernel_properties,control_port_names_list)
-    createHierarchyTCL(outDir + "/userkernels.tcl",kernel_properties,control_port_names_list,tcl_user_app.fpga['ip_folder'])
+    createHierarchyTCL(project_name,outDir + "/userkernels.tcl",kernel_properties,control_port_names_list,tcl_user_app.fpga['ip_folder'])
     m_axis_array = getInterfaces(tcl_user_app.fpga, 'm_axis', 'scope', 'global')
 
     # Now connect all m_axis interfaces through the output switch into the
@@ -2040,7 +2039,7 @@ def userApplicationRegionMultiSLR(tcl_user_app, mappings,outDir,main_slr):
         if active:
             ec_file.write(']]\nresize_pblock [get_pblocks ' + mappings[region]['name'] + '] -add {'+mappings[region]['clockregion']+"}\n\n\n")
 
-def userApplicationRegion(outDir,output_path, fpga, sim):
+def userApplicationRegion(project_name,outDir,output_path, fpga, sim):
     """
     Takes care of calling a bunch of functions for assembling the user application
     region part of the block diagram. To be specific, this function takes care
@@ -2061,7 +2060,7 @@ def userApplicationRegion(outDir,output_path, fpga, sim):
     userApplicationRegionMemInstGlobal(tcl_user_app, tcl_user_app.fpga['comm'] != 'tcp')
     userApplicationRegionMemInstLocal(tcl_user_app)
     userApplicationRegionSwitchesInst(tcl_user_app, sim)
-    (kernel_properies,control_name_list,control_prop_list,clk_200_int,clk_300_int)=userApplicationRegionKernelConnectSwitches(outDir,output_path, tcl_user_app, sim)
+    (kernel_properies,control_name_list,control_prop_list,clk_200_int,clk_300_int)=userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, tcl_user_app, sim)
     userApplicationRegionAssignAddresses(tcl_user_app, tcl_user_app.fpga['comm'] !='tcp' and tcl_user_app.fpga.address_space == 64)
     userApplicationLocalConnections(tcl_user_app)
     userApplicationRegionControlInst(tcl_user_app,control_name_list,control_prop_list)
@@ -2653,7 +2652,7 @@ def makeTCLFiles(fpga, projectName, output_path, sim):
     #make bridge to network
     if fpga['comm'] != 'none':
         netBridge(outDir, fpga)
-    userApplicationRegion(outDir,output_path, fpga, sim)
+    userApplicationRegion(projectName,outDir,output_path, fpga, sim)
     bridgeConnections(outDir, fpga, sim)
     #if(num_debug_interfaces > 0):
     #    add_debug_interfaces(outDir, num_debug_interfaces, fpga)

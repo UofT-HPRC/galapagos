@@ -1,6 +1,0 @@
-make --dry-run --always-make --keep-going --print-directory
-make: Entering directory '/home/yugao/Research/Galapagos/galapagos/middleware'
-make: Leaving directory '/home/yugao/Research/Galapagos/galapagos/middleware'
- 
-/home/yugao/Research/Galapagos/galapagos/include.mk:20: *** GALAPAGOS_PART is not set.  Stop.
-
