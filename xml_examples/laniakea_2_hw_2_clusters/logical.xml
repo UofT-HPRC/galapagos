@@ -2,7 +2,7 @@
 
 
 <cluster>
-    <userIpPath>/home/savi/Desktop/imperial/imperial_ip_repo2</userIpPath>
+    <userIpPath> /home/savi/Desktop/imperial/imperial_ip_repo2 </userIpPath>
     <kernel> viv_test_core 
         <type> open </type>
         <num> 1 </num>
