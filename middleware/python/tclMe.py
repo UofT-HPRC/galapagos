@@ -68,6 +68,9 @@ class tclMeFile():
         self.tprint('source ' + source)
     def addConstraints(self,file_path):
         self.tprint('add_files -fileset constrs_1 -norecurse '+file_path)
+    def addVerilog(self,file_path):
+        self.tprint('add_files -fileset sources_1 -norecurse ' + file_path)
+        self.tprint('update_compile_order -fileset sources_1')
     def setInterfacesCLK(self,clk_name,intfs):
         self.tprint("set_property CONFIG.ASSOCIATED_BUSIF {",'')
         first_config = True

@@ -31,11 +31,11 @@ The Galapagos framework has been tested using Python 3.7.10, please have it inst
 2. A map file describing how your kernels are distributed on devices
 	1. NOTE: Currently Galapagos requires a minimum of 2 declared devices (nodes). If you only want to use one node, create a dummy kernel in your logical file, and create a CPU node in your map file that hosts the kernel (for details on how to create a CPU node, see the map files in the userIP folder).
  
-## Steps
+## Steps to run on every terminal using Galapagos
 1. If using a virtual environment, enter it by running `source /path/to/venv/bin/activate`
 	1. Eg. `source ./python_venv_3_7_10/bin/activate`
-2. Initialize environment variables by running: `source build.sh`
-3. Compile the Vivado HLS IPs and generate TCL scripts by running: `make PROJECTNAME="<project_name>" LOGICALFILE=</path/to/logical/file> MAPFILE=</path/to/map/file>`
+2. Initialize environment variables by running: `source build.sh`. At this point it will ask if you wish to install a board, this process takes about 30 minutes per board and only has to be done once as the installed products are added to the galapagos project directory.
+3. Compile the Vivado HLS IPs and generate TCL scripts by running: `make PROJECTNAME="<project_name>" LOGICALFILE=</path/to/logical/file> MAPFILE=</path/to/map/file>`. Ensure any boards referenced in the map file are already installed
 4. Use the TCL scripts to generate Vivado projects by running: `source projects/<project_name>/createCluster.sh`
 5. At this point, Galapagos will have created one Vivado project for each FPGA declared in your map file. Each FPGA's Vivado project will contain a block diagram for each kernel mapped to it. The number in each block diagram is the ID of the kernel that the block diagram represents. For example, the Vivado project below has block diagrams generated for kernels 3 and 4 in the cluster.
 	1. ![Galapagos Vivado Project](https://github.com/UofT-HPRC/galapagos/blob/reconfigurable/fig/galapagos_vivado_project.PNG)

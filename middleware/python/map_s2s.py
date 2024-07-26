@@ -197,17 +197,13 @@ def map_s2s(fpga_db, kernel_db, input_logical, input_map, output_map_file_name):
 
 
     for node_idx, node in enumerate(output_map['cluster']['node']):
-        print("**********************************************")
-        print("Node " + str(node_idx))
         node_ff = 0
         node_lut = 0
         node_uram = 0
         node_dsp = 0
         node_clb = 0
         node_bram = 0
-        print("Kernels in Node:")
         for kernel in node['kernel']:
-            print(str(kernel_list[kernel]['#text']) + " " + str(kernel_db[str(kernel_list[kernel]['#text'])]))
             f_csv.write(str(node_idx) + "," + str(kernel) + "," + kernel_list[kernel]["#text"] + ","  + str(kernel_db[str(kernel_list[kernel]['#text'])]['ff']) + "," + str(kernel_db[str(kernel_list[kernel]['#text'])]['lut']) + "," + str(kernel_db[str(kernel_list[kernel]['#text'])]['dsp']) + "," + str(kernel_db[str(kernel_list[kernel]['#text'])]['uram']) + "," + "," + ",\n")
             node_ff = kernel_db[str(kernel_list[kernel]['#text'])]['ff'] + node_ff
             node_lut = kernel_db[str(kernel_list[kernel]['#text'])]['lut'] + node_lut

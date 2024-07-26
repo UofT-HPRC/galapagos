@@ -10,6 +10,7 @@ import socket, struct
 import glob
 import subprocess
 multi_slr_boards = ['u200','u250','u280']
+board_pairs={'sidewinder':'xczu19eg-ffvc1760-2-i','vck5000':'xcvc1902-vsvd1760-2mp-e-s','u200':'xcu200-fsgd2104-2-e','u250':'xcu250-figd2104-2l-e','u280':'xcu280-fsvh2892-2l-e'}
 def memory_sort_and_validate(memories):
     #Process the size
     #Returns an array of arrays containing
@@ -205,7 +206,7 @@ class cluster(abstractDict):
         # Now deal with nodes (i.e. a CPU or an FPGA)
         self.nodes = []
         for node_inst in map_dict:
-            if node_inst['board'] in multi_slr_boards:
+            if (('board' in node_inst) and (node_inst['board'] in multi_slr_boards)):
                 if type(node_inst['kernel']) is list:
                     for element in node_inst['kernel']:
                         if (int(element['num'])==0):
@@ -226,24 +227,38 @@ class cluster(abstractDict):
             # but it does also check the fields to make sure they're all valid and that no mandatory info
             # is missing
             node_inst = node(**node_dict)
-
-            # I'm fairly sure these next few lines of code are just converting
-            # data formats
+            if ((node_inst['type']=='hw') and ('part' not in node_inst)):
+                node_inst['part']=board_pairs[node_inst['board']]
             node_inst['kernel'] = []
             node_inst['kernel_map'] = {}
             node_inst['dns_ip']=dns_ip_address
             node_inst['ip_folder']=user_ip_folder
             no_open = True
-            if node_inst['board'] in multi_slr_boards:
+            if (('board' in node_inst) and (node_inst['board'] in multi_slr_boards)):
                 node_inst['multi_slr'] = True
                 #Specify the Multi SLR settings
                 #distance is the number of reg slices to do the crossing
                 #clockregion specifies that clock region setting for each of the slices
                 if node_inst['board'] == 'u200':
                     node_inst['slr_mappings'] = \
-                        {'SLR2': { 'kernel' : [], 'distance': 0, 'name': 'pb_slr2','clockregion': 'CLOCKREGION_X0Y10:CLOCKREGION_X5Y14'},
-                         'SLR1': { 'kernel' : [], 'distance': 2, 'name': 'pb_slr1','clockregion': 'CLOCKREGION_X0Y5:CLOCKREGION_X5Y9' },
-                         'SLR0': {'kernel': [], 'distance': 4, 'name': 'pb_slr0','clockregion': 'CLOCKREGION_X0Y0:CLOCKREGION_X5Y4'}
+                        {'SLR2': { 'kernel' : [], 'distance': 1, 'name': 'pb_slr2','clockregion': 'CLOCKREGION_X0Y10:CLOCKREGION_X5Y14'},
+                         'SLR1': { 'kernel' : [], 'distance': 3, 'name': 'pb_slr1','clockregion': 'CLOCKREGION_X0Y5:CLOCKREGION_X5Y9' },
+                         'SLR0': {'kernel': [], 'distance': 5, 'name': 'pb_slr0','clockregion': 'CLOCKREGION_X0Y0:CLOCKREGION_X5Y4'}
+                    }
+                    node_inst['main_slr'] = 'pb_slr2'
+                elif node_inst['board'] == 'u250':
+                    node_inst['slr_mappings'] = \
+                        {'SLR2': {'kernel': [], 'distance': 1, 'name': 'pb_slr2','clockregion': 'CLOCKREGION_X0Y10:CLOCKREGION_X5Y14'},
+                         'SLR1': {'kernel': [], 'distance': 3, 'name': 'pb_slr1','clockregion': 'CLOCKREGION_X0Y5:CLOCKREGION_X5Y9' },
+                         'SLR3': {'kernel': [], 'distance': 3, 'name': 'pb_slr3','clockregion': 'CLOCKREGION_X0Y5:CLOCKREGION_X5Y9'},
+                         'SLR0': {'kernel': [], 'distance': 5, 'name': 'pb_slr0','clockregion': 'CLOCKREGION_X0Y0:CLOCKREGION_X5Y4'}
+                    }
+                    node_inst['main_slr'] = 'pb_slr2'
+                elif node_inst['board'] == 'u280':
+                    node_inst['slr_mappings'] = \
+                        {'SLR2': { 'kernel' : [], 'distance': 1, 'name': 'pb_slr2','clockregion': 'CLOCKREGION_X0Y10:CLOCKREGION_X5Y14'},
+                         'SLR1': { 'kernel' : [], 'distance': 3, 'name': 'pb_slr1','clockregion': 'CLOCKREGION_X0Y5:CLOCKREGION_X5Y9' },
+                         'SLR0': {'kernel': [], 'distance': 5, 'name': 'pb_slr0','clockregion': 'CLOCKREGION_X0Y0:CLOCKREGION_X5Y4'}
                     }
                     node_inst['main_slr'] = 'pb_slr2'
             else:
@@ -278,7 +293,7 @@ class cluster(abstractDict):
                         if int(kern['num']) == int(kmap_node):
                             # Instead of having numbers in node_inst['kernel'], have
                             # pointers to our properly parsed kernel objects
-                            kern['distance']=0
+                            kern['distance']=1
                             node_inst['kernel_map'][kern['num']] = len(node_inst['kernel'])
                             node_inst['kernel'].append(kern)
                             # At the same time, append mac and ip information to each
@@ -305,13 +320,16 @@ class cluster(abstractDict):
     def processMemoryBus(self):
         for i in range(len(self.nodes)):
             memories = []
+            has_control = False
             for j in range(len(self.nodes[i]['kernel'])):
                 if self.nodes[i]['kernel'][j].data['control']:
                     memories.append([j,self.nodes[i]['kernel'][j].data['control_range']])
+                    has_control = True
             ext_memories = memory_sort_and_validate(memories)
             for mem in ext_memories:
                 self.nodes[i]['kernel'][mem[0]].data['control_size'] = mem[1]
                 self.nodes[i]['kernel'][mem[0]].data['control_address'] = mem[2]
+            self.nodes[i].has_control = has_control
 
 
 
@@ -353,19 +371,32 @@ class cluster(abstractDict):
         print(list_inst)
         return(list_inst)
     #make COE to intialize BRAM of all IP addresses
+    def BRAM_entry_formatter(self,address,value):
+        hex_addr = hex(address)[2:]
+        hex_val = value
+        hex_addr = (4-len(hex_addr))*'0'+hex_addr
+        return ' @'+hex_addr+' '+hex_val
     def writeBRAMFile(self, output_path, addr_type):
+        its_mac = False
+        print("Writing BRAM FILE")
         if addr_type == 'mac':
             bramFile = open(output_path + '/' + self.name + '/mac.coe', 'w')
             bramFile.write('memory_initialization_radix=16;\n')
+            bramFilevck = open(output_path + '/' + self.name + '/mac.mem', 'w')
+            its_mac=True
+            nodeFile = open(os.devnull, 'w')
+            nodeFilevck = open(os.devnull, 'w')
         else: #ip
             bramFile = open(output_path + '/' + self.name + '/ip.coe', 'w')
             bramFile.write('memory_initialization_radix=10;\n')
+            bramFilevck = open(output_path + '/' + self.name + '/ip.mem', 'w')
             nodeFile = open(output_path + '/' + self.name + '/node.coe', 'w')
             nodeFile.write('memory_initialization_radix=10;\n')
             nodeFile.write('memory_initialization_vector=\n')
+            nodeFilevck = open(output_path + '/' + self.name + '/node.mem', 'w')
         bramFile.write('memory_initialization_vector=\n')
-
-        kernelIndex = 0
+        bram_address = 0
+        node_address = 0
         #iterate through kernels in order of tdest, populating the ipaddress at that location
         maxKernelIndex = 0
         for kern in self.kernels:
@@ -374,7 +405,6 @@ class cluster(abstractDict):
 
         for currIndex in range(0, maxKernelIndex + 1):
             found = 0
-
             for kern in self.kernels:
                 if currIndex == int(kern['num']):
                     found = 1
@@ -387,7 +417,14 @@ class cluster(abstractDict):
                         bramFile.write(writeStr + ',0, 0, 0,')
                     else:
                         bramFile.write(writeStr + ',0, 0, 0;')
-                    break
+                    if its_mac:
+                        bramFilevck.write(self.BRAM_entry_formatter(bram_address, writeStr))
+                    else:
+                        bramFilevck.write(self.BRAM_entry_formatter(bram_address, hex(int(writeStr))[2:]))
+                    bramFilevck.write(self.BRAM_entry_formatter(bram_address + 4, '0'))
+                    bramFilevck.write(self.BRAM_entry_formatter(bram_address + 8, '0'))
+                    bramFilevck.write(self.BRAM_entry_formatter(bram_address + 12, '0'))
+                    bram_address = bram_address + 16
             if found==0:
                 if addr_type == 'mac':
                     defaultStr = 'ffffffffffff'
@@ -398,8 +435,14 @@ class cluster(abstractDict):
                     bramFile.write(defaultStr + ',0, 0, 0,')
                 else:
                     bramFile.write(defaultStr + ',0, 0, 0;')
-                break
-
+                if its_mac:
+                    bramFilevck.write(self.BRAM_entry_formatter(bram_address, defaultStr))
+                else:
+                    bramFilevck.write(self.BRAM_entry_formatter(bram_address, hex(int(defaultStr))[2:]))
+                bramFilevck.write(self.BRAM_entry_formatter(bram_address + 4, '0'))
+                bramFilevck.write(self.BRAM_entry_formatter(bram_address + 8, '0'))
+                bramFilevck.write(self.BRAM_entry_formatter(bram_address + 12, '0'))
+                bram_address = bram_address +16
             if addr_type == "ip":
                 for node in self.nodes:
                     for kern in node["kernel"]:
@@ -409,6 +452,11 @@ class cluster(abstractDict):
                                 nodeFile.write(writeStr + ',0, 0, 0,')
                             else:
                                 nodeFile.write(writeStr + ',0, 0, 0;')
+                            nodeFilevck.write(self.BRAM_entry_formatter(node_address, writeStr))
+                            nodeFilevck.write(self.BRAM_entry_formatter(node_address + 4, '0'))
+                            nodeFilevck.write(self.BRAM_entry_formatter(node_address + 8, '0'))
+                            nodeFilevck.write(self.BRAM_entry_formatter(node_address + 12, '0'))
+                            node_address = node_address +16
         if addr_type == "ip":
             nodeFile.close()
         bramFile.close()
@@ -458,11 +506,10 @@ class cluster(abstractDict):
                         os.remove(f)
                 os.makedirs(dirName, exist_ok=True)
                 #currently only making flattened bitstreams
-                globalConfigFile.write("galapagos-update-board " + node_obj['board'] + "\n")
                 if node_obj['make_bit']:
-                    globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + self.name +  " --start_synth 1" + "\n")
+                    globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + "  --board " + node_obj['board'] + "  --part "+ node_obj['part'] + " --dir " + self.name +  " --start_synth 1" + "\n")
                 else:
-                    globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + " --dir " + self.name +  " --start_synth 0" + "\n")
+                    globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + "  --board " + node_obj['board'] + "  --part "+ node_obj['part'] + " --dir " + self.name +  " --start_synth 0" + "\n")
             elif node_obj['type'] == 'sw':
                 dirName = output_path + '/' + self.name + '/' + str(node_idx)
                 if os.path.exists(dirName):

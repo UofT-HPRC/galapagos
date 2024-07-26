@@ -20,10 +20,10 @@ void router(
 )
 {
 #pragma HLS INTERFACE ap_ctrl_none port = return
-#pragma HLS INTERFACE axis port = stream_in
-#pragma HLS INTERFACE axis port = stream_out_switch
-#pragma HLS INTERFACE axis port = stream_out_network
-#pragma HLS INTERFACE axis port = ctrl_out_switch
+#pragma HLS INTERFACE axis port = stream_in register_mode=off
+#pragma HLS INTERFACE axis port = stream_out_switch register_mode=off
+#pragma HLS INTERFACE axis port = stream_out_network register_mode=off
+#pragma HLS INTERFACE axis port = ctrl_out_switch register_mode=off
 #pragma HLS INTERFACE bram port = network_table
 
     galapagos_packet packetIn;

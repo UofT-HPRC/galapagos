@@ -101,32 +101,42 @@ def copy_file(dest_fp,src_filename):
     dest_fp.write(src_file.read())
     src_file.close()
 
-def createTopLevelVerilog(target_files, source_dir, kernel_properties,control_names):
+def createTopLevelVerilog(target_files, source_dir, kernel_properties,control_names,fpga):
     dst_file = open(target_files,"w")
-    copy_file(dst_file,source_dir+"/../verilog/shellTop_pt1.v")
+    if fpga['board'] == 'u200':
+        copy_file(dst_file, source_dir + "/../verilog/shellTop_pt1_u200.v")
+    else:
+        copy_file(dst_file, source_dir + "/../verilog/shellTop_pt1.v")
     dst_file.write(construct_axis_wire("  ","M_AXIS",512,0,True))
     dst_file.write(construct_axis_wire("  ","S_AXIS",512,0,False))
-    dst_file.write(construct_axi_wire("  ","S_AXI_CONTROL",16,128,40))
-    for CN in control_names:
-        dst_file.write(construct_axi_wire("  ", str(CN) + "_CONTROL", 16, 128, 40))
+    if fpga.has_control:
+        dst_file.write(construct_axi_wire("  ","S_AXI_CONTROL",16,128,40))
+        for CN in control_names:
+            dst_file.write(construct_axi_wire("  ", str(CN) + "_CONTROL", 16, 128, 40))
     for props in kernel_properties:
         name=props['inst']
         dst_file.write(construct_axis_wire("  ", str(name) + "_MAXIS", 512, 24, True))
         dst_file.write(construct_axis_wire("  ", str(name) + "_SAXIS", 512, 24, True))
         dst_file.write(add_axi_wire_field("  ", str(name) + "_SWAN","t", wan_axis_fields, wan_axis_sizes, 0, 512, 0) + "\n")
-    copy_file(dst_file,source_dir+"/../verilog/shellTop_pt2.v")
+    if fpga['board'] == 'u200':
+        copy_file(dst_file, source_dir + "/../verilog/shellTop_pt2_u200.v")
+    else:
+        copy_file(dst_file, source_dir + "/../verilog/shellTop_pt2.v")
     dst_file.write(construct_axis_base_defn("    ","M_AXIS","eth_tx",True))
     dst_file.write(construct_axis_base_defn("    ","S_AXIS","eth_rx",False))
-    dst_file.write(construct_axi_defn("    ","S_AXI_CONTROL","S_AXI_CONTROL",True,True))
+    if fpga.has_control:
+        dst_file.write(construct_axi_defn("    ","S_AXI_CONTROL","S_AXI_CONTROL",True,True))
     copy_file(dst_file,source_dir+"/../verilog/shellTop_pt3.v")
     dst_file.write(construct_axis_base_defn("    ","M_AXIS","M_AXIS",True))
     dst_file.write(construct_axis_base_defn("    ","S_AXIS","S_AXIS",False))
-    dst_file.write(construct_axi_defn("    ","S_AXI_CONTROL","S_AXI_CONTROL",True,True))
+    if fpga.has_control:
+        dst_file.write(construct_axi_defn("    ","S_AXI_CONTROL","S_AXI_CONTROL",True,True))
     for props in kernel_properties:
         name=props['inst']
         dst_file.write("\n\n    //User: "+str(name)+"\n")
-        if name in control_names:
-            dst_file.write(construct_axi_defn("      ",str(name)+"_CONTROL",str(name)+"_CONTROL",True,True))
+        if fpga.has_control:
+            if name in control_names:
+                dst_file.write(construct_axi_defn("      ",str(name)+"_CONTROL",str(name)+"_CONTROL",True,True))
         dst_file.write(construct_axis_defn("      ",str(name)+"_MAXIS",str(name)+"_MAXIS",True,True,True))
         dst_file.write(add_axi_defn_field_set_id("      ",str(name)+"_SAXIS",str(name)+"_SAXIS","t",axis_fields,props['id'],False))
         if props['wan_enabled'][0]:
@@ -147,8 +157,9 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,control_na
         dst_file.write("  //User: "+str(name)+"\n  user_"+str(name)+"_i user_"+str(name)+"_i_i\n    (."+rstname+"(rstn)\n    ,."+clkname+"(CLK)\n")
         if props['has_id']:
             dst_file.write("    ,."+props['id_port']+"("+str(props['id'])+")\n")
-        if name in control_names:
-            dst_file.write(construct_axi_defn("    ",str(name)+"_CONTROL","AXI_CONTROL",True,True))
+        if fpga.has_control:
+            if name in control_names:
+                dst_file.write(construct_axi_defn("    ",str(name)+"_CONTROL","AXI_CONTROL",True,True))
         dst_file.write(construct_axis_defn("    ",str(name)+"_MAXIS",Sname,True,True,True))
         dst_file.write(construct_axis_defn("    ",str(name)+"_SAXIS",Mname,True,False,False))
 
