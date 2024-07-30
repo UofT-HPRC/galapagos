@@ -33,18 +33,19 @@ for o, a in opts:
 
 if path is None:
     path = str(os.environ.get('GALAPAGOS_PATH'))+ "/projects"
-print("Output path: " + path)
 list_of_clusters = []
 supercluster = False
 if clusterFile == None:
     supercluster = False
-    list_of_clusters.append([logicalFile,mapFile])
+    list_of_clusters.append([logicalFile,mapFile,projectName,False])
 else:
 
     laniakea_inst = lancluster(projectName, clusterFile, path)
+    list_of_clusters = laniakea_inst.list_of_clusters
 
 for cluster_loc in list_of_clusters:
-    cluster_inst = cluster(projectName, cluster_loc[0], cluster_loc[1], False)
+    print(cluster_loc)
+    cluster_inst = cluster(cluster_loc[2], cluster_loc[0], cluster_loc[1], cluster_loc[3])
     cluster_inst.processMemoryBus()
     cluster_inst.makeProjectClusterScript(path)
     cluster_inst.writeClusterTCL(path, sim)
