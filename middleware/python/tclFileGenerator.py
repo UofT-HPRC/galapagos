@@ -42,7 +42,7 @@ def createHierarchyTCL(project_name,outFile,kernel_properties,ctrl_ports_list, u
         file_contents = file_contents + "create_bd_intf_port -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 "+Mname+"\n"
         if wanena:
             file_contents = file_contents + "create_bd_intf_port -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 "+wannam+"\n"
-        file_contents = file_contents + "create_bd_port -dir I -type clk -freq_hz 199498000 "+clkname+"\n"
+        file_contents = file_contents + "create_bd_port -dir I -type clk -freq_hz 199998001 "+clkname+"\n"
         file_contents = file_contents + "create_bd_port -dir I -type rst "+rstname+"\nset_property CONFIG.ASSOCIATED_RESET {"+rstname+"} [get_bd_ports /"+clkname+"]\n"
         file_contents = file_contents + "set_property -dict [ list CONFIG.HAS_TKEEP {1} CONFIG.HAS_TLAST {1} CONFIG.TDEST_WIDTH {24} CONFIG.TDATA_NUM_BYTES {64} CONFIG.TID_WIDTH {24} CONFIG.TUSER_WIDTH {8} ] [get_bd_intf_ports /"+Sname+"]\n"
         if prop['has_id']:
@@ -2309,9 +2309,9 @@ def bridgeConnections(outDir, fpga, sim):
                     'port_name':'g2N_output'
                     },
                     {
-                    'name':'network/network_bridge_inst',
+                    'name':'network/network_bridge_inst/axis_clock_converter_0',
                     'type':'intf',
-                    'port_name':'${netBridge_from_app}'
+                    'port_name':'S_AXIS'
                     }
                     )
             # else:
@@ -2423,9 +2423,9 @@ def bridgeConnections(outDir, fpga, sim):
                 tcl_bridge_connections.makeConnection(
                         'intf',
                         {
-                        'name':'network/network_bridge_inst',
+                        'name':'network/network_bridge_inst/axis_clock_converter_1',
                         'type':'intf',
-                        'port_name':'${netBridge_to_app}'
+                        'port_name':'M_AXIS'
                         },
                         {
                         'name':'network/galapagos_bridge_inst',
