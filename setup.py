@@ -80,9 +80,9 @@ if(args.hls_dir == ''):
     hls_dir = ''
 else:
     hls_dir = args.hls_dir
-vitis_ver = '2022.2'
+vitis_ver = '2023.1'
 
-hls_ver = '2022.2'
+hls_ver = '2023.1'
 
 
 
@@ -103,8 +103,8 @@ print('ENVIRONMENT VARIABLES SET:')
 env_var = {'GALAPAGOS_PATH': answers['galapagos_dir'],
            'GALAPAGOS_VITIS_PATH' : answers['vitis_dir'],
            'GALAPAGOS_HLS_PATH' : answers['hls_dir'],
-           'GALAPAGOS_VITIS_VERSION' : '2022.2',
-           'GALAPAGOS_HLS_VERSION' : '2022.2'
+           'GALAPAGOS_VITIS_VERSION' : '2023.1',
+           'GALAPAGOS_HLS_VERSION' : '2023.1'
         }
 
 pprint(env_var)
@@ -127,7 +127,7 @@ while invalid:
         print("aborting board install, just installing parameters")
         out_file.close()
         out_file = open("my_init.sh","w")
-        out_file.write("source init_params.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['hls_dir'] + ' 2022.2 2022.2 ' + '\n')
+        out_file.write("source init_params.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['hls_dir'] + ' 2023.1 2023.1 ' + '\n')
         answer = "n"
       elif board_name == "sidewinder":
         answers['boa_name'] = 'sidewinder'
@@ -153,7 +153,7 @@ while invalid:
         if ((confirmation == "no") or (confirmation == "n")):
           running = False
       if running:
-        out_file.write("source init.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['hls_dir'] + ' 2022.2 2022.2 ' + answers['par_name'] + ' ' + answers['boa_name'] +'\n')
+        out_file.write("source init.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['hls_dir'] + ' 2023.1 2023.1 ' + answers['par_name'] + ' ' + answers['boa_name'] +'\n')
 
         out_file.write("make hlsmiddleware\n")
         print("Are there other boards you wish to install in this project? (Y/N)")
@@ -162,7 +162,7 @@ while invalid:
           print("invalid answer, please enter y or n")
           answer = str(input()).strip().lower()
   elif ((answer == "no") or (answer == "n")):
-    out_file.write("source init_params.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['hls_dir'] + ' 2022.2 2022.2 ' + '\n')
+    out_file.write("source init_params.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['hls_dir'] + ' 2023.1 2023.1 ' + '\n')
   else:
     print("<"+answer + "> is invalid, please enter y or n")
 out_file.close()
