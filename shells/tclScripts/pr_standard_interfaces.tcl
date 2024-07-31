@@ -1,5 +1,5 @@
 create_bd_port -dir I -type clk CLK
-set_property CONFIG.FREQ_HZ 199498000 [get_bd_ports CLK]
+set_property CONFIG.FREQ_HZ 199998001 [get_bd_ports CLK]
 create_bd_port -dir I -type clk CLK300
 set_property CONFIG.FREQ_HZ 322265625 [get_bd_ports CLK300]
 create_bd_port -dir I -type rst rstn
