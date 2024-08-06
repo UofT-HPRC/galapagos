@@ -191,11 +191,6 @@ class cluster(abstractDict):
                     else:
                         kern_dict_local['wire_slave']['master']['node'] = str(i + int(kern_dict_local['wire_slave']['master']['node']))
 
-
-
-
-
-
                 # This basically copies the dictionary parsed from the <kernel> tags into another dictionary,
                 # but it does also check the fields to make sure they're all valid and that no mandatory info
                 # is missing
@@ -277,7 +272,7 @@ class cluster(abstractDict):
                         # kernel objects we just built) to find the one matching
                         # this number
                         if int(kern['num']) == int(kmap_node['num']):
-                            node_inst['has_wan'] = node_inst['has_wan'] or kern['wan_enabled']
+                            node_inst['has_wan'] = node_inst['has_wan'] or kern['wan_enabled'][0]
                             # Instead of having numbers in node_inst['kernel'], have
                             # pointers to our properly parsed kernel objects
                             node_inst['kernel_map'][kern['num']] = len(node_inst['kernel'])
@@ -296,7 +291,7 @@ class cluster(abstractDict):
                 for kmap_node in node_dict['kernel']:
                     for kern_idx, kern in enumerate(self.kernels):
                         if int(kern['num']) == int(kmap_node):
-                            node_inst['has_wan'] = node_inst['has_wan'] or kern['wan_enabled']
+                            node_inst['has_wan'] = node_inst['has_wan'] or kern['wan_enabled'][0]
                             # Instead of having numbers in node_inst['kernel'], have
                             # pointers to our properly parsed kernel objects
                             kern['distance']=1

@@ -1175,7 +1175,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
         'CONFIG.ARB_ON_TLAST {1}'
     ]
     tcl_user_app.setProperties('applicationRegion/output_switch', properties)
-    if tcl_user_app.fpga['has_wan'][0]:
+    if tcl_user_app.fpga['has_wan']:
         tcl_user_app.instBlock(
             {
                 'name': 'axis_switch',
@@ -1515,7 +1515,7 @@ def userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, 
                 WANportName,
                 int(m_axis['kernel_inst']['distance'])
             )
-    if tcl_user_app.fpga['has_wan'][0]:
+    if tcl_user_app.fpga['has_wan']:
         properties = [
             'CONFIG.NUM_SI {' + str(wan_idx+1) + '}',
             'CONFIG.NUM_MI {1}',
@@ -1540,7 +1540,7 @@ def userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, 
             1
         )
     # Now handle the WAN Sector
-    if (tcl_user_app.fpga['has_wan'][0]):
+    if (tcl_user_app.fpga['has_wan']):
         tcl_user_app.instBlock(
             {
                 'name': 'WAN_bridge',
@@ -2118,7 +2118,7 @@ def netBridgeConstants(tcl_net):
     # these constants are unneeded in raw mode
     ip_addr = tcl_net.fpga['dns_ip'].split(".")
     ip_addr_val = (int(ip_addr[0])<<24)|(int(ip_addr[1])<<16)|(int(ip_addr[2])<<8)|(int(ip_addr[3]));
-    if tcl_net.fpga['has_wan'][0]:
+    if tcl_net.fpga['has_wan']:
         tcl_net.instBlock(
             {
                 'name': 'xlconstant',
@@ -2208,11 +2208,11 @@ def netBridgeConstants(tcl_net):
         tcl_net.tprint('set mac_addr 0x' + tcl_net.fpga['mac'].replace(":","")    )
         tcl_net.tprint('set net_mask 0xFFFF0000')
 
-        if tcl_net.fpga['board'] == 'vck5000' and tcl_net.fpga['has_wan'][0]:
+        if tcl_net.fpga['board'] == 'vck5000' and tcl_net.fpga['has_wan']:
             tcl_net.addSource(galapagos_path + '/middleware/tclScripts/pr_udp100_vck_bridge.tcl')
         elif tcl_net.fpga['board'] == 'vck5000':
             tcl_net.addSource(galapagos_path + '/middleware/tclScripts/pr_udp100_vck_bridge_no_wan.tcl')
-        elif tcl_net.fpga['has_wan'][0]:
+        elif tcl_net.fpga['has_wan']:
             tcl_net.addSource(galapagos_path + '/middleware/tclScripts/pr_udp100_bridge.tcl')
         else:
             tcl_net.addSource(galapagos_path + '/middleware/tclScripts/pr_udp100_bridge_no_wan.tcl')
