@@ -16,7 +16,7 @@ void sender(
   static ap_uint<8> flit_count=0;
   static ap_uint<32> packets_sent_cnt = 0;
   pkt_sent=packets_sent_cnt;
-  if (!pkt_out.full() && (run == 1))
+  if (!pkt_out.full() && ((run == 1) || (flit_count!=0)))
   {
     temp_data.data.range(511,448) = flit_count *8;
     temp_data.data.range(447,384) = flit_count *8+1;

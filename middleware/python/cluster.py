@@ -105,7 +105,8 @@ class cluster(abstractDict):
             top_map = map_file['cluster']
         logical_dict = top_kern['kernel']
         map_dict = top_map['node']
-        if "dns" in top_map:
+        has_dns = "dns" in top_map
+        if has_dns:
             dns_ip_address = top_map['dns']
         else:
             dns_ip_address = '0.0.0.0'
@@ -126,6 +127,8 @@ class cluster(abstractDict):
             if (('wan' in kern_dict) and (kern_dict['wan']['enabled'].lower()== 'true')):
                 kern_dict['wan_enabled'] = True
                 kern_dict['wan_name'] = kern_dict['wan']['name']
+                if not has_dns:
+                    raise ValueError("dns must be specified in order to use WAN features")
             else:
                 kern_dict['wan_enabled'] = False
                 kern_dict['wan_name'] = ""
@@ -232,6 +235,7 @@ class cluster(abstractDict):
             node_inst['kernel'] = []
             node_inst['kernel_map'] = {}
             node_inst['dns_ip']=dns_ip_address
+            node_inst['has_wan'] = False
             node_inst['ip_folder']=user_ip_folder
             no_open = True
             if (('board' in node_inst) and (node_inst['board'] in multi_slr_boards)):
@@ -273,6 +277,7 @@ class cluster(abstractDict):
                         # kernel objects we just built) to find the one matching
                         # this number
                         if int(kern['num']) == int(kmap_node['num']):
+                            node_inst['has_wan'] = node_inst['has_wan'] or kern['wan_enabled']
                             # Instead of having numbers in node_inst['kernel'], have
                             # pointers to our properly parsed kernel objects
                             node_inst['kernel_map'][kern['num']] = len(node_inst['kernel'])
@@ -291,6 +296,7 @@ class cluster(abstractDict):
                 for kmap_node in node_dict['kernel']:
                     for kern_idx, kern in enumerate(self.kernels):
                         if int(kern['num']) == int(kmap_node):
+                            node_inst['has_wan'] = node_inst['has_wan'] or kern['wan_enabled']
                             # Instead of having numbers in node_inst['kernel'], have
                             # pointers to our properly parsed kernel objects
                             kern['distance']=1

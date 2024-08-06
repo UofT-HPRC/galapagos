@@ -117,7 +117,8 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,control_na
         name=props['inst']
         dst_file.write(construct_axis_wire("  ", str(name) + "_MAXIS", 512, 24, True))
         dst_file.write(construct_axis_wire("  ", str(name) + "_SAXIS", 512, 24, True))
-        dst_file.write(add_axi_wire_field("  ", str(name) + "_SWAN","t", wan_axis_fields, wan_axis_sizes, 0, 512, 0) + "\n")
+        if props['wan_enabled'][0]:
+            dst_file.write(add_axi_wire_field("  ", str(name) + "_SWAN","t", wan_axis_fields, wan_axis_sizes, 0, 512, 0) + "\n")
     if fpga['board'] == 'u200':
         copy_file(dst_file, source_dir + "/../verilog/shellTop_pt2_u200.v")
     else:
@@ -141,10 +142,6 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,control_na
         dst_file.write(add_axi_defn_field_set_id("      ",str(name)+"_SAXIS",str(name)+"_SAXIS","t",axis_fields,props['id'],False))
         if props['wan_enabled'][0]:
             dst_file.write(add_axi_defn_field_set_user("      ",str(name) + "_SWAN",str(name) + "_SWAN","t",wan_axis_fields,False,0)+"\n")
-        else:
-            dst_file.write(
-                add_axim_masked_field("      ", str(name) + "_SWAN", str(name) + "_SWAN", "t", wan_axis_fields, False,
-                                   True) + "\n")
     dst_file.write("    );\n\n\n")
     
     for props in kernel_properties:

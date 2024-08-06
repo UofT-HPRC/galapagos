@@ -1158,15 +1158,6 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
             'resetns':['aresetn']
         }
     )
-    tcl_user_app.instBlock(
-        {
-            'name': 'axis_switch',
-            'inst': 'applicationRegion/WAN_switch',
-            'clks': ['aclk'],
-            'resetns_port': 'rstn',
-            'resetns': ['aresetn']
-        }
-    )
     #Configure the switch to have 1 slave per kernel, 1 master, that it allows all messages through, and arbitrate on TLAST only.
     properties = [
         'CONFIG.NUM_SI {' + str(num_slave_m_axis_global) + '}',
@@ -1184,22 +1175,32 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim):
         'CONFIG.ARB_ON_TLAST {1}'
     ]
     tcl_user_app.setProperties('applicationRegion/output_switch', properties)
-    properties = [
-        'CONFIG.NUM_SI {' + str(num_slave_m_axis_global) + '}',
-        'CONFIG.NUM_MI {1}',
-        'CONFIG.HAS_TLAST.VALUE_SRC USER',
-        'CONFIG.M00_AXIS_HIGHTDEST {0xffffffff}'
-    ]
-    tcl_user_app.setProperties('applicationRegion/WAN_switch', properties)
-    properties = [
-        'CONFIG.HAS_TLAST {1}'
-    ]
-    tcl_user_app.setProperties('applicationRegion/WAN_switch', properties)
-    properties = [
-        'CONFIG.ARB_ON_MAX_XFERS {0}',
-        'CONFIG.ARB_ON_TLAST {1}'
-    ]
-    tcl_user_app.setProperties('applicationRegion/WAN_switch', properties)
+    if tcl_user_app.fpga['has_wan'][0]:
+        tcl_user_app.instBlock(
+            {
+                'name': 'axis_switch',
+                'inst': 'applicationRegion/WAN_switch',
+                'clks': ['aclk'],
+                'resetns_port': 'rstn',
+                'resetns': ['aresetn']
+            }
+        )
+        properties = [
+            'CONFIG.NUM_SI {' + str(num_slave_m_axis_global) + '}',
+            'CONFIG.NUM_MI {1}',
+            'CONFIG.HAS_TLAST.VALUE_SRC USER',
+            'CONFIG.M00_AXIS_HIGHTDEST {0xffffffff}'
+        ]
+        tcl_user_app.setProperties('applicationRegion/WAN_switch', properties)
+        properties = [
+            'CONFIG.HAS_TLAST {1}'
+        ]
+        tcl_user_app.setProperties('applicationRegion/WAN_switch', properties)
+        properties = [
+            'CONFIG.ARB_ON_MAX_XFERS {0}',
+            'CONFIG.ARB_ON_TLAST {1}'
+        ]
+        tcl_user_app.setProperties('applicationRegion/WAN_switch', properties)
 
 
 
@@ -1278,7 +1279,8 @@ def userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, 
             )
             clk_200_intf_config.append(presufix_port_name + "_MAXIS")
             clk_200_intf_config.append(presufix_port_name + "_SAXIS")
-            clk_200_intf_config.append(presufix_port_name + "_SWAN")
+            if s_axis['kernel_inst']['wan_enabled'][0]:
+                clk_200_intf_config.append(presufix_port_name + "_SWAN")
             if s_axis['kernel_inst']['control']:
                 clk_200_intf_config.append(presufix_port_name + "_CONTROL")
                 control_port_names_list.append(str(presufix_port_name))
@@ -1359,7 +1361,8 @@ def userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, 
                                       })
             clk_200_intf_config.append(str(s_axis_array[0]['name']) + "_MAXIS")
             clk_200_intf_config.append(str(s_axis_array[0]['name']) + "_SAXIS")
-            clk_200_intf_config.append(str(s_axis_array[0]['name']) + "_SWAN")
+            if s_axis_array[0]['kernel_inst']['wan_enabled'][0]:
+                clk_200_intf_config.append(str(s_axis_array[0]['name']) + "_SWAN")
             if s_axis_array[0]['kernel_inst']['control']:
                 clk_200_intf_config.append(str(s_axis_array[0]['name']) + "_CONTROL")
                 control_port_names_list.append(str(s_axis_array[0]['name']))
@@ -1399,7 +1402,8 @@ def userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, 
                 )
                 clk_200_intf_config.append(str(presufix_port_name) + "_MAXIS")
                 clk_200_intf_config.append(str(presufix_port_name) + "_SAXIS")
-                clk_200_intf_config.append(str(presufix_port_name) + "_SWAN")
+                if s_axis_array[0]['kernel_inst']['wan_enabled'][0]:
+                    clk_200_intf_config.append(str(presufix_port_name) + "_SWAN")
                 if s_axis_array[0]['kernel_inst']['control']:
                     clk_200_intf_config.append(str(presufix_port_name) + "_CONTROL")
                     control_port_names_list.append(str(presufix_port_name))
@@ -1470,17 +1474,19 @@ def userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, 
         "CONFIG.TDEST_WIDTH {32}",
         "CONFIG.TUSER_WIDTH {16}"
     ]
+    wan_idx = 0;
     for idx, m_axis in enumerate(m_axis_array):
         instName = m_axis['kernel_inst']['inst']
         ht_name = instName.split('/')[-1]
         portName = ht_name + "_SAXIS"
-        WANportName = ht_name + "_SWAN"
         tcl_user_app.add_axis_port(portName, 'Slave')
-        tcl_user_app.add_axis_port(WANportName, 'Slave')
         tcl_user_app.setPortProperties(portName, AXIS_PROPERTIES)
-        tcl_user_app.setPortProperties(WANportName, SWAN_PROPERTIES)
+        if m_axis['kernel_inst']['wan_enabled'][0]:
+            WANportName = ht_name + "_SWAN"
+            tcl_user_app.add_axis_port(WANportName, 'Slave')
+            tcl_user_app.setPortProperties(WANportName, SWAN_PROPERTIES)
         idx_str = "%02d"%(idx+1)
-
+        wan_idx_str = "%02d"%(wan_idx+1)
         tcl_user_app.makeBufferedIntfConnection(
             {
                 'type': 'intf_port',
@@ -1494,19 +1500,28 @@ def userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, 
             portName,
             int(m_axis['kernel_inst']['distance'])
         )
-        tcl_user_app.makeBufferedIntfConnection(
-            {
-                'type': 'intf_port',
-                'port_name': WANportName
-            },
-            {
-            'name':'applicationRegion/WAN_switch',
-            'type':'intf',
-            'port_name':'S'+ idx_str + '_AXIS'
-            },
-            WANportName,
-            int(m_axis['kernel_inst']['distance'])
-        )
+        if m_axis['kernel_inst']['wan_enabled'][0]:
+            wan_idx = wan_idx + 1
+            tcl_user_app.makeBufferedIntfConnection(
+                {
+                    'type': 'intf_port',
+                    'port_name': WANportName
+                },
+                {
+                'name':'applicationRegion/WAN_switch',
+                'type':'intf',
+                'port_name':'S'+ wan_idx_str + '_AXIS'
+                },
+                WANportName,
+                int(m_axis['kernel_inst']['distance'])
+            )
+    properties = [
+        'CONFIG.NUM_SI {' + str(wan_idx+1) + '}',
+        'CONFIG.NUM_MI {1}',
+        'CONFIG.HAS_TLAST.VALUE_SRC USER',
+        'CONFIG.M00_AXIS_HIGHTDEST {0xffffffff}'
+    ]
+    tcl_user_app.setProperties('applicationRegion/WAN_switch', properties)
     if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
         # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
         tcl_user_app.makeBufferedIntfConnection(
@@ -1524,43 +1539,44 @@ def userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, 
             1
         )
     # Now handle the WAN Sector
-    tcl_user_app.instBlock(
-        {
-            'name': 'WAN_bridge',
-            'inst': 'applicationRegion/WAN_bridge',
-            'clks': ['ap_clk'],
-            'resetns': ['ap_rst_n'],
-            'resetns_port': 'rstn',
-        }
-    )
-    tcl_user_app.makeBufferedIntfConnection(
-        {
-            'name': 'applicationRegion/WAN_switch',
-            'type': 'intf',
-            'port_name': 'M00_AXIS'
-        },
-        {
-            'name': 'applicationRegion/WAN_bridge',
-            'type': 'intf',
-            'port_name': 'g2N_input'
-        },
-        'applicationRegion/WAN_switch',
-        1
-    )
-    tcl_user_app.makeBufferedIntfConnection(
-        {
-            'name': 'applicationRegion/WAN_bridge',
-            'type': 'intf',
-            'port_name': 'g2N_output'
-        },
-        {
-            'name': 'network/fetch/dispatcher',
-            'type': 'intf',
-            'port_name': 'rxGalapagosBridge'
-        },
-        "applicationRegion/WAN_bridge_buffer",
-        1
-    )
+    if (tcl_user_app.fpga['has_wan'][0]):
+        tcl_user_app.instBlock(
+            {
+                'name': 'WAN_bridge',
+                'inst': 'applicationRegion/WAN_bridge',
+                'clks': ['ap_clk'],
+                'resetns': ['ap_rst_n'],
+                'resetns_port': 'rstn',
+            }
+        )
+        tcl_user_app.makeBufferedIntfConnection(
+            {
+                'name': 'applicationRegion/WAN_switch',
+                'type': 'intf',
+                'port_name': 'M00_AXIS'
+            },
+            {
+                'name': 'applicationRegion/WAN_bridge',
+                'type': 'intf',
+                'port_name': 'g2N_input'
+            },
+            'applicationRegion/WAN_switch',
+            1
+        )
+        tcl_user_app.makeBufferedIntfConnection(
+            {
+                'name': 'applicationRegion/WAN_bridge',
+                'type': 'intf',
+                'port_name': 'g2N_output'
+            },
+            {
+                'name': 'network/fetch/dispatcher',
+                'type': 'intf',
+                'port_name': 'rxGalapagosBridge'
+            },
+            "applicationRegion/WAN_bridge_buffer",
+            1
+        )
     # Now handle the control interfaces
 
     s_axi_array = getInterfaces(tcl_user_app.fpga, 's_axi', 'scope', 'global')
@@ -2101,15 +2117,16 @@ def netBridgeConstants(tcl_net):
     # these constants are unneeded in raw mode
     ip_addr = tcl_net.fpga['dns_ip'].split(".")
     ip_addr_val = (int(ip_addr[0])<<24)|(int(ip_addr[1])<<16)|(int(ip_addr[2])<<8)|(int(ip_addr[3]));
-    tcl_net.instBlock(
-        {
-            'name': 'xlconstant',
-            'resetns_port': 'rstn',
-            'inst': 'network/dns_server_info',
-            'properties': ['CONFIG.CONST_WIDTH {32}',
-                           ' CONFIG.CONST_VAL {'+str(ip_addr_val)+'}']
-        }
-    )
+    if tcl_net.fpga['has_wan'][0]:
+        tcl_net.instBlock(
+            {
+                'name': 'xlconstant',
+                'resetns_port': 'rstn',
+                'inst': 'network/dns_server_info',
+                'properties': ['CONFIG.CONST_WIDTH {32}',
+                               ' CONFIG.CONST_VAL {'+str(ip_addr_val)+'}']
+            }
+        )
     if tcl_net.fpga['comm'] != "raw":
         ip_addr = tcl_net.fpga['ip'].split(".")
         #tcl_net.write('addip ip_constant_block network/ip_constant_block_inst\n')
@@ -2189,10 +2206,15 @@ def netBridgeConstants(tcl_net):
         tcl_net.tprint('set ip_gateway ' + '0x{0:0{1}X}'.format(int(ip_addr[0]),2) +'0x{0:0{1}X}'.format(int(ip_addr[1]),2)[2:] + '0x{0:0{1}X}'.format(int(ip_addr[2]),2)[2:]   + '0x{0:0{1}X}'.format(0,2)[2:]   )
         tcl_net.tprint('set mac_addr 0x' + tcl_net.fpga['mac'].replace(":","")    )
         tcl_net.tprint('set net_mask 0xFFFF0000')
-        if tcl_net.fpga['board'] == 'vck5000':
+
+        if tcl_net.fpga['board'] == 'vck5000' and tcl_net.fpga['has_wan'][0]:
             tcl_net.addSource(galapagos_path + '/middleware/tclScripts/pr_udp100_vck_bridge.tcl')
-        else:
+        elif tcl_net.fpga['board'] == 'vck5000':
+            tcl_net.addSource(galapagos_path + '/middleware/tclScripts/pr_udp100_vck_bridge_no_wan.tcl')
+        elif tcl_net.fpga['has_wan'][0]:
             tcl_net.addSource(galapagos_path + '/middleware/tclScripts/pr_udp100_bridge.tcl')
+        else:
+            tcl_net.addSource(galapagos_path + '/middleware/tclScripts/pr_udp100_bridge_no_wan.tcl')
 
 
 def netBridge(outDir, fpga):
