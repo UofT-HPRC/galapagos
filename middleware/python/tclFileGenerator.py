@@ -1515,13 +1515,14 @@ def userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, 
                 WANportName,
                 int(m_axis['kernel_inst']['distance'])
             )
-    properties = [
-        'CONFIG.NUM_SI {' + str(wan_idx+1) + '}',
-        'CONFIG.NUM_MI {1}',
-        'CONFIG.HAS_TLAST.VALUE_SRC USER',
-        'CONFIG.M00_AXIS_HIGHTDEST {0xffffffff}'
-    ]
-    tcl_user_app.setProperties('applicationRegion/WAN_switch', properties)
+    if tcl_user_app.fpga['has_wan'][0]:
+        properties = [
+            'CONFIG.NUM_SI {' + str(wan_idx+1) + '}',
+            'CONFIG.NUM_MI {1}',
+            'CONFIG.HAS_TLAST.VALUE_SRC USER',
+            'CONFIG.M00_AXIS_HIGHTDEST {0xffffffff}'
+        ]
+        tcl_user_app.setProperties('applicationRegion/WAN_switch', properties)
     if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
         # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
         tcl_user_app.makeBufferedIntfConnection(
