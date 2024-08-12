@@ -1,6 +1,7 @@
 
 import copy
 import tclFileGenerator
+import gatewayFileGenerator
 from abstractDict import abstractDict
 from kernel import kernel
 from collections import OrderedDict
@@ -85,7 +86,7 @@ class cluster(abstractDict):
             print("Unhandled exetension for " + file_name)
             return None
 
-    def __init__(self, name, kernel_file, map_file, supercluster, mode='file'):
+    def __init__(self, name, kernel_file, map_file, supercluster, dns_addr, gw_ip, gw_mac,gw_board, mode='file'):
         """
         Initializes the cluster object using logical file and mapping file
 
@@ -105,9 +106,8 @@ class cluster(abstractDict):
             top_map = map_file['cluster']
         logical_dict = top_kern['kernel']
         map_dict = top_map['node']
-        has_dns = "dns" in top_map
-        if has_dns:
-            dns_ip_address = top_map['dns']
+        if supercluster:
+            dns_ip_address = dns_addr
         else:
             dns_ip_address = '0.0.0.0'
         if "userIpPath" in top_kern:
@@ -120,15 +120,17 @@ class cluster(abstractDict):
         for log_inst in logical_dict:
             if(int(log_inst['num'])==0):
                 raise ValueError("There can not be any nodes pointing to kernel 0")
-        axis_array = OrderedDict([('scope','global'),('name','fakename')])
-        kern0=OrderedDict([('#text','garbage'),('type','open'),('num','0'),('control','false'),('clk','clk'),('aresetn','aresetn'),('s_axis',axis_array),('m_axis',axis_array)])
+        s_axis_array = OrderedDict([('scope','global'),('name','direct_rx')])
+        m_axis_array = OrderedDict([('scope', 'global'), ('name', 'lan_tx')])
+        wan_array = OrderedDict([('enabled', 'False'), ('name', 'wan_prt')])
+        kern0=OrderedDict([('#text','gateway'),('type','open'),('num','0'),('control','false'),('clk','clk'),('aresetn','aresetn'),('s_axis',s_axis_array),('m_axis',m_axis_array),('wan',wan_array)])
         logical_dict.insert(0, kern0)
         for kern_dict in logical_dict:
             if (('wan' in kern_dict) and (kern_dict['wan']['enabled'].lower()== 'true')):
                 kern_dict['wan_enabled'] = True
                 kern_dict['wan_name'] = kern_dict['wan']['name']
-                if not has_dns:
-                    raise ValueError("dns must be specified in order to use WAN features")
+                if not supercluster:
+                    raise ValueError("WAN features require laniakea flow, not galapagos flow")
             else:
                 kern_dict['wan_enabled'] = False
                 kern_dict['wan_name'] = ""
@@ -218,7 +220,7 @@ class cluster(abstractDict):
                             raise ValueError("There can not be any nodes pointing to kernel 0")
                 elif(int(node_inst['kernel'])==0):
                     raise ValueError("There can not be any nodes pointing to kernel 0")
-        map0=OrderedDict([('type','sw'),('kernel','0'),('mac','00:00:00:00:00:00'),('ip','0.0.0.0')])
+        map0=OrderedDict([('type','hw'),('kernel','0'),('mac',gw_mac),('ip',gw_ip),('autorun','False'),('comm','udp'),('board',gw_board)])
         map_dict.insert(0,map0)
         for node_idx, node_dict in enumerate(map_dict):
             # This basically copies the dictionary parsed from the <node> tags into another dictionary,
@@ -335,21 +337,21 @@ class cluster(abstractDict):
 
 
         return
-    def writeClusterTCL(self, output_path, sim):
+    def writeClusterTCL(self, output_path, sim, is_supercluster):
         #tclFileThreads = []
         for node_idx, node in enumerate(self.nodes):
-
-            if node_idx == 0:
+            if ((node_idx == 0) and (not is_supercluster)):
                 continue
             elif node['type'] == 'hw':
-                tclFileGenerator.makeTCLFiles(node, self.name, output_path, sim)
+                tclFileGenerator.makeTCLFiles(node, self.name, output_path, sim, node_idx==0)
             elif node['type']=='sw':
                 tclFileGenerator.makeSWFile(node,self.name, output_path,self.getListOfKernelIPs())
-
-#        for thread in tclFileThreads:
-#            thread.join()
-
-
+    def writeGatewayFile(self,path,api_file):
+        topAPI = self.getDict(api_file)['cluster']
+        for node_idx, node in enumerate(self.nodes):
+            if (node_idx == 0):
+                outDir = path + '/' + self.name + '/' + str(node['num'])
+                gatewayFileGenerator.makeGWFiles(node,outDir,topAPI)
     def getListOfKernelIPs(self):
 
         kernelIndex = 0
@@ -462,7 +464,7 @@ class cluster(abstractDict):
             nodeFile.close()
         bramFile.close()
 
-    def makeProjectClusterScript(self, output_path):
+    def makeProjectClusterScript(self, output_path,supercluster):
         """
         As per the name, makes a project cluster script. You may be wondering what a
         project cluster script is. Me too.
@@ -496,7 +498,7 @@ class cluster(abstractDict):
         globalConfigFile.write("cd " + str(os.environ.get('GALAPAGOS_PATH')) + "\n")
         for node_idx, node_obj in enumerate(self.nodes):
             #only need vivado project for hw nodes
-            if node_idx == 0:
+            if ((node_idx == 0) and (not supercluster)):
                 continue
             elif node_obj['type'] == 'hw':
                 dirName = output_path + '/' + self.name + '/' + str(node_idx)

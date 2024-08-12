@@ -1,5 +1,6 @@
 #comment out when running full script
 #create_bd_cell -type hier network
+source $top_path/middleware/tclScripts/pr_fetch_bypass.tcl
 
 
 set netBridge_from_app S_AXIS 

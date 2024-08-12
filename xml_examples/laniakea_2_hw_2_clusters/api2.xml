@@ -4,12 +4,12 @@
 <cluster>
     <port>
         <form> direct </form>
-        <tag> direct_to_2 </tag>
+        <num> 1 </num>
         <target> 2 </target>
     </port>
     <port>
          <form> broadcast </form>
-         <tag> bc_to_1_2 </tag>
+         <num> 2 </num>
          <target> 1 </target>
          <target> 2 </target>
     </port>

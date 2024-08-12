@@ -37,7 +37,11 @@ class lancluster(abstractDict):
                 print("xmltodict module not installed in Python")
                 exit(1)
             with open(file_name) as fd:
-                return xmltodict.parse(fd.read())
+                print(file_name)
+                print(fd)
+                contents = fd.read()
+                print(contents)
+                return xmltodict.parse(contents)
         elif extension == ".json":
             import json
             with open(file_name) as fd:
@@ -61,9 +65,11 @@ class lancluster(abstractDict):
             topClus = self.getDict(cluster_file)['superCluster']
         else:
             topClus = cluster_file
+        if 'dns' not in topClus:
+            raise ValueError ("dns must be specified in the cluster file")
+
         for cluster_inst in topClus['cluster']:
-            createGW(cluster_inst['apiFile'],cluster_inst['logicalFile'],cluster_inst['mapFile'],path)
-            self.list_of_clusters.append([cluster_inst['logicalFile'],cluster_inst['mapFile'],name+"_"+str(cluster_inst['num']),True])
+            self.list_of_clusters.append([name+"_"+str(cluster_inst['num']),cluster_inst['logicalFile'],cluster_inst['mapFile'],True,topClus['dns'],cluster_inst['gatewayIP'],cluster_inst['gatewayMac'],cluster_inst['gatewayBoard'],cluster_inst["apiFile"]])
         return
 def createGW(logical,map,api,path):
     '''

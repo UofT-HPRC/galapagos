@@ -152,6 +152,29 @@ class tclMeFile():
                     self.tprint(
                         'connect_bd_net [get_bd_ports ARESETN] [get_bd_pins ' + ip['inst'] + '/' + reset_name + ']')
 
+    def saxis_tie_off(self, block,port):
+        self.instBlock(
+            {
+                'name': 'xlconstant',
+                'inst': block+"_"+port+"_tie",
+                'properties': ['CONFIG.CONST_WIDTH {1}',
+                               ' CONFIG.CONST_VAL {0}']
+            }
+        )
+        self.makeConnection(
+            'net',
+            {
+                'name': block,
+                'type': 'pin',
+                'port_name': port+"_TVALID"
+            },
+            {
+                'name': block+"_"+port+"_tie",
+                'type': 'pin',
+                'port_name': 'dout'
+            }
+        )
+
     def makeBufferedIntfConnection(self,source,sink,name,distance):
         cur_source = source
         for i in range(distance):
