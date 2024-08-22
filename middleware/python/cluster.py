@@ -123,7 +123,7 @@ class cluster(abstractDict):
         s_axis_array = OrderedDict([('scope','global'),('name','direct_rx')])
         m_axis_array = OrderedDict([('scope', 'global'), ('name', 'lan_tx')])
         wan_array = OrderedDict([('enabled', 'False'), ('name', 'wan_prt')])
-        kern0=OrderedDict([('#text','gateway'),('type','open'),('num','0'),('control','false'),('clk','clk'),('aresetn','aresetn'),('s_axis',s_axis_array),('m_axis',m_axis_array),('wan',wan_array)])
+        kern0=OrderedDict([('#text','gateway'),('type','open'),('num','0'),('control','false'),('clk','CLK'),('aresetn','rstn'),('s_axis',s_axis_array),('m_axis',m_axis_array),('wan',wan_array)])
         logical_dict.insert(0, kern0)
         for kern_dict in logical_dict:
             if (('wan' in kern_dict) and (kern_dict['wan']['enabled'].lower()== 'true')):
@@ -337,21 +337,23 @@ class cluster(abstractDict):
 
 
         return
-    def writeClusterTCL(self, output_path, sim, is_supercluster):
+    def writeClusterTCL(self, output_path, sim, is_supercluster,api_info):
         #tclFileThreads = []
         for node_idx, node in enumerate(self.nodes):
             if ((node_idx == 0) and (not is_supercluster)):
                 continue
             elif node['type'] == 'hw':
-                tclFileGenerator.makeTCLFiles(node, self.name, output_path, sim, node_idx==0)
+                tclFileGenerator.makeTCLFiles(node, self.name, output_path, sim, node_idx==0,api_info)
             elif node['type']=='sw':
                 tclFileGenerator.makeSWFile(node,self.name, output_path,self.getListOfKernelIPs())
     def writeGatewayFile(self,path,api_file):
+        api_info = {}
         topAPI = self.getDict(api_file)['cluster']
         for node_idx, node in enumerate(self.nodes):
             if (node_idx == 0):
                 outDir = path + '/' + self.name + '/' + str(node['num'])
-                gatewayFileGenerator.makeGWFiles(node,outDir,topAPI)
+                api_info=gatewayFileGenerator.makeGWFiles(node,outDir,topAPI)
+        return api_info
     def getListOfKernelIPs(self):
 
         kernelIndex = 0

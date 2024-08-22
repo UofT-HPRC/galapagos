@@ -4,7 +4,7 @@ import copy
 import subprocess
 import os
 from tclMe import tclMeFile
-
+import gatewayFileGenerator
 from createTopLevel import createTopLevelVerilog
 """
 Most of these functions are called (directly or indirectly) by makeTclFiles.
@@ -13,12 +13,16 @@ Each one takes care of one self-contained part of the TCL file generation.
 #interfaces constant
 #creates the standard interfaces, same for all fpgas
 
-def createHierarchyTCL(project_name,outFile,kernel_properties,ctrl_ports_list, user_repo,fpga,is_gw):
+def createHierarchyTCL(project_name,outFile,kernel_properties,ctrl_ports_list, user_repo,fpga,is_gw,outDir,api_info):
     dst_file = open(outFile, "w")
     has_attached = False
     for prop in kernel_properties:
         if ((prop['type'] == 'ip') or (prop['type'] == 'cpp_vit') or (prop['type'] == 'cpp_viv') ):
             has_attached = True
+    if is_gw and fpga['num'] == 0:
+        dst_file.write("set existing_ip_repo_path [ get_property ip_repo_paths [current_project] ]\n")
+        dst_file.write("set addition_ip_repo_path  " + outDir + "/Gateway_IP_repo"+ "\nset new_ip_repo_path \"${existing_ip_repo_path} ${addition_ip_repo_path}\"\n")
+        dst_file.write("set_property ip_repo_paths $new_ip_repo_path [current_project]\nupdate_ip_catalog -rebuild -scan_changes\n")
     if has_attached:
         dst_file.write("set existing_ip_repo_path [ get_property ip_repo_paths [current_project] ]\n")
         dst_file.write("set addition_ip_repo_path "+user_repo+"\nset new_ip_repo_path \"${existing_ip_repo_path} ${addition_ip_repo_path}\"\n")
@@ -34,22 +38,48 @@ def createHierarchyTCL(project_name,outFile,kernel_properties,ctrl_ports_list, u
         wannam = prop['wan_name'][0]
         file_contents = ""
         file_contents = file_contents +"create_bd_design \"user_"+str(kern)+"_i\"\n"
+        file_contents = file_contents + "create_bd_port -dir I -type clk -freq_hz 199998001 "+clkname+"\n"
         if fpga.has_control:
             if kern in ctrl_ports_list:
                 file_contents = file_contents +"create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 AXI_CONTROL\n"
                 file_contents = file_contents + "set_property -dict [ list CONFIG.DATA_WIDTH {128} CONFIG.ADDR_WIDTH {40} CONFIG.ID_WIDTH {16} CONFIG.ARUSER_WIDTH {16} CONFIG.AWUSER_WIDTH {16} ] [get_bd_intf_ports /AXI_CONTROL]\n"
         file_contents = file_contents + "create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 "+Sname+"\n"
+        file_contents = file_contents + "addIfToClock "+clkname+" " + Sname + "\n"
         file_contents = file_contents + "create_bd_intf_port -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 "+Mname+"\n"
+        file_contents = file_contents + "addIfToClock "+clkname+" " + Mname + "\n"
         if wanena:
             file_contents = file_contents + "create_bd_intf_port -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 "+wannam+"\n"
-        if is_gw:
-            file_contents = file_contents + "create_bd_intf_port -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 Direct_port\n"
-        file_contents = file_contents + "create_bd_port -dir I -type clk -freq_hz 199998001 "+clkname+"\n"
+            file_contents = file_contents + "addIfToClock "+clkname+" " + wannam + "\n"
         file_contents = file_contents + "create_bd_port -dir I -type rst "+rstname+"\nset_property CONFIG.ASSOCIATED_RESET {"+rstname+"} [get_bd_ports /"+clkname+"]\n"
         file_contents = file_contents + "set_property -dict [ list CONFIG.HAS_TKEEP {1} CONFIG.HAS_TLAST {1} CONFIG.TDEST_WIDTH {24} CONFIG.TDATA_NUM_BYTES {64} CONFIG.TID_WIDTH {24} CONFIG.TUSER_WIDTH {8} ] [get_bd_intf_ports /"+Sname+"]\n"
+        if is_gw:
+            file_contents = file_contents + "set_property -dict [ list CONFIG.HAS_TKEEP {1} CONFIG.HAS_TLAST {1} CONFIG.TDEST_WIDTH {16} CONFIG.TDATA_NUM_BYTES {64} CONFIG.TID_WIDTH {0} CONFIG.TUSER_WIDTH {48} ] [get_bd_intf_ports /" + Sname + "]\n"
+            file_contents = file_contents + "create_bd_intf_port -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 Direct_port\n"
+            file_contents = file_contents + "addIfToClock "+clkname+" Direct_port\n"
         if prop['has_id']:
             file_contents = file_contents + "create_bd_port -dir I -from 23 -to 0 " + prop['id_port'] + "\n"
-        if prop['type'] == 'ip':
+        if (is_gw and fpga['num'] == 0):
+            cwd = os.getcwd()
+            files_to_parse = gatewayFileGenerator.create_hls_files(api_info, outDir)
+            subprocess.run(["mkdir", "-p", outDir + "/Gateway_IP_repo"])
+            for file_inst in files_to_parse:
+                subprocess.run(["cp", outDir + "/"+file_inst+".cpp",
+                            outDir + "/Gateway_IP_repo/"+file_inst+".cpp"])
+                os.chdir(outDir + "/Gateway_IP_repo/")
+                tcl_file = open( outDir + "/Gateway_IP_repo/" + file_inst + ".tcl", "w")
+                tcl_file.write("set part_name " + fpga['part'] + "\n")
+                tcl_file.write(
+                    "open_project " + file_inst + "\nset_top " + file_inst +
+                    "\nopen_solution \"solution1\"\nset_part ${part_name}\n")
+                tcl_file.write("add_files " + outDir + "/Gateway_IP_repo/" + file_inst + ".cpp\n")
+                tcl_file.write("create_clock -period 199.498000MHz -name default\ncsynth_design\n")
+                tcl_file.write("export_design -format ip_catalog\nclose_project\nquit\n")
+                tcl_file.close()
+                subprocess.run(["vitis_hls", outDir + "/Gateway_IP_repo/" + file_inst + ".tcl"])
+                os.chdir(cwd)
+            file_contents = file_contents + ("source "+ outDir + '/0_gateway.tcl\n')
+            print("Sourcing gateway at "+outDir + '/0_gateway.tcl')
+        elif prop['type'] == 'ip':
             file_contents=file_contents + "addip :" + name + " userIPinstance\n"
         elif (prop['type'] == 'verilog'):
             file_contents = file_contents + "add_files -norecurse " + user_repo + "/" + name + ".v\nupdate_compile_order -fileset sources_1\n"
@@ -65,7 +95,7 @@ def createHierarchyTCL(project_name,outFile,kernel_properties,ctrl_ports_list, u
         elif ((prop['type'] == 'cpp_vit') or (prop['type'] == 'cpp_viv')):
             file_contents = file_contents + "addip :" + name + " userIPinstance\n"
             cwd = os.getcwd()
-            subprocess.run(["mkdir",user_repo + "/__galapagos_autogen_"+project_name+"/"+name])
+            subprocess.run(["mkdir","-p",user_repo + "/__galapagos_autogen_"+project_name+"/"+name])
             subprocess.run(["cp", user_repo+"/"+name+".cpp", user_repo + "/__galapagos_autogen_"+project_name+"/"+name+"/"+name+".cpp"])
             os.chdir(user_repo + "/__galapagos_autogen_"+project_name+"/"+name)
             tcl_file = open(user_repo + "/__galapagos_autogen_"+project_name+"/"+name+"/"+name+".tcl", "w")
@@ -89,6 +119,7 @@ def createHierarchyTCL(project_name,outFile,kernel_properties,ctrl_ports_list, u
             file_contents = file_contents + "connect_bd_net [get_bd_ports " + clkname + "] [get_bd_pins userIPinstance/" + clkname + "]\n"
             file_contents = file_contents + "connect_bd_net [get_bd_ports " + rstname + "] [get_bd_pins userIPinstance/" + rstname + "]\n"
             file_contents = file_contents + "validate_bd_design\n"
+
         file_contents = file_contents + "save_bd_design\n"
         dst_file.write(file_contents)
 
@@ -1212,7 +1243,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim,is_gw):
 
 
 
-def userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, tcl_user_app, sim,is_gw):
+def userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, tcl_user_app, sim,is_gw,api_info):
     """
     Now that the kernels, Galapagos router, and memory controllers are instantiated,
     it's time to connect them all together.
@@ -1462,7 +1493,7 @@ def userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, 
                         1
                     )
     createTopLevelVerilog(outDir + "/topLevel.v", output_path + "/../middleware/python",kernel_properties,control_port_names_list,tcl_user_app.fpga,is_gw)
-    createHierarchyTCL(project_name,outDir + "/userkernels.tcl",kernel_properties,control_port_names_list,tcl_user_app.fpga['ip_folder'],tcl_user_app.fpga,is_gw)
+    createHierarchyTCL(project_name,outDir + "/userkernels.tcl",kernel_properties,control_port_names_list,tcl_user_app.fpga['ip_folder'],tcl_user_app.fpga,is_gw,outDir,api_info)
     m_axis_array = getInterfaces(tcl_user_app.fpga, 'm_axis', 'scope', 'global')
 
     # Now connect all m_axis interfaces through the output switch into the
@@ -1998,7 +2029,7 @@ def userApplicationRegionGWShellChanges(tcl_user_app):
     tcl_user_app.saxis_tie_off(
         'network/network_bridge_udp'
         ,'lbRxDataIn')
-def userApplicationRegion(project_name,outDir,output_path, fpga, sim,is_gw):
+def userApplicationRegion(project_name,outDir,output_path, fpga, sim,is_gw,api_info):
     """
     Takes care of calling a bunch of functions for assembling the user application
     region part of the block diagram. To be specific, this function takes care
@@ -2019,7 +2050,7 @@ def userApplicationRegion(project_name,outDir,output_path, fpga, sim,is_gw):
     userApplicationRegionMemInstGlobal(tcl_user_app, tcl_user_app.fpga['comm'] != 'tcp')
     userApplicationRegionMemInstLocal(tcl_user_app)
     userApplicationRegionSwitchesInst(tcl_user_app, sim,is_gw)
-    (kernel_properies,control_name_list,control_prop_list,clk_200_int,clk_300_int)=userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, tcl_user_app, sim,is_gw)
+    (kernel_properies,control_name_list,control_prop_list,clk_200_int,clk_300_int)=userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, tcl_user_app, sim,is_gw,api_info)
     if tcl_user_app.fpga.has_control:
         userApplicationRegionAssignAddresses(tcl_user_app, tcl_user_app.fpga['comm'] !='tcp' and tcl_user_app.fpga.address_space == 64)
     userApplicationLocalConnections(tcl_user_app)
@@ -2634,7 +2665,7 @@ int main (int argc, char **argv)
 '''
     cpu_cpp.write(to_write)
 
-def makeTCLFiles(fpga, projectName, output_path, sim,is_gw):
+def makeTCLFiles(fpga, projectName, output_path, sim,is_gw,api_info):
     """
     Top-level function call for TCL file generation functions.
 
@@ -2649,7 +2680,7 @@ def makeTCLFiles(fpga, projectName, output_path, sim,is_gw):
     #make bridge to network
     if fpga['comm'] != 'none':
         netBridge(outDir, fpga,is_gw)
-    userApplicationRegion(projectName,outDir,output_path, fpga, sim,is_gw)
+    userApplicationRegion(projectName,outDir,output_path, fpga, sim,is_gw,api_info)
     bridgeConnections(outDir, fpga, sim,is_gw)
     #if(num_debug_interfaces > 0):
     #    add_debug_interfaces(outDir, num_debug_interfaces, fpga)
@@ -2682,7 +2713,6 @@ if { ! [info exists default_dir] } {\n\
     if 'custom' in fpga:
         tclMain.addSource(outDir + '/' + str(fpga['num']) + '_custom.tcl')
         tclMain.addSource(galapagos_path + '/middleware/tclScripts/custom/' + fpga['custom'] + '.tcl')
-    if (is_gw and fpga['num']==0):
-        tclMain.addSource(outDir + '/0_gateway.tcl')
+
     tclMain.tprint('validate_bd_design')
     tclMain.close()

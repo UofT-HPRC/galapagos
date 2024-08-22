@@ -2,8 +2,8 @@ ENABLE_DEBUG = True
 if ENABLE_DEBUG:
     from inspect import getframeinfo, stack
     import os
-    targetFile = "/middleware/python/tclFileGenerator.py"
-    fullPath = os.environ.get("GALAPAGOS_PATH") + targetFile
+    badFile = "/middleware/python/tclMe.py"
+    fullbadPath = os.environ.get("GALAPAGOS_PATH") + badFile
 
 class tclMeFile():
     """
@@ -21,8 +21,9 @@ class tclMeFile():
             fileName (string): The file name
             fpga: The node object for the FPGA of interest
         """
-        self.fileHandle = open(fileName + '.tcl', 'a+')
+        self.fileHandle = open(fileName + '.tcl', 'w')
         self.fpga = fpga
+        self.prev_line = -1
 
     def tprint_raw(self, cmd, end='\n'):
         """
@@ -40,13 +41,17 @@ class tclMeFile():
         """
         if ENABLE_DEBUG:
             stackIndex = 0
+            fullname = ""
             for index, stackFrame in enumerate(stack()):
                 caller = getframeinfo(stackFrame[0])
-                if caller.filename == fullPath:
+                if caller.filename != fullbadPath:
+                    fullname = caller.filename
                     stackIndex = index
                     break                    
             caller = getframeinfo(stack()[stackIndex][0])
-            self.fileHandle.write("# " + targetFile + ":" + str(caller.lineno) + '\n')
+            if self.prev_line != caller.lineno:
+                self.fileHandle.write("# " + fullname + ":" + str(caller.lineno) + '\n')
+            self.prev_line = caller.lineno
         self.tprint_raw(cmd, end)
 
     def createHierarchy(self, hierarchy):
@@ -104,6 +109,8 @@ class tclMeFile():
                 self.tprint('set_property  ' + key + ' ' + value +  ' [get_bd_addr_segs {' + master + '/SEG_' + slave_inst + '_' + slave_base + '}]')
             else:
                 self.tprint('set_property  ' + key + ' ' + value +  ' [get_bd_addr_segs {' + master + '/SEG_' + slave_port + '_' + slave_base + '}]')
+    def add_intf_pin(self,pin_name, intf_type, type):
+        self.tprint("create_bd_intf_pin -mode "+type+" -vlnv "+intf_type+" "+pin_name)
     def add_intf_port(self, port_name, intf_type, type):
         self.tprint('create_bd_intf_port -mode '+type+' -vlnv '+intf_type+' '+port_name)
     def add_axis_port(self, port_name, type):
@@ -112,10 +119,7 @@ class tclMeFile():
         self.add_intf_port(port_name, 'xilinx.com:interface:aximm_rtl:1.0', type)
     def instBlock(self, ip):
 
-        if 'vendor' in ip and ip['vendor'] != None:
-            self.tprint('addip ' + ip['name'] + ' ' +  ip['inst'] )
-        else:
-            self.tprint('addip ' + ip['name'] + ' ' +  ip['inst'])
+        self.tprint('addip ' + ip['name'] + ' ' +  ip['inst'])
         
         if 'properties' in ip and ip['properties'] != None:
             self.setProperties(ip['inst'], ip['properties'])

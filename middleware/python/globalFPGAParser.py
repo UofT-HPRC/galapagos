@@ -2,7 +2,6 @@ import getopt, sys
 import os
 from cluster import cluster
 from lancluster import lancluster
-import subprocess
 
 try:
     opts, args = getopt.getopt(sys.argv[1:],"", ["logicalFile=", "mapFile=", "projectName=", "clusterFile=", "sim=", "path="])
@@ -37,18 +36,22 @@ list_of_clusters = []
 supercluster = False
 if clusterFile == None:
     supercluster = False
-    list_of_clusters.append([projectName,logicalFile,mapFile,False,'0.0.0.0','0.0.0.0','00:00:00:00:00:00','sidewinder',""])
+    list_of_clusters.append([projectName,logicalFile,mapFile,
+                             False, '0.0.0.0', '0.0.0.0', '00:00:00:00:00:00', 'sidewinder', ""])
 else:
 
     laniakea_inst = lancluster(projectName, clusterFile, path)
     list_of_clusters = laniakea_inst.list_of_clusters
 
 for cluster_loc in list_of_clusters:
-    cluster_inst = cluster(cluster_loc[0], cluster_loc[1], cluster_loc[2], cluster_loc[3],cluster_loc[4],cluster_loc[5],cluster_loc[6],cluster_loc[7])
+    cluster_inst = cluster(cluster_loc[0], cluster_loc[1], cluster_loc[2], cluster_loc[3],cluster_loc[4],cluster_loc[5],
+                           cluster_loc[6],cluster_loc[7])
     cluster_inst.processMemoryBus()
     cluster_inst.makeProjectClusterScript(path,cluster_loc[3])
-    cluster_inst.writeClusterTCL(path, sim, cluster_loc[3])
     if cluster_loc[3]:
-        cluster_inst.writeGatewayFile(path,cluster_loc[8])
+        api_info = cluster_inst.writeGatewayFile(path,cluster_loc[8])
+    else:
+        api_info = {"has_gateway": False}
+    cluster_inst.writeClusterTCL(path, sim, cluster_loc[3],api_info)
     cluster_inst.writeBRAMFile(path, 'mac')
     cluster_inst.writeBRAMFile(path, 'ip')
