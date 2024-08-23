@@ -53,21 +53,19 @@ def parseAPI(topAPI):
     print(return_dict)
     return return_dict
 def generate_parser (api_info,gatewayFile):
-
+    print("Generating the gateway file")
     number_of_MI = 3
     if len(api_info["direct"]) == 0:
         number_of_MI = number_of_MI - 1
     else:
         gatewayFile.createHierarchy("direct")
         gatewayFile.add_intf_pin("direct/direct_in", "xilinx.com:interface:axis_rtl:1.0", "Slave")
-        gatewayFile.add_intf_pin("direct/direct_out", "xilinx.com:interface:axis_rtl:1.0", "Master")
         gatewayFile.add_intf_pin("direct/lan_out", "xilinx.com:interface:axis_rtl:1.0", "Master")
     if len(api_info["broadcast"]) == 0:
         number_of_MI = number_of_MI - 1
     else:
         gatewayFile.createHierarchy("broadcast")
         gatewayFile.add_intf_pin("broadcast/direct_in", "xilinx.com:interface:axis_rtl:1.0", "Slave")
-        gatewayFile.add_intf_pin("broadcast/direct_out", "xilinx.com:interface:axis_rtl:1.0", "Master")
         gatewayFile.add_intf_pin("broadcast/lan_out", "xilinx.com:interface:axis_rtl:1.0", "Master")
     if (len(api_info["control"]) == 0) or (len(api_info["control_multiple"]) == 0):
         number_of_MI = number_of_MI - 1
@@ -92,19 +90,6 @@ def generate_parser (api_info,gatewayFile):
                  'type': 'intf',
                  'port_name': 'direct_in'
                  }
-            )
-            gatewayFile.makeConnection(
-                'intf',
-                {
-                 'name': 'direct',
-                 'type': 'intf',
-                 'port_name': 'direct_out'
-                 },
-                {
-                    'name': None,
-                    'type': 'intf_port',
-                    'port_name': 'Direct_port'
-                }
             )
             gatewayFile.makeConnection(
                 'intf',
@@ -135,19 +120,6 @@ def generate_parser (api_info,gatewayFile):
             gatewayFile.makeConnection(
                 'intf',
                 {
-                 'name': 'broadcast',
-                 'type': 'intf',
-                 'port_name': 'direct_out'
-                 },
-                {
-                    'name': None,
-                    'type': 'intf_port',
-                    'port_name': 'Direct_port'
-                }
-            )
-            gatewayFile.makeConnection(
-                'intf',
-                {
                     'name': 'broadcast',
                     'type': 'intf',
                     'port_name': 'lan_out'
@@ -170,19 +142,6 @@ def generate_parser (api_info,gatewayFile):
                  'type': 'intf',
                  'port_name': 'direct_in'
                  }
-            )
-            gatewayFile.makeConnection(
-                'intf',
-                {
-                 'name': 'control',
-                 'type': 'intf',
-                 'port_name': 'direct_out'
-                 },
-                {
-                    'name': None,
-                    'type': 'intf_port',
-                    'port_name': 'Direct_port'
-                }
             )
             gatewayFile.makeConnection(
                 'intf',
@@ -227,20 +186,6 @@ def generate_parser (api_info,gatewayFile):
                                ]
             }
         )
-        gatewayFile.instBlock(
-            {
-                'name': 'axis_switch',
-                'inst': 'parser/output_direct_switch',
-                'clks': ['aclk'],
-                'resetns': ['aresetn'],
-                'resetns_port': 'rstn',
-                'properties': ['CONFIG.NUM_SI {' + str(number_of_MI) + '}',
-                               'CONFIG.NUM_MI {1}',
-                               'CONFIG.HAS_TLAST {1}',
-                               'CONFIG.ARB_ON_TLAST {1}'
-                               ]
-            }
-        )
         gatewayFile.makeConnection(
             'intf',
             {
@@ -252,19 +197,6 @@ def generate_parser (api_info,gatewayFile):
              'type': 'intf',
              'port_name': 'S00_AXIS'
              }
-        )
-        gatewayFile.makeConnection(
-            'intf',
-            {
-                'name': 'parser/output_direct_switch',
-                'type': 'intf',
-                'port_name': 'M00_AXIS'
-            },
-            {
-                'name': None,
-                'type': 'intf_port',
-                'port_name': 'Direct_port'
-            }
         )
         gatewayFile.makeConnection(
             'intf',
@@ -306,20 +238,6 @@ def generate_parser (api_info,gatewayFile):
                 {
                     'name': 'direct',
                     'type': 'intf',
-                    'port_name': 'direct_out'
-                },
-                {
-                    'name': 'parser/output_direct_switch',
-                    'type': 'intf',
-                    'port_name': 'S' + str_port
-                },
-                "parser/output_direct_switch_d",
-                1
-            )
-            gatewayFile.makeBufferedIntfConnection(
-                {
-                    'name': 'direct',
-                    'type': 'intf',
                     'port_name': 'lan_out'
                 },
                 {
@@ -349,20 +267,6 @@ def generate_parser (api_info,gatewayFile):
                     'port_name': 'direct_in'
                  },
                 "parser/input_switch_b",
-                1
-            )
-            gatewayFile.makeBufferedIntfConnection(
-                {
-                    'name': 'broadcast',
-                    'type': 'intf',
-                    'port_name': 'direct_out'
-                },
-                {
-                    'name': 'parser/output_direct_switch',
-                    'type': 'intf',
-                    'port_name': 'S' + str_port
-                },
-                "parser/output_direct_switch_b",
                 1
             )
             gatewayFile.makeBufferedIntfConnection(
@@ -405,20 +309,6 @@ def generate_parser (api_info,gatewayFile):
                 {
                     'name': 'control',
                     'type': 'intf',
-                    'port_name': 'direct_out'
-                },
-                {
-                    'name': 'parser/output_direct_switch',
-                    'type': 'intf',
-                    'port_name': 'S' + str_port
-                },
-                "parser/output_direct_switch_c",
-                1
-            )
-            gatewayFile.makeBufferedIntfConnection(
-                {
-                    'name': 'control',
-                    'type': 'intf',
                     'port_name': 'lan_out'
                 },
                 {
@@ -435,15 +325,6 @@ def generate_parser (api_info,gatewayFile):
         gatewayFile.setProperties("parser/input_switch", is_props)
 
 def implement_direct_section(gatewayFile):
-    gatewayFile.instModule(
-        {
-            'name': 'direct_tieoff',
-            'inst': 'direct/dt',
-            'clks': ['aclk'],
-            'resetns': ['aresetn'],
-            'resetns_port': 'rstn',
-        }
-    )
     gatewayFile.instBlock(
         {
             'name': 'direct_channel',
@@ -481,29 +362,8 @@ def implement_direct_section(gatewayFile):
         "direct/lan_out",
         1
     )
-    gatewayFile.makeConnection(
-        "intf",
-        {
-            'name': 'direct/dt',
-            'type': 'intf',
-            'port_name': 'm_axis'
-        },
-        {'name': 'direct',
-         'type': 'intf',
-         'port_name': 'direct_out'
-         }
-    )
     return
 def implement_broadcast_section(gatewayFile):
-    gatewayFile.instModule(
-        {
-            'name': 'direct_tieoff',
-            'inst': 'broadcast/dt',
-            'clks': ['aclk'],
-            'resetns': ['aresetn'],
-            'resetns_port': 'rstn',
-        }
-    )
     gatewayFile.instBlock(
         {
             'name': 'broadcast_localizer',
@@ -601,18 +461,6 @@ def implement_broadcast_section(gatewayFile):
         "broadcast/lan_out",
         1
     )
-    gatewayFile.makeConnection(
-        "intf",
-        {
-            'name': 'broadcast/dt',
-            'type': 'intf',
-            'port_name': 'm_axis'
-        },
-        {'name': 'broadcast',
-         'type': 'intf',
-         'port_name': 'direct_out'
-         }
-    )
     return
 def implement_control_section(array,multiple_array,gatewayFile,outDir):
     return
@@ -620,7 +468,7 @@ def makeGWFiles (fpga, outDir,topAPI):
     api_info = parseAPI(topAPI)
     gatewayFile = tclMeFile(outDir + '/0_gateway', fpga)
     generate_parser(api_info,gatewayFile)
-    if (len(api_info["direct"])!= 0):
+    if (len(api_info["control"]) == 0) and (len(api_info["control_multiple"]) == 0):
         gatewayFile.addVerilog(str(os.environ.get('GALAPAGOS_PATH'))+"/middleware/verilog/direct_tieoff.v")
     if len(api_info["direct"])!= 0:
         implement_direct_section(gatewayFile)
@@ -628,6 +476,43 @@ def makeGWFiles (fpga, outDir,topAPI):
         implement_broadcast_section(gatewayFile)
     if (len(api_info["control"])!= 0) or (len(api_info["control_multiple"])!= 0):
         implement_control_section(api_info["control"],api_info["control_multiple"], gatewayFile,outDir)
+        gatewayFile.makeBufferedIntfConnection(
+            {
+                'name': 'control',
+                'type': 'intf',
+                'port_name': 'direct_out'
+            },
+            {
+                'name': None,
+                'type': 'intf_port',
+                'port_name': 'Direct_port'
+            },
+            "direct_out",
+            1
+        )
+    else:
+        gatewayFile.instModule(
+            {
+                'name': 'direct_tieoff',
+                'inst': 'dt',
+                'clks': ['aclk'],
+                'resetns': ['aresetn'],
+                'resetns_port': 'rstn',
+            }
+        )
+        gatewayFile.makeConnection(
+            "intf",
+            {
+                'name': 'dt',
+                'type': 'intf',
+                'port_name': 'dt'
+            },
+            {
+                'name': None,
+                'type': 'intf_port',
+                'port_name': 'Direct_port'
+            },
+        )
     gatewayFile.close()
     return api_info
 def write_direct_channel(CF,array):
@@ -645,6 +530,10 @@ def write_direct_channel(CF,array):
     CF.declare_var(CF.return_stream(512,8,8,8), "lan_out_target")
     CF.cline("lan_out_target.last = 0")
     CF.declare_array("ap_uint<16>", "destination",length_of_mem,dest_array)
+    if (length_of_mem > 50):
+        CF.set_pragma("HLS bind_storage variable=destination type=ROM_1P impl=BRAM")
+    else:
+        CF.set_pragma("HLS bind_storage variable=destination type=ROM_1P impl=LUTRAM")
     CF.clines(["direct_in_target = direct_in.read()", "ap_uint<8> saved_dest = destination[direct_in_target.dest]"])
     CF.start_block("while", "lan_out_target.last == 0")
     CF.set_pragma("HLS PIPELINE")
@@ -674,6 +563,10 @@ def write_broadcast_localizer(CF,array):
     CF.declare_var(CF.return_stream(512, 48, 0, 16), "direct_in_target")
     CF.declare_var(CF.return_stream(512, 8, 0, 16), "bc_info_target")
     CF.declare_array("ap_uint<24>", "destination", length_of_mem, dest_array)
+    if (length_of_mem > 50):
+        CF.set_pragma("HLS bind_storage variable=destination type=ROM_1P impl=BRAM")
+    else:
+        CF.set_pragma("HLS bind_storage variable=destination type=ROM_1P impl=LUTRAM")
     CF.clines(["direct_in_target = direct_in.read()","bc_info_target.last = 0"])
     CF.cline("ap_uint<24> saved_dest = destination[direct_in_target.dest-" + str(array[0]["offset"]) + "]")
     CF.start_block("while", "bc_info_target.last == 0")
@@ -709,6 +602,10 @@ def write_broadcast_repeater (CF, array):
     CF.declare_var(CF.return_stream(512, 0, 0, 0), "fifo_out_target")
     CF.declare_var(CF.return_stream(512, 0, 0, 0), "fifo_in_target")
     CF.declare_array("ap_uint<24>", "destination", length_of_mem, dest_array)
+    if (length_of_mem > 50):
+        CF.set_pragma("HLS bind_storage variable=destination type=ROM_1P impl=BRAM")
+    else:
+        CF.set_pragma("HLS bind_storage variable=destination type=ROM_1P impl=LUTRAM")
     CF.clines(["bc_info_target=bc_info_in.read()", "ap_uint<16> address = bc_info_target.dest",
                "ap_uint<8> num_targets = bc_info_target.user", "ap_uint<8> target = destination[address]",
                "ap_uint<8> flit_count = 0"])
@@ -743,121 +640,11 @@ def write_broadcast_repeater (CF, array):
     CF.end_block()
     CF.end_block()
     CF.end_function()
-def write_broadcast_repeater_old(CF, array):
-    CF.import_libs(
-        ["<stdint.h>", "<stdlib.h>", "<iostream>", "<iomanip>", "<string.h>", "<stdio.h>", "\"hls_stream.h\"",
-         "\"ap_int.h\"", "\"ap_axi_sdata.h\""])
-    CF.start_function("broadcast_repeater", [["hls::stream< " + CF.return_stream(512, 8, 0, 16) + " >", "&bc_info_in"],
-                                             ["hls::stream< " + CF.return_stream(512, 0, 0, 0) + " >", "&fifo_out"],
-                                             ["hls::stream< " + CF.return_stream(512, 0, 0, 0) + " >", "&fifo_in"],
-                                         ["hls::stream< " + CF.return_stream(512, 8, 8, 8) + " >", "&lan_out"]])
-    #User is the number of reps, dest is the start address in the mem structure
-    CF.set_pragma("HLS INTERFACE ap_ctrl_none port=return")
-    CF.set_pragma("HLS DATAFLOW")
-    CF.set_axis_pragmas(["bc_info_in", "fifo_out","fifo_in","lan_out"])
-    length_of_mem = array[0]["total_length"]
-    dest_array = [0] * length_of_mem
-    for elem in array:
-        for target_idx in range(len(elem["target"])):
-            dest_array[elem["mem_start"]+target_idx] = elem["target"][target_idx]
-    CF.declare_var(CF.return_stream(512, 8, 0, 16), "bc_info_target")
-    CF.declare_var(CF.return_stream(512, 8, 8, 8), "lan_out_target")
-    CF.declare_var(CF.return_stream(512, 0, 0, 0), "fifo_out_target")
-    CF.declare_var(CF.return_stream(512, 0, 0, 0), "fifo_in_target")
-    CF.clines(["static ap_uint<8> pending = 0", "static ap_uint<16> address = 0", "static ap_uint<1> active = 0",
-               "static ap_uint<1> source = 0", "static ap_uint<8> target = 0"])
-    CF.declare_array("ap_uint<24>", "destination", length_of_mem, dest_array)
-    CF.start_block("if", "(active == 1)")
-    CF.start_block("if", "((target==0) and (!bc_info_in.empty()))")
-    CF.cline("bc_info_target=bc_info_in.read()")
-    CF.object_write("lan_out_target", ["data", "keep", "last", "dest", "user", "id"],
-                    ["bc_info_target.data", "bc_info_target.keep", "bc_info_target.last", "target", "0", "0"])
-    CF.object_write("fifo_out_target", ["data", "keep", "last"],
-                    ["bc_info_target.data", "bc_info_target.keep", "bc_info_target.last"])
-    CF.start_block("if", "bc_info_target.last==1")
-    CF.clines(["active = 0", "source = 0", "pending = pending-1"])
-    CF.end_block()
-    CF.start_block("else")
-    CF.cline("active = 1")
-    CF.cline("source = 0")
-    CF.end_block()
-    CF.cline("fifo_out.write(fifo_out_target)")
-    CF.cline("lan_out.write(lan_out_target)")
-    CF.end_block()
-    CF.start_block("else if", "((target==1) and (!fifo_in.empty()))")
-    CF.cline("fifo_in_target=fifo_in.read()")
-    CF.object_write("lan_out_target", ["data", "keep", "last", "dest", "user", "id"],
-                    ["fifo_in_target.data", "fifo_in_target.keep", "fifo_in_target.last", "target", "0", "0"])
-    CF.object_write("fifo_out_target", ["data", "keep", "last"],
-                    ["fifo_in_target.data", "fifo_in_target.keep", "fifo_in_target.last"])
-    CF.start_block("if", "pending!=1")
-    CF.cline("fifo_out.write(fifo_out_target)")
-    CF.end_block()
-    CF.start_block("if", "bc_info_target.last==1")
-    CF.cline("active = 0")
-    CF.cline("source = 0")
-    CF.cline("pending = pending - 1")
-    CF.end_block()
-    CF.start_block("else")
-    CF.cline("active = 1")
-    CF.cline("source = 0")
-    CF.end_block()
-    CF.cline("lan_out.write(lan_out_target)")
-    CF.end_block()
-    CF.end_block()
-    CF.start_block("else if", "(!bc_info_in.empty() && pending == 0)")
-    CF.cline("bc_info_target = bc_info_in.read()")
-    CF.cline("pending = bc_info_target.user")
-    CF.cline("ap_uint<8> target_temp = destination[bc_info_target.dest]")
-    CF.object_write("fifo_out_target", ["data", "keep", "last"],
-                    ["bc_info_target.data","bc_info_target.keep", "bc_info_target.last"])
-    CF.object_write("lan_out_target", ["data", "keep", "last","dest","user","id"],
-                    ["bc_info_target.data", "bc_info_target.keep", "bc_info_target.last","target_temp","0","0"])
-    CF.start_block("if", "bc_info_target.last==1")
-    CF.cline("active = 0")
-    CF.cline("source = 0")
-    CF.cline("pending = pending - 1")
-    CF.end_block()
-    CF.start_block("else")
-    CF.cline("active = 1")
-    CF.cline("source = 0")
-    CF.end_block()
-    CF.cline("fifo_out.write(fifo_out_target)")
-    CF.cline("lan_out.write(lan_out_target)")
-    CF.cline("target = target_temp")
-    CF.cline("ap_uint<16> address = bc_info_target.dest+1")
-    CF.end_block()
-    CF.start_block("else if","(!fifo_in.empty() && pending != 0)")
-    CF.cline("fifo_in_target = fifo_in.read()")
-    CF.cline("ap_uint<8> target_temp = destination[address]")
-    CF.cline("address = address + 1")
-    CF.object_write("fifo_out_target", ["data", "keep", "last"],
-                    ["fifo_in_target.data", "fifo_in_target.keep", "fifo_in_target.last"])
-    CF.object_write("lan_out_target", ["data", "keep", "last", "dest", "user", "id"],
-                    ["fifo_in_target.data", "fifo_in_target.keep", "fifo_in_target.last", "target_temp", "0", "0"])
-    CF.start_block("if", "pending!=1")
-    CF.cline("fifo_out.write(fifo_out_target)")
-    CF.end_block()
-    CF.cline("lan_out.write(lan_out_target)")
-    CF.start_block("if", "fifo_in_target.last==1")
-    CF.cline("active = 0")
-    CF.cline("source = 0")
-    CF.cline("pending = pending - 1")
-    CF.end_block()
-    CF.start_block("else")
-    CF.cline("active = 1")
-    CF.cline("source = 0")
-    CF.end_block()
-    CF.cline("target = target_temp")
-    CF.end_block()
-    CF.end_function()
-    return
-def create_hls_files(api_info,outDir):
+def create_hls_files (api_info, outDir):
     files_to_parse = []
     if len(api_info["direct"])!= 0:
         CF = cppMeFile(outDir + "/direct_channel")
         write_direct_channel(CF,api_info["direct"])
-        #Uncomment once we have written this filel
         files_to_parse.append("direct_channel")
     if len(api_info["broadcast"])!=0:
         CF = cppMeFile(outDir + "/broadcast_localizer")
