@@ -53,7 +53,20 @@ class tclMeFile():
                 self.fileHandle.write("# " + fullname + ":" + str(caller.lineno) + '\n')
             self.prev_line = caller.lineno
         self.tprint_raw(cmd, end)
-
+    def tlines(self,array):
+        for line in array:
+            self.tprint(line)
+    def create_bd(self,name,clock,freq,reset):
+        self.tlines(["create_bd_design "+name,
+                     "create_bd_port -dir I -type clk -freq_hz "+str(freq)+" "+clock,
+                     "create_bd_port -dir I -type rst "+reset,
+                     "set_property CONFIG.ASSOCIATED_RESET {"+reset+"} [get_bd_ports /"+clock+"]"])
+    def add_ip_repo(self, repoDir):
+        self.tlines(["set existing_ip_repo_path [ get_property ip_repo_paths [current_project] ]",
+                     "set addition_ip_repo_path "+repoDir,
+                     "set new_ip_repo_path \"${existing_ip_repo_path} ${addition_ip_repo_path}\"",
+                     "set_property ip_repo_paths $new_ip_repo_path [current_project]",
+                     "update_ip_catalog -rebuild -scan_changes"])
     def createHierarchy(self, hierarchy):
         """
         Does what it says on the tin.
@@ -109,6 +122,12 @@ class tclMeFile():
                 self.tprint('set_property  ' + key + ' ' + value +  ' [get_bd_addr_segs {' + master + '/SEG_' + slave_inst + '_' + slave_base + '}]')
             else:
                 self.tprint('set_property  ' + key + ' ' + value +  ' [get_bd_addr_segs {' + master + '/SEG_' + slave_port + '_' + slave_base + '}]')
+    def add_if_to_clk(self,interface,clock):
+        self.tprint("addIfToClock "+clock+" " + interface)
+    def setup_axis_link(self,name,bytes,keep,last,dest,id,user):
+        self.setPortProperties(name, ["CONFIG.HAS_TKEEP {"+ str(keep)+"}", "CONFIG.HAS_TLAST {"+ str(last)+"}",
+                                      "CONFIG.TDEST_WIDTH {"+ str(dest)+"}", "CONFIG.TDATA_NUM_BYTES {"+ str(bytes)+"}",
+                                      "CONFIG.TID_WIDTH {"+ str(id)+"}", "CONFIG.TUSER_WIDTH {"+ str(user)+"}"])
     def add_intf_pin(self,pin_name, intf_type, type):
         self.tprint("create_bd_intf_pin -mode "+type+" -vlnv "+intf_type+" "+pin_name)
     def add_intf_port(self, port_name, intf_type, type):
@@ -117,7 +136,7 @@ class tclMeFile():
         self.add_intf_port(port_name, 'xilinx.com:interface:axis_rtl:1.0', type)
     def add_axi4_port(self, port_name, type):
         self.add_intf_port(port_name, 'xilinx.com:interface:aximm_rtl:1.0', type)
-    def instBlock(self, ip):
+    def instBlockcc(self,ip,clk):
 
         self.tprint('addip ' + ip['name'] + ' ' +  ip['inst'])
         
@@ -126,7 +145,7 @@ class tclMeFile():
 
         if 'clks' in ip and ip['clks'] != None:
             for clk_name in ip['clks']:
-                self.tprint('connect_bd_net [get_bd_ports CLK] [get_bd_pins ' + ip['inst'] + '/' + clk_name + ']')
+                self.tprint('connect_bd_net [get_bd_ports '+clk+'] [get_bd_pins ' + ip['inst'] + '/' + clk_name + ']')
 
         if 'resetns' in ip and ip['resetns'] != None:
             if ip['resetns_port'] != None:
@@ -136,7 +155,13 @@ class tclMeFile():
                 for reset_name in ip['resetns']:
                     self.tprint('connect_bd_net [get_bd_ports ARESETN] [get_bd_pins ' + ip['inst'] + '/' + reset_name + ']')
 
+    def instBlock(self, ip):
+        self.instBlockcc(ip, "CLK")
+
     def instModule(self, ip):
+        self.instModulecc(ip, "CLK")
+
+    def instModulecc(self, ip,clk):
 
         self.tprint('create_bd_cell -type module -reference '+ip['name']+' '+ip['inst'])
         if 'properties' in ip and ip['properties'] != None:
@@ -144,7 +169,7 @@ class tclMeFile():
 
         if 'clks' in ip and ip['clks'] != None:
             for clk_name in ip['clks']:
-                self.tprint('connect_bd_net [get_bd_ports CLK] [get_bd_pins ' + ip['inst'] + '/' + clk_name + ']')
+                self.tprint('connect_bd_net [get_bd_ports '+clk+'] [get_bd_pins ' + ip['inst'] + '/' + clk_name + ']')
 
         if 'resetns' in ip and ip['resetns'] != None:
             if ip['resetns_port'] != None:
@@ -211,6 +236,10 @@ class tclMeFile():
             sink
         )
 
+    def validate(self):
+        self.tprint('validate_bd_design')
+    def save(self):
+        self.tprint('save_bd_design')
     def makeConnection(self, conn_type, source, sink):
         if conn_type == 'net':
             self.tprint('connect_bd_net [', end = '')

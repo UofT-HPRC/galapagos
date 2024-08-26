@@ -33,7 +33,8 @@ laniakea_middleware: guard-PROJECTNAME guard-CLUSTERFILE ${CLUSTERFILE}
 	python3.7 ${python_path}/globalFPGAParser.py --clusterFile=${CLUSTERFILE} --projectName=${PROJECTNAME}
 	python3.7 ${python_path}/createTopLevel.py
 
-
+apiquery: guard-APIFILE guard-PROJECTNAME ${APIFILE}
+	python3.7 ${python_path}/queryAPIInfo.py --apiFile=${APIFILE} --projectName=${PROJECTNAME}
 
 hlsmiddleware:
 	 $(MAKE) -C $(hls_path)

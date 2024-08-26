@@ -14,19 +14,15 @@ Each one takes care of one self-contained part of the TCL file generation.
 #creates the standard interfaces, same for all fpgas
 
 def createHierarchyTCL(project_name,outFile,kernel_properties,ctrl_ports_list, user_repo,fpga,is_gw,outDir,api_info):
-    dst_file = open(outFile, "w")
+    hier_file = tclMeFile(outFile,fpga)
     has_attached = False
     for prop in kernel_properties:
         if ((prop['type'] == 'ip') or (prop['type'] == 'cpp_vit') or (prop['type'] == 'cpp_viv') ):
             has_attached = True
     if is_gw and fpga['num'] == 0:
-        dst_file.write("set existing_ip_repo_path [ get_property ip_repo_paths [current_project] ]\n")
-        dst_file.write("set addition_ip_repo_path  " + outDir + "/Gateway_IP_repo"+ "\nset new_ip_repo_path \"${existing_ip_repo_path} ${addition_ip_repo_path}\"\n")
-        dst_file.write("set_property ip_repo_paths $new_ip_repo_path [current_project]\nupdate_ip_catalog -rebuild -scan_changes\n")
+        hier_file.add_ip_repo(outDir + "/Gateway_IP_repo")
     if has_attached:
-        dst_file.write("set existing_ip_repo_path [ get_property ip_repo_paths [current_project] ]\n")
-        dst_file.write("set addition_ip_repo_path "+user_repo+"\nset new_ip_repo_path \"${existing_ip_repo_path} ${addition_ip_repo_path}\"\n")
-        dst_file.write("set_property ip_repo_paths $new_ip_repo_path [current_project]\nupdate_ip_catalog -rebuild -scan_changes\n")
+        hier_file.add_ip_repo(user_repo)
     for prop in kernel_properties:
         kern = prop['inst']
         name = prop['name']
@@ -36,28 +32,29 @@ def createHierarchyTCL(project_name,outFile,kernel_properties,ctrl_ports_list, u
         rstname = prop['reset_name']
         wanena = prop['wan_enabled'][0]
         wannam = prop['wan_name'][0]
-        file_contents = ""
-        file_contents = file_contents +"create_bd_design \"user_"+str(kern)+"_i\"\n"
-        file_contents = file_contents + "create_bd_port -dir I -type clk -freq_hz 199998001 "+clkname+"\n"
+        id_prt = ""
+        if prop['has_id']:
+            id_prt = str(prop['id_port'])
+        hier_file.create_bd("\"user_"+str(kern)+"_i\"",clkname,199998001,rstname)
         if fpga.has_control:
             if kern in ctrl_ports_list:
-                file_contents = file_contents +"create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 AXI_CONTROL\n"
-                file_contents = file_contents + "set_property -dict [ list CONFIG.DATA_WIDTH {128} CONFIG.ADDR_WIDTH {40} CONFIG.ID_WIDTH {16} CONFIG.ARUSER_WIDTH {16} CONFIG.AWUSER_WIDTH {16} ] [get_bd_intf_ports /AXI_CONTROL]\n"
-        file_contents = file_contents + "create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 "+Sname+"\n"
-        file_contents = file_contents + "addIfToClock "+clkname+" " + Sname + "\n"
-        file_contents = file_contents + "create_bd_intf_port -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 "+Mname+"\n"
-        file_contents = file_contents + "addIfToClock "+clkname+" " + Mname + "\n"
+                hier_file.add_axi4_port("AXI_CONTROL","Slave")
+                hier_file.tprint("set_property -dict [ list CONFIG.DATA_WIDTH {128} CONFIG.ADDR_WIDTH {40} CONFIG.ID_WIDTH {16} CONFIG.ARUSER_WIDTH {16} CONFIG.AWUSER_WIDTH {16} ] [get_bd_intf_ports /AXI_CONTROL]")
+        hier_file.add_axis_port(Sname,"Slave")
+        hier_file.add_if_to_clk(Sname,clkname)
+        hier_file.add_axis_port(Mname,  "Master")
+        hier_file.add_if_to_clk(Mname, clkname)
         if wanena:
-            file_contents = file_contents + "create_bd_intf_port -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 "+wannam+"\n"
-            file_contents = file_contents + "addIfToClock "+clkname+" " + wannam + "\n"
-        file_contents = file_contents + "create_bd_port -dir I -type rst "+rstname+"\nset_property CONFIG.ASSOCIATED_RESET {"+rstname+"} [get_bd_ports /"+clkname+"]\n"
-        file_contents = file_contents + "set_property -dict [ list CONFIG.HAS_TKEEP {1} CONFIG.HAS_TLAST {1} CONFIG.TDEST_WIDTH {24} CONFIG.TDATA_NUM_BYTES {64} CONFIG.TID_WIDTH {24} CONFIG.TUSER_WIDTH {8} ] [get_bd_intf_ports /"+Sname+"]\n"
+            hier_file.add_axis_port(wannam, "Master")
+            hier_file.add_if_to_clk(wannam, clkname)
         if is_gw:
-            file_contents = file_contents + "set_property -dict [ list CONFIG.HAS_TKEEP {1} CONFIG.HAS_TLAST {1} CONFIG.TDEST_WIDTH {16} CONFIG.TDATA_NUM_BYTES {64} CONFIG.TID_WIDTH {0} CONFIG.TUSER_WIDTH {48} ] [get_bd_intf_ports /" + Sname + "]\n"
-            file_contents = file_contents + "create_bd_intf_port -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 Direct_port\n"
-            file_contents = file_contents + "addIfToClock "+clkname+" Direct_port\n"
+            hier_file.setup_axis_link("/" + Sname, 64, 1, 1, 16, 0, 48)
+            hier_file.add_axis_port("Direct_port", "Master")
+            hier_file.add_if_to_clk("Direct_port", clkname)
+        else:
+            hier_file.setup_axis_link("/" + Sname, 64, 1, 1, 24, 24, 8)
         if prop['has_id']:
-            file_contents = file_contents + "create_bd_port -dir I -from 23 -to 0 " + prop['id_port'] + "\n"
+            hier_file.tprint("create_bd_port -dir I -from 23 -to 0 " + id_prt)
         if (is_gw and fpga['num'] == 0):
             cwd = os.getcwd()
             files_to_parse = gatewayFileGenerator.create_hls_files(api_info, outDir)
@@ -66,62 +63,158 @@ def createHierarchyTCL(project_name,outFile,kernel_properties,ctrl_ports_list, u
                 subprocess.run(["cp", outDir + "/"+file_inst+".cpp",
                             outDir + "/Gateway_IP_repo/"+file_inst+".cpp"])
                 os.chdir(outDir + "/Gateway_IP_repo/")
-                tcl_file = open( outDir + "/Gateway_IP_repo/" + file_inst + ".tcl", "w")
-                tcl_file.write("set part_name " + fpga['part'] + "\n")
-                tcl_file.write(
-                    "open_project " + file_inst + "\nset_top " + file_inst +
-                    "\nopen_solution \"solution1\"\nset_part ${part_name}\n")
-                tcl_file.write("add_files " + outDir + "/Gateway_IP_repo/" + file_inst + ".cpp\n")
-                tcl_file.write("create_clock -period 199.498000MHz -name default\ncsynth_design\n")
-                tcl_file.write("export_design -format ip_catalog\nclose_project\nquit\n")
+                tcl_file = tclMeFile( outDir + "/Gateway_IP_repo/" + file_inst, fpga)
+                tcl_file.tlines(["set part_name " + fpga['part'],
+                    "open_project " + file_inst,
+                    "set_top " + file_inst,
+                    "open_solution \"solution1\"",
+                    "set_part ${part_name}",
+                    "add_files " + outDir + "/Gateway_IP_repo/" + file_inst + ".cpp",
+                    "create_clock -period 199.498000MHz -name default",
+                    "csynth_design",
+                    "export_design -format ip_catalog",
+                    "close_project",
+                    "quit"])
                 tcl_file.close()
                 subprocess.run(["vitis_hls", outDir + "/Gateway_IP_repo/" + file_inst + ".tcl"])
                 os.chdir(cwd)
-            file_contents = file_contents + ("source "+ outDir + '/0_gateway.tcl\n')
-            print("Sourcing gateway at "+outDir + '/0_gateway.tcl')
-        elif prop['type'] == 'ip':
-            file_contents=file_contents + "addip :" + name + " userIPinstance\n"
-        elif (prop['type'] == 'verilog'):
-            file_contents = file_contents + "add_files -norecurse " + user_repo + "/" + name + ".v\nupdate_compile_order -fileset sources_1\n"
-            file_contents = file_contents + "create_bd_cell -type module -reference " + name + " userIPinstance\n"
-        elif (prop['type'] == 'vhdl'):
-            file_contents = file_contents + "add_files -norecurse " + user_repo + "/" + name + ".vhdl\nupdate_compile_order -fileset sources_1\n"
-            file_contents = file_contents + "create_bd_cell -type module -reference " + name + " userIPinstance\n"
-        elif (prop['type'] == 'system_verilog'):
-            file_contents = file_contents + "add_files -norecurse " + user_repo + "/" + name + ".sv\nupdate_compile_order -fileset sources_1\n"
-            file_contents = file_contents + "create_bd_cell -type module -reference " + name + " userIPinstance\n"
-        elif (prop['type'] == 'tcl'):
-            file_contents = file_contents + "source " + user_repo + "/" + name + ".tcl\n"
+            hier_file.addSource(outDir + '/0_gateway.tcl')
         elif ((prop['type'] == 'cpp_vit') or (prop['type'] == 'cpp_viv')):
-            file_contents = file_contents + "addip :" + name + " userIPinstance\n"
+            hier_file.instBlockcc(
+                {'name': name,
+                 'resetns_port': rstname,
+                 'clock_port': clkname,
+                 'inst': 'userIPinstance',
+                 'clks': [clkname],
+                 'resetns': [rstname],
+                 },
+                clkname
+            )
             cwd = os.getcwd()
             subprocess.run(["mkdir","-p",user_repo + "/__galapagos_autogen_"+project_name+"/"+name])
             subprocess.run(["cp", user_repo+"/"+name+".cpp", user_repo + "/__galapagos_autogen_"+project_name+"/"+name+"/"+name+".cpp"])
             os.chdir(user_repo + "/__galapagos_autogen_"+project_name+"/"+name)
-            tcl_file = open(user_repo + "/__galapagos_autogen_"+project_name+"/"+name+"/"+name+".tcl", "w")
-            tcl_file.write("set part_name "+fpga['part']+"\n")
-            tcl_file.write("open_project "+name+"\nset_top "+name+"\nopen_solution \"solution1\"\nset_part ${part_name}\n")
-            tcl_file.write("add_files "+ user_repo + "/__galapagos_autogen_"+project_name+"/"+name+"/"+name+".cpp\n")
-            tcl_file.write("create_clock -period 199.498000MHz -name default\ncsynth_design\nexport_design -format ip_catalog\nclose_project\nquit\n")
+            tcl_file = tclMeFile(user_repo + "/__galapagos_autogen_"+project_name+"/"+name+"/"+name, fpga)
+            tcl_file.tlines(["set part_name "+fpga['part'],
+                           "open_project "+name,
+                           "set_top "+name,
+                           "open_solution \"solution1\"",
+                           "set_part ${part_name}",
+                           "add_files "+ user_repo + "/__galapagos_autogen_"+project_name+"/"+name+"/"+name+".cpp",
+                           "create_clock -period 199.498000MHz -name default",
+                           "csynth_design",
+                           "export_design -format ip_catalog",
+                           "close_project",
+                           "quit"])
             tcl_file.close()
             if (prop['type'] == 'cpp_vit'):
                 subprocess.run(["vitis_hls",user_repo + "/__galapagos_autogen_"+project_name+"/"+name+"/"+name+".tcl"])
             else:
                 subprocess.run(["vivado_hls", user_repo + "/__galapagos_autogen_"+project_name+"/" + name + "/" + name + ".tcl"])
             os.chdir(cwd)
+        elif prop['type'] == 'ip':
+            hier_file.instBlockcc(
+                {'name': name,
+                 'resetns_port': rstname,
+                 'clock_port': clkname,
+                 'inst': 'userIPinstance',
+                 'clks': [clkname],
+                 'resetns': [rstname],
+                 },
+                clkname
+            )
+        elif (prop['type'] == 'verilog'):
+            hier_file.addVerilog(user_repo + "/" + name +".v")
+            hier_file.instModulecc(
+                {'name': name,
+                 'resetns_port': rstname,
+                 'clock_port': clkname,
+                 'inst': 'userIPinstance',
+                 'clks': [clkname],
+                 'resetns': [rstname],
+                 },
+                clkname
+            )
+        elif (prop['type'] == 'vhdl'):
+            hier_file.addVerilog(user_repo + "/" + name + ".vhdl")
+            hier_file.instModulecc(
+                {'name': name,
+                 'resetns_port': rstname,
+                 'clock_port': clkname,
+                 'inst': 'userIPinstance',
+                 'clks': [clkname],
+                 'resetns': [rstname],
+                 },
+                clkname
+            )
+        elif (prop['type'] == 'system_verilog'):
+            hier_file.addVerilog(user_repo + "/" + name + ".sv")
+            hier_file.instModulecc(
+                {'name': name,
+                 'resetns_port': rstname,
+                 'clock_port': clkname,
+                 'inst': 'userIPinstance',
+                 'clks': [clkname],
+                 'resetns': [rstname],
+                 },
+                clkname
+            )
+        elif (prop['type'] == 'tcl'):
+            hier_file.addSource(user_repo + "/" + name + ".tcl")
         if ((prop['type'] != 'open') and (prop['type'] != 'tcl')):
-            file_contents = file_contents + "connect_bd_intf_net [get_bd_intf_ports " + Sname + "] [get_bd_intf_pins userIPinstance/" + Sname + "]\n"
-            file_contents = file_contents + "connect_bd_intf_net [get_bd_intf_ports " + Mname + "] [get_bd_intf_pins userIPinstance/" + Mname + "]\n"
+            hier_file.makeConnection(
+                "intf",
+                {
+                    'name': None,
+                    'type': 'intf_port',
+                    'port_name': Sname
+                },
+                {'name': 'userIPinstance',
+                 'type': 'intf',
+                 'port_name': Sname
+                 }
+            )
+            hier_file.makeConnection(
+                "intf",
+                {
+                    'name': None,
+                    'type': 'intf_port',
+                    'port_name': Mname
+                },
+                {'name': 'userIPinstance',
+                 'type': 'intf',
+                 'port_name': Mname
+                 }
+            )
             if wanena:
-                file_contents = file_contents + "connect_bd_intf_net [get_bd_intf_ports " + wannam + "] [get_bd_intf_pins userIPinstance/" + wannam + "]\n"
+                hier_file.makeConnection(
+                    "intf",
+                    {
+                        'name': None,
+                        'type': 'intf_port',
+                        'port_name': wannam
+                    },
+                    {'name': 'userIPinstance',
+                     'type': 'intf',
+                     'port_name': wannam
+                     }
+                )
             if prop['has_id']:
-                file_contents = file_contents + "connect_bd_net [get_bd_ports " + prop['id_port'] + "] [get_bd_pins userIPinstance/" + prop['id_port'] + "]\n"
-            file_contents = file_contents + "connect_bd_net [get_bd_ports " + clkname + "] [get_bd_pins userIPinstance/" + clkname + "]\n"
-            file_contents = file_contents + "connect_bd_net [get_bd_ports " + rstname + "] [get_bd_pins userIPinstance/" + rstname + "]\n"
-            file_contents = file_contents + "validate_bd_design\n"
-
-        file_contents = file_contents + "save_bd_design\n"
-        dst_file.write(file_contents)
+                hier_file.makeConnection(
+                    "net",
+                    {
+                        'name': None,
+                        'type': 'port',
+                        'port_name': id_prt
+                    },
+                    {'name': 'userIPinstance',
+                     'type': 'pin',
+                     'port_name': id_prt
+                     }
+                )
+            hier_file.validate()
+        hier_file.save()
+    hier_file.close()
 
 def userApplicationRegionControlInst(tcl_user_app,kern_name_list,kern_prop_list):
     """
@@ -1493,7 +1586,7 @@ def userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, 
                         1
                     )
     createTopLevelVerilog(outDir + "/topLevel.v", output_path + "/../middleware/python",kernel_properties,control_port_names_list,tcl_user_app.fpga,is_gw)
-    createHierarchyTCL(project_name,outDir + "/userkernels.tcl",kernel_properties,control_port_names_list,tcl_user_app.fpga['ip_folder'],tcl_user_app.fpga,is_gw,outDir,api_info)
+    createHierarchyTCL(project_name,outDir + "/userkernels",kernel_properties,control_port_names_list,tcl_user_app.fpga['ip_folder'],tcl_user_app.fpga,is_gw,outDir,api_info)
     m_axis_array = getInterfaces(tcl_user_app.fpga, 'm_axis', 'scope', 'global')
 
     # Now connect all m_axis interfaces through the output switch into the

@@ -32,6 +32,11 @@ prepare:
 install:
 	source build.sh
 
+query: ${APIFILE} guard-APIFILE guard-PROJECTNAME
+	mkdir -p $(GALAPAGOS_PATH)/projects
+	$(MAKE) -C $(MIDDLEWARE_DIR) apiquery
+
+
 middleware: ${LOGICALFILE} ${MAPFILE} guard-LOGICALFILE guard-MAPFILE guard-PROJECTNAME
 	mkdir -p $(GALAPAGOS_PATH)/projects
 	$(MAKE) -C $(MIDDLEWARE_DIR) middleware 

@@ -52,6 +52,41 @@ def parseAPI(topAPI):
                    "port_regions": [broadcast_start,control_start,control_multiple_start,last_port]}
     print(return_dict)
     return return_dict
+def generate_api_report(api_info,header):
+    if not api_info["has_gateway"]:
+        return "No Gateway found in project"
+    string = ""
+    if len(api_info["direct"]) != 0:
+        if header:
+            string = string + "Direct Ports:\nname,type,port number,target\n"
+        for port in api_info["direct"]:
+            string = string + str(port["tag"])+",direct,"+str(port["num"])+","+str(port["target"])+"\n"
+    if len(api_info["broadcast"]) != 0:
+        if header:
+            string = string + "\n\nBroadcast Ports:\nname,type,port number,targets\n"
+        for port in api_info["broadcast"]:
+            string = string + str(port["tag"])+",broadcast,"+str(port["num"])
+            for target in port["target"]:
+                string = string + "," + str(target)
+            string = string + "\n"
+    if len(api_info["control"]) != 0:
+        if header:
+            string = string + "\n\nControl Ports:\nname,type,port number,target, address, range\n"
+        for port in api_info["control"]:
+            print(port)
+            string = (string + str(port["tag"])+",direct,"+str(port["num"])+","+str(port["target"])+
+                      ","+str(port["address"])+","+str(port["maxRange"])+"\n")
+    if len(api_info["control_multiple"]) != 0:
+        if header:
+            string = string + "\n\nControl Broadcast Ports:"
+            string = string + "\nname,type,port number,range, target, address, target, address, ...\n"
+        for port in api_info["control_multiple"]:
+            string = string + str(port["tag"])+",control broadcast,"+str(port["num"])+str(port["maxRange"])
+            for target in port["target"]:
+                string = string + "," + str(target["num"])+ "," + str(target["address"])
+            string = string + "\n"
+    return string
+
 def generate_parser (api_info,gatewayFile):
     print("Generating the gateway file")
     number_of_MI = 3
@@ -212,7 +247,6 @@ def generate_parser (api_info,gatewayFile):
             }
         )
         props = ["CONFIG.M00_AXIS_BASETDEST {0x00000000}","CONFIG.M00_AXIS_HIGHTDEST {0xFFFFFFFF}"]
-        gatewayFile.setProperties("parser/output_direct_switch",props)
         gatewayFile.setProperties("parser/output_lan_switch", props)
         current_port = 0
         is_props = []
@@ -464,8 +498,17 @@ def implement_broadcast_section(gatewayFile):
     return
 def implement_control_section(array,multiple_array,gatewayFile,outDir):
     return
-def makeGWFiles (fpga, outDir,topAPI):
+def query_API(outDir,topAPI):
     api_info = parseAPI(topAPI)
+    gatewayInfoFile = open(outDir + '/gateway_info.txt', "w")
+    gatewayInfoFile.write(generate_api_report(api_info, True))
+    gatewayInfoFile.close()
+    gatewayInfoFile2 = open(outDir + '/gateway_info.csv', "w")
+    gatewayInfoFile2.write(generate_api_report(api_info, False))
+    gatewayInfoFile2.close()
+    return api_info
+def makeGWFiles (fpga, outDir,topAPI):
+    api_info= query_API(outDir,topAPI)
     gatewayFile = tclMeFile(outDir + '/0_gateway', fpga)
     generate_parser(api_info,gatewayFile)
     if (len(api_info["control"]) == 0) and (len(api_info["control_multiple"]) == 0):

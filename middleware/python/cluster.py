@@ -352,7 +352,7 @@ class cluster(abstractDict):
         for node_idx, node in enumerate(self.nodes):
             if (node_idx == 0):
                 outDir = path + '/' + self.name + '/' + str(node['num'])
-                api_info=gatewayFileGenerator.makeGWFiles(node,outDir,topAPI)
+                api_info = gatewayFileGenerator.makeGWFiles(node, outDir, topAPI)
         return api_info
     def getListOfKernelIPs(self):
 
