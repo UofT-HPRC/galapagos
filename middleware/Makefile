@@ -24,6 +24,9 @@ python_path = $(middleware_path)/python
 
 all: middleware hlsmiddleware
 
+merge: guard-PROJECTNAME
+	python3.7 ${python_path}/join_clusters.py --projectName=${PROJECTNAME} --clinfoFiles="$(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))"
+
 middleware: guard-LOGICALFILE guard-MAPFILE guard-PROJECTNAME ${LOGICALFILE} ${MAPFILE}
 	python3.7 ${python_path}/globalFPGAParser.py --logicalFile=${LOGICALFILE} \
 		--mapFile=${MAPFILE} --projectName=${PROJECTNAME}

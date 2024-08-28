@@ -2,6 +2,8 @@ import argparse
 import socket
 
 # Definitions
+DNS_PORT = 9001
+
 DATA_WIDTH = 512 # bits
 DATA_WIDTH_BYTES = int(DATA_WIDTH/8) # bytes
 IP_LENGTH = 32
@@ -126,14 +128,3 @@ def ip_server(server_ip, in_port, ip_file):
 		sock.sendto(response_packet, requestor_address)
 
 if (__name__ == "__main__"):
-    parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('server_ip_address', type=str, 
-                        help='IP address of this server')
-    parser.add_argument('in_port', type=int, 
-                        help='port to read requests from')
-    parser.add_argument('out_port', type=int, 
-                        help='port to write requests to')
-    parser.add_argument('ip_file', type=str,
-                        help='path to file with list of IP addresses. Each line should look like: KERNEL_ID:KERNEL_IP')
-    args = parser.parse_args()
-    ip_server(args.server_ip_address, args.in_port, args.ip_file)

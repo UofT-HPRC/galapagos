@@ -24,18 +24,18 @@ HLSMIDDLEWARE_DIR = $(GALAPAGOS_PATH)/middleware/hls
 
 .PHONY: middleware
 
-all: middleware
+full: middleware
 
 prepare:
 	source parameterize.sh
-
-install:
-	source build.sh
 
 query: ${APIFILE} guard-APIFILE guard-PROJECTNAME
 	mkdir -p $(GALAPAGOS_PATH)/projects
 	$(MAKE) -C $(MIDDLEWARE_DIR) apiquery
 
+merge:
+	mkdir -p $(GALAPAGOS_PATH)/projects
+	python3.7 ${MIDDLEWARE_DIR}/python/join_clusters.py --projectName=${PROJECTNAME} --clinfoFiles="$(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))"
 
 middleware: ${LOGICALFILE} ${MAPFILE} guard-LOGICALFILE guard-MAPFILE guard-PROJECTNAME
 	mkdir -p $(GALAPAGOS_PATH)/projects
@@ -59,3 +59,6 @@ hlsmiddleware:
 clean:
 	$(MAKE) -C $(MIDDLEWARE_DIR) clean
 	$(MAKE) -C $(SHELLS_DIR) clean
+
+%::
+	@true

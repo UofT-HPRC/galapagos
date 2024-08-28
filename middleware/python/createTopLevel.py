@@ -120,7 +120,7 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,control_na
         if props['wan_enabled'][0]:
             dst_file.write(add_axi_wire_field("  ", str(name) + "_SWAN","t", wan_axis_fields, wan_axis_sizes, 0, 512, 0) + "\n")
         if is_gw:
-            dst_file.write(add_axi_wire_field("  ","Direct_port","t",["data","keep","user","dest","last","valid","ready"],[512,64,48,16,1,1,1],0,512,0)+"\n")
+            dst_file.write(add_axi_wire_field("  ","Direct_port","t",["data","keep","user","last","valid","ready"],[512,64,64,1,1,1],0,512,0)+"\n")
     if fpga['board'] == 'u200':
         copy_file(dst_file, source_dir + "/../verilog/shellTop_pt2_u200.v")
     else:
@@ -140,12 +140,15 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,control_na
         if fpga.has_control:
             if name in control_names:
                 dst_file.write(construct_axi_defn("      ",str(name)+"_CONTROL",str(name)+"_CONTROL",True,True))
-        dst_file.write(construct_axis_defn("      ",str(name)+"_MAXIS",str(name)+"_MAXIS",True,True,True))
+        if is_gw:
+            dst_file.write(construct_axis_defn("      ",str(name)+"_MAXIS",str(name)+"_MAXIS",True,True,False))
+        else:
+            dst_file.write(construct_axis_defn("      ",str(name)+"_MAXIS",str(name)+"_MAXIS",True,True,True))
         dst_file.write(add_axi_defn_field_set_id("      ",str(name)+"_SAXIS",str(name)+"_SAXIS","t",axis_fields,props['id'],False))
         if props['wan_enabled'][0]:
             dst_file.write(add_axi_defn_field_set_user("      ",str(name) + "_SWAN",str(name) + "_SWAN","t",wan_axis_fields,False,0)+"\n")
         if is_gw:
-            dst_file.write(add_axi_defn_field("      ","Direct_port","Direct_port","t",["data","keep","user","dest","last","valid","ready"],0,1))
+            dst_file.write(add_axi_defn_field("      ","Direct_port","Direct_port","t",["data","keep","user","last","valid","ready"],0,1))
     dst_file.write("    );\n\n\n")
     
     for props in kernel_properties:
@@ -161,13 +164,13 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,control_na
         if fpga.has_control:
             if name in control_names:
                 dst_file.write(construct_axi_defn("    ",str(name)+"_CONTROL","AXI_CONTROL",True,True))
-        dst_file.write(construct_axis_defn("    ",str(name)+"_MAXIS",Sname,True,True,True))
+        dst_file.write(construct_axis_defn("    ",str(name)+"_MAXIS",Sname,True,True, (not is_gw)))
         dst_file.write(construct_axis_defn("    ",str(name)+"_SAXIS",Mname,True,False,False))
 
         if props['wan_enabled'][0]:
             dst_file.write(add_axi_defn_field("      ", str(name) + "_SWAN", props['wan_name'][0], "t", wan_axis_fields, False, True) + "\n")
         if is_gw:
-            dst_file.write(add_axi_defn_field("      ","Direct_port","Direct_port","t",["data","keep","user","dest","last","valid","ready"],0,1))
+            dst_file.write(add_axi_defn_field("      ","Direct_port","Direct_port","t",["data","keep","user","last","valid","ready"],0,1))
         dst_file.write("    );\n\n\n")
     dst_file.write("  endmodule")
     dst_file.close()

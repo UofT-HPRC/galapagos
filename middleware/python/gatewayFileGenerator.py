@@ -3,7 +3,7 @@ from tclMe import tclMeFile
 from cppMe import cppMeFile
 import os
 
-def parseAPI(topAPI):
+def parseAPI(topAPI,Gateway_ip):
     direct = []
     broadcast = []
     control = []
@@ -47,10 +47,10 @@ def parseAPI(topAPI):
         control_multiple[idx]['num'] = current_port
         current_port = current_port + 1
     last_port = current_port-1
-    return_dict = {"has_gateway": True,"direct": direct, "broadcast": broadcast, "control": control,
-                   "control_multiple": control_multiple,
-                   "port_regions": [broadcast_start,control_start,control_multiple_start,last_port]}
-    print(return_dict)
+    return_dict = {"has_gateway": True, "direct": direct, "broadcast": broadcast, "control": control,
+                   "control_multiple": control_multiple, "gateway_ip": Gateway_ip,
+                   "port_regions": [broadcast_start,control_start,control_multiple_start,last_port],
+                   "length": last_port}
     return return_dict
 def generate_api_report(api_info,header):
     if not api_info["has_gateway"]:
@@ -73,7 +73,6 @@ def generate_api_report(api_info,header):
         if header:
             string = string + "\n\nControl Ports:\nname,type,port number,target, address, range\n"
         for port in api_info["control"]:
-            print(port)
             string = (string + str(port["tag"])+",direct,"+str(port["num"])+","+str(port["target"])+
                       ","+str(port["address"])+","+str(port["maxRange"])+"\n")
     if len(api_info["control_multiple"]) != 0:
@@ -81,14 +80,13 @@ def generate_api_report(api_info,header):
             string = string + "\n\nControl Broadcast Ports:"
             string = string + "\nname,type,port number,range, target, address, target, address, ...\n"
         for port in api_info["control_multiple"]:
-            string = string + str(port["tag"])+",control broadcast,"+str(port["num"])+str(port["maxRange"])
+            string = string + str(port["tag"])+",control broadcast,"+str(port["num"])+","+str(port["maxRange"])
             for target in port["target"]:
                 string = string + "," + str(target["num"])+ "," + str(target["address"])
             string = string + "\n"
     return string
 
 def generate_parser (api_info,gatewayFile):
-    print("Generating the gateway file")
     number_of_MI = 3
     if len(api_info["direct"]) == 0:
         number_of_MI = number_of_MI - 1
@@ -498,8 +496,8 @@ def implement_broadcast_section(gatewayFile):
     return
 def implement_control_section(array,multiple_array,gatewayFile,outDir):
     return
-def query_API(outDir,topAPI):
-    api_info = parseAPI(topAPI)
+def query_API(outDir,topAPI,Gateway_ip):
+    api_info = parseAPI(topAPI,Gateway_ip)
     gatewayInfoFile = open(outDir + '/gateway_info.txt', "w")
     gatewayInfoFile.write(generate_api_report(api_info, True))
     gatewayInfoFile.close()
@@ -507,8 +505,8 @@ def query_API(outDir,topAPI):
     gatewayInfoFile2.write(generate_api_report(api_info, False))
     gatewayInfoFile2.close()
     return api_info
-def makeGWFiles (fpga, outDir,topAPI):
-    api_info= query_API(outDir,topAPI)
+def makeGWFiles (fpga, outDir,topAPI,Gateway_ip):
+    api_info= query_API(outDir,topAPI,Gateway_ip)
     gatewayFile = tclMeFile(outDir + '/0_gateway', fpga)
     generate_parser(api_info,gatewayFile)
     if (len(api_info["control"]) == 0) and (len(api_info["control_multiple"]) == 0):

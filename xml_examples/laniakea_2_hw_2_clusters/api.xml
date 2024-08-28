@@ -22,20 +22,10 @@
              <address>0xA0000000 </address>
         </target>
         <target>
-             <num>5 </num>
+             <num>3 </num>
              <address>0xA0001000 </address>
         </target>
         <maxRange> 4K </maxRange>
-    </port>
-    <port>
-        <form> direct </form>
-        <tag> direct_to_5 </tag>
-        <target> 5 </target>
-    </port>
-    <port>
-        <form> direct </form>
-        <tag> direct_to_7 </tag>
-        <target> 7 </target>
     </port>
     <port>
         <form> direct </form>
@@ -44,11 +34,11 @@
     </port>
     <port>
         <form> broadcast </form>
-        <tag> bc_2345 </tag>
-        <target> 4 </target>
+        <tag> bc_1234 </tag>
+        <target> 1 </target>
         <target> 2 </target>
         <target> 3 </target>
-        <target> 5 </target>
+        <target> 4 </target>
     </port>
     <port>
         <form> control </form>

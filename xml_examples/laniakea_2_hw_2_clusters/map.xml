@@ -5,6 +5,7 @@
         <comm> udp </comm>
         <type> hw </type>
         <kernel> 1 </kernel>
+        <kernel> 2 </kernel>
         <autorun> False </autorun>
         <mac> 0c:c4:2b:2d:bd:01  </mac>
         <ip> 10.1.9.201 </ip>
@@ -13,7 +14,8 @@
         <board> sidewinder </board>
         <comm> udp </comm>
         <type> hw </type>
-        <kernel> 2 </kernel>
+        <kernel> 3 </kernel>
+        <kernel> 4 </kernel>
         <autorun> False </autorun>
         <mac>  0c:c4:2b:2d:bd:02 </mac>
         <ip> 10.1.9.202 </ip>

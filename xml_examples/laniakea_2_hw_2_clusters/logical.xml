@@ -17,13 +17,14 @@
             <name> out_data </name>
         </m_axis>
         <wan>
-            <enabled> False </enabled>
+            <enabled> True </enabled>
             <name> laniakea_wan </name>
         </wan>
         <aresetn> ap_rst_n </aresetn>
     </kernel>
         <kernel> test_core 
         <num> 2 </num>
+        <rep> 3 </rep>
         <type> open </type>
         <control> False </control>
         <control_range> 4k </control_range>

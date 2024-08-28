@@ -13,7 +13,7 @@ Each one takes care of one self-contained part of the TCL file generation.
 #interfaces constant
 #creates the standard interfaces, same for all fpgas
 
-def createHierarchyTCL(project_name,outFile,kernel_properties,ctrl_ports_list, user_repo,fpga,is_gw,outDir,api_info):
+def createHierarchyTCL(project_name,outFile,kernel_properties,ctrl_ports_list, user_repo,fpga,is_gw,outDir,api_info,CAMILO_TEMP_DEBUG):
     hier_file = tclMeFile(outFile,fpga)
     has_attached = False
     for prop in kernel_properties:
@@ -55,7 +55,7 @@ def createHierarchyTCL(project_name,outFile,kernel_properties,ctrl_ports_list, u
             hier_file.setup_axis_link("/" + Sname, 64, 1, 1, 24, 24, 8)
         if prop['has_id']:
             hier_file.tprint("create_bd_port -dir I -from 23 -to 0 " + id_prt)
-        if (is_gw and fpga['num'] == 0):
+        if (is_gw and fpga['num'] == 0 and (not CAMILO_TEMP_DEBUG)):
             cwd = os.getcwd()
             files_to_parse = gatewayFileGenerator.create_hls_files(api_info, outDir)
             subprocess.run(["mkdir", "-p", outDir + "/Gateway_IP_repo"])
@@ -64,7 +64,8 @@ def createHierarchyTCL(project_name,outFile,kernel_properties,ctrl_ports_list, u
                             outDir + "/Gateway_IP_repo/"+file_inst+".cpp"])
                 os.chdir(outDir + "/Gateway_IP_repo/")
                 tcl_file = tclMeFile( outDir + "/Gateway_IP_repo/" + file_inst, fpga)
-                tcl_file.tlines(["set part_name " + fpga['part'],
+                tcl_file.tlines(
+                    ["set part_name " + fpga['part'],
                     "open_project " + file_inst,
                     "set_top " + file_inst,
                     "open_solution \"solution1\"",
@@ -74,7 +75,8 @@ def createHierarchyTCL(project_name,outFile,kernel_properties,ctrl_ports_list, u
                     "csynth_design",
                     "export_design -format ip_catalog",
                     "close_project",
-                    "quit"])
+                    "quit"]
+                )
                 tcl_file.close()
                 subprocess.run(["vitis_hls", outDir + "/Gateway_IP_repo/" + file_inst + ".tcl"])
                 os.chdir(cwd)
@@ -1336,7 +1338,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim,is_gw):
 
 
 
-def userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, tcl_user_app, sim,is_gw,api_info):
+def userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, tcl_user_app, sim,is_gw,api_info,CAMILO_TEMP_DEBUG):
     """
     Now that the kernels, Galapagos router, and memory controllers are instantiated,
     it's time to connect them all together.
@@ -1586,7 +1588,7 @@ def userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, 
                         1
                     )
     createTopLevelVerilog(outDir + "/topLevel.v", output_path + "/../middleware/python",kernel_properties,control_port_names_list,tcl_user_app.fpga,is_gw)
-    createHierarchyTCL(project_name,outDir + "/userkernels",kernel_properties,control_port_names_list,tcl_user_app.fpga['ip_folder'],tcl_user_app.fpga,is_gw,outDir,api_info)
+    createHierarchyTCL(project_name,outDir + "/userkernels",kernel_properties,control_port_names_list,tcl_user_app.fpga['ip_folder'],tcl_user_app.fpga,is_gw,outDir,api_info,CAMILO_TEMP_DEBUG)
     m_axis_array = getInterfaces(tcl_user_app.fpga, 'm_axis', 'scope', 'global')
 
     # Now connect all m_axis interfaces through the output switch into the
@@ -2122,7 +2124,7 @@ def userApplicationRegionGWShellChanges(tcl_user_app):
     tcl_user_app.saxis_tie_off(
         'network/network_bridge_udp'
         ,'lbRxDataIn')
-def userApplicationRegion(project_name,outDir,output_path, fpga, sim,is_gw,api_info):
+def userApplicationRegion(project_name,outDir,output_path, fpga, sim,is_gw,api_info,CAMILO_TEMP_DEBUG):
     """
     Takes care of calling a bunch of functions for assembling the user application
     region part of the block diagram. To be specific, this function takes care
@@ -2143,7 +2145,7 @@ def userApplicationRegion(project_name,outDir,output_path, fpga, sim,is_gw,api_i
     userApplicationRegionMemInstGlobal(tcl_user_app, tcl_user_app.fpga['comm'] != 'tcp')
     userApplicationRegionMemInstLocal(tcl_user_app)
     userApplicationRegionSwitchesInst(tcl_user_app, sim,is_gw)
-    (kernel_properies,control_name_list,control_prop_list,clk_200_int,clk_300_int)=userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, tcl_user_app, sim,is_gw,api_info)
+    (kernel_properies,control_name_list,control_prop_list,clk_200_int,clk_300_int)=userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, tcl_user_app, sim,is_gw,api_info,CAMILO_TEMP_DEBUG)
     if tcl_user_app.fpga.has_control:
         userApplicationRegionAssignAddresses(tcl_user_app, tcl_user_app.fpga['comm'] !='tcp' and tcl_user_app.fpga.address_space == 64)
     userApplicationLocalConnections(tcl_user_app)
@@ -2758,7 +2760,7 @@ int main (int argc, char **argv)
 '''
     cpu_cpp.write(to_write)
 
-def makeTCLFiles(fpga, projectName, output_path, sim,is_gw,api_info):
+def makeTCLFiles(fpga, projectName, output_path, sim,is_gw,api_info,CAMILO_TEMP_DEBUG):
     """
     Top-level function call for TCL file generation functions.
 
@@ -2773,7 +2775,7 @@ def makeTCLFiles(fpga, projectName, output_path, sim,is_gw,api_info):
     #make bridge to network
     if fpga['comm'] != 'none':
         netBridge(outDir, fpga,is_gw)
-    userApplicationRegion(projectName,outDir,output_path, fpga, sim,is_gw,api_info)
+    userApplicationRegion(projectName,outDir,output_path, fpga, sim,is_gw,api_info,CAMILO_TEMP_DEBUG)
     bridgeConnections(outDir, fpga, sim,is_gw)
     #if(num_debug_interfaces > 0):
     #    add_debug_interfaces(outDir, num_debug_interfaces, fpga)

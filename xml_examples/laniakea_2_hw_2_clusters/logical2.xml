@@ -6,6 +6,7 @@
     <kernel> viv_test_core 
         <type> open </type>
         <num> 1 </num>
+        <rep> 2 </rep>
         <control> False </control>
         <clk> ap_clk </clk>
         <s_axis>
@@ -23,10 +24,10 @@
         <aresetn> ap_rst_n </aresetn>
     </kernel>
         <kernel> test_core 
-        <num> 2 </num>
+        <num> 3 </num>
+        <rep> 2 </rep>
         <type> open </type>
         <control> False </control>
-        <control_range> 4k </control_range>
         <clk> ap_clk </clk>
         <s_axis>
             <scope> global </scope>
