@@ -40,11 +40,12 @@ middleware: ${LOGICALFILE} ${MAPFILE} guard-LOGICALFILE guard-MAPFILE guard-PROJ
 full: ${LOGICALFILE} ${MAPFILE} guard-LOGICALFILE guard-MAPFILE guard-PROJECTNAME
 	mkdir -p $(GALAPAGOS_PATH)/projects
 	source $(MAKE) -C $(MIDDLEWARE_DIR) middleware
-	source source $(GALAPAGOS_PATH)/projects/$(PROJECTNAME)/createCluster.sh
+	source $(GALAPAGOS_PATH)/projects/$(PROJECTNAME)/createCluster.sh
 
 laniakea: ${CLUSTERFILE} guard-CLUSTERFILE guard-PROJECTNAME
 	mkdir -p $(GALAPAGOS_PATH)/projects
 	$(MAKE) -C $(GALAPAGOS_PATH)/middleware laniakea_middleware
+
 hlsmiddleware:
 	mkdir -p $(GALAPAGOS_PATH)/hlsBuild
 	$(MAKE) -C $(MIDDLEWARE_DIR) hlsmiddleware
