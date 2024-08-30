@@ -13,10 +13,9 @@ void g2N(
 {
 
     galapagos_packet gp = input->read();
-    ap_uint<PACKET_USER_LENGTH> size;
 
     ap_uint<PACKET_DATA_LENGTH> header = get_header(gp.id, gp.dest, 0);
-    // ap_uint<PACKET_DATA_LENGTH> header = get_header(gp.id, gp.dest);
+
 
     netStream np;
     // Write header
@@ -24,15 +23,12 @@ void g2N(
     np.last = 0;
     np.data = header;
     np.user = gp.user;
-    // np.user= size;
-    // ap_wait();
     output->write(np);
 
     // write first packet
     np.data = gp.data;
     np.last = gp.last;
     np.user = gp.user;
-    //    np.user = size;
     output->write(np);
 
     while (!np.last)
@@ -55,15 +51,12 @@ void n2G(
     netStream np = input->read();
     ap_uint<PACKET_DEST_LENGTH> id = np.data.range(PACKET_DEST_LENGTH + PACKET_USER_LENGTH - 1, PACKET_USER_LENGTH);
     ap_uint<PACKET_DEST_LENGTH> dest = np.data.range(PACKET_DEST_LENGTH + PACKET_DEST_LENGTH + PACKET_USER_LENGTH - 1, PACKET_DEST_LENGTH + PACKET_USER_LENGTH);
-    ap_uint<PACKET_USER_LENGTH> size = np.data.range(PACKET_USER_LENGTH - 1, 0);
-    // ap_uint<PACKET_DEST_LENGTH> id = np.data.range(PACKET_DEST_LENGTH-1, 0);
-    // ap_uint<PACKET_DEST_LENGTH> dest =  np.data.range(PACKET_DEST_LENGTH+PACKET_DEST_LENGTH-1, PACKET_DEST_LENGTH);
 
     // gp
     galapagos_packet gp;
     gp.id = id;
     gp.dest = dest;
-    gp.user = size;
+    gp.user = 0;
     gp.data = np.data;
     gp.last = np.last;
     gp.keep = np.keep;
@@ -75,25 +68,12 @@ void n2G(
         netStream np = input->read();
         gp.id = id;
         gp.dest = dest;
-        gp.user = size;
+        gp.user = 0;
         gp.data = np.data;
         gp.last = np.last;
         gp.keep = np.keep;
         output->write(gp);
     }
-
-    //     for(int i=0; i<size; i++){
-    // #pragma HLS PIPELINE II=1
-    //         galapagos_packet gp;
-    //         netStream np = input->read();
-    //         gp.id = id;
-    //         gp.dest = dest;
-    //         gp.user = size;
-    //         gp.data = np.data;
-    //         gp.last = np.last;
-    //         gp.keep = np.keep;
-    //         output->write(gp);
-    //     }
 }
 
 void galapagos_bridge(

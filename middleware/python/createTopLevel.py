@@ -30,12 +30,14 @@ def add_axi_defn_field_set_user(preamble,name,portname,cat,field,has_id,user):
         elif ((field[i] != "id") or has_id):
             result_str = result_str + preamble+",."+portname+"_"+cat+field[i]+"("+name+"_"+cat+field[i]+")\n"
     return result_str + "\n";
-def add_axi_defn_field_set_id(preamble,name,portname,cat,field,id,has_user):
+def add_axi_defn_field_set_id_user(preamble,name,portname,cat,field,id,user):
     result_str = ""
     for i in range (len(field)):
         if (field[i] == 'id'):
-            result_str = result_str + preamble + ",." + portname + "_" + cat + field[i] + "(" + str(id)+ ")\n"
-        elif  ((field[i] != "user") or has_user):
+            result_str = result_str + preamble + ",." + portname + "_" + cat + "id(" + str(id)+ ")\n"
+        elif  (field[i] == "user"):
+            result_str = result_str + preamble + ",." + portname + "_" + cat + "user(" + str(user) + ")\n"
+        else:
             result_str = result_str + preamble+",."+portname+"_"+cat+field[i]+"("+name+"_"+cat+field[i]+")\n"
     return result_str + "\n";
 def add_axim_masked_field(preamble,name,portname,cat,field,has_id,has_user):
@@ -144,7 +146,7 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,control_na
             dst_file.write(construct_axis_defn("      ",str(name)+"_MAXIS",str(name)+"_MAXIS",True,True,False))
         else:
             dst_file.write(construct_axis_defn("      ",str(name)+"_MAXIS",str(name)+"_MAXIS",True,True,True))
-        dst_file.write(add_axi_defn_field_set_id("      ",str(name)+"_SAXIS",str(name)+"_SAXIS","t",axis_fields,props['id'],False))
+        dst_file.write(add_axi_defn_field_set_id_user("      ",str(name)+"_SAXIS",str(name)+"_SAXIS","t",axis_fields,props['id'],0))
         if props['wan_enabled'][0]:
             dst_file.write(add_axi_defn_field_set_user("      ",str(name) + "_SWAN",str(name) + "_SWAN","t",wan_axis_fields,False,0)+"\n")
         if is_gw:

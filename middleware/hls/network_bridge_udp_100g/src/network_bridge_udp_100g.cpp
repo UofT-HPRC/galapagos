@@ -43,11 +43,10 @@ void rxPath(stream<axiWord512> &lbRxDataIn,
     }
 }
 
-extAxiWord512 currWordExtender(axiWord512 wordIn, ap_uint<32> ip)
+extAxiWord512 currWordExtender(axiWord512 wordIn, ap_uint<32> ip, ap_uint<16> port)
 {
 #pragma HLS inline
     extAxiWord512 wordOut;
-    ap_uint<16> port= wordIn.user == 0 ? 9000 : 32798;
     wordOut.data = wordIn.data;
     wordOut.user=(port,port,ip);
     wordOut.last=wordIn.last;
@@ -63,16 +62,19 @@ void txPath(
 {
 #pragma HLS INTERFACE bram port = ip_table
 
-    static int dest;
-    static ap_uint<32> dest_ip_addr;
-    static axiWord512 currWordIn;
-    static extAxiWord512 currWordOut;
+    int dest;
+    ap_uint<32> dest_ip_addr;
+    ap_uint<32> dest_port;
+    axiWord512 currWordIn;
+    extAxiWord512 currWordOut;
 
     // read header
     currWordIn = rxGalapagosBridge.read();
+    ap_uint<16> ctrl_dest_port = 32768 + currWordIn.user;
+    ap_uint<16> port = ((currWordIn.user == 0) ? ((ap_uint<16>)(9000)) : ctrl_dest_port);
     dest = currWordIn.data.range(PACKET_DEST_LENGTH+PACKET_DEST_LENGTH+PACKET_USER_LENGTH-1, PACKET_DEST_LENGTH+PACKET_USER_LENGTH);
     dest_ip_addr = ip_table[dest * 4];
-    currWordOut=currWordExtender(currWordIn,dest_ip_addr);
+    currWordOut=currWordExtender(currWordIn,dest_ip_addr,port);
     // write header
     lbTxDataOut.write(currWordOut);
 
@@ -81,7 +83,7 @@ void txPath(
     {
 #pragma HLS PIPELINE II = 1
         currWordIn = rxGalapagosBridge.read();
-        currWordOut=currWordExtender(currWordIn,dest_ip_addr);
+        currWordOut=currWordExtender(currWordIn,dest_ip_addr,port);
         lbTxDataOut.write(currWordOut);
     }
 }
