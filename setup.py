@@ -110,7 +110,8 @@ env_var = {'GALAPAGOS_PATH': answers['galapagos_dir'],
 pprint(env_var)
 
 out_file = open("my_init.sh", "w") 
-
+env_reset_file = open("environmental_reset.sh","w")
+env_reset_file.write("source init_params.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['hls_dir'] + ' 2023.1 2023.1 ' + '\n')
 print("Galapagos requires boards to be installed in order to be used.\nThis process takes 20 minutes but only needs do be done once per board per project.\n Do you wish to install a board at this time?(Y/N)\n")
 invalid = True
 answer = str(input()).strip().lower()
@@ -162,7 +163,7 @@ while invalid:
           print("invalid answer, please enter y or n")
           answer = str(input()).strip().lower()
   elif ((answer == "no") or (answer == "n")):
-    out_file.write("source init_params.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['hls_dir'] + ' 2023.1 2023.1 ' + '\n')
+    out_file.write("")
   else:
     print("<"+answer + "> is invalid, please enter y or n")
 out_file.close()
