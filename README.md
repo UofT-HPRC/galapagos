@@ -305,9 +305,9 @@ There are currently four possible port types:
         <logicalFile> /home/savi/Desktop/imperial/wan2/galapagos/xml_examples/laniakea_2_hw_2_clusters/logical.xml </logicalFile>
         <mapFile> /home/savi/Desktop/imperial/wan2/galapagos/xml_examples/laniakea_2_hw_2_clusters/map.xml </mapFile>
         <apiFile> /home/savi/Desktop/imperial/wan2/galapagos/xml_examples/laniakea_2_hw_2_clusters/api.xml </apiFile>
+        <hasGateway> True </hasGateway>
         <gatewayIP> 10.1.9.200 </gatewayIP>
         <gatewayMac> 0c:c4:2b:2d:bd:05</gatewayMac>
-        <hasGateway> True </hasGateway>
   <gatewayBoard> sidewinder </gatewayBoard>
     </cluster>
 
