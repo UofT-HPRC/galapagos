@@ -46,7 +46,7 @@ The following instructions are to create regular Galapagos clusters.
 
 # Laniakea Instructions
 
-The following instructions are to create regular Laniakea super clusters.
+The following instructions are to create Laniakea super clusters.
 
 ## What you need before starting
 1. A logical file **For Each Galapagos Cluster** describing that cluster's kernels. See the **LOGICALFILE** section of the README for more details.
