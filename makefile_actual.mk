@@ -26,19 +26,19 @@ HLSMIDDLEWARE_DIR = $(GALAPAGOS_PATH)/middleware/hls
 
 query: ${APIFILE} guard-APIFILE guard-PROJECTNAME
 	mkdir -p $(GALAPAGOS_PATH)/projects
-	source $(MAKE) -C $(MIDDLEWARE_DIR) apiquery
+	$(MAKE) -C $(MIDDLEWARE_DIR) apiquery
 
 merge:
 	mkdir -p $(GALAPAGOS_PATH)/projects
-	source python3.7 ${MIDDLEWARE_DIR}/python/join_clusters.py --projectName=${PROJECTNAME} --clinfoFiles="$(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))"
+	python3.7 ${MIDDLEWARE_DIR}/python/join_clusters.py --projectName=${PROJECTNAME} --clinfoFiles="$(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))"
 
 middleware: ${LOGICALFILE} ${MAPFILE} guard-LOGICALFILE guard-MAPFILE guard-PROJECTNAME
 	mkdir -p $(GALAPAGOS_PATH)/projects
-	source $(MAKE) -C $(MIDDLEWARE_DIR) middleware 
+	$(MAKE) -C $(MIDDLEWARE_DIR) middleware 
 
-galapagos: middleware ${LOGICALFILE} ${MAPFILE} guard-LOGICALFILE guard-MAPFILE guard-PROJECTNAME
+galapagos: ${LOGICALFILE} ${MAPFILE} guard-LOGICALFILE guard-MAPFILE guard-PROJECTNAME
 	mkdir -p $(GALAPAGOS_PATH)/projects
-	source $(MAKE) -C $(MIDDLEWARE_DIR) middleware
+	$(MAKE) -C $(MIDDLEWARE_DIR) middleware 
 	source $(GALAPAGOS_PATH)/projects/$(PROJECTNAME)/createCluster.sh
 
 laniakea: ${CLUSTERFILE} guard-CLUSTERFILE guard-PROJECTNAME
