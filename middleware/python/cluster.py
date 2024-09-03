@@ -499,6 +499,7 @@ class cluster(abstractDict):
         globalSimFile = open(output_path + "/" + self.name + '/simCluster.sh', 'w')
 
         globalConfigFile.write("cd " + str(os.environ.get('GALAPAGOS_PATH')) + "\n")
+        globalConfigFile.write("source " + str(os.environ.get('GALAPAGOS_PATH'))+"/environmental_reset.sh" + "\n")
         for node_idx, node_obj in enumerate(self.nodes):
             #only need vivado project for hw nodes
             if ((node_idx == 0) and (not hasGW)):

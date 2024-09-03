@@ -16,6 +16,5 @@
         <logicalFile>/home/savi/Desktop/imperial/wan2/galapagos/xml_examples/laniakea_2_hw_2_clusters/logical2.xml </logicalFile>
         <mapFile> /home/savi/Desktop/imperial/wan2/galapagos/xml_examples/laniakea_2_hw_2_clusters/map2.xml </mapFile>
         <hasGateway> False </hasGateway>
-	<gatewayBoard> sidewinder </gatewayBoard>
   </cluster>
 </superCluster>

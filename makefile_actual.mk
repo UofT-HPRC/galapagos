@@ -23,7 +23,6 @@ HLSMIDDLEWARE_DIR = $(GALAPAGOS_PATH)/middleware/hls
 
 .PHONY: middleware
 
-full: middleware
 
 query: ${APIFILE} guard-APIFILE guard-PROJECTNAME
 	mkdir -p $(GALAPAGOS_PATH)/projects
@@ -37,7 +36,7 @@ middleware: ${LOGICALFILE} ${MAPFILE} guard-LOGICALFILE guard-MAPFILE guard-PROJ
 	mkdir -p $(GALAPAGOS_PATH)/projects
 	source $(MAKE) -C $(MIDDLEWARE_DIR) middleware 
 
-full: ${LOGICALFILE} ${MAPFILE} guard-LOGICALFILE guard-MAPFILE guard-PROJECTNAME
+galapagos: middleware ${LOGICALFILE} ${MAPFILE} guard-LOGICALFILE guard-MAPFILE guard-PROJECTNAME
 	mkdir -p $(GALAPAGOS_PATH)/projects
 	source $(MAKE) -C $(MIDDLEWARE_DIR) middleware
 	source $(GALAPAGOS_PATH)/projects/$(PROJECTNAME)/createCluster.sh

@@ -37,7 +37,6 @@ print(f.renderText('Welcome to Galapagos Setup'))
 parser = argparse.ArgumentParser(description='Galapagos Menu')
 parser.add_argument("-d", "--dir", help="absolute path where galapagos directory is located", default='')
 parser.add_argument("-vd", "--vit_dir", help="absolute path of vitis", default='')
-parser.add_argument("-hd", "--hls_dir", help="absolute path of vitis_hls", default='')
 
 args = parser.parse_args()
 
@@ -52,13 +51,7 @@ path_q = {
 vit_path_q = {
           'type': 'input',
           'name': 'vitis_dir',
-          'message': 'What is the directory vitis is located? (default=/mnt/shares/tools/Xilinx/Vitis)',
-          }
-
-hls_path_q = {
-          'type': 'input',
-          'name': 'hls_dir',
-          'message': 'What is the directory vitis_hls is located? (default=/mnt/shares/tools/Xilinx/Vitis)',
+          'message': 'What is the absolute path where vitis 2023.1 is installed? (default=/mnt/shares/tools/Xilinx/Vitis)',
           }
 
 
@@ -75,11 +68,6 @@ if(args.vit_dir == ''):
 else:
     vitis_dir = args.vit_dir
 
-if(args.hls_dir == ''):
-    questions.append(hls_path_q)
-    hls_dir = ''
-else:
-    hls_dir = args.hls_dir
 vitis_ver = '2023.1'
 
 hls_ver = '2023.1'
@@ -94,15 +82,12 @@ if answers['galapagos_dir'] == '':
 if answers['vitis_dir'] == '':
     answers['vitis_dir'] = '/mnt/shares/tools/Xilinx/Vitis'
 
-if answers['hls_dir'] == '':
-    answers['hls_dir'] = '/mnt/shares/tools/Xilinx/Vitis'
-
 
 
 print('ENVIRONMENT VARIABLES SET:')
 env_var = {'GALAPAGOS_PATH': answers['galapagos_dir'],
            'GALAPAGOS_VITIS_PATH' : answers['vitis_dir'],
-           'GALAPAGOS_HLS_PATH' : answers['hls_dir'],
+           'GALAPAGOS_HLS_PATH' : answers['vitis_dir'],
            'GALAPAGOS_VITIS_VERSION' : '2023.1',
            'GALAPAGOS_HLS_VERSION' : '2023.1'
         }
@@ -111,7 +96,7 @@ pprint(env_var)
 
 out_file = open("my_init.sh", "w") 
 env_reset_file = open("environmental_reset.sh","w")
-env_reset_file.write("source init_params.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['hls_dir'] + ' 2023.1 2023.1 ' + '\n')
+env_reset_file.write("source init_params.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['vitis_dir'] + ' 2023.1 2023.1 ' + '\n')
 print("Galapagos requires boards to be installed in order to be used.\nThis process takes 20 minutes but only needs do be done once per board per project.\n Do you wish to install a board at this time?(Y/N)\n")
 invalid = True
 answer = str(input()).strip().lower()
@@ -128,7 +113,7 @@ while invalid:
         print("aborting board install, just installing parameters")
         out_file.close()
         out_file = open("my_init.sh","w")
-        out_file.write("source init_params.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['hls_dir'] + ' 2023.1 2023.1 ' + '\n')
+        out_file.write("source init_params.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['vitis_dir'] + ' 2023.1 2023.1 ' + '\n')
         answer = "n"
       elif board_name == "sidewinder":
         answers['boa_name'] = 'sidewinder'
@@ -154,7 +139,7 @@ while invalid:
         if ((confirmation == "no") or (confirmation == "n")):
           running = False
       if running:
-        out_file.write("source init.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['hls_dir'] + ' 2023.1 2023.1 ' + answers['par_name'] + ' ' + answers['boa_name'] +'\n')
+        out_file.write("source init.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['vitis_dir'] + ' 2023.1 2023.1 ' + answers['par_name'] + ' ' + answers['boa_name'] +'\n')
 
         out_file.write("make hlsmiddleware\n")
         print("Are there other boards you wish to install in this project? (Y/N)")
