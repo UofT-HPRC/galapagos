@@ -4,9 +4,7 @@ Welcome to the Galapagos Hardware Stack.
 
 ## Prerequisites
 
-
-Both the Docker Container and native install requires Xilinx Vivado to be installed. Currently Galapagos requires Vivado and Vitis HLS 2023.1, and Vivado 2018.3 to be installed.
-
+Vitis 2023.1 and Vitis HLS 2023.1 must be installed on your device or on an NFS attached directory
 The Galapagos framework has been tested using Python 3.7.10, please have it installed.
 
 ## First-Time Setup
@@ -18,85 +16,76 @@ The Galapagos framework has been tested using Python 3.7.10, please have it inst
 	1. Eg. `source ./python_venv_3_7_10/bin/activate`
 6. Install the following dependencies: `pip3 install wheel pyfiglet regex PyInquirer xmltodict`
 	1. If pip gives a timeout error, follow the instructions here: [https://github.com/UofT-HPRC/tpdp/blob/main/configuring_server/new_students/README.md#pip-error-ssl-timeout](https://github.com/UofT-HPRC/tpdp/blob/main/configuring_server/new_students/README.md#pip-error-ssl-timeout)
-7. In this directory (`galapagos`) run `source build.sh`.
-	1. This sets several environment variables which are used by the Galapagos framework
-9. Now you should be ready to go! To test your framework, run the following in this directory:
-	1. ```
-		make test
-		source projects/test_proj/createCluster.sh
-		```
+7. Install Galapagos
+
+## Installing Galapagos/Laniakea
+
+The following instructions installs both Galapagos and Laniakea in your machine. Note this process can, depending on the number of boards, take an hour or more to run.
+
+1. Clone the github repository and checkout the branch you wish to use.
+2. run: **make install** This will ask the following:
+	1. The absolute file path of the galapagos repository (default is the current folder
+	2. The folder location for the vitis 2023.1 install
+ 	3. A wizard will ask you the boards which you wish to install. A board must be installed in order to be able to make Galapagos or Laniakea projects which utilize that board.
+
+# Galapagos Instructions
+
+The following instructions are to create regular Galapagos clusters.
+
 ## Compile a Galapagos Project
 ## What you need before starting
-1. A logical file describing your project's kernels
-2. A map file describing how your kernels are distributed on devices
-	1. NOTE: Currently Galapagos requires a minimum of 2 declared devices (nodes). If you only want to use one node, create a dummy kernel in your logical file, and create a CPU node in your map file that hosts the kernel (for details on how to create a CPU node, see the map files in the userIP folder).
+1. A logical file describing your project's kernels. See the **LOGICALFILE** section of the README for more details.
+2. A map file describing how your kernels are distributed on devices. See the **MAPFILE** section of the README for more details.
+	1. NOTE: There must be at least two nodes in a Galapagos cluster.
  
-## Steps to run on every terminal using Galapagos
+## Steps to compile a Galapagos project
 1. If using a virtual environment, enter it by running `source /path/to/venv/bin/activate`
 	1. Eg. `source ./python_venv_3_7_10/bin/activate`
-2. Initialize environment variables by running: `source build.sh`. At this point it will ask if you wish to install a board, this process takes about 30 minutes per board and only has to be done once as the installed products are added to the galapagos project directory.
-3. Compile the Vivado HLS IPs and generate TCL scripts by running: `make PROJECTNAME="<project_name>" LOGICALFILE=</path/to/logical/file> MAPFILE=</path/to/map/file>`. Ensure any boards referenced in the map file are already installed
-4. Use the TCL scripts to generate Vivado projects by running: `source projects/<project_name>/createCluster.sh`
-5. At this point, Galapagos will have created one Vivado project for each FPGA declared in your map file. Each FPGA's Vivado project will contain a block diagram for each kernel mapped to it. The number in each block diagram is the ID of the kernel that the block diagram represents. For example, the Vivado project below has block diagrams generated for kernels 3 and 4 in the cluster.
-	1. ![Galapagos Vivado Project](https://github.com/UofT-HPRC/galapagos/blob/reconfigurable/fig/galapagos_vivado_project.PNG)
-6. In all of your Vivado projects, open up the kernel block diagrams and construct your kernels. The following connections will be provided for you:
-	1. `CLK`: Clock pin
- 	2. `rst`: Active-low reset
- 	1. `RX_AXIS`: Input AXI-Stream port. AXI-Stream LAN messages sent to this kernel will arrive through this port.
- 	2. `TX_AXIS`: Output AXI-Stream port. AXI-Stream LAN messages that this kernel sends must be sent through this port.
-  	3. `TX_WAN_AXIS`: Output AXI-Stream port. AXI-Stream WAN messages that this kernel sends must be sent through this port.
-  	4. `S_AXIL`: Input AXI-Lite port created if `control`-`s_axil/both` is selected in the Logical File. AXI-Lite messages sent using the control protocol will arrive through this port. 
-  	3. `M_AXIL`: Output AXI-Lite port created if `control`-`m_axil/both` is selected in the Logical File. AXI-Lite control messages that this kernel sends must be sent through this port. 
+2. Create the project by running: `make galapagos PROJECTNAME="<project_name>" LOGICALFILE=</path/to/logical/file> MAPFILE=</path/to/map/file>`. Ensure any boards referenced in the map file are already installed
+3. At this point, Galapagos will have created one Vivado project for each FPGA declared in your map file. this is located at projects/<project_name>/<node_number>. 
 
+# Laniakea Instructions
 
-## Initial Setup for Native Install
+The following instructions are to create Laniakea super clusters.
 
+## What you need before starting
+1. A logical file **For Each Galapagos Cluster** describing that cluster's kernels. See the **LOGICALFILE** section of the README for more details.
+2. A map file **For Each Galapagos Cluster** describing how your kernels are distributed on devices. See the **MAPFILE** section of the README for more details.
+	1. NOTE: There must be at least two nodes in a Galapagos cluster.
+3. A api file **For Each Galapagos Cluster** describing how that cluster can be externally accessible. See the **APIFILE** section of the README for more details
+4. A cluster file describing the laniakea cluster itself. See the **CLUSTERFILE** section of the README for more details
 
-First you need to initialize all environment variables. This is done with a build script.
+## Steps to compile a Laniakea Project
+1. If using a virtual environment, enter it by running `source /path/to/venv/bin/activate`
+	1. Eg. `source ./python_venv_3_7_10/bin/activate`
+2. Create the project by running: `make laniakea PROJECTNAME="<project_name>" CLUSTERFILE=</path/to/cluster/file>`. Ensure any boards referenced in the project are already installed
+	1. A folder will be created for each cluster declared in your cluster file. this is located at projects/<project_name>_<cluster_name>/. It will also create a folder with the informational cluster files at  projects/<project_name>_cluster_files/
+3. Navigate to each of the cluster folders and run `source createCluster.sh`. This is a slightly time consuming process but you may run this for multiple clusters simultaneously.
+4. At this point, Laniakea will have created one Vivado project for each FPGA declared in the cluster's map file. this is located at projects/<project_name>_<cluster_name>//<node_number>. 
 
-`source build.sh`
+## Informational Cluster Files
+These files are automatically generated at projects/<project_name>_cluster_files/ when running laniakea. They perform the following
+1. dns.py and dns_map.txt must be located in the dns server. The two files must be in the same directory. Running dns.py runs the dns server enabling the WAN subsystem to work.
+2. clusterinfo.clinfo - a non human-readable file describing the clusters in the project. This is necessary when merging two laniakea projects together.
+3. api_plaintext.txt - a plaintext readable file describing the API of all the clusters in the project.
+4. api_database.csv - A csv file with the same information as api_plaintext.txt allowing the user to use it in scripts more easily
 
-Second you need to compile the Vivado_HLS source code and generate a Vivado project.
+## Merging Cluster Files
 
-`make PROJECTNAME=${project_name}`
+Two or more laniakia projects may be joined together to form a larger project without requiring re-compilation. The instructions are as follows
+1. run **make merge PROJECTNAME="<project_name> <clinfo_file1> <clinfo_file2>** containing the clusterinfo.clinfo file locations for the clusters you wish to merge
+2. The informational cluster files for the combined project can be found in projects/<project_name>_cluster_files/
 
-Third you need to build the Vivado project.
+# Galapagos and Laniakea Compilation files
 
-`source projects/${project_name}/createCluster.sh`
+The following files may be needed to create Galapagos or Laniakea projects
 
-The layers of the stack that we introduce are as follows:
+## LOGICALFILE
 
-- Middleware Layer
-- Hypervisor Layer
-- Physical Hardware /Network Setup
-
-For more details on our automation process please refer to the Makefile. 
-
-## Physical Hardware/Network Setup Layer
-
-Our setup has all FPGAs connected directly to a network switch.  We have the following FPGA boards:
-- Alphadata 7v3
-- Alphadata 8k5
-- Alphadata 8v3
-- Fidus Sidewinder (also has a hardened ARM CPU)
-
-Boards without the hardened ARM are connected with an X86 CPU via PCIe. 
-
-## Hypervisor Layer
-
-We plan to have hypervisors setup for various boards. Currently the hypervisor abstracts away the network and PCIe interfaces. 
-This exposes all devices with a hypervisor as an AXI-stream in and out through the network interface, and an S_AXI interface from PCIe or ARM and M_AXI to off-chip memory
-
-
-## Middleware Layer
-
-This takes two files (refer to LOGICALFILE, MAPFILE defined in the Makefile) and partitions a large cluster logically described by the user into multiple separate FPGAs.
-
-### LOGICALFILE
+The following is an example logical file:
 
 ```
 <cluster>
-	<clusterNumber> 1 </clusterNumber>
 	<userIpPath> /home/user/test/ip_repo </userIpPath>
 	<kernel> kernelName
 	        <num> 1 </num>
@@ -114,6 +103,13 @@ This takes two files (refer to LOGICALFILE, MAPFILE defined in the Makefile) and
 	            <scope> global </scope>
 	            <name> nameOfOutputStreamInterface </name>
 	        </m_axis>
+		<!--
+		The following is used in Laniakea projects but not in Galapagos projects
+		-->
+	        <wan>
+			<enabled> True </enabled>
+			<name> nameOfWanOutStreamInterface </name>
+		</wan>
 	</kernel>
 	<kernel> otherKernelName
 	        <num> 1 </num>
@@ -133,8 +129,6 @@ This takes two files (refer to LOGICALFILE, MAPFILE defined in the Makefile) and
 	</kernel>
 </cluster>
 ```
-`<clusterNumber>` enumerates this cluster within the Laniakea framework
-
 `<userIPPath>` is the location of the repository containing all your IPs and source files you wish to be inserted. Unpackaged files must be in the in the described folder, not within subdirectories.
 
 The `<num>` tag refers to the unique ID of a kernel. IDs must start at 1 and be consecutive <br/>
@@ -145,7 +139,7 @@ The `<type>` can be sw, open, ip, vhdl, system_verilog, tcl, verilog, cpp_viv, o
 
     In sw mode, the kernel is a software lib-galapagos kernel
 
-    In IP mode, the name of the ip must exactly match the kernel name. 
+    In IP mode, the name of the ip must exactly match the kernel name. It must be found in <userIPPath>
     
     In verilog mode the file must be located at `<userIPPath>`/`<name>`.v, and the top level module must be `<name>`, where `<name>` is the kernelName. 
     
@@ -159,7 +153,7 @@ The `<type>` can be sw, open, ip, vhdl, system_verilog, tcl, verilog, cpp_viv, o
     
     In cpp_viv or cpp_vit mode, the code must be contained to one file located at `<userIPPath>`/`<name>`.cpp with the main function being called `<name>`, where `<name>` is the kernelName.
 
-The `<clk>` refers to the name of the clock interface, this will be tied to the clock in the Hypervisor. <br/>
+The `<clk>` refers to the name of the clock interface, this will be tied to a 200MHz clock. <br/>
 
 The `<control>` refers to whether an AXI Lite control interface is required. <br/>
 
@@ -169,12 +163,18 @@ The `<aresetn>` refers to the name of the reset interface, this will be tied to 
 
 The `<id_port>` refers to the port name in the kernel that will be tied to a constant with the value of the unique kernel ID. (optional) <br/>
 
-The `<s_axis>` and `<m_axis>` are the names of the axi stream ports on the IP. In Open mode, this specifies the name of that port in the open block design.<scope> is for a future extension and for now must be global
+The `<s_axis>` and `<m_axis>` allows you to describe the name of the axi stream ports on the IP. In Open mode, this specifies the name of that port in the open block design.<scope> is for a future extension and for now must be global. The sideband signals (and the bitwidths) are as follows:
+	TDEST(8) specifies the kernel number of the target of the message and TID(8) is the kernel number of the sender. You do not need to specify TID on the master port as that information is automatically added for security by Galapagos or Laniakea. WAN messages from other clusters arrive with TID=0.
+ 	TDATA(512), TLAST(1), and TKEEP(64) are used to send the payload as per the AXI Streaming Standard
+  	TREADY(1), and TVALID(1) are the handshaking signals.
 
+The `<wan>` section **in Laniakea only** allows you to describe the name of the output WAN axi stream ports on the IP. The WAN port is used to communicate with other clusters.  In Open mode, this specifies the name of that port in the open block design. By setting <enabled> to false, you can ask Laniakea to not create an output WAN axi stream port. The sideband signals are as follows:
+	TDEST(32) specifies the cluster ID of the target cluster
+ 	TUSER(16) specifies the API port number of the function being performed
+	TDATA(512), TLAST(1), and TKEEP(64) are used to send the payload as per the AXI Streaming Standard
+  	TREADY(1), and TVALID(1) are the handshaking signals.
 
-### MAPFILE
-
-The cluster is described in a MAPFILE with no notion of the mappings.  <br/>
+## MAPFILE
 
 The following is an example map file:
 
@@ -189,11 +189,27 @@ The following is an example map file:
     </node>
     <node>
         <type> hw </type>
+        <board> sidewinder </board>
         <kernel> 2 </kernel>
 	<kernel> 3 </kernel>
         <mac>  fa:16:3e:55:ca:08 </mac>
         <ip> 10.1.9.208 </ip>
-        <board> sidewinder </board>
+        <comm> udp </comm>
+        <autorun> True </autorun>
+    </node>
+ 	<node>
+        <type> hw </type>
+        <board> u200 </board>
+        <kernel>
+		<num> 4 </num>
+		<slr> SLR1 </slr>
+	</kernel>
+        <kernel>
+		<num> 5 </num>
+		<slr> SLR2 </slr>
+	</kernel>
+        <mac>  fa:16:3e:55:ca:08 </mac>
+        <ip> 10.1.9.208 </ip>
         <comm> udp </comm>
         <autorun> True </autorun>
     </node>
@@ -201,19 +217,117 @@ The following is an example map file:
 ```
 The `<type>` is the type of device used. Currently supported is sw for a CPU node or hw for a hardware node
 
-The `<kernel>` refers to the unique kernel ID that you wish to put on this node. You can repeat this tag if an FPGA or CPU has multiple kernels in the same device  <br/>
+The `<board>` tag refers to the FPGA board you wish to use for this particular node. <br/>
+
+For single SLR nodes the `<kernel>` refers to the unique kernel ID that you wish to put on this node. You can repeat this tag if an FPGA or CPU has multiple kernels in the same device  <br/>
+
+For multi SLR nodes the `<kernel>` has two fields. `<num>` refers to the unique kernel ID that you wish to put on this node. `<slr>` refers to the SLR of the FPGA you wish to place this kernel in. You can repeat this tag if an FPGA or CPU has multiple kernels in the same device  <br/>
 
 The `<mac>` and `<ip>` refer to the device's ip address and mac address respectively
 
-
-
 For type hw nodes, the following is also required:
-
-The `<board>` tag refers to the FPGA board you wish to use for this particular node. <br/>
 
 The `<com>` tag refers to whether the node is using the tcp or the udp protocol
 
 The `<autorun>` can only be True if none of the kernels are `open`. When True, the scripts will automatically run synthesis, implementation, and bitstream generation on the device.
 
-For an example refer to `galapagos/xml_examples`
+For an example refer to the `xml_examples` folder
 
+## APIFILE
+
+```
+<cluster>
+    <port>
+        <form> direct </form>
+        <tag> direct_to_2 </tag>
+        <target> 2 </target>
+    </port>
+    <port>
+        <form> broadcast </form>
+        <tag> bc_123 </tag>
+        <target> 1 </target>
+        <target> 2 </target>
+        <target> 3 </target>
+    </port>
+    <port>
+        <form> control_multiple </form>
+        <tag> bc_2345 </tag>
+        <target>
+             <num>4 </num>
+             <address>0xA0000000 </address>
+        </target>
+        <target>
+             <num>3 </num>
+             <address>0xA0001000 </address>
+        </target>
+        <maxRange> 4K </maxRange>
+    </port>
+    <port>
+        <form> direct </form>
+        <tag> direct_to_1 </tag>
+        <target> 1 </target>
+    </port>
+    <port>
+        <form> broadcast </form>
+        <tag> bc_1234 </tag>
+        <target> 1 </target>
+        <target> 2 </target>
+        <target> 3 </target>
+        <target> 4 </target>
+    </port>
+```
+
+Describes the desired API of this cluster. 
+
+For every port you must specify the name of the port (`<tag>`) and the type of port (`<form>`)
+
+There are currently four possible port types:
+
+1. direct
+	1. Used to just forward a message to a specific kernel
+	2. User needs to specify the target using `<target>`
+
+2. broadcast
+	1. Used to repeat the same message to send to multiple kernel
+ 	2. User needs to specify all the target kernels using `<target>`
+3. control
+	1. TBD, not implemented yet
+4. control_multiple
+	1. TBD, not implemented yet
+
+## CLUSTERFILE
+
+```
+<superCluster>
+    <dns> 10.1.9.109 </dns>
+    <cluster>
+        <name> first_cluster </name>
+        <logicalFile> /home/savi/Desktop/imperial/wan2/galapagos/xml_examples/laniakea_2_hw_2_clusters/logical.xml </logicalFile>
+        <mapFile> /home/savi/Desktop/imperial/wan2/galapagos/xml_examples/laniakea_2_hw_2_clusters/map.xml </mapFile>
+        <apiFile> /home/savi/Desktop/imperial/wan2/galapagos/xml_examples/laniakea_2_hw_2_clusters/api.xml </apiFile>
+        <hasGateway> True </hasGateway>
+        <gatewayIP> 10.1.9.200 </gatewayIP>
+        <gatewayMac> 0c:c4:2b:2d:bd:05</gatewayMac>
+  <gatewayBoard> sidewinder </gatewayBoard>
+    </cluster>
+
+    <cluster>
+        <name> second_cluster </name>
+        <logicalFile>/home/savi/Desktop/imperial/wan2/galapagos/xml_examples/laniakea_2_hw_2_clusters/logical2.xml </logicalFile>
+        <mapFile> /home/savi/Desktop/imperial/wan2/galapagos/xml_examples/laniakea_2_hw_2_clusters/map2.xml </mapFile>
+        <hasGateway> False </hasGateway>
+  </cluster>
+</superCluster>
+```
+
+The `<dns>` is the IP of the dns in all of the servers
+
+Specify a `<cluster>` block for each cluster containing the following:
+
+The `<name>` specifies the cluster_name used in the folder naming convention as well as within the cluster information files
+
+`<hasGateway>` specifies if the cluster needs an rx gateway which is placed at node 0. Clusters without a gateway can still send messages to other clusters, but they do not have any port numbers to receive messages from other clusters. If `<hasGateway>` is false, then we do not need to specify `<apiFile>`, `<gatewayIP>`, or `<gatewayMac>`.
+
+The `<logicalFile>`, `<mapFile>`, and `<apiFile>` tags are used to specify the logical, map, and api files respectively for the referenced laniakea cluster. You must use absolute filepaths, relative paths are not acceptable.
+
+`<gatewayIP>`, and `<gatewayMac>` specify the IP address and the Mac address respectively of the gateway.
