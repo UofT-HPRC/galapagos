@@ -2,7 +2,7 @@ import getopt, sys
 import os
 from cluster import cluster
 import lancluster
-CAMILO_TEMP_DEBUG = True
+CAMILO_TEMP_DEBUG = False
 try:
     opts, args = getopt.getopt(sys.argv[1:],"", ["logicalFile=", "mapFile=", "projectName=", "clusterFile=", "sim=", "path="])
 except:
