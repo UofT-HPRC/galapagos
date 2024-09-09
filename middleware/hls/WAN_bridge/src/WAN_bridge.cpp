@@ -7,7 +7,7 @@ ap_axis_net gp_to_net (galapagos_packet in_data)
 	out_data.data = in_data.data;
 	out_data.keep = in_data.keep;
 	out_data.last = in_data.last;
-    out_data.user = in_data.user;
+	out_data.user = in_data.user;
 	return out_data;
 }
 
@@ -35,7 +35,7 @@ void WAN_bridge(
 			old_packet = gp_to_net(packetin);
 			packetout.data = get_header(packetin.dest, packetin.user);
 			packetout.keep = KEEP_ALL;
-            packetout.user = packetin.user;
+			packetout.user = packetin.user;
 			packetout.last = 0;
 			g2N_output.write(packetout);
 			stage = 1;

@@ -22,14 +22,6 @@ def add_axi_defn_field(preamble,name,portname,cat,field,has_id,has_user):
         if ((field[i] != "id") or has_id) and ((field[i] != "user") or has_user):
             result_str = result_str + preamble+",."+portname+"_"+cat+field[i]+"("+name+"_"+cat+field[i]+")\n"
     return result_str + "\n";
-def add_axi_defn_field_set_user(preamble,name,portname,cat,field,has_id,user):
-    result_str = ""
-    for i in range (len(field)):
-        if(field[i] == "user"):
-            result_str = result_str + preamble + ",." + portname + "_" + cat + "user(" + str(user) + ")\n"
-        elif ((field[i] != "id") or has_id):
-            result_str = result_str + preamble+",."+portname+"_"+cat+field[i]+"("+name+"_"+cat+field[i]+")\n"
-    return result_str + "\n";
 def add_axi_defn_field_set_id_user(preamble,name,portname,cat,field,id,user):
     result_str = ""
     for i in range (len(field)):
@@ -148,7 +140,7 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,control_na
             dst_file.write(construct_axis_defn("      ",str(name)+"_MAXIS",str(name)+"_MAXIS",True,True,True))
         dst_file.write(add_axi_defn_field_set_id_user("      ",str(name)+"_SAXIS",str(name)+"_SAXIS","t",axis_fields,props['id'],0))
         if props['wan_enabled'][0]:
-            dst_file.write(add_axi_defn_field_set_user("      ",str(name) + "_SWAN",str(name) + "_SWAN","t",wan_axis_fields,False,0)+"\n")
+            dst_file.write(add_axi_defn_field("      ",str(name) + "_SWAN",str(name) + "_SWAN","t",wan_axis_fields,False,True)+"\n")
         if is_gw:
             dst_file.write(add_axi_defn_field("      ","Direct_port","Direct_port","t",["data","keep","user","last","valid","ready"],0,1))
     dst_file.write("    );\n\n\n")
