@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<cluster>
+    <port>
+        <form> direct </form>
+        <tag> direct_to_2 </tag>
+        <target> 2 </target>
+    </port>
+    <port>
+        <form> broadcast </form>
+        <tag> bc_123 </tag>
+        <target> 1 </target>
+        <target> 2 </target>
+        <target> 3 </target>
+    </port>
+    <port>
+        <form> control_multiple </form>
+        <tag> bc_2345 </tag>
+        <target>
+             <num>4 </num>
+             <address>0xA0000000 </address>
+        </target>
+        <target>
+             <num>3 </num>
+             <address>0xA0001000 </address>
+        </target>
+        <maxRange> 4K </maxRange>
+    </port>
+    <port>
+        <form> direct </form>
+        <tag> direct_to_1 </tag>
+        <target> 1 </target>
+    </port>
+    <port>
+        <form> broadcast </form>
+        <tag> bc_1234 </tag>
+        <target> 1 </target>
+        <target> 2 </target>
+        <target> 3 </target>
+        <target> 4 </target>
+    </port>
+    <port>
+        <form> control </form>
+        <tag> bc_2345 </tag>
+        <target> 4 </target>
+        <address> 0xA0000000 </address>
+        <maxRange> 4K </maxRange>
+    </port>
+
+</cluster>
+

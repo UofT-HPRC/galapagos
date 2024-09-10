@@ -1,0 +1,161 @@
+
+
+================================================================
+== Vivado HLS Report for 'ether_protocol_assembler'
+================================================================
+* Date:           Thu Jul 25 02:39:00 2024
+
+* Version:        2019.1 (Build 2552052 on Fri May 24 15:28:33 MDT 2019)
+* Project:        ether_protocol_assembler
+* Solution:       solution1
+* Product family: virtexuplus
+* Target device:  xcu280-fsvh2892-2L-e
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |   3.10|     1.317|        0.39|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+-----+-----+-----+---------+
+    |  Latency  |  Interval | Pipeline|
+    | min | max | min | max |   Type  |
+    +-----+-----+-----+-----+---------+
+    |    0|    0|    0|    0|   none  |
+    +-----+-----+-----+-----+---------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        N/A
+
+
+
+================================================================
+== Utilization Estimates
+================================================================
+* Summary: 
++---------------------+---------+-------+---------+---------+-----+
+|         Name        | BRAM_18K| DSP48E|    FF   |   LUT   | URAM|
++---------------------+---------+-------+---------+---------+-----+
+|DSP                  |        -|      -|        -|        -|    -|
+|Expression           |        -|      -|        0|     1010|    -|
+|FIFO                 |        -|      -|        -|        -|    -|
+|Instance             |        -|      -|        -|        -|    -|
+|Memory               |        -|      -|        -|        -|    -|
+|Multiplexer          |        -|      -|        -|       30|    -|
+|Register             |        -|      -|      581|        -|    -|
++---------------------+---------+-------+---------+---------+-----+
+|Total                |        0|      0|      581|     1040|    0|
++---------------------+---------+-------+---------+---------+-----+
+|Available SLR        |     1344|   3008|   869120|   434560|  320|
++---------------------+---------+-------+---------+---------+-----+
+|Utilization SLR (%)  |        0|      0|    ~0   |    ~0   |    0|
++---------------------+---------+-------+---------+---------+-----+
+|Available            |     4032|   9024|  2607360|  1303680|  960|
++---------------------+---------+-------+---------+---------+-----+
+|Utilization (%)      |        0|      0|    ~0   |    ~0   |    0|
++---------------------+---------+-------+---------+---------+-----+
+
++ Detail: 
+    * Instance: 
+    N/A
+
+    * DSP48E: 
+    N/A
+
+    * Memory: 
+    N/A
+
+    * FIFO: 
+    N/A
+
+    * Expression: 
+    +--------------------------------+----------+-------+---+-----+------------+------------+
+    |          Variable Name         | Operation| DSP48E| FF| LUT | Bitwidth P0| Bitwidth P1|
+    +--------------------------------+----------+-------+---+-----+------------+------------+
+    |and_ln69_fu_265_p2              |    and   |      0|  0|    2|           1|           1|
+    |arp_ready_V                     |    and   |      0|  0|    2|           1|           1|
+    |eth_out_last_V                  |    and   |      0|  0|    2|           1|           1|
+    |eth_out_valid_V                 |    and   |      0|  0|    2|           1|           1|
+    |ip_ready_V                      |    and   |      0|  0|    2|           1|           1|
+    |ret_V_5_fu_243_p2               |    and   |      0|  0|    2|           1|           1|
+    |or_ln73_fu_277_p2               |    or    |      0|  0|    2|           1|           1|
+    |ret_V_2_fu_289_p2               |    or    |      0|  0|    2|           1|           1|
+    |ret_V_fu_253_p2                 |    or    |      0|  0|    2|           1|           1|
+    |eth_ip_in_data_V_eth_fu_313_p3  |  select  |      0|  0|  428|           1|         512|
+    |eth_ip_in_keep_V_eth_fu_321_p3  |  select  |      0|  0|   63|           1|          64|
+    |eth_ip_in_last_V_eth_fu_337_p3  |  select  |      0|  0|    2|           1|           1|
+    |eth_ip_in_valid_V_et_fu_329_p3  |  select  |      0|  0|    2|           1|           1|
+    |eth_out_data_V                  |  select  |      0|  0|  428|           1|         512|
+    |eth_out_keep_V                  |  select  |      0|  0|   63|           1|          64|
+    |lhs_V_2_fu_369_p2               |    xor   |      0|  0|    2|           1|           2|
+    |xor_ln73_fu_271_p2              |    xor   |      0|  0|    2|           1|           2|
+    |xor_ln80_fu_295_p2              |    xor   |      0|  0|    2|           1|           2|
+    +--------------------------------+----------+-------+---+-----+------------+------------+
+    |Total                           |          |      0|  0| 1010|          18|        1169|
+    +--------------------------------+----------+-------+---+-----+------------+------------+
+
+    * Multiplexer: 
+    +----------------------------------+----+-----------+-----+-----------+
+    |               Name               | LUT| Input Size| Bits| Total Bits|
+    +----------------------------------+----+-----------+-----+-----------+
+    |ap_phi_mux_lhs_V_3_phi_fu_177_p8  |  21|          4|    1|          4|
+    |arbiter_V                         |   9|          2|    1|          2|
+    +----------------------------------+----+-----------+-----+-----------+
+    |Total                             |  30|          6|    2|          6|
+    +----------------------------------+----+-----------+-----+-----------+
+
+    * Register: 
+    +---------------------+-----+----+-----+-----------+
+    |         Name        |  FF | LUT| Bits| Const Bits|
+    +---------------------+-----+----+-----+-----------+
+    |ap_CS_fsm            |    1|   0|    1|          0|
+    |arbiter_V            |    1|   0|    1|          0|
+    |eth_out_reg_data_V   |  512|   0|  512|          0|
+    |eth_out_reg_keep_V   |   64|   0|   64|          0|
+    |eth_out_reg_last_V   |    1|   0|    1|          0|
+    |eth_out_reg_valid_V  |    1|   0|    1|          0|
+    |output_sw_reg_V      |    1|   0|    1|          0|
+    +---------------------+-----+----+-----+-----------+
+    |Total                |  581|   0|  581|          0|
+    +---------------------+-----+----+-----+-----------+
+
+
+
+================================================================
+== Interface
+================================================================
+* Summary: 
++--------------------+-----+-----+--------------+--------------------------+--------------+
+|      RTL Ports     | Dir | Bits|   Protocol   |       Source Object      |    C Type    |
++--------------------+-----+-----+--------------+--------------------------+--------------+
+|ap_clk              |  in |    1| ap_ctrl_none | ether_protocol_assembler | return value |
+|ap_rst              |  in |    1| ap_ctrl_none | ether_protocol_assembler | return value |
+|eth_arp_in_data_V   |  in |  512|    ap_none   |     eth_arp_in_data_V    |    scalar    |
+|eth_arp_in_keep_V   |  in |   64|    ap_none   |     eth_arp_in_keep_V    |    scalar    |
+|eth_arp_in_valid_V  |  in |    1|    ap_none   |    eth_arp_in_valid_V    |    scalar    |
+|eth_arp_in_last_V   |  in |    1|    ap_none   |     eth_arp_in_last_V    |    scalar    |
+|arp_ready_V         | out |    1|    ap_none   |        arp_ready_V       |    pointer   |
+|eth_ip_in_data_V    |  in |  512|    ap_none   |     eth_ip_in_data_V     |    scalar    |
+|eth_ip_in_keep_V    |  in |   64|    ap_none   |     eth_ip_in_keep_V     |    scalar    |
+|eth_ip_in_valid_V   |  in |    1|    ap_none   |     eth_ip_in_valid_V    |    scalar    |
+|eth_ip_in_last_V    |  in |    1|    ap_none   |     eth_ip_in_last_V     |    scalar    |
+|ip_ready_V          | out |    1|    ap_none   |        ip_ready_V        |    pointer   |
+|eth_out_data_V      | out |  512|    ap_none   |      eth_out_data_V      |    pointer   |
+|eth_out_keep_V      | out |   64|    ap_none   |      eth_out_keep_V      |    pointer   |
+|eth_out_valid_V     | out |    1|    ap_none   |      eth_out_valid_V     |    pointer   |
+|eth_out_last_V      | out |    1|    ap_none   |      eth_out_last_V      |    pointer   |
+|eth_out_ready_V     |  in |    1|    ap_none   |      eth_out_ready_V     |    scalar    |
++--------------------+-----+-----+--------------+--------------------------+--------------+
+

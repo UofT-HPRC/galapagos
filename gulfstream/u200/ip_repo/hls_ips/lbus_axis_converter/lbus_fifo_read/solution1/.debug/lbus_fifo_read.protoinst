@@ -1,0 +1,9 @@
+{
+	"version": "1.0",
+	"modules": {
+		"lbus_fifo_read": {
+			"proto_instances": {
+			}
+		}
+	}
+}

@@ -1,0 +1,9 @@
+{
+	"version": "1.0",
+	"modules": {
+		"axis2lbus": {
+			"proto_instances": {
+			}
+		}
+	}
+}

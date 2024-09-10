@@ -1,0 +1,154 @@
+
+
+================================================================
+== Vivado HLS Report for 'action_excecutor'
+================================================================
+* Date:           Thu Jul 25 00:26:18 2024
+
+* Version:        2019.1 (Build 2552052 on Fri May 24 15:28:33 MDT 2019)
+* Project:        action_excecutor
+* Solution:       solution1
+* Product family: virtexuplus
+* Target device:  xcu200-fsgd2104-2-e
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |   3.10|     0.822|        0.39|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+-----+-----+-----+---------+
+    |  Latency  |  Interval | Pipeline|
+    | min | max | min | max |   Type  |
+    +-----+-----+-----+-----+---------+
+    |    0|    0|    0|    0|   none  |
+    +-----+-----+-----+-----+---------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        N/A
+
+
+
+================================================================
+== Utilization Estimates
+================================================================
+* Summary: 
++---------------------+---------+-------+---------+---------+-----+
+|         Name        | BRAM_18K| DSP48E|    FF   |   LUT   | URAM|
++---------------------+---------+-------+---------+---------+-----+
+|DSP                  |        -|      -|        -|        -|    -|
+|Expression           |        -|      -|        0|      503|    -|
+|FIFO                 |        -|      -|        -|        -|    -|
+|Instance             |        -|      -|        -|        -|    -|
+|Memory               |        -|      -|        -|        -|    -|
+|Multiplexer          |        -|      -|        -|       33|    -|
+|Register             |        -|      -|      643|        -|    -|
++---------------------+---------+-------+---------+---------+-----+
+|Total                |        0|      0|      643|      536|    0|
++---------------------+---------+-------+---------+---------+-----+
+|Available SLR        |     1440|   2280|   788160|   394080|  320|
++---------------------+---------+-------+---------+---------+-----+
+|Utilization SLR (%)  |        0|      0|    ~0   |    ~0   |    0|
++---------------------+---------+-------+---------+---------+-----+
+|Available            |     4320|   6840|  2364480|  1182240|  960|
++---------------------+---------+-------+---------+---------+-----+
+|Utilization (%)      |        0|      0|    ~0   |    ~0   |    0|
++---------------------+---------+-------+---------+---------+-----+
+
++ Detail: 
+    * Instance: 
+    N/A
+
+    * DSP48E: 
+    N/A
+
+    * Memory: 
+    N/A
+
+    * FIFO: 
+    N/A
+
+    * Expression: 
+    +-------------------------+----------+-------+---+-----+------------+------------+
+    |      Variable Name      | Operation| DSP48E| FF| LUT | Bitwidth P0| Bitwidth P1|
+    +-------------------------+----------+-------+---+-----+------------+------------+
+    |action_re_V              |    and   |      0|  0|    2|           1|           1|
+    |and_ln1355_fu_380_p2     |    and   |      0|  0|    2|           1|           1|
+    |and_ln68_fu_289_p2       |    and   |      0|  0|    2|           1|           1|
+    |ret_V_1_fu_261_p2        |    and   |      0|  0|    2|           1|           1|
+    |ret_V_fu_267_p2          |    and   |      0|  0|    2|           1|           1|
+    |select_ln68_1_fu_281_p3  |  select  |      0|  0|   63|           1|          64|
+    |select_ln68_fu_273_p3    |  select  |      0|  0|  428|           1|         512|
+    |lhs_V_fu_374_p2          |    xor   |      0|  0|    2|           2|           1|
+    +-------------------------+----------+-------+---+-----+------------+------------+
+    |Total                    |          |      0|  0|  503|           9|         582|
+    +-------------------------+----------+-------+---+-----+------------+------------+
+
+    * Multiplexer: 
+    +-------------------------------------+----+-----------+-----+-----------+
+    |                 Name                | LUT| Input Size| Bits| Total Bits|
+    +-------------------------------------+----+-----------+-----+-----------+
+    |ap_phi_mux_storemerge_phi_fu_211_p4  |  15|          3|   16|         48|
+    |src_ip_reg_V                         |   9|          2|   32|         64|
+    |src_port_reg_V                       |   9|          2|   16|         32|
+    +-------------------------------------+----+-----------+-----+-----------+
+    |Total                                |  33|          7|   64|        144|
+    +-------------------------------------+----+-----------+-----+-----------+
+
+    * Register: 
+    +----------------------+-----+----+-----+-----------+
+    |         Name         |  FF | LUT| Bits| Const Bits|
+    +----------------------+-----+----+-----+-----------+
+    |ap_CS_fsm             |    1|   0|    1|          0|
+    |dst_port_reg_V        |   16|   0|   16|          0|
+    |payload_out_reg_data  |  512|   0|  512|          0|
+    |payload_out_reg_keep  |   64|   0|   64|          0|
+    |payload_out_reg_last  |    1|   0|    1|          0|
+    |payload_out_reg_vali  |    1|   0|    1|          0|
+    |src_ip_reg_V          |   32|   0|   32|          0|
+    |src_port_reg_V        |   16|   0|   16|          0|
+    +----------------------+-----+----+-----+-----------+
+    |Total                 |  643|   0|  643|          0|
+    +----------------------+-----+----+-----+-----------+
+
+
+
+================================================================
+== Interface
+================================================================
+* Summary: 
++---------------------+-----+-----+--------------+---------------------+--------------+
+|      RTL Ports      | Dir | Bits|   Protocol   |    Source Object    |    C Type    |
++---------------------+-----+-----+--------------+---------------------+--------------+
+|ap_clk               |  in |    1| ap_ctrl_none |   action_excecutor  | return value |
+|ap_rst               |  in |    1| ap_ctrl_none |   action_excecutor  | return value |
+|action               |  in |   65|    ap_none   |        action       |    scalar    |
+|action_valid_V       |  in |    1|    ap_none   |    action_valid_V   |    scalar    |
+|action_empty_V       |  in |    1|    ap_none   |    action_empty_V   |    scalar    |
+|action_re_V          | out |    1|    ap_none   |     action_re_V     |    pointer   |
+|payload_in_data_V    |  in |  512|    ap_none   |  payload_in_data_V  |    scalar    |
+|payload_in_keep_V    |  in |   64|    ap_none   |  payload_in_keep_V  |    scalar    |
+|payload_in_valid_V   |  in |    1|    ap_none   |  payload_in_valid_V |    scalar    |
+|payload_in_last_V    |  in |    1|    ap_none   |  payload_in_last_V  |    scalar    |
+|payload_ready_V      | out |    1|    ap_none   |   payload_ready_V   |    pointer   |
+|payload_out_data_V   | out |  512|    ap_none   |  payload_out_data_V |    pointer   |
+|payload_out_keep_V   | out |   64|    ap_none   |  payload_out_keep_V |    pointer   |
+|payload_out_valid_V  | out |    1|    ap_none   | payload_out_valid_V |    pointer   |
+|payload_out_last_V   | out |    1|    ap_none   |  payload_out_last_V |    pointer   |
+|src_ip_V             | out |   32|    ap_none   |       src_ip_V      |    pointer   |
+|src_port_V           | out |   16|    ap_none   |      src_port_V     |    pointer   |
+|dst_port_V           | out |   16|    ap_none   |      dst_port_V     |    pointer   |
++---------------------+-----+-----+--------------+---------------------+--------------+
+

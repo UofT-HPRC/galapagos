@@ -1,0 +1,72 @@
+==============================================================
+Vivado(TM) HLS - High-Level Synthesis from C, C++ and SystemC v2019.1 (64-bit)
+Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
+==============================================================
+INFO: [HLS 200-10] Setting target device to 'xcu280-fsvh2892-2L-e'
+INFO: [SYN 201-201] Setting up clock 'default' with a period of 3.103ns.
+INFO: [SCHED 204-61] Option 'relax_ii_for_timing' is enabled, will increase II to preserve clock frequency constraints.
+INFO: [HLS 200-10] Analyzing design file '/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/arp_server/arp_send.cpp' ... 
+INFO: [HLS 200-111] Finished Linking Time (s): cpu = 00:00:17 ; elapsed = 00:00:28 . Memory (MB): peak = 798.621 ; gain = 126.000 ; free physical = 29628 ; free virtual = 56800
+INFO: [HLS 200-111] Finished Checking Pragmas Time (s): cpu = 00:00:17 ; elapsed = 00:00:28 . Memory (MB): peak = 798.621 ; gain = 126.000 ; free physical = 29628 ; free virtual = 56800
+INFO: [HLS 200-10] Starting code transformations ...
+INFO: [HLS 200-111] Finished Standard Transforms Time (s): cpu = 00:00:19 ; elapsed = 00:00:30 . Memory (MB): peak = 798.621 ; gain = 126.000 ; free physical = 29603 ; free virtual = 56780
+INFO: [HLS 200-10] Checking synthesizability ...
+INFO: [HLS 200-111] Finished Checking Synthesizability Time (s): cpu = 00:00:19 ; elapsed = 00:00:30 . Memory (MB): peak = 798.621 ; gain = 126.000 ; free physical = 29596 ; free virtual = 56773
+INFO: [XFORM 203-102] Automatically partitioning small array 'send_resp_fifo.mac.V' completely based on array size.
+INFO: [XFORM 203-102] Automatically partitioning small array 'send_resp_fifo.ip.V' completely based on array size.
+INFO: [XFORM 203-102] Automatically partitioning small array 'send_req_fifo.V' completely based on array size.
+INFO: [XFORM 203-101] Partitioning array 'send_resp_fifo.mac.V' in dimension 1 completely.
+INFO: [XFORM 203-101] Partitioning array 'send_resp_fifo.ip.V' in dimension 1 completely.
+INFO: [XFORM 203-101] Partitioning array 'send_req_fifo.V' in dimension 1 completely.
+INFO: [XFORM 203-401] Performing if-conversion on hyperblock from (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/arp_server/arp_send.cpp:135:45) to (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/arp_server/arp_send.cpp:136:46) in function 'arp_send'... converting 6 basic blocks.
+INFO: [XFORM 203-401] Performing if-conversion on hyperblock from (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/arp_server/arp_send.cpp:144:17) to (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/arp_server/arp_send.cpp:146:2) in function 'arp_send'... converting 6 basic blocks.
+INFO: [XFORM 203-401] Performing if-conversion on hyperblock from (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/arp_server/arp_send.cpp:148:78) in function 'arp_send'... converting 3 basic blocks.
+INFO: [XFORM 203-401] Performing if-conversion on hyperblock from (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/arp_server/arp_send.cpp:149:18) to (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/arp_server/arp_send.cpp:151:3) in function 'arp_send'... converting 6 basic blocks.
+INFO: [XFORM 203-603] Inlining function 'aesl_mux_load.4i48P.i2' into 'arp_send' (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/arp_server/arp_send.cpp:124).
+INFO: [HLS 200-111] Finished Pre-synthesis Time (s): cpu = 00:00:19 ; elapsed = 00:00:30 . Memory (MB): peak = 862.621 ; gain = 190.000 ; free physical = 29544 ; free virtual = 56724
+INFO: [HLS 200-111] Finished Architecture Synthesis Time (s): cpu = 00:00:19 ; elapsed = 00:00:30 . Memory (MB): peak = 862.621 ; gain = 190.000 ; free physical = 29543 ; free virtual = 56724
+INFO: [HLS 200-10] Starting hardware synthesis ...
+INFO: [HLS 200-10] Synthesizing 'arp_send' ...
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-42] -- Implementing module 'arp_send' 
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [SCHED 204-11] Starting scheduling ...
+INFO: [SCHED 204-11] Finished scheduling.
+INFO: [HLS 200-111]  Elapsed time: 30.44 seconds; current allocated memory: 124.935 MB.
+INFO: [BIND 205-100] Starting micro-architecture generation ...
+INFO: [BIND 205-101] Performing variable lifetime analysis.
+INFO: [BIND 205-101] Exploring resource sharing.
+INFO: [BIND 205-101] Binding ...
+INFO: [BIND 205-100] Finished micro-architecture generation.
+INFO: [HLS 200-111]  Elapsed time: 0.13 seconds; current allocated memory: 126.131 MB.
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-10] -- Generating RTL for module 'arp_send' 
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [RTGEN 206-500] Setting interface mode on port 'arp_send/myMac_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'arp_send/myIP_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'arp_send/gateway_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'arp_send/netmask_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'arp_send/arptable_addr_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'arptable_addr_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'arp_send/arptable_data_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'arp_send/call_for_responce_Mac_IP_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'arp_send/call_for_responce_valid_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'arp_send/lookup_req_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'arp_send/lookup_result_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'lookup_result_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'arp_send/arp_status_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'arp_status_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'arp_send/arp_out_data_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'arp_out_data_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'arp_send/arp_out_keep_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'arp_out_keep_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'arp_send/arp_out_last_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'arp_out_last_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'arp_send/arp_out_valid_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'arp_out_valid_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'arp_send/arp_out_ready_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on function 'arp_send' to 'ap_ctrl_none'.
+WARNING: [RTGEN 206-101] Port 'arp_send/arp_out_ready_V' has no fanin or fanout and is left dangling.
+               Please use C simulation to confirm this function argument can be read from or written to.
+INFO: [RTGEN 206-100] Generating core module 'arp_send_mux_42_32_1_1': 2 instance(s).
+INFO: [RTGEN 206-100] Finished creating RTL model for 'arp_send'.

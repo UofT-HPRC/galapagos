@@ -1,0 +1,165 @@
+<profile>
+
+<section name = "Vivado HLS Report for 'udp_eth_assemble'" level="0">
+<item name = "Date">Thu Jul 25 02:47:46 2024
+</item>
+<item name = "Version">2019.1 (Build 2552052 on Fri May 24 15:28:33 MDT 2019)</item>
+<item name = "Project">udp_eth_assemble</item>
+<item name = "Solution">solution1</item>
+<item name = "Product family">virtexuplus</item>
+<item name = "Target device">xcu250-figd2104-2L-e</item>
+</section>
+
+<section name = "Performance Estimates" level="0">
+<item name = "Timing (ns)">
+<section name = "" level="1">
+<item name = "Summary"><table name="" hasTotal="0">
+<keys size="4">Clock, Target, Estimated, Uncertainty</keys>
+<column name="ap_clk">3.10, 1.518, 0.39</column>
+</table>
+</item>
+</section>
+</item>
+<item name = "Latency (clock cycles)">
+<section name = "" level="1">
+<item name = "Summary"><table name="" hasTotal="0">
+<keys size="6">, min, max, min, max, Type</keys>
+<column name="">0, 0, 0, 0, none</column>
+</table>
+</item>
+<item name = "Detail">
+<section name = "" level="1">
+<item name = "Instance"><table name="" hasTotal="0">
+<keys size="7">Instance, Module, min, max, min, max, Type</keys>
+</table>
+</item>
+<item name = "Loop"><table name="" hasTotal="0">
+<keys size="8">Loop Name, min, max, Latency, achieved, target, Count, Pipelined</keys>
+</table>
+</item>
+</section>
+</item>
+</section>
+</item>
+</section>
+
+<section name = "Utilization Estimates" level="0">
+<item name = "Summary"><table name="" hasTotal="1">
+<keys size="6">Name, BRAM_18K, DSP48E, FF, LUT, URAM</keys>
+<column name="DSP">-, -, -, -, -</column>
+<column name="Expression">-, -, 0, 326, -</column>
+<column name="FIFO">-, -, -, -, -</column>
+<column name="Instance">-, -, -, -, -</column>
+<column name="Memory">-, -, -, -, -</column>
+<column name="Multiplexer">-, -, -, 69, -</column>
+<column name="Register">-, -, 1239, -, -</column>
+<specialColumn name="Available SLR">1344, 3072, 864000, 432000, 320</specialColumn>
+<specialColumn name="Utilization SLR (%)">0, 0, ~0, ~0, 0</specialColumn>
+<specialColumn name="Available">5376, 12288, 3456000, 1728000, 1280</specialColumn>
+<specialColumn name="Utilization (%)">0, 0, ~0, ~0, 0</specialColumn>
+</table>
+</item>
+<item name = "Detail">
+<section name = "" level="1">
+<item name = "Instance"><table name="" hasTotal="1">
+<keys size="7">Instance, Module, BRAM_18K, DSP48E, FF, LUT, URAM</keys>
+</table>
+</item>
+<item name = "DSP48E"><table name="" hasTotal="0">
+<keys size="3">Instance, Module, Expression</keys>
+</table>
+</item>
+<item name = "Memory"><table name="" hasTotal="1">
+<keys size="10">Memory, Module, BRAM_18K, FF, LUT, URAM, Words, Bits, Banks, W*Bits*Banks</keys>
+</table>
+</item>
+<item name = "FIFO"><table name="" hasTotal="1">
+<keys size="8">Name, BRAM_18K, FF, LUT, URAM, Depth, Bits, Size:D*B</keys>
+</table>
+</item>
+<item name = "Expression"><table name="" hasTotal="1">
+<keys size="7">Variable Name, Operation, DSP48E, FF, LUT, Bitwidth P0, Bitwidth P1</keys>
+<column name="add_ln215_1_fu_610_p2">+, 0, 0, 16, 4, 16</column>
+<column name="add_ln215_2_fu_638_p2">+, 0, 0, 16, 16, 16</column>
+<column name="add_ln215_fu_566_p2">+, 0, 0, 16, 5, 16</column>
+<column name="action_re_V">and, 0, 0, 2, 1, 1</column>
+<column name="and_ln1355_2_fu_354_p2">and, 0, 0, 2, 1, 1</column>
+<column name="and_ln1355_4_fu_373_p2">and, 0, 0, 2, 1, 1</column>
+<column name="and_ln1355_fu_756_p2">and, 0, 0, 2, 1, 1</column>
+<column name="ap_condition_354">and, 0, 0, 2, 1, 1</column>
+<column name="payload_ready_V">and, 0, 0, 2, 1, 1</column>
+<column name="ret_V_11_fu_762_p2">and, 0, 0, 2, 1, 1</column>
+<column name="ret_V_12_fu_338_p2">and, 0, 0, 2, 1, 1</column>
+<column name="ret_V_14_fu_386_p2">and, 0, 0, 2, 1, 1</column>
+<column name="ret_V_15_fu_332_p2">and, 0, 0, 2, 1, 1</column>
+<column name="ret_V_5_fu_402_p2">and, 0, 0, 2, 1, 1</column>
+<column name="ret_V_7_fu_450_p2">and, 0, 0, 2, 1, 1</column>
+<column name="or_ln1356_fu_686_p2">or, 0, 0, 22, 22, 6</column>
+<column name="ret_V_13_fu_348_p2">or, 0, 0, 2, 1, 1</column>
+<column name="ret_V_8_fu_508_p2">or, 0, 0, 2, 1, 1</column>
+<column name="ret_V_9_fu_530_p2">or, 0, 0, 2, 1, 1</column>
+<column name="select_ln1355_1_fu_486_p3">select, 0, 0, 22, 1, 22</column>
+<column name="select_ln1355_fu_456_p3">select, 0, 0, 178, 1, 176</column>
+<column name="lhs_V_fu_444_p2">xor, 0, 0, 2, 1, 2</column>
+<column name="rhs_V_3_fu_367_p2">xor, 0, 0, 2, 1, 2</column>
+<column name="rhs_V_4_fu_396_p2">xor, 0, 0, 2, 2, 1</column>
+<column name="rhs_V_fu_312_p2">xor, 0, 0, 2, 2, 1</column>
+<column name="xor_ln1355_fu_326_p2">xor, 0, 0, 2, 1, 2</column>
+<column name="xor_ln215_fu_644_p2">xor, 0, 0, 16, 2, 16</column>
+</table>
+</item>
+<item name = "Multiplexer"><table name="" hasTotal="1">
+<keys size="5">Name, LUT, Input Size, Bits, Total Bits</keys>
+<column name="IN_PACKET_V">9, 2, 1, 2</column>
+<column name="packet_out_reg_data_s">15, 3, 512, 1536</column>
+<column name="packet_out_reg_keep_s">15, 3, 64, 192</column>
+<column name="packet_out_reg_last_s">15, 3, 1, 3</column>
+<column name="packet_out_reg_valid">15, 3, 1, 3</column>
+</table>
+</item>
+<item name = "Register"><table name="" hasTotal="1">
+<keys size="5">Name, FF, LUT, Bits, Const Bits</keys>
+<column name="IN_PACKET_V">1, 0, 1, 0</column>
+<column name="ap_CS_fsm">1, 0, 1, 0</column>
+<column name="myIP_reg_V">32, 0, 32, 0</column>
+<column name="myMac_reg_V">48, 0, 48, 0</column>
+<column name="packet_out_reg_data_s">512, 0, 512, 0</column>
+<column name="packet_out_reg_keep_s">64, 0, 64, 0</column>
+<column name="packet_out_reg_last_s">1, 0, 1, 0</column>
+<column name="packet_out_reg_valid">1, 0, 1, 0</column>
+<column name="payload_in_reg_data_s">512, 0, 512, 0</column>
+<column name="payload_in_reg_keep_s">64, 0, 64, 0</column>
+<column name="payload_in_reg_last_s">1, 0, 1, 0</column>
+<column name="payload_in_reg_valid">1, 0, 1, 0</column>
+<column name="payloadin_pause_V">1, 0, 1, 0</column>
+</table>
+</item>
+</section>
+</item>
+</section>
+
+<section name = "Interface" level="0">
+<item name = "Summary"><table name="" hasTotal="0">
+<keys size="6">RTL Ports, Dir, Bits, Protocol, Source Object, C Type</keys>
+<column name="ap_clk">in, 1, ap_ctrl_none, udp_eth_assemble, return value</column>
+<column name="ap_rst">in, 1, ap_ctrl_none, udp_eth_assemble, return value</column>
+<column name="myMac_V">in, 48, ap_none, myMac_V, scalar</column>
+<column name="myIP_V">in, 32, ap_none, myIP_V, scalar</column>
+<column name="action">in, 161, ap_none, action, scalar</column>
+<column name="action_valid_V">in, 1, ap_none, action_valid_V, scalar</column>
+<column name="action_empty_V">in, 1, ap_none, action_empty_V, scalar</column>
+<column name="action_re_V">out, 1, ap_none, action_re_V, pointer</column>
+<column name="payload_in_data_V">in, 512, ap_none, payload_in_data_V, scalar</column>
+<column name="payload_in_keep_V">in, 64, ap_none, payload_in_keep_V, scalar</column>
+<column name="payload_in_valid_V">in, 1, ap_none, payload_in_valid_V, scalar</column>
+<column name="payload_in_last_V">in, 1, ap_none, payload_in_last_V, scalar</column>
+<column name="payload_ready_V">out, 1, ap_none, payload_ready_V, pointer</column>
+<column name="packet_out_data_V">out, 512, ap_none, packet_out_data_V, pointer</column>
+<column name="packet_out_keep_V">out, 64, ap_none, packet_out_keep_V, pointer</column>
+<column name="packet_out_valid_V">out, 1, ap_none, packet_out_valid_V, pointer</column>
+<column name="packet_out_last_V">out, 1, ap_none, packet_out_last_V, pointer</column>
+<column name="packet_out_ready_V">in, 1, ap_none, packet_out_ready_V, scalar</column>
+</table>
+</item>
+</section>
+</profile>

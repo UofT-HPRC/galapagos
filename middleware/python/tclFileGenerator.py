@@ -2063,22 +2063,30 @@ def userApplicationLocalConnections(tcl_user_app):
                         'port_name': wire_slave['name']
                         }
                         )
-def userApplicationRegionMultiSLR(tcl_user_app, mappings,outDir,main_slr):
+def userApplicationRegionMultiSLR(tcl_user_app, mappings,outDir,main_slr,reset_slr,board):
     ec_file = open(outDir+"/extra_constraints.xdc","w")
     tcl_user_app.addConstraints(outDir+'/extra_constraints.xdc')
     for region in mappings:
         active = False
-        if mappings[region]['name']== main_slr:
+        if mappings[region]['name'] == main_slr:
             active = True
             ec_file.write('create_pblock ' + mappings[region]['name']+'\n')
             ec_file.write('add_cells_to_pblock [get_pblocks ' + mappings[region]['name'] + '] [get_cells -quiet [list')
-            ec_file.write(' shell_i pr_i/applicationRegion pr_i/network')
+            if board == 'u250':
+                ec_file.write(' shell_i/ethernet pr_i/applicationRegion pr_i/network')
+            else:
+                ec_file.write(' shell_i pr_i/applicationRegion pr_i/network')
+        elif mappings[region]['name'] == reset_slr:
+            active = True
+            ec_file.write('create_pblock '+mappings[region]['name']+'\n')
+            ec_file.write('add_cells_to_pblock [get_pblocks ' + mappings[region]['name'] + '] [get_cells -quiet [list')
+            ec_file.write(' ' + "shell_i/clock_reset_generator")
         elif mappings[region]['kernel'] != []:
             active = True
             ec_file.write('create_pblock '+mappings[region]['name']+'\n')
             ec_file.write('add_cells_to_pblock [get_pblocks ' + mappings[region]['name'] + '] [get_cells -quiet [list')
         for kernel_inst in mappings[region]['kernel']:
-            port_name = kernel_inst['name'] + "_inst_" + str(kernel_inst['num'])+'_i'
+            port_name = "user_"+kernel_inst['name'] + "_inst_" + str(kernel_inst['num'])+'_i_i'
             ec_file.write(' '+port_name)
         if active:
             ec_file.write(']]\nresize_pblock [get_pblocks ' + mappings[region]['name'] + '] -add {'+mappings[region]['clockregion']+"}\n\n\n")
@@ -2154,7 +2162,7 @@ def userApplicationRegion(project_name,outDir,output_path, fpga, sim,is_gw,api_i
     tcl_user_app.setInterfacesCLK("CLK",clk_200_int)
     tcl_user_app.setInterfacesCLK("CLK300", clk_300_int)
     if fpga['multi_slr']:
-        userApplicationRegionMultiSLR(tcl_user_app,fpga['slr_mappings'],outDir, fpga['main_slr'])
+        userApplicationRegionMultiSLR(tcl_user_app,fpga['slr_mappings'],outDir, fpga['main_slr'],fpga['reset_slr'],fpga['board'])
     if is_gw:
         userApplicationRegionGWShellChanges(tcl_user_app)
     tcl_user_app.close()
