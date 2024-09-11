@@ -337,7 +337,23 @@ class cluster(abstractDict):
                 self.nodes[i]['kernel'][mem[0]].data['control_address'] = mem[2]
             self.nodes[i].has_control = has_control
 
-
+    ### changes by Charles
+    def checkDDR(self):
+        for i in range(len(self.nodes)):
+            has_ddr = False
+            max_ddr_id_width = 1
+            for j in range(len(self.nodes[i]['kernel'])):
+                if self.nodes[i]['kernel'][j].data['ddr']:
+                    self.nodes[i]['kernel'][j].has_ddr = True
+                    has_ddr = True
+                    if max_ddr_id_width < int(self.nodes[i]['kernel'][j]['ddr_id_width']):
+                        max_ddr_id_width = int(self.nodes[i]['kernel'][j]['ddr_id_width'])
+                    # print("Node: ", i, " Kernel: ", j, " has ddr")
+                    # print("Max DDR ID Width: ", str(max_ddr_id_width))
+            self.nodes[i].has_ddr = has_ddr
+            self.nodes[i].max_ddr_id_width = max_ddr_id_width
+        return
+    ###
 
         return
     def writeClusterTCL(self, output_path, sim, has_GW,api_info,CAMILO_TEMP_DEBUG):

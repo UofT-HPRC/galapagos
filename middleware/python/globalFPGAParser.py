@@ -49,6 +49,7 @@ else:
 for cluster_loc in list_of_clusters:
     cluster_inst = cluster(cluster_loc,lan_flow)
     cluster_inst.processMemoryBus()
+    cluster_inst.checkDDR()  # Charles
     cluster_inst.makeProjectClusterScript(path,cluster_loc['has_dns'])
     if cluster_loc['has_dns']:
         api_info = cluster_inst.writeGatewayFile(path,cluster_loc['apiRef'])
