@@ -40,32 +40,32 @@ void WAN_network_dispatch(
 #pragma HLS INTERFACE axis port=lbTxDataOut register_mode=off
 #pragma HLS INTERFACE axis port=fetch_out register_mode=off
 
-
+    static enum sState {TX_IDLE = 0,FORWARD_REST} sinkState;
     ap_axis_net packet;
-    static ap_uint<1> sinkState = 0;
+
     ip_fetch_packet_t fetch_packet_out;
 
     switch(sinkState){
-        case 0:
+        case TX_IDLE:
             if(!rxGalapagosBridge.empty() && !fetch_out.full() && !lbTxDataOut.full())
             {
                 packet = rxGalapagosBridge.read();
                 fetch_packet_out.data = packet.data.range(2*PACKET_DEST_LENGTH + PACKET_USER_LENGTH - 1, PACKET_DEST_LENGTH + PACKET_USER_LENGTH);
                 fetch_out.write(fetch_packet_out);
-                sinkState = (packet.last==1) ? 0:1;
+                sinkState = (packet.last==1) ? TX_IDLE:FORWARD_REST;
                 lbTxDataOut.write(packet);
             }
             break;
-        case 1:
+        case FORWARD_REST:
           if(!rxGalapagosBridge.empty() && !fetch_out.full() && !lbTxDataOut.full())
           {
             packet = rxGalapagosBridge.read();
-            sinkState = (packet.last==1) ? 0:1;
+            sinkState = (packet.last==1) ? TX_IDLE:FORWARD_REST;
             lbTxDataOut.write(packet);
           }
         	break;
         default:
-            sinkState = 0;
+            sinkState = TX_IDLE;
             break;
 
     }

@@ -147,8 +147,8 @@ def copy_file(dest_fp,src_filename):
 
 def createTopLevelVerilog(target_files, source_dir, kernel_properties,control_names,fpga,is_gw):
     dst_file = open(target_files,"w")
-    if fpga['board'] in ('u200','u250','u280'):
-        copy_file(dst_file, source_dir + "/../verilog/shellTop_pt1_u2xx.v")
+    if fpga['board'] == 'u200':
+        copy_file(dst_file, source_dir + "/../verilog/shellTop_pt1_u200.v")
     else:
         copy_file(dst_file, source_dir + "/../verilog/shellTop_pt1.v")
     dst_file.write(construct_axis_wire("  ","M_AXIS",512,0,True))
@@ -169,8 +169,8 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,control_na
             dst_file.write(add_axi_wire_field("  ", str(name) + "_SWAN","t", wan_axis_fields, wan_axis_sizes, 0, 512, 0) + "\n")
         if is_gw:
             dst_file.write(add_axi_wire_field("  ","Direct_port","t",["data","keep","user","last","valid","ready"],[512,64,64,1,1,1],0,512,0)+"\n")
-    if fpga['board'] in ('u200','u250','u280'):
-        copy_file(dst_file, source_dir + "/../verilog/shellTop_pt2_u2xx.v")
+    if fpga['board'] == 'u200':
+        copy_file(dst_file, source_dir + "/../verilog/shellTop_pt2_u200.v")
     else:
         copy_file(dst_file, source_dir + "/../verilog/shellTop_pt2.v")
     dst_file.write(construct_axis_base_defn("    ","M_AXIS","eth_tx",True))
