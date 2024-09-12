@@ -1,0 +1,5 @@
+# This file is automatically written.  Do not modify.
+proc gen_USERPARAMETER_DATA_WIDTH_ENABLEMENT {HAS_DATA } {expr $HAS_DATA == true}
+proc gen_USERPARAMETER_ID_WIDTH_ENABLEMENT {HAS_ID } {expr $HAS_ID == true}
+proc gen_USERPARAMETER_DEST_WIDTH_ENABLEMENT {HAS_DEST } {expr $HAS_DEST == true}
+proc gen_USERPARAMETER_USER_WIDTH_ENABLEMENT {HAS_USER } {expr $HAS_USER == true}

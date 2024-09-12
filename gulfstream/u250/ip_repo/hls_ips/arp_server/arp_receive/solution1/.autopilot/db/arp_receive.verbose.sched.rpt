@@ -1,0 +1,232 @@
+
+
+================================================================
+== Vivado HLS Report for 'arp_receive'
+================================================================
+* Date:           Thu Jul 25 02:32:38 2024
+
+* Version:        2019.1 (Build 2552052 on Fri May 24 15:28:33 MDT 2019)
+* Project:        arp_receive
+* Solution:       solution1
+* Product family: virtexuplus
+* Target device:  xcu250-figd2104-2L-e
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |   3.10|     1.847|        0.39|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+-----+-----+-----+---------+
+    |  Latency  |  Interval | Pipeline|
+    | min | max | min | max |   Type  |
+    +-----+-----+-----+-----+---------+
+    |    0|    0|    0|    0|   none  |
+    +-----+-----+-----+-----+---------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        N/A
+
+============================================================
++ Verbose Summary: Synthesis Manager
+============================================================
+InlineROM: 1
+ExposeGlobal: 0
+============================================================
++ Verbose Summary: CDFG Model
+============================================================
+IsTopModel: 1
+ResetActiveHigh: 1
+IsCombinational: 0
+IsDatapathOnly: 0
+HasWiredReturn: 1
+HasMFsm: 0
+HasVarLatency: 0
+IsPipeline: 0
+IsRtlPipelined: 0
+IsInstanceOverlapped: 0
+IsDontTouch: 0
+HasImplIP: 0
+IsGatedGlobalClock: 0
+
+
+============================================================
++ Verbose Summary: Schedule
+============================================================
+* Number of FSM states : 1
+* Pipeline : 0
+* Dataflow Pipeline: 0
+
+* FSM state transitions: 
+1 --> 
+
+* FSM state operations: 
+
+State 1 <SV = 0> <Delay = 1.84>
+ST_1 : Operation 2 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i32 %myIP_V), !map !96"   --->   Operation 2 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 3 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i336 %arp_in_data_V), !map !102"   --->   Operation 3 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 4 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i1 %arp_in_valid_V), !map !106"   --->   Operation 4 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 5 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i80 %arp_internal_resp_Mac_IP_V), !map !110"   --->   Operation 5 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 6 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i1 %arp_internal_resp_valid_V), !map !114"   --->   Operation 6 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 7 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i80* %call_for_responce_Mac_IP_V), !map !118"   --->   Operation 7 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 8 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i1* %call_for_responce_valid_V), !map !122"   --->   Operation 8 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 9 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i80* %arptable_dataout_Mac_IP_V), !map !126"   --->   Operation 9 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 10 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i1* %arptable_dataout_valid_V), !map !130"   --->   Operation 10 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 11 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i8* %arptable_addrout_V), !map !134"   --->   Operation 11 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 12 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecTopModule([12 x i8]* @arp_receive_str) nounwind"   --->   Operation 12 'spectopmodule' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 13 [1/1] (0.00ns)   --->   "%arp_internal_resp_va = call i1 @_ssdm_op_Read.ap_none.i1(i1 %arp_internal_resp_valid_V)" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:36]   --->   Operation 13 'read' 'arp_internal_resp_va' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 14 [1/1] (0.00ns)   --->   "%arp_internal_resp_Ma = call i80 @_ssdm_op_Read.ap_none.i80(i80 %arp_internal_resp_Mac_IP_V)" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:36]   --->   Operation 14 'read' 'arp_internal_resp_Ma' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 15 [1/1] (0.00ns)   --->   "%arp_in_valid_V_read = call i1 @_ssdm_op_Read.ap_none.i1(i1 %arp_in_valid_V)" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:36]   --->   Operation 15 'read' 'arp_in_valid_V_read' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 16 [1/1] (0.00ns)   --->   "%arp_in_data_V_read = call i336 @_ssdm_op_Read.ap_none.i336(i336 %arp_in_data_V)" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:36]   --->   Operation 16 'read' 'arp_in_data_V_read' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 17 [1/1] (0.00ns)   --->   "%myIP_V_read = call i32 @_ssdm_op_Read.ap_none.i32(i32 %myIP_V)" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:36]   --->   Operation 17 'read' 'myIP_V_read' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 18 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i32 0, [13 x i8]* @p_str5, i32 0, i32 0, [1 x i8]* @p_str6, i32 0, i32 0, [1 x i8]* @p_str6, [1 x i8]* @p_str6, [1 x i8]* @p_str6, i32 0, i32 0, i32 0, i32 0, [1 x i8]* @p_str6, [1 x i8]* @p_str6) nounwind" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:41]   --->   Operation 18 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 19 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i32 %myIP_V, [8 x i8]* @p_str7, i32 0, i32 0, [1 x i8]* @p_str6, i32 0, i32 0, [1 x i8]* @p_str6, [1 x i8]* @p_str6, [1 x i8]* @p_str6, i32 0, i32 0, i32 0, i32 0, [1 x i8]* @p_str6, [1 x i8]* @p_str6) nounwind" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:42]   --->   Operation 19 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 20 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i336 %arp_in_data_V, i1 %arp_in_valid_V, [8 x i8]* @p_str7, i32 0, i32 0, [1 x i8]* @p_str6, i32 0, i32 0, [1 x i8]* @p_str6, [1 x i8]* @p_str6, [1 x i8]* @p_str6, i32 0, i32 0, i32 0, i32 0, [1 x i8]* @p_str6, [1 x i8]* @p_str6) nounwind" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:43]   --->   Operation 20 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 21 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i80 %arp_internal_resp_Mac_IP_V, i1 %arp_internal_resp_valid_V, [8 x i8]* @p_str7, i32 0, i32 0, [1 x i8]* @p_str6, i32 0, i32 0, [1 x i8]* @p_str6, [1 x i8]* @p_str6, [1 x i8]* @p_str6, i32 0, i32 0, i32 0, i32 0, [1 x i8]* @p_str6, [1 x i8]* @p_str6) nounwind" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:44]   --->   Operation 21 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 22 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i80* %call_for_responce_Mac_IP_V, i1* %call_for_responce_valid_V, [8 x i8]* @p_str7, i32 0, i32 0, [1 x i8]* @p_str6, i32 0, i32 0, [1 x i8]* @p_str6, [1 x i8]* @p_str6, [1 x i8]* @p_str6, i32 0, i32 0, i32 0, i32 0, [1 x i8]* @p_str6, [1 x i8]* @p_str6) nounwind" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:45]   --->   Operation 22 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 23 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i80* %arptable_dataout_Mac_IP_V, i1* %arptable_dataout_valid_V, [8 x i8]* @p_str7, i32 0, i32 0, [1 x i8]* @p_str6, i32 0, i32 0, [1 x i8]* @p_str6, [1 x i8]* @p_str6, [1 x i8]* @p_str6, i32 0, i32 0, i32 0, i32 0, [1 x i8]* @p_str6, [1 x i8]* @p_str6) nounwind" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:46]   --->   Operation 23 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 24 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i8* %arptable_addrout_V, [8 x i8]* @p_str7, i32 0, i32 0, [1 x i8]* @p_str6, i32 0, i32 0, [1 x i8]* @p_str6, [1 x i8]* @p_str6, [1 x i8]* @p_str6, i32 0, i32 0, i32 0, i32 0, [1 x i8]* @p_str6, [1 x i8]* @p_str6) nounwind" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:47]   --->   Operation 24 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 25 [1/1] (0.00ns)   --->   "%call_for_responce_re_2 = load i80* @call_for_responce_re_1, align 8" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_server.h:66->/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:65]   --->   Operation 25 'load' 'call_for_responce_re_2' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 26 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_none.i80P(i80* %call_for_responce_Mac_IP_V, i80 %call_for_responce_re_2)" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_server.h:66->/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:65]   --->   Operation 26 'write' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 27 [1/1] (0.00ns)   --->   "%call_for_responce_re_3 = load i1* @call_for_responce_re, align 8" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_server.h:66->/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:65]   --->   Operation 27 'load' 'call_for_responce_re_3' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 28 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_none.i1P(i1* %call_for_responce_valid_V, i1 %call_for_responce_re_3)" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_server.h:66->/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:65]   --->   Operation 28 'write' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 29 [1/1] (0.00ns)   --->   "%arptable_dataout_reg_2 = load i80* @arptable_dataout_reg_1, align 8" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_server.h:66->/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:66]   --->   Operation 29 'load' 'arptable_dataout_reg_2' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 30 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_none.i80P(i80* %arptable_dataout_Mac_IP_V, i80 %arptable_dataout_reg_2)" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_server.h:66->/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:66]   --->   Operation 30 'write' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 31 [1/1] (0.00ns)   --->   "%arptable_dataout_reg_3 = load i1* @arptable_dataout_reg, align 8" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_server.h:66->/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:66]   --->   Operation 31 'load' 'arptable_dataout_reg_3' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 32 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_none.i1P(i1* %arptable_dataout_valid_V, i1 %arptable_dataout_reg_3)" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_server.h:66->/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:66]   --->   Operation 32 'write' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 33 [1/1] (0.00ns)   --->   "%arptable_addrout_reg_1 = load i8* @arptable_addrout_reg, align 1" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:67]   --->   Operation 33 'load' 'arptable_addrout_reg_1' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 34 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_none.i8P(i8* %arptable_addrout_V, i8 %arptable_addrout_reg_1)" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:67]   --->   Operation 34 'write' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 35 [1/1] (0.00ns)   --->   "%arp_in_reg_valid_V_l = load i1* @arp_in_reg_valid_V, align 4" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:71]   --->   Operation 35 'load' 'arp_in_reg_valid_V_l' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 36 [1/1] (0.00ns)   --->   "%arp_in_reg_fixed_hea_1 = load i48* @arp_in_reg_fixed_hea, align 8" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:71]   --->   Operation 36 'load' 'arp_in_reg_fixed_hea_1' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 37 [1/1] (0.00ns)   --->   "%arp_in_reg_dst_ip_V_s = load i32* @arp_in_reg_dst_ip_V, align 4" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:71]   --->   Operation 37 'load' 'arp_in_reg_dst_ip_V_s' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 38 [1/1] (0.00ns)   --->   "%myIPReg_V_load = load i32* @myIPReg_V, align 4" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:71]   --->   Operation 38 'load' 'myIPReg_V_load' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 39 [1/1] (0.00ns)   --->   "%arp_in_reg_opcode_V_s = load i16* @arp_in_reg_opcode_V, align 2" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:71]   --->   Operation 39 'load' 'arp_in_reg_opcode_V_s' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 40 [1/1] (0.00ns)   --->   "%arp_in_reg_dst_mac_V_1 = load i48* @arp_in_reg_dst_mac_V, align 8" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:72]   --->   Operation 40 'load' 'arp_in_reg_dst_mac_V_1' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 41 [1/1] (0.00ns)   --->   "%v2_V = load i32* @arp_in_reg_src_ip_V, align 4" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:72]   --->   Operation 41 'load' 'v2_V' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 42 [1/1] (0.67ns)   --->   "%icmp_ln879_2 = icmp eq i16 %arp_in_reg_opcode_V_s, 1" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:71]   --->   Operation 42 'icmp' 'icmp_ln879_2' <Predicate = true> <Delay = 0.67> <Core = "Cmp">   --->   Core 25 'Cmp' <Latency = 0> <II = 1> <Delay = 0.85> <FuncUnit> <Opcode : 'icmp'> <InPorts = 2> <OutPorts = 1>
+ST_1 : Operation 43 [1/1] (0.00ns)   --->   "br i1 %arp_in_reg_valid_V_l, label %0, label %._crit_edge455.critedge" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:71]   --->   Operation 43 'br' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 44 [1/1] (0.60ns)   --->   "store i1 false, i1* @call_for_responce_re, align 8"   --->   Operation 44 'store' <Predicate = (!arp_in_reg_valid_V_l)> <Delay = 0.60>
+ST_1 : Operation 45 [1/1] (0.61ns)   --->   "br label %._crit_edge456" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:72]   --->   Operation 45 'br' <Predicate = (!arp_in_reg_valid_V_l)> <Delay = 0.61>
+ST_1 : Operation 46 [1/1] (0.98ns)   --->   "%icmp_ln879 = icmp eq i48 %arp_in_reg_fixed_hea_1, 4429186564" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:71]   --->   Operation 46 'icmp' 'icmp_ln879' <Predicate = (arp_in_reg_valid_V_l)> <Delay = 0.98> <Core = "Cmp">   --->   Core 25 'Cmp' <Latency = 0> <II = 1> <Delay = 0.85> <FuncUnit> <Opcode : 'icmp'> <InPorts = 2> <OutPorts = 1>
+ST_1 : Operation 47 [1/1] (0.00ns)   --->   "br i1 %icmp_ln879, label %1, label %._crit_edge456.critedge" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:71]   --->   Operation 47 'br' <Predicate = (arp_in_reg_valid_V_l)> <Delay = 0.00>
+ST_1 : Operation 48 [1/1] (0.60ns)   --->   "store i1 false, i1* @call_for_responce_re, align 8"   --->   Operation 48 'store' <Predicate = (arp_in_reg_valid_V_l & !icmp_ln879)> <Delay = 0.60>
+ST_1 : Operation 49 [1/1] (0.61ns)   --->   "br label %._crit_edge456"   --->   Operation 49 'br' <Predicate = (arp_in_reg_valid_V_l & !icmp_ln879)> <Delay = 0.61>
+ST_1 : Operation 50 [1/1] (0.85ns)   --->   "%icmp_ln879_1 = icmp eq i32 %arp_in_reg_dst_ip_V_s, %myIPReg_V_load" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:71]   --->   Operation 50 'icmp' 'icmp_ln879_1' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879)> <Delay = 0.85> <Core = "Cmp">   --->   Core 25 'Cmp' <Latency = 0> <II = 1> <Delay = 0.85> <FuncUnit> <Opcode : 'icmp'> <InPorts = 2> <OutPorts = 1>
+ST_1 : Operation 51 [1/1] (0.00ns)   --->   "br i1 %icmp_ln879_1, label %._crit_edge452, label %.critedge" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:71]   --->   Operation 51 'br' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879)> <Delay = 0.00>
+ST_1 : Operation 52 [1/1] (0.60ns)   --->   "store i1 false, i1* @call_for_responce_re, align 8"   --->   Operation 52 'store' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879 & !icmp_ln879_1)> <Delay = 0.60>
+ST_1 : Operation 53 [1/1] (0.98ns)   --->   "%icmp_ln879_3 = icmp eq i48 %arp_in_reg_dst_mac_V_1, -1" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:72]   --->   Operation 53 'icmp' 'icmp_ln879_3' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879 & !icmp_ln879_1)> <Delay = 0.98> <Core = "Cmp">   --->   Core 25 'Cmp' <Latency = 0> <II = 1> <Delay = 0.85> <FuncUnit> <Opcode : 'icmp'> <InPorts = 2> <OutPorts = 1>
+ST_1 : Operation 54 [1/1] (0.85ns)   --->   "%icmp_ln879_4 = icmp eq i32 %v2_V, %arp_in_reg_dst_ip_V_s" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:72]   --->   Operation 54 'icmp' 'icmp_ln879_4' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879 & !icmp_ln879_1)> <Delay = 0.85> <Core = "Cmp">   --->   Core 25 'Cmp' <Latency = 0> <II = 1> <Delay = 0.85> <FuncUnit> <Opcode : 'icmp'> <InPorts = 2> <OutPorts = 1>
+ST_1 : Operation 55 [1/1] (0.00ns) (grouped into LUT with out node and_ln72_1)   --->   "%and_ln72 = and i1 %icmp_ln879_4, %icmp_ln879_2" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:72]   --->   Operation 55 'and' 'and_ln72' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879 & !icmp_ln879_1)> <Delay = 0.00> <Core = "LogicGate">   --->   Core 27 'LogicGate' <Latency = 0> <II = 1> <Delay = 0.12> <FuncUnit> <Opcode : 'and' 'or' 'xor'> <InPorts = 2> <OutPorts = 1>
+ST_1 : Operation 56 [1/1] (0.12ns) (out node of the LUT)   --->   "%and_ln72_1 = and i1 %and_ln72, %icmp_ln879_3" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:72]   --->   Operation 56 'and' 'and_ln72_1' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879 & !icmp_ln879_1)> <Delay = 0.12> <Core = "LogicGate">   --->   Core 27 'LogicGate' <Latency = 0> <II = 1> <Delay = 0.12> <FuncUnit> <Opcode : 'and' 'or' 'xor'> <InPorts = 2> <OutPorts = 1>
+ST_1 : Operation 57 [1/1] (0.61ns)   --->   "br label %._crit_edge456" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:72]   --->   Operation 57 'br' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879 & !icmp_ln879_1)> <Delay = 0.61>
+ST_1 : Operation 58 [1/1] (0.60ns)   --->   "store i1 %icmp_ln879_2, i1* @call_for_responce_re, align 8"   --->   Operation 58 'store' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879 & icmp_ln879_1)> <Delay = 0.60>
+ST_1 : Operation 59 [1/1] (0.61ns)   --->   "br label %._crit_edge456" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:72]   --->   Operation 59 'br' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879 & icmp_ln879_1)> <Delay = 0.61>
+ST_1 : Operation 60 [1/1] (0.00ns) (grouped into LUT with out node ret_V)   --->   "%lhs_V = phi i1 [ false, %._crit_edge455.critedge ], [ true, %._crit_edge452 ], [ false, %._crit_edge456.critedge ], [ %and_ln72_1, %.critedge ]" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:72]   --->   Operation 60 'phi' 'lhs_V' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 61 [1/1] (0.00ns)   --->   "%rhs_V = load i1* @arp_internal_resp_va, align 1"   --->   Operation 61 'load' 'rhs_V' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 62 [1/1] (0.12ns) (out node of the LUT)   --->   "%ret_V = or i1 %rhs_V, %lhs_V"   --->   Operation 62 'or' 'ret_V' <Predicate = true> <Delay = 0.12> <Core = "LogicGate">   --->   Core 27 'LogicGate' <Latency = 0> <II = 1> <Delay = 0.12> <FuncUnit> <Opcode : 'and' 'or' 'xor'> <InPorts = 2> <OutPorts = 1>
+ST_1 : Operation 63 [1/1] (0.00ns)   --->   "store i1 %ret_V, i1* @arptable_dataout_reg, align 8"   --->   Operation 63 'store' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 64 [1/1] (0.00ns)   --->   "%v1_V_1 = load i48* @arp_in_reg_src_mac_V, align 8" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:77]   --->   Operation 64 'load' 'v1_V_1' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 65 [1/1] (0.00ns)   --->   "br i1 %arp_in_reg_valid_V_l, label %2, label %7" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:73]   --->   Operation 65 'br' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 66 [1/1] (0.00ns)   --->   "br i1 %rhs_V, label %8, label %._crit_edge471" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:84]   --->   Operation 66 'br' <Predicate = (!arp_in_reg_valid_V_l)> <Delay = 0.00>
+ST_1 : Operation 67 [1/1] (0.00ns)   --->   "%p_Val2_s = load i80* @arp_internal_resp_re, align 8" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:85]   --->   Operation 67 'load' 'p_Val2_s' <Predicate = (!arp_in_reg_valid_V_l & rhs_V)> <Delay = 0.00>
+ST_1 : Operation 68 [1/1] (0.61ns)   --->   "store i80 %p_Val2_s, i80* @arptable_dataout_reg_1, align 8" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:85]   --->   Operation 68 'store' <Predicate = (!arp_in_reg_valid_V_l & rhs_V)> <Delay = 0.61>
+ST_1 : Operation 69 [1/1] (0.00ns)   --->   "%trunc_ln647 = trunc i80 %p_Val2_s to i8" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:86]   --->   Operation 69 'trunc' 'trunc_ln647' <Predicate = (!arp_in_reg_valid_V_l & rhs_V)> <Delay = 0.00>
+ST_1 : Operation 70 [1/1] (0.61ns)   --->   "store i8 %trunc_ln647, i8* @arptable_addrout_reg, align 1" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:86]   --->   Operation 70 'store' <Predicate = (!arp_in_reg_valid_V_l & rhs_V)> <Delay = 0.61>
+ST_1 : Operation 71 [1/1] (0.00ns)   --->   "br label %._crit_edge471" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:87]   --->   Operation 71 'br' <Predicate = (!arp_in_reg_valid_V_l & rhs_V)> <Delay = 0.00>
+ST_1 : Operation 72 [1/1] (0.00ns)   --->   "br label %9"   --->   Operation 72 'br' <Predicate = (!arp_in_reg_valid_V_l)> <Delay = 0.00>
+ST_1 : Operation 73 [1/1] (0.98ns)   --->   "%icmp_ln879_5 = icmp eq i48 %arp_in_reg_fixed_hea_1, 4429186564" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:74]   --->   Operation 73 'icmp' 'icmp_ln879_5' <Predicate = (arp_in_reg_valid_V_l)> <Delay = 0.98> <Core = "Cmp">   --->   Core 25 'Cmp' <Latency = 0> <II = 1> <Delay = 0.85> <FuncUnit> <Opcode : 'icmp'> <InPorts = 2> <OutPorts = 1>
+ST_1 : Operation 74 [1/1] (0.00ns)   --->   "br i1 %icmp_ln879_5, label %3, label %._crit_edge467" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:74]   --->   Operation 74 'br' <Predicate = (arp_in_reg_valid_V_l)> <Delay = 0.00>
+ST_1 : Operation 75 [1/1] (0.85ns)   --->   "%icmp_ln879_6 = icmp eq i32 %arp_in_reg_dst_ip_V_s, %myIPReg_V_load" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:74]   --->   Operation 75 'icmp' 'icmp_ln879_6' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879_5)> <Delay = 0.85> <Core = "Cmp">   --->   Core 25 'Cmp' <Latency = 0> <II = 1> <Delay = 0.85> <FuncUnit> <Opcode : 'icmp'> <InPorts = 2> <OutPorts = 1>
+ST_1 : Operation 76 [1/1] (0.00ns)   --->   "br i1 %icmp_ln879_6, label %4, label %._crit_edge464" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:74]   --->   Operation 76 'br' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879_5)> <Delay = 0.00>
+ST_1 : Operation 77 [1/1] (0.00ns)   --->   "br i1 %icmp_ln879_2, label %5, label %._crit_edge460" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:74]   --->   Operation 77 'br' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879_5 & icmp_ln879_6)> <Delay = 0.00>
+ST_1 : Operation 78 [1/1] (0.67ns)   --->   "%icmp_ln879_7 = icmp eq i16 %arp_in_reg_opcode_V_s, 2" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:79]   --->   Operation 78 'icmp' 'icmp_ln879_7' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879_5 & icmp_ln879_6 & !icmp_ln879_2)> <Delay = 0.67> <Core = "Cmp">   --->   Core 25 'Cmp' <Latency = 0> <II = 1> <Delay = 0.85> <FuncUnit> <Opcode : 'icmp'> <InPorts = 2> <OutPorts = 1>
+ST_1 : Operation 79 [1/1] (0.00ns)   --->   "br i1 %icmp_ln879_7, label %._crit_edge465, label %._crit_edge464" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:79]   --->   Operation 79 'br' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879_5 & icmp_ln879_6 & !icmp_ln879_2)> <Delay = 0.00>
+ST_1 : Operation 80 [1/1] (0.98ns)   --->   "%icmp_ln879_8 = icmp eq i48 %arp_in_reg_dst_mac_V_1, -1" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:79]   --->   Operation 80 'icmp' 'icmp_ln879_8' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879_5 & !icmp_ln879_2 & !icmp_ln879_7) | (arp_in_reg_valid_V_l & icmp_ln879_5 & !icmp_ln879_6)> <Delay = 0.98> <Core = "Cmp">   --->   Core 25 'Cmp' <Latency = 0> <II = 1> <Delay = 0.85> <FuncUnit> <Opcode : 'icmp'> <InPorts = 2> <OutPorts = 1>
+ST_1 : Operation 81 [1/1] (0.85ns)   --->   "%icmp_ln879_9 = icmp eq i32 %v2_V, %arp_in_reg_dst_ip_V_s" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:79]   --->   Operation 81 'icmp' 'icmp_ln879_9' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879_5 & !icmp_ln879_2 & !icmp_ln879_7) | (arp_in_reg_valid_V_l & icmp_ln879_5 & !icmp_ln879_6)> <Delay = 0.85> <Core = "Cmp">   --->   Core 25 'Cmp' <Latency = 0> <II = 1> <Delay = 0.85> <FuncUnit> <Opcode : 'icmp'> <InPorts = 2> <OutPorts = 1>
+ST_1 : Operation 82 [1/1] (0.00ns) (grouped into LUT with out node and_ln79_1)   --->   "%and_ln79 = and i1 %icmp_ln879_9, %icmp_ln879_2" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:79]   --->   Operation 82 'and' 'and_ln79' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879_5 & !icmp_ln879_2 & !icmp_ln879_7) | (arp_in_reg_valid_V_l & icmp_ln879_5 & !icmp_ln879_6)> <Delay = 0.00> <Core = "LogicGate">   --->   Core 27 'LogicGate' <Latency = 0> <II = 1> <Delay = 0.12> <FuncUnit> <Opcode : 'and' 'or' 'xor'> <InPorts = 2> <OutPorts = 1>
+ST_1 : Operation 83 [1/1] (0.12ns) (out node of the LUT)   --->   "%and_ln79_1 = and i1 %and_ln79, %icmp_ln879_8" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:79]   --->   Operation 83 'and' 'and_ln79_1' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879_5 & !icmp_ln879_2 & !icmp_ln879_7) | (arp_in_reg_valid_V_l & icmp_ln879_5 & !icmp_ln879_6)> <Delay = 0.12> <Core = "LogicGate">   --->   Core 27 'LogicGate' <Latency = 0> <II = 1> <Delay = 0.12> <FuncUnit> <Opcode : 'and' 'or' 'xor'> <InPorts = 2> <OutPorts = 1>
+ST_1 : Operation 84 [1/1] (0.00ns)   --->   "br i1 %and_ln79_1, label %._crit_edge465, label %._crit_edge467" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:79]   --->   Operation 84 'br' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879_5 & !icmp_ln879_2 & !icmp_ln879_7) | (arp_in_reg_valid_V_l & icmp_ln879_5 & !icmp_ln879_6)> <Delay = 0.00>
+ST_1 : Operation 85 [1/1] (0.00ns)   --->   "%p_Result_2 = call i80 @_ssdm_op_BitConcatenate.i80.i48.i32(i48 %v1_V_1, i32 %v2_V)" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:81]   --->   Operation 85 'bitconcatenate' 'p_Result_2' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879_5 & !icmp_ln879_2 & and_ln79_1) | (arp_in_reg_valid_V_l & icmp_ln879_5 & icmp_ln879_6 & !icmp_ln879_2 & icmp_ln879_7) | (arp_in_reg_valid_V_l & icmp_ln879_5 & !icmp_ln879_6 & and_ln79_1)> <Delay = 0.00>
+ST_1 : Operation 86 [1/1] (0.61ns)   --->   "store i80 %p_Result_2, i80* @arptable_dataout_reg_1, align 8" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:81]   --->   Operation 86 'store' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879_5 & !icmp_ln879_2 & and_ln79_1) | (arp_in_reg_valid_V_l & icmp_ln879_5 & icmp_ln879_6 & !icmp_ln879_2 & icmp_ln879_7) | (arp_in_reg_valid_V_l & icmp_ln879_5 & !icmp_ln879_6 & and_ln79_1)> <Delay = 0.61>
+ST_1 : Operation 87 [1/1] (0.00ns)   --->   "%trunc_ln647_2 = trunc i32 %v2_V to i8" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:82]   --->   Operation 87 'trunc' 'trunc_ln647_2' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879_5 & !icmp_ln879_2 & and_ln79_1) | (arp_in_reg_valid_V_l & icmp_ln879_5 & icmp_ln879_6 & !icmp_ln879_2 & icmp_ln879_7) | (arp_in_reg_valid_V_l & icmp_ln879_5 & !icmp_ln879_6 & and_ln79_1)> <Delay = 0.00>
+ST_1 : Operation 88 [1/1] (0.61ns)   --->   "store i8 %trunc_ln647_2, i8* @arptable_addrout_reg, align 1" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:82]   --->   Operation 88 'store' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879_5 & !icmp_ln879_2 & and_ln79_1) | (arp_in_reg_valid_V_l & icmp_ln879_5 & icmp_ln879_6 & !icmp_ln879_2 & icmp_ln879_7) | (arp_in_reg_valid_V_l & icmp_ln879_5 & !icmp_ln879_6 & and_ln79_1)> <Delay = 0.61>
+ST_1 : Operation 89 [1/1] (0.00ns)   --->   "br label %._crit_edge467" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:83]   --->   Operation 89 'br' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879_5 & !icmp_ln879_2 & and_ln79_1) | (arp_in_reg_valid_V_l & icmp_ln879_5 & icmp_ln879_6 & !icmp_ln879_2 & icmp_ln879_7) | (arp_in_reg_valid_V_l & icmp_ln879_5 & !icmp_ln879_6 & and_ln79_1)> <Delay = 0.00>
+ST_1 : Operation 90 [1/1] (0.00ns)   --->   "br label %6"   --->   Operation 90 'br' <Predicate = (arp_in_reg_valid_V_l & !icmp_ln879_2) | (arp_in_reg_valid_V_l & !icmp_ln879_6) | (arp_in_reg_valid_V_l & !icmp_ln879_5)> <Delay = 0.00>
+ST_1 : Operation 91 [1/1] (0.00ns)   --->   "%v1_V = load i48* @eth_src_mac_V, align 8" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:76]   --->   Operation 91 'load' 'v1_V' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879_5 & icmp_ln879_6 & icmp_ln879_2)> <Delay = 0.00>
+ST_1 : Operation 92 [1/1] (0.00ns)   --->   "%p_Result_s = call i80 @_ssdm_op_BitConcatenate.i80.i48.i32(i48 %v1_V, i32 %v2_V)" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:76]   --->   Operation 92 'bitconcatenate' 'p_Result_s' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879_5 & icmp_ln879_6 & icmp_ln879_2)> <Delay = 0.00>
+ST_1 : Operation 93 [1/1] (0.00ns)   --->   "store i80 %p_Result_s, i80* @call_for_responce_re_1, align 8" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:76]   --->   Operation 93 'store' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879_5 & icmp_ln879_6 & icmp_ln879_2)> <Delay = 0.00>
+ST_1 : Operation 94 [1/1] (0.00ns)   --->   "%p_Result_1 = call i80 @_ssdm_op_BitConcatenate.i80.i48.i32(i48 %v1_V_1, i32 %v2_V)" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:77]   --->   Operation 94 'bitconcatenate' 'p_Result_1' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879_5 & icmp_ln879_6 & icmp_ln879_2)> <Delay = 0.00>
+ST_1 : Operation 95 [1/1] (0.61ns)   --->   "store i80 %p_Result_1, i80* @arptable_dataout_reg_1, align 8" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:77]   --->   Operation 95 'store' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879_5 & icmp_ln879_6 & icmp_ln879_2)> <Delay = 0.61>
+ST_1 : Operation 96 [1/1] (0.00ns)   --->   "%trunc_ln647_1 = trunc i32 %v2_V to i8" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:78]   --->   Operation 96 'trunc' 'trunc_ln647_1' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879_5 & icmp_ln879_6 & icmp_ln879_2)> <Delay = 0.00>
+ST_1 : Operation 97 [1/1] (0.61ns)   --->   "store i8 %trunc_ln647_1, i8* @arptable_addrout_reg, align 1" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:78]   --->   Operation 97 'store' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879_5 & icmp_ln879_6 & icmp_ln879_2)> <Delay = 0.61>
+ST_1 : Operation 98 [1/1] (0.00ns)   --->   "br label %6" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:79]   --->   Operation 98 'br' <Predicate = (arp_in_reg_valid_V_l & icmp_ln879_5 & icmp_ln879_6 & icmp_ln879_2)> <Delay = 0.00>
+ST_1 : Operation 99 [1/1] (0.00ns)   --->   "br label %9" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:84]   --->   Operation 99 'br' <Predicate = (arp_in_reg_valid_V_l)> <Delay = 0.00>
+ST_1 : Operation 100 [1/1] (0.00ns)   --->   "br i1 %arp_internal_resp_va, label %10, label %11" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:91]   --->   Operation 100 'br' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 101 [1/1] (0.00ns)   --->   "br i1 %arp_in_reg_valid_V_l, label %._crit_edge472, label %12" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:93]   --->   Operation 101 'br' <Predicate = (!arp_internal_resp_va)> <Delay = 0.00>
+ST_1 : Operation 102 [1/1] (0.60ns)   --->   "store i1 false, i1* @arp_internal_resp_va, align 1" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:94]   --->   Operation 102 'store' <Predicate = (!arp_in_reg_valid_V_l & !arp_internal_resp_va)> <Delay = 0.60>
+ST_1 : Operation 103 [1/1] (0.00ns)   --->   "br label %._crit_edge472" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:95]   --->   Operation 103 'br' <Predicate = (!arp_in_reg_valid_V_l & !arp_internal_resp_va)> <Delay = 0.00>
+ST_1 : Operation 104 [1/1] (0.00ns)   --->   "br label %13"   --->   Operation 104 'br' <Predicate = (!arp_internal_resp_va)> <Delay = 0.00>
+ST_1 : Operation 105 [1/1] (0.60ns)   --->   "store i1 true, i1* @arp_internal_resp_va, align 1" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:92]   --->   Operation 105 'store' <Predicate = (arp_internal_resp_va)> <Delay = 0.60>
+ST_1 : Operation 106 [1/1] (0.00ns)   --->   "br label %13" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:93]   --->   Operation 106 'br' <Predicate = (arp_internal_resp_va)> <Delay = 0.00>
+ST_1 : Operation 107 [1/1] (0.00ns)   --->   "store i32 %myIP_V_read, i32* @myIPReg_V, align 4" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:96]   --->   Operation 107 'store' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 108 [1/1] (0.00ns)   --->   "%p_Result_4 = call i48 @_ssdm_op_PartSelect.i48.i336.i32.i32(i336 %arp_in_data_V_read, i32 240, i32 287)" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:97]   --->   Operation 108 'partselect' 'p_Result_4' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 109 [1/1] (0.00ns)   --->   "store i48 %p_Result_4, i48* @eth_src_mac_V, align 8" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:97]   --->   Operation 109 'store' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 110 [1/1] (0.00ns)   --->   "%p_Result_5 = call i48 @_ssdm_op_PartSelect.i48.i336.i32.i32(i336 %arp_in_data_V_read, i32 176, i32 223)" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:98]   --->   Operation 110 'partselect' 'p_Result_5' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 111 [1/1] (0.00ns)   --->   "store i48 %p_Result_5, i48* @arp_in_reg_fixed_hea, align 8" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:98]   --->   Operation 111 'store' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 112 [1/1] (0.00ns)   --->   "%p_Result_6 = call i16 @_ssdm_op_PartSelect.i16.i336.i32.i32(i336 %arp_in_data_V_read, i32 160, i32 175)" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:99]   --->   Operation 112 'partselect' 'p_Result_6' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 113 [1/1] (0.00ns)   --->   "store i16 %p_Result_6, i16* @arp_in_reg_opcode_V, align 8" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:99]   --->   Operation 113 'store' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 114 [1/1] (0.00ns)   --->   "%p_Result_7 = call i48 @_ssdm_op_PartSelect.i48.i336.i32.i32(i336 %arp_in_data_V_read, i32 112, i32 159)" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:100]   --->   Operation 114 'partselect' 'p_Result_7' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 115 [1/1] (0.00ns)   --->   "store i48 %p_Result_7, i48* @arp_in_reg_src_mac_V, align 8" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:100]   --->   Operation 115 'store' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 116 [1/1] (0.00ns)   --->   "%p_Result_8 = call i32 @_ssdm_op_PartSelect.i32.i336.i32.i32(i336 %arp_in_data_V_read, i32 80, i32 111)" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:101]   --->   Operation 116 'partselect' 'p_Result_8' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 117 [1/1] (0.00ns)   --->   "store i32 %p_Result_8, i32* @arp_in_reg_src_ip_V, align 8" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:101]   --->   Operation 117 'store' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 118 [1/1] (0.00ns)   --->   "%p_Result_9 = call i48 @_ssdm_op_PartSelect.i48.i336.i32.i32(i336 %arp_in_data_V_read, i32 32, i32 79)" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:102]   --->   Operation 118 'partselect' 'p_Result_9' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 119 [1/1] (0.00ns)   --->   "store i48 %p_Result_9, i48* @arp_in_reg_dst_mac_V, align 8" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:102]   --->   Operation 119 'store' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 120 [1/1] (0.00ns)   --->   "%trunc_ln647_3 = trunc i336 %arp_in_data_V_read to i32" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:103]   --->   Operation 120 'trunc' 'trunc_ln647_3' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 121 [1/1] (0.00ns)   --->   "store i32 %trunc_ln647_3, i32* @arp_in_reg_dst_ip_V, align 8" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:103]   --->   Operation 121 'store' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 122 [1/1] (0.00ns)   --->   "store i1 %arp_in_valid_V_read, i1* @arp_in_reg_valid_V, align 4" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:104]   --->   Operation 122 'store' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 123 [1/1] (0.00ns)   --->   "store i80 %arp_internal_resp_Ma, i80* @arp_internal_resp_re, align 8" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:105]   --->   Operation 123 'store' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 124 [1/1] (0.00ns)   --->   "ret void" [/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:107]   --->   Operation 124 'ret' <Predicate = true> <Delay = 0.00>
+
+
+============================================================
++ Verbose Summary: Timing violations
+============================================================
+Target clock period: 3.1ns, clock uncertainty: 0.388ns.
+
+ <State 1>: 1.85ns
+The critical path consists of the following:
+	'load' operation ('arp_in_reg_dst_mac_V_1', /home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:72) on static variable 'arp_in_reg_dst_mac_V' [65]  (0 ns)
+	'icmp' operation ('icmp_ln879_3', /home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:72) [83]  (0.986 ns)
+	'and' operation ('and_ln72_1', /home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:72) [86]  (0.122 ns)
+	multiplexor before 'phi' operation ('i_op', /home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:72) with incoming values : ('and_ln72_1', /home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:72) [92]  (0.617 ns)
+	'phi' operation ('i_op', /home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:72) with incoming values : ('and_ln72_1', /home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/arp_server/arp_receive.cpp:72) [92]  (0 ns)
+	'or' operation ('ret.V') [94]  (0.122 ns)
+
+
+============================================================
++ Verbose Summary: Binding
+============================================================
+N/A
+* FSMD analyzer results:
+  - Output states:
+ - Input state : 
+  - Chain level:
+	State 1
+
+
+============================================================
++ Verbose Summary: Datapath Resource usage 
+============================================================
+N/A

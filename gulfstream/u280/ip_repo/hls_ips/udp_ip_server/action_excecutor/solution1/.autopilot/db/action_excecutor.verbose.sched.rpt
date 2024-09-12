@@ -1,0 +1,184 @@
+
+
+================================================================
+== Vivado HLS Report for 'action_excecutor'
+================================================================
+* Date:           Thu Jul 25 02:41:17 2024
+
+* Version:        2019.1 (Build 2552052 on Fri May 24 15:28:33 MDT 2019)
+* Project:        action_excecutor
+* Solution:       solution1
+* Product family: virtexuplus
+* Target device:  xcu280-fsvh2892-2L-e
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |   3.10|     0.822|        0.39|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+-----+-----+-----+---------+
+    |  Latency  |  Interval | Pipeline|
+    | min | max | min | max |   Type  |
+    +-----+-----+-----+-----+---------+
+    |    0|    0|    0|    0|   none  |
+    +-----+-----+-----+-----+---------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        N/A
+
+============================================================
++ Verbose Summary: Synthesis Manager
+============================================================
+InlineROM: 1
+ExposeGlobal: 0
+============================================================
++ Verbose Summary: CDFG Model
+============================================================
+IsTopModel: 1
+ResetActiveHigh: 1
+IsCombinational: 0
+IsDatapathOnly: 0
+HasWiredReturn: 1
+HasMFsm: 0
+HasVarLatency: 0
+IsPipeline: 0
+IsRtlPipelined: 0
+IsInstanceOverlapped: 0
+IsDontTouch: 0
+HasImplIP: 0
+IsGatedGlobalClock: 0
+
+
+============================================================
++ Verbose Summary: Schedule
+============================================================
+* Number of FSM states : 1
+* Pipeline : 0
+* Dataflow Pipeline: 0
+
+* FSM state transitions: 
+1 --> 
+
+* FSM state operations: 
+
+State 1 <SV = 0> <Delay = 0.82>
+ST_1 : Operation 2 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i65 %action), !map !60"   --->   Operation 2 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 3 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i1 %action_valid_V), !map !75"   --->   Operation 3 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 4 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i1 %action_empty_V), !map !79"   --->   Operation 4 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 5 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i1* %action_re_V), !map !83"   --->   Operation 5 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 6 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i512 %payload_in_data_V), !map !87"   --->   Operation 6 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 7 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i64 %payload_in_keep_V), !map !91"   --->   Operation 7 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 8 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i1 %payload_in_valid_V), !map !95"   --->   Operation 8 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 9 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i1 %payload_in_last_V), !map !99"   --->   Operation 9 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 10 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i1* %payload_ready_V), !map !103"   --->   Operation 10 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 11 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i512* %payload_out_data_V), !map !107"   --->   Operation 11 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 12 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i64* %payload_out_keep_V), !map !111"   --->   Operation 12 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 13 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i1* %payload_out_valid_V), !map !115"   --->   Operation 13 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 14 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i1* %payload_out_last_V), !map !119"   --->   Operation 14 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 15 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i32* %src_ip_V), !map !123"   --->   Operation 15 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 16 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i16* %src_port_V), !map !127"   --->   Operation 16 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 17 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecBitsMap(i16* %dst_port_V), !map !131"   --->   Operation 17 'specbitsmap' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 18 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecTopModule([17 x i8]* @action_excecutor_str) nounwind"   --->   Operation 18 'spectopmodule' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 19 [1/1] (0.00ns)   --->   "%payload_in_last_V_re = call i1 @_ssdm_op_Read.ap_none.i1(i1 %payload_in_last_V)" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:36]   --->   Operation 19 'read' 'payload_in_last_V_re' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 20 [1/1] (0.00ns)   --->   "%payload_in_valid_V_r = call i1 @_ssdm_op_Read.ap_none.i1(i1 %payload_in_valid_V)" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:36]   --->   Operation 20 'read' 'payload_in_valid_V_r' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 21 [1/1] (0.00ns)   --->   "%payload_in_keep_V_re = call i64 @_ssdm_op_Read.ap_none.i64(i64 %payload_in_keep_V)" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:36]   --->   Operation 21 'read' 'payload_in_keep_V_re' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 22 [1/1] (0.00ns)   --->   "%payload_in_data_V_re = call i512 @_ssdm_op_Read.ap_none.i512(i512 %payload_in_data_V)" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:36]   --->   Operation 22 'read' 'payload_in_data_V_re' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 23 [1/1] (0.00ns)   --->   "%action_empty_V_read = call i1 @_ssdm_op_Read.ap_none.i1(i1 %action_empty_V)" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:36]   --->   Operation 23 'read' 'action_empty_V_read' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 24 [1/1] (0.00ns)   --->   "%action_valid_V_read = call i1 @_ssdm_op_Read.ap_none.i1(i1 %action_valid_V)" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:36]   --->   Operation 24 'read' 'action_valid_V_read' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 25 [1/1] (0.00ns)   --->   "%action_read = call i65 @_ssdm_op_Read.ap_none.i65(i65 %action)" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:36]   --->   Operation 25 'read' 'action_read' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 26 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i32 0, [13 x i8]* @p_str9, i32 0, i32 0, [1 x i8]* @p_str10, i32 0, i32 0, [1 x i8]* @p_str10, [1 x i8]* @p_str10, [1 x i8]* @p_str10, i32 0, i32 0, i32 0, i32 0, [1 x i8]* @p_str10, [1 x i8]* @p_str10) nounwind" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:44]   --->   Operation 26 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 27 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i65 %action, [8 x i8]* @p_str11, i32 0, i32 0, [1 x i8]* @p_str10, i32 0, i32 0, [1 x i8]* @p_str10, [1 x i8]* @p_str10, [1 x i8]* @p_str10, i32 0, i32 0, i32 0, i32 0, [1 x i8]* @p_str10, [1 x i8]* @p_str10) nounwind" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:45]   --->   Operation 27 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 28 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i1 %action_valid_V, [8 x i8]* @p_str11, i32 0, i32 0, [1 x i8]* @p_str10, i32 0, i32 0, [1 x i8]* @p_str10, [1 x i8]* @p_str10, [1 x i8]* @p_str10, i32 0, i32 0, i32 0, i32 0, [1 x i8]* @p_str10, [1 x i8]* @p_str10) nounwind" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:46]   --->   Operation 28 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 29 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i1 %action_empty_V, [8 x i8]* @p_str11, i32 0, i32 0, [1 x i8]* @p_str10, i32 0, i32 0, [1 x i8]* @p_str10, [1 x i8]* @p_str10, [1 x i8]* @p_str10, i32 0, i32 0, i32 0, i32 0, [1 x i8]* @p_str10, [1 x i8]* @p_str10) nounwind" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:47]   --->   Operation 29 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 30 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i1* %action_re_V, [8 x i8]* @p_str11, i32 0, i32 0, [1 x i8]* @p_str10, i32 0, i32 0, [1 x i8]* @p_str10, [1 x i8]* @p_str10, [1 x i8]* @p_str10, i32 0, i32 0, i32 0, i32 0, [1 x i8]* @p_str10, [1 x i8]* @p_str10) nounwind" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:48]   --->   Operation 30 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 31 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i512 %payload_in_data_V, i64 %payload_in_keep_V, i1 %payload_in_valid_V, i1 %payload_in_last_V, [8 x i8]* @p_str11, i32 0, i32 0, [1 x i8]* @p_str10, i32 0, i32 0, [1 x i8]* @p_str10, [1 x i8]* @p_str10, [1 x i8]* @p_str10, i32 0, i32 0, i32 0, i32 0, [1 x i8]* @p_str10, [1 x i8]* @p_str10) nounwind" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:49]   --->   Operation 31 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 32 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i1* %payload_ready_V, [8 x i8]* @p_str11, i32 0, i32 0, [1 x i8]* @p_str10, i32 0, i32 0, [1 x i8]* @p_str10, [1 x i8]* @p_str10, [1 x i8]* @p_str10, i32 0, i32 0, i32 0, i32 0, [1 x i8]* @p_str10, [1 x i8]* @p_str10) nounwind" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:50]   --->   Operation 32 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 33 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i512* %payload_out_data_V, i64* %payload_out_keep_V, i1* %payload_out_valid_V, i1* %payload_out_last_V, [8 x i8]* @p_str11, i32 0, i32 0, [1 x i8]* @p_str10, i32 0, i32 0, [1 x i8]* @p_str10, [1 x i8]* @p_str10, [1 x i8]* @p_str10, i32 0, i32 0, i32 0, i32 0, [1 x i8]* @p_str10, [1 x i8]* @p_str10) nounwind" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:51]   --->   Operation 33 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 34 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i32* %src_ip_V, [8 x i8]* @p_str11, i32 0, i32 0, [1 x i8]* @p_str10, i32 0, i32 0, [1 x i8]* @p_str10, [1 x i8]* @p_str10, [1 x i8]* @p_str10, i32 0, i32 0, i32 0, i32 0, [1 x i8]* @p_str10, [1 x i8]* @p_str10) nounwind" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:52]   --->   Operation 34 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 35 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i16* %src_port_V, [8 x i8]* @p_str11, i32 0, i32 0, [1 x i8]* @p_str10, i32 0, i32 0, [1 x i8]* @p_str10, [1 x i8]* @p_str10, [1 x i8]* @p_str10, i32 0, i32 0, i32 0, i32 0, [1 x i8]* @p_str10, [1 x i8]* @p_str10) nounwind" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:53]   --->   Operation 35 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 36 [1/1] (0.00ns)   --->   "call void (...)* @_ssdm_op_SpecInterface(i16* %dst_port_V, [8 x i8]* @p_str11, i32 0, i32 0, [1 x i8]* @p_str10, i32 0, i32 0, [1 x i8]* @p_str10, [1 x i8]* @p_str10, [1 x i8]* @p_str10, i32 0, i32 0, i32 0, i32 0, [1 x i8]* @p_str10, [1 x i8]* @p_str10) nounwind" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:54]   --->   Operation 36 'specinterface' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 37 [1/1] (0.00ns)   --->   "%payload_out_reg_data_1 = load i512* @payload_out_reg_data, align 64" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/udp_ip_rx.h:41->/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:61]   --->   Operation 37 'load' 'payload_out_reg_data_1' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 38 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_none.i512P(i512* %payload_out_data_V, i512 %payload_out_reg_data_1)" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/udp_ip_rx.h:41->/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:61]   --->   Operation 38 'write' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 39 [1/1] (0.00ns)   --->   "%payload_out_reg_keep_1 = load i64* @payload_out_reg_keep, align 64" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/udp_ip_rx.h:41->/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:61]   --->   Operation 39 'load' 'payload_out_reg_keep_1' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 40 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_none.i64P(i64* %payload_out_keep_V, i64 %payload_out_reg_keep_1)" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/udp_ip_rx.h:41->/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:61]   --->   Operation 40 'write' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 41 [1/1] (0.00ns)   --->   "%payload_out_reg_vali_1 = load i1* @payload_out_reg_vali, align 8" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/udp_ip_rx.h:41->/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:61]   --->   Operation 41 'load' 'payload_out_reg_vali_1' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 42 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_none.i1P(i1* %payload_out_valid_V, i1 %payload_out_reg_vali_1)" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/udp_ip_rx.h:41->/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:61]   --->   Operation 42 'write' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 43 [1/1] (0.00ns)   --->   "%payload_out_reg_last_1 = load i1* @payload_out_reg_last, align 1" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/udp_ip_rx.h:41->/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:61]   --->   Operation 43 'load' 'payload_out_reg_last_1' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 44 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_none.i1P(i1* %payload_out_last_V, i1 %payload_out_reg_last_1)" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/udp_ip_rx.h:41->/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:61]   --->   Operation 44 'write' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 45 [1/1] (0.00ns)   --->   "%src_ip_reg_V_load = load i32* @src_ip_reg_V, align 4" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:62]   --->   Operation 45 'load' 'src_ip_reg_V_load' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 46 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_none.i32P(i32* %src_ip_V, i32 %src_ip_reg_V_load)" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:62]   --->   Operation 46 'write' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 47 [1/1] (0.00ns)   --->   "%src_port_reg_V_load = load i16* @src_port_reg_V, align 2" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:63]   --->   Operation 47 'load' 'src_port_reg_V_load' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 48 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_none.i16P(i16* %src_port_V, i16 %src_port_reg_V_load)" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:63]   --->   Operation 48 'write' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 49 [1/1] (0.00ns)   --->   "%dst_port_reg_V_load = load i16* @dst_port_reg_V, align 2" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:64]   --->   Operation 49 'load' 'dst_port_reg_V_load' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 50 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_none.i16P(i16* %dst_port_V, i16 %dst_port_reg_V_load)" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:64]   --->   Operation 50 'write' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 51 [1/1] (0.00ns)   --->   "%rhs_V = call i1 @_ssdm_op_BitSelect.i1.i65.i32(i65 %action_read, i32 64)" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:66]   --->   Operation 51 'bitselect' 'rhs_V' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 52 [1/1] (0.12ns)   --->   "%ret_V_1 = and i1 %rhs_V, %action_valid_V_read" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:66]   --->   Operation 52 'and' 'ret_V_1' <Predicate = true> <Delay = 0.12> <Core = "LogicGate">   --->   Core 27 'LogicGate' <Latency = 0> <II = 1> <Delay = 0.12> <FuncUnit> <Opcode : 'and' 'or' 'xor'> <InPorts = 2> <OutPorts = 1>
+ST_1 : Operation 53 [1/1] (0.12ns)   --->   "%ret_V = and i1 %ret_V_1, %payload_in_valid_V_r" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:66]   --->   Operation 53 'and' 'ret_V' <Predicate = true> <Delay = 0.12> <Core = "LogicGate">   --->   Core 27 'LogicGate' <Latency = 0> <II = 1> <Delay = 0.12> <FuncUnit> <Opcode : 'and' 'or' 'xor'> <InPorts = 2> <OutPorts = 1>
+ST_1 : Operation 54 [1/1] (0.57ns)   --->   "%select_ln68 = select i1 %ret_V, i512 %payload_in_data_V_re, i512 0" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:68]   --->   Operation 54 'select' 'select_ln68' <Predicate = true> <Delay = 0.57> <Core = "Sel">   --->   Core 26 'Sel' <Latency = 0> <II = 1> <Delay = 0.41> <FuncUnit> <Opcode : 'select'> <InPorts = 3> <OutPorts = 1>
+ST_1 : Operation 55 [1/1] (0.41ns)   --->   "%select_ln68_1 = select i1 %ret_V, i64 %payload_in_keep_V_re, i64 0" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:68]   --->   Operation 55 'select' 'select_ln68_1' <Predicate = true> <Delay = 0.41> <Core = "Sel">   --->   Core 26 'Sel' <Latency = 0> <II = 1> <Delay = 0.41> <FuncUnit> <Opcode : 'select'> <InPorts = 3> <OutPorts = 1>
+ST_1 : Operation 56 [1/1] (0.12ns)   --->   "%and_ln68 = and i1 %ret_V, %payload_in_last_V_re" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:68]   --->   Operation 56 'and' 'and_ln68' <Predicate = true> <Delay = 0.12> <Core = "LogicGate">   --->   Core 27 'LogicGate' <Latency = 0> <II = 1> <Delay = 0.12> <FuncUnit> <Opcode : 'and' 'or' 'xor'> <InPorts = 2> <OutPorts = 1>
+ST_1 : Operation 57 [1/1] (0.00ns)   --->   "store i512 %select_ln68, i512* @payload_out_reg_data, align 64" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/udp_ip_rx.h:41->/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:67]   --->   Operation 57 'store' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 58 [1/1] (0.00ns)   --->   "store i64 %select_ln68_1, i64* @payload_out_reg_keep, align 64" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/udp_ip_rx.h:41->/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:69]   --->   Operation 58 'store' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 59 [1/1] (0.00ns)   --->   "store i1 %ret_V, i1* @payload_out_reg_vali, align 8" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/udp_ip_rx.h:41->/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:67]   --->   Operation 59 'store' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 60 [1/1] (0.00ns)   --->   "store i1 %and_ln68, i1* @payload_out_reg_last, align 1" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/udp_ip_rx.h:41->/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:67]   --->   Operation 60 'store' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 61 [1/1] (0.00ns)   --->   "br i1 %ret_V_1, label %0, label %1" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:71]   --->   Operation 61 'br' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 62 [1/1] (0.60ns)   --->   "store i32 0, i32* @src_ip_reg_V, align 4" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:76]   --->   Operation 62 'store' <Predicate = (!ret_V_1)> <Delay = 0.60>
+ST_1 : Operation 63 [1/1] (0.60ns)   --->   "store i16 0, i16* @src_port_reg_V, align 2" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:77]   --->   Operation 63 'store' <Predicate = (!ret_V_1)> <Delay = 0.60>
+ST_1 : Operation 64 [1/1] (0.60ns)   --->   "br label %2"   --->   Operation 64 'br' <Predicate = (!ret_V_1)> <Delay = 0.60>
+ST_1 : Operation 65 [1/1] (0.00ns)   --->   "%trunc_ln321 = trunc i65 %action_read to i32" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:72]   --->   Operation 65 'trunc' 'trunc_ln321' <Predicate = (ret_V_1)> <Delay = 0.00>
+ST_1 : Operation 66 [1/1] (0.60ns)   --->   "store i32 %trunc_ln321, i32* @src_ip_reg_V, align 4" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:72]   --->   Operation 66 'store' <Predicate = (ret_V_1)> <Delay = 0.60>
+ST_1 : Operation 67 [1/1] (0.00ns)   --->   "%action_src_port_V_lo = call i16 @_ssdm_op_PartSelect.i16.i65.i32.i32(i65 %action_read, i32 32, i32 47)" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:73]   --->   Operation 67 'partselect' 'action_src_port_V_lo' <Predicate = (ret_V_1)> <Delay = 0.00>
+ST_1 : Operation 68 [1/1] (0.60ns)   --->   "store i16 %action_src_port_V_lo, i16* @src_port_reg_V, align 2" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:73]   --->   Operation 68 'store' <Predicate = (ret_V_1)> <Delay = 0.60>
+ST_1 : Operation 69 [1/1] (0.00ns)   --->   "%action_dst_port_V_lo = call i16 @_ssdm_op_PartSelect.i16.i65.i32.i32(i65 %action_read, i32 48, i32 63)" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:74]   --->   Operation 69 'partselect' 'action_dst_port_V_lo' <Predicate = (ret_V_1)> <Delay = 0.00>
+ST_1 : Operation 70 [1/1] (0.60ns)   --->   "br label %2" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:75]   --->   Operation 70 'br' <Predicate = (ret_V_1)> <Delay = 0.60>
+ST_1 : Operation 71 [1/1] (0.00ns)   --->   "%storemerge = phi i16 [ 0, %1 ], [ %action_dst_port_V_lo, %0 ]" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:74]   --->   Operation 71 'phi' 'storemerge' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 72 [1/1] (0.00ns)   --->   "store i16 %storemerge, i16* @dst_port_reg_V, align 2" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:74]   --->   Operation 72 'store' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 73 [1/1] (0.00ns) (grouped into LUT with out node ret_V_2)   --->   "%lhs_V = xor i1 %action_empty_V_read, true" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:81]   --->   Operation 73 'xor' 'lhs_V' <Predicate = true> <Delay = 0.00> <Core = "LogicGate">   --->   Core 27 'LogicGate' <Latency = 0> <II = 1> <Delay = 0.12> <FuncUnit> <Opcode : 'and' 'or' 'xor'> <InPorts = 2> <OutPorts = 1>
+ST_1 : Operation 74 [1/1] (0.00ns) (grouped into LUT with out node ret_V_2)   --->   "%and_ln1355 = and i1 %payload_in_last_V_re, %lhs_V" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:81]   --->   Operation 74 'and' 'and_ln1355' <Predicate = true> <Delay = 0.00> <Core = "LogicGate">   --->   Core 27 'LogicGate' <Latency = 0> <II = 1> <Delay = 0.12> <FuncUnit> <Opcode : 'and' 'or' 'xor'> <InPorts = 2> <OutPorts = 1>
+ST_1 : Operation 75 [1/1] (0.12ns) (out node of the LUT)   --->   "%ret_V_2 = and i1 %and_ln1355, %payload_in_valid_V_r" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:81]   --->   Operation 75 'and' 'ret_V_2' <Predicate = true> <Delay = 0.12> <Core = "LogicGate">   --->   Core 27 'LogicGate' <Latency = 0> <II = 1> <Delay = 0.12> <FuncUnit> <Opcode : 'and' 'or' 'xor'> <InPorts = 2> <OutPorts = 1>
+ST_1 : Operation 76 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_none.i1P(i1* %action_re_V, i1 %ret_V_2)" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:81]   --->   Operation 76 'write' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 77 [1/1] (0.00ns)   --->   "call void @_ssdm_op_Write.ap_none.i1P(i1* %payload_ready_V, i1 %action_valid_V_read)" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:82]   --->   Operation 77 'write' <Predicate = true> <Delay = 0.00>
+ST_1 : Operation 78 [1/1] (0.00ns)   --->   "ret void" [/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:83]   --->   Operation 78 'ret' <Predicate = true> <Delay = 0.00>
+
+
+============================================================
++ Verbose Summary: Timing violations
+============================================================
+Target clock period: 3.1ns, clock uncertainty: 0.388ns.
+
+ <State 1>: 0.822ns
+The critical path consists of the following:
+	wire read on port 'action_valid_V' (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:36) [46]  (0 ns)
+	'and' operation ('ret.V', /home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:66) [74]  (0.122 ns)
+	'and' operation ('ret.V', /home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:66) [75]  (0.122 ns)
+	'select' operation ('select_ln68', /home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/udp_ip_server/udp_ip_rx/action_excecutor.cpp:68) [76]  (0.578 ns)
+
+
+============================================================
++ Verbose Summary: Binding
+============================================================
+N/A
+* FSMD analyzer results:
+  - Output states:
+ - Input state : 
+  - Chain level:
+	State 1
+
+
+============================================================
++ Verbose Summary: Datapath Resource usage 
+============================================================
+N/A

@@ -1,0 +1,200 @@
+
+
+================================================================
+== Vivado HLS Report for 'ether_protocol_spliter'
+================================================================
+* Date:           Thu Jul 25 02:40:07 2024
+
+* Version:        2019.1 (Build 2552052 on Fri May 24 15:28:33 MDT 2019)
+* Project:        ether_protocol_spliter
+* Solution:       solution1
+* Product family: virtexuplus
+* Target device:  xcu250-figd2104-2L-e
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |   3.10|     1.725|        0.39|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+-----+-----+-----+---------+
+    |  Latency  |  Interval | Pipeline|
+    | min | max | min | max |   Type  |
+    +-----+-----+-----+-----+---------+
+    |    0|    0|    0|    0|   none  |
+    +-----+-----+-----+-----+---------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        N/A
+
+
+
+================================================================
+== Utilization Estimates
+================================================================
+* Summary: 
++---------------------+---------+-------+---------+---------+------+
+|         Name        | BRAM_18K| DSP48E|    FF   |   LUT   | URAM |
++---------------------+---------+-------+---------+---------+------+
+|DSP                  |        -|      -|        -|        -|     -|
+|Expression           |        -|      -|        0|     1112|     -|
+|FIFO                 |        -|      -|        -|        -|     -|
+|Instance             |        -|      -|        -|        -|     -|
+|Memory               |        -|      -|        -|        -|     -|
+|Multiplexer          |        -|      -|        -|       75|     -|
+|Register             |        -|      -|     1833|        -|     -|
++---------------------+---------+-------+---------+---------+------+
+|Total                |        0|      0|     1833|     1187|     0|
++---------------------+---------+-------+---------+---------+------+
+|Available SLR        |     1344|   3072|   864000|   432000|   320|
++---------------------+---------+-------+---------+---------+------+
+|Utilization SLR (%)  |        0|      0|    ~0   |    ~0   |     0|
++---------------------+---------+-------+---------+---------+------+
+|Available            |     5376|  12288|  3456000|  1728000|  1280|
++---------------------+---------+-------+---------+---------+------+
+|Utilization (%)      |        0|      0|    ~0   |    ~0   |     0|
++---------------------+---------+-------+---------+---------+------+
+
++ Detail: 
+    * Instance: 
+    N/A
+
+    * DSP48E: 
+    N/A
+
+    * Memory: 
+    N/A
+
+    * FIFO: 
+    N/A
+
+    * Expression: 
+    +---------------------------+----------+-------+---+-----+------------+------------+
+    |       Variable Name       | Operation| DSP48E| FF| LUT | Bitwidth P0| Bitwidth P1|
+    +---------------------------+----------+-------+---+-----+------------+------------+
+    |add_ln214_fu_602_p2        |     +    |      0|  0|   16|          16|           6|
+    |and_ln1355_3_fu_747_p2     |    and   |      0|  0|    2|           1|           1|
+    |and_ln1355_4_fu_753_p2     |    and   |      0|  0|    2|           1|           1|
+    |and_ln1355_fu_544_p2       |    and   |      0|  0|    2|           1|           1|
+    |and_ln63_fu_427_p2         |    and   |      0|  0|    2|           1|           1|
+    |and_ln64_fu_478_p2         |    and   |      0|  0|    2|           1|           1|
+    |and_ln879_1_fu_397_p2      |    and   |      0|  0|    2|           1|           1|
+    |and_ln879_2_fu_484_p2      |    and   |      0|  0|    2|           1|           1|
+    |and_ln879_3_fu_490_p2      |    and   |      0|  0|    2|           1|           1|
+    |and_ln879_fu_391_p2        |    and   |      0|  0|    2|           1|           1|
+    |and_ln96_fu_784_p2         |    and   |      0|  0|    2|           1|           1|
+    |ret_V_10_fu_771_p2         |    and   |      0|  0|    2|           1|           1|
+    |ret_V_14_fu_506_p2         |    and   |      0|  0|    2|           1|           1|
+    |ret_V_15_fu_524_p2         |    and   |      0|  0|    2|           1|           1|
+    |ret_V_16_fu_550_p2         |    and   |      0|  0|    2|           1|           1|
+    |ret_V_6_fu_667_p2          |    and   |      0|  0|    2|           1|           1|
+    |ret_V_8_fu_759_p2          |    and   |      0|  0|    2|           1|           1|
+    |icmp_ln70_fu_574_p2        |   icmp   |      0|  0|   13|          16|          12|
+    |icmp_ln73_fu_626_p2        |   icmp   |      0|  0|   13|          16|          12|
+    |icmp_ln879_1_fu_379_p2     |   icmp   |      0|  0|   13|          16|          12|
+    |icmp_ln879_2_fu_409_p2     |   icmp   |      0|  0|   24|          48|           2|
+    |icmp_ln879_3_fu_421_p2     |   icmp   |      0|  0|   13|          16|          12|
+    |icmp_ln879_4_fu_450_p2     |   icmp   |      0|  0|   24|          48|          48|
+    |icmp_ln879_5_fu_466_p2     |   icmp   |      0|  0|   13|          16|          12|
+    |icmp_ln879_6_fu_614_p2     |   icmp   |      0|  0|   24|          48|           2|
+    |icmp_ln879_fu_363_p2       |   icmp   |      0|  0|   24|          48|          48|
+    |icmp_ln96_fu_790_p2        |   icmp   |      0|  0|   13|          16|          12|
+    |ap_condition_158           |    or    |      0|  0|    2|           1|           1|
+    |or_ln1355_1_fu_713_p2      |    or    |      0|  0|    2|           1|           1|
+    |or_ln1355_fu_707_p2        |    or    |      0|  0|    2|           1|           1|
+    |or_ln63_fu_415_p2          |    or    |      0|  0|    2|           1|           1|
+    |or_ln70_fu_580_p2          |    or    |      0|  0|    2|           1|           1|
+    |or_ln73_1_fu_632_p2        |    or    |      0|  0|    2|           1|           1|
+    |or_ln73_fu_620_p2          |    or    |      0|  0|    2|           1|           1|
+    |or_ln96_1_fu_802_p2        |    or    |      0|  0|    2|           1|           1|
+    |or_ln96_fu_796_p2          |    or    |      0|  0|    2|           1|           1|
+    |ret_V_17_fu_765_p2         |    or    |      0|  0|    2|           1|           1|
+    |ret_V_18_fu_741_p2         |    or    |      0|  0|    2|           1|           1|
+    |ret_V_4_fu_568_p2          |    or    |      0|  0|    2|           1|           1|
+    |ret_V_fu_556_p2            |    or    |      0|  0|    2|           1|           1|
+    |select_ln1355_1_fu_727_p3  |  select  |      0|  0|  428|           1|         512|
+    |select_ln1355_fu_719_p3    |  select  |      0|  0|  428|           1|         512|
+    |rhs_V_fu_661_p2            |    xor   |      0|  0|    2|           1|           2|
+    |xor_ln1355_fu_538_p2       |    xor   |      0|  0|    2|           1|           2|
+    |xor_ln761_1_fu_472_p2      |    xor   |      0|  0|    2|           1|           2|
+    |xor_ln761_fu_385_p2        |    xor   |      0|  0|    2|           1|           2|
+    +---------------------------+----------+-------+---+-----+------------+------------+
+    |Total                      |          |      0|  0| 1112|         339|        1239|
+    +---------------------------+----------+-------+---+-----+------------+------------+
+
+    * Multiplexer: 
+    +-------------------------------------------------+----+-----------+-----+-----------+
+    |                       Name                      | LUT| Input Size| Bits| Total Bits|
+    +-------------------------------------------------+----+-----------+-----+-----------+
+    |ap_phi_mux_p_Val2_3_phi_fu_256_p4                |  15|          3|  512|       1536|
+    |ap_phi_mux_payload_output_reg_d_1_phi_fu_245_p4  |  15|          3|    1|          3|
+    |ap_phi_mux_storemerge1171_phi_fu_265_p6          |  21|          4|    1|          4|
+    |ap_phi_mux_val_assign_1_phi_fu_232_p6            |  15|          3|    1|          3|
+    |ip_output_reg_valid_s                            |   9|          2|    1|          2|
+    +-------------------------------------------------+----+-----------+-----+-----------+
+    |Total                                            |  75|         15|  516|       1548|
+    +-------------------------------------------------+----+-----------+-----+-----------+
+
+    * Register: 
+    +-----------------------+-----+----+-----+-----------+
+    |          Name         |  FF | LUT| Bits| Const Bits|
+    +-----------------------+-----+----+-----+-----------+
+    |ap_CS_fsm              |    1|   0|    1|          0|
+    |arp_output_reg_data_s  |  336|   0|  336|          0|
+    |arp_output_reg_valid   |    1|   0|    1|          0|
+    |axis_input_reg_data_s  |  512|   0|  512|          0|
+    |axis_input_reg_keep_s  |   64|   0|   64|          0|
+    |axis_input_reg_last_s  |    1|   0|    1|          0|
+    |axis_input_reg_valid   |    1|   0|    1|          0|
+    |in_ip_packet_V         |    1|   0|    1|          0|
+    |ip_output_reg_data_V   |  336|   0|  336|          0|
+    |ip_output_reg_valid_s  |    1|   0|    1|          0|
+    |myMacAddr_reg_V        |   48|   0|   48|          0|
+    |payload_len_reg_data   |   16|   0|   16|          0|
+    |payload_len_reg_vali   |    1|   0|    1|          0|
+    |payload_output_reg_d   |  512|   0|  512|          0|
+    |payload_output_reg_l   |    1|   0|    1|          0|
+    |payload_output_reg_v   |    1|   0|    1|          0|
+    +-----------------------+-----+----+-----+-----------+
+    |Total                  | 1833|   0| 1833|          0|
+    +-----------------------+-----+----+-----+-----------+
+
+
+
+================================================================
+== Interface
+================================================================
+* Summary: 
++---------------------+-----+-----+--------------+------------------------+--------------+
+|      RTL Ports      | Dir | Bits|   Protocol   |      Source Object     |    C Type    |
++---------------------+-----+-----+--------------+------------------------+--------------+
+|ap_clk               |  in |    1| ap_ctrl_none | ether_protocol_spliter | return value |
+|ap_rst               |  in |    1| ap_ctrl_none | ether_protocol_spliter | return value |
+|myMacAddr_V          |  in |   48|    ap_none   |       myMacAddr_V      |    scalar    |
+|s_axis_data_V        |  in |  512|    ap_none   |      s_axis_data_V     |    scalar    |
+|s_axis_keep_V        |  in |   64|    ap_none   |      s_axis_keep_V     |    scalar    |
+|s_axis_last_V        |  in |    1|    ap_none   |      s_axis_last_V     |    scalar    |
+|s_axis_valid_V       |  in |    1|    ap_none   |     s_axis_valid_V     |    scalar    |
+|arp_data_V           | out |  336|    ap_none   |       arp_data_V       |    pointer   |
+|arp_valid_V          | out |    1|    ap_none   |       arp_valid_V      |    pointer   |
+|ip_data_V            | out |  336|    ap_none   |        ip_data_V       |    pointer   |
+|ip_valid_V           | out |    1|    ap_none   |       ip_valid_V       |    pointer   |
+|payload_data_V       | out |  512|    ap_none   |     payload_data_V     |    pointer   |
+|payload_valid_V      | out |    1|    ap_none   |     payload_valid_V    |    pointer   |
+|payload_last_V       | out |    1|    ap_none   |     payload_last_V     |    pointer   |
+|payload_len_data_V   | out |   16|    ap_none   |   payload_len_data_V   |    pointer   |
+|payload_len_valid_V  | out |    1|    ap_none   |   payload_len_valid_V  |    pointer   |
++---------------------+-----+-----+--------------+------------------------+--------------+
+

@@ -1,0 +1,9 @@
+{
+	"version": "1.0",
+	"modules": {
+		"udp_ip_tx": {
+			"proto_instances": {
+			}
+		}
+	}
+}
