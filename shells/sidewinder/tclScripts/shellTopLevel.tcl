@@ -71,16 +71,4 @@ connect_bd_intf_net [get_bd_intf_ports gt_ref] -boundary_type upper [get_bd_intf
 connect_bd_intf_net [get_bd_intf_ports init_clk] -boundary_type upper [get_bd_intf_pins ethernet/init_clk]
 connect_bd_intf_net [get_bd_intf_ports eth_rx] -boundary_type upper [get_bd_intf_pins ethernet/eth_rx]
 
-### specifically for ddr4
-create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 ddr4_AXI
-create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:diff_clock_rtl:1.0 ddr_clk_DS
-create_bd_intf_port -mode Master -vlnv xilinx.com:interface:ddr4_rtl:1.0 C0_DDR4_0
-
-set_property CONFIG.DATA_WIDTH 512 [get_bd_intf_ports /ddr4_AXI]
-set_property CONFIG.ADDR_WIDTH 34 [get_bd_intf_ports /ddr4_AXI]
-set_property CONFIG.ID_WIDTH 28 [get_bd_intf_ports /ddr4_AXI]
-set_property CONFIG.FREQ_HZ 333111000 [get_bd_intf_ports /ddr_clk_DS]
-set_property CONFIG.FREQ_HZ 199998001 [get_bd_intf_ports /ddr4_AXI]
-
-create_bd_cell -type hier ddr4
 

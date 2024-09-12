@@ -15,7 +15,7 @@ class kernel(abstractDict):
         Args:
             **kwargs: The stuff to put in this dictionary
         """
-        self.has_ddr = False  # Charles
+
         self.cycle_count, mandatory_array,optional_array = self.init_vars()
         super().__init__(mandatory_array, optional_array, **kwargs)
         array_of_arrays = ['clk', 'aresetn', 'm_axi', 's_axi', 'm_axis', 's_axis', 'wan', 'wan_enabled','wan_name', 'wire_slave', 'wire_master', 'const', 'properties']
@@ -72,10 +72,8 @@ class kernel(abstractDict):
             'board',
             'note',
             'control',
-            'control_range',
-            'ddr',
-            'ddr_size',
-            'ddr_id_width'
+            'control_range'
+
         )
 
 
