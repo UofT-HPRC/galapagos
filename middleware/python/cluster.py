@@ -227,6 +227,7 @@ class cluster(abstractDict):
             # but it does also check the fields to make sure they're all valid and that no mandatory info
             # is missing
             node_inst = node(**node_dict)
+            node_inst['use_ddr_shell'] = 1 #Charles use this flag to set which shell_bd to use. 0 uses shell_bd.tcl, 1 uses shell_bd_ddr.tcl
             if ((node_inst['type']=='hw') and ('part' not in node_inst)):
                 node_inst['part']=board_pairs[node_inst['board']]
             node_inst['kernel'] = []
@@ -517,9 +518,9 @@ class cluster(abstractDict):
                 os.makedirs(dirName, exist_ok=True)
                 #currently only making flattened bitstreams
                 if node_obj['make_bit']:
-                    globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + "  --board " + node_obj['board'] + "  --part "+ node_obj['part'] + " --dir " + self.name +  " --start_synth 1" + "\n")
+                    globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + "  --board " + node_obj['board'] + "  --part "+ node_obj['part'] + " --dir " + self.name + " --start_synth 1 --use_ddr_shell " + str(node_obj['use_ddr_shell']) + "\n")
                 else:
-                    globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + "  --board " + node_obj['board'] + "  --part "+ node_obj['part'] + " --dir " + self.name +  " --start_synth 0" + "\n")
+                    globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + "  --board " + node_obj['board'] + "  --part "+ node_obj['part'] + " --dir " + self.name + " --start_synth 0 --use_ddr_shell " + str(node_obj['use_ddr_shell']) + "\n")
             elif node_obj['type'] == 'sw':
                 dirName = output_path + '/' + self.name + '/' + str(node_idx)
                 if os.path.exists(dirName):
