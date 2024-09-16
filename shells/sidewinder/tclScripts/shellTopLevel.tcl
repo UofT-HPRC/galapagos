@@ -70,5 +70,3 @@ connect_bd_intf_net [get_bd_intf_ports eth_tx] -boundary_type upper [get_bd_intf
 connect_bd_intf_net [get_bd_intf_ports gt_ref] -boundary_type upper [get_bd_intf_pins ethernet/gt_ref]
 connect_bd_intf_net [get_bd_intf_ports init_clk] -boundary_type upper [get_bd_intf_pins ethernet/init_clk]
 connect_bd_intf_net [get_bd_intf_ports eth_rx] -boundary_type upper [get_bd_intf_pins ethernet/eth_rx]
-
-
