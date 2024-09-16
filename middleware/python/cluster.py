@@ -227,7 +227,7 @@ class cluster(abstractDict):
             # but it does also check the fields to make sure they're all valid and that no mandatory info
             # is missing
             node_inst = node(**node_dict)
-            node_inst['use_ddr_shell'] = 1 #Charles use this flag to set which shell_bd to use. 0 uses shell_bd.tcl, 1 uses shell_bd_ddr.tcl
+            node_inst['use_ddr_shell'] = 0 #Charles use this flag to set which shell_bd to use. 0 uses shell_bd.tcl, 1 uses shell_bd_ddr.tcl
             if ((node_inst['type']=='hw') and ('part' not in node_inst)):
                 node_inst['part']=board_pairs[node_inst['board']]
             node_inst['kernel'] = []
