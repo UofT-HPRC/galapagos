@@ -222,12 +222,29 @@ class cluster(abstractDict):
                           ('ip',cluster_desc['gatewayIP']),('autorun','False'),('comm','udp'),
                           ('board',cluster_desc['gatewayBoard'])])
         map_dict.insert(0,map0)
+
         for node_idx, node_dict in enumerate(map_dict):
             # This basically copies the dictionary parsed from the <node> tags into another dictionary,
             # but it does also check the fields to make sure they're all valid and that no mandatory info
             # is missing
             node_inst = node(**node_dict)
-            node_inst['use_ddr_shell'] = 0 #Charles use this flag to set which shell_bd to use. 0 uses shell_bd.tcl, 1 uses shell_bd_ddr.tcl
+            has_ddr = False
+            max_ddr_id_width = 1
+            for i in node_inst['kernel']:
+                for j in self.kernels:
+                    if int(i) == int(j.data['num']) and j.data['ddr']:
+                        print(int(i))
+                        print(j.data['num'])
+                        node_inst.has_ddr = True
+                        has_ddr = True
+                        if max_ddr_id_width < int(j['ddr_id_width']):
+                            max_ddr_id_width = int(j['ddr_id_width'])
+                        node_inst.max_ddr_id_width = max_ddr_id_width
+            if has_ddr:
+                node_inst['use_ddr_shell'] = 1 #Charles use this flag to set which shell_bd to use. 0 uses shell_bd.tcl, 1 uses shell_bd_ddr.tcl
+            else:
+                node_inst['use_ddr_shell'] = 0
+            print("Use DDR Shell: " + str(node_inst['use_ddr_shell']))
             if ((node_inst['type']=='hw') and ('part' not in node_inst)):
                 node_inst['part']=board_pairs[node_inst['board']]
             node_inst['kernel'] = []
@@ -324,6 +341,7 @@ class cluster(abstractDict):
             # Maintain array of pointer to node objects
             self.nodes.append(node_inst)
 
+
     def processMemoryBus(self):
         for i in range(len(self.nodes)):
             memories = []
@@ -337,10 +355,24 @@ class cluster(abstractDict):
                 self.nodes[i]['kernel'][mem[0]].data['control_size'] = mem[1]
                 self.nodes[i]['kernel'][mem[0]].data['control_address'] = mem[2]
             self.nodes[i].has_control = has_control
-
-
-
         return
+
+    # ### changes by Charles
+    # def checkDDR(self):
+    #     for i in range(len(self.nodes)):
+    #         #has_ddr = False
+    #         max_ddr_id_width = 1
+    #         for j in range(len(self.nodes[i]['kernel'])):
+    #             if self.nodes[i]['kernel'][j].data['ddr']:
+    #                 self.nodes[i]['kernel'][j].has_ddr = True
+    #                 #has_ddr = True
+    #                 if max_ddr_id_width < int(self.nodes[i]['kernel'][j]['ddr_id_width']):
+    #                     max_ddr_id_width = int(self.nodes[i]['kernel'][j]['ddr_id_width'])
+    #         #self.nodes[i].has_ddr = has_ddr
+    #         self.nodes[i].max_ddr_id_width = max_ddr_id_width
+    #     return
+    # ###
+
     def writeClusterTCL(self, output_path, sim, has_GW,api_info,CAMILO_TEMP_DEBUG):
         #tclFileThreads = []
         for node_idx, node in enumerate(self.nodes):

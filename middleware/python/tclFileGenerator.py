@@ -3,9 +3,12 @@ import copy
 
 import subprocess
 import os
+import re
+import math
 from tclMe import tclMeFile
 import gatewayFileGenerator
-from createTopLevel import createTopLevelVerilog
+from MemoryPartitioner import MemoryPartitioner
+from createTopLevel import createTopLevelVerilog, createMemoryPartitioner
 """
 Most of these functions are called (directly or indirectly) by makeTclFiles.
 Each one takes care of one self-contained part of the TCL file generation.
@@ -44,6 +47,14 @@ def createHierarchyTCL(project_name,outFile,kernel_properties,ctrl_ports_list, u
         hier_file.add_if_to_clk(Sname,clkname)
         hier_file.add_axis_port(Mname,  "Master")
         hier_file.add_if_to_clk(Mname, clkname)
+        ### changes for ddr - Charles
+        if fpga.has_ddr:
+            for i in fpga['kernel']:
+                if i['num'] == int(kern[-1]) and i['ddr']:
+                    hier_file.tprint("create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 out_ddr\n")
+                    hier_file.tprint("set_property -dict [list CONFIG.DATA_WIDTH {512} CONFIG.ADDR_WIDTH {34} CONFIG.ID_WIDTH {1} CONFIG.FREQ_HZ {199998001} ] [get_bd_intf_ports out_ddr]\n")
+                    print("DDR FOUND IN KERNEL BD")
+        ###
         if wanena:
             hier_file.add_axis_port(wannam, "Master")
             hier_file.add_if_to_clk(wannam, clkname)
@@ -1334,7 +1345,309 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim,is_gw):
             ]
             tcl_user_app.setProperties('applicationRegion/WAN_switch', properties)
 
+### changes for ddr - Charles
+def userApplicationRegionDDR(tcl_user_app, outDir, output_path):
+    s_axis_array = getInterfaces(tcl_user_app.fpga, 's_axis', 'scope', 'global')
+    num_kern_with_ddr = 0
+    max_ddr_id_width = 1
+    for i in s_axis_array:
+        if i['kernel_inst']['ddr']:
+            num_kern_with_ddr += 1
+            if max_ddr_id_width < int(i['kernel_inst']['ddr_id_width']):
+                max_ddr_id_width = int(i['kernel_inst']['ddr_id_width'])
 
+    if num_kern_with_ddr == 1:
+        ddr4_AXI_PROPERTIES = [
+            "CONFIG.DATA_WIDTH {512}",
+            "CONFIG.ADDR_WIDTH {34}",
+            "CONFIG.ID_WIDTH {" + str(max_ddr_id_width) + "}",
+            "CONFIG.FREQ_HZ {199998001}"
+        ]
+        kernel_AXI_PROPERTIES = [
+            "CONFIG.DATA_WIDTH {512}",
+            "CONFIG.ADDR_WIDTH {34}",
+            "CONFIG.ID_WIDTH {" + str(max_ddr_id_width) + "}",
+            "CONFIG.FREQ_HZ {199998001}"
+        ]
+
+        if s_axis_array[0]['kernel_inst']['ddr']:
+            instName = s_axis_array[0]['kernel_inst']['inst']
+            ht_name = instName.split('/')[-1]
+            portName = ht_name + "_DDR_SAXI"
+            tcl_user_app.add_axi4_port(portName, 'Slave')
+            tcl_user_app.add_axi4_port('ddr4_AXI', 'Master')
+            tcl_user_app.setPortProperties(portName, kernel_AXI_PROPERTIES)
+            tcl_user_app.setPortProperties('ddr4_AXI', ddr4_AXI_PROPERTIES)
+
+            tcl_user_app.instBlock(
+                {
+                    'name': 'axi_interconnect',
+                    'inst': 'ddr_inter',
+                    'clks': ['ACLK', 'S00_ACLK', 'M00_ACLK', 'M01_ACLK'],
+                    'resetns': ['ARESETN', 'S00_ARESETN', 'M00_ARESETN', 'M01_ARESETN'],
+                    'resetns_port': 'rstn'
+                }
+            )
+
+            tcl_user_app.makeConnection(
+                'intf',
+                {
+                    'type': 'intf_port',
+                    'port_name': portName
+                },
+                {
+                    'name': 'ddr_inter',
+                    'type': 'intf',
+                    'port_name': 'S00_AXI'
+                }
+            )
+
+            tcl_user_app.makeConnection(
+                'intf',
+                {
+                    'type': 'intf_port',
+                    'port_name': 'ddr4_AXI'
+                },
+                {
+                    'name': 'ddr_inter',
+                    'type': 'intf',
+                    'port_name': 'M00_AXI'
+                }
+            )
+
+            tcl_user_app.assign_address(
+                None,
+                'ddr4_AXI',
+                'Reg'
+            )
+
+            prop = {'offset': "0x00000000"}
+            tcl_user_app.set_address_properties(None, 'ddr4_AXI', 'Reg', portName, **prop)
+            prop = {'range': '16G'}
+            tcl_user_app.set_address_properties(None, 'ddr4_AXI', 'Reg', portName, **prop)
+            print("TCL FILE GENERATOR DDR FOUND")
+        else:
+            print("TCL FILE GENERATOR DDR NOT FOUND")
+        if s_axis_array[0]['kernel_inst']['ddr_size']:
+            print("TCL FILE GENERATOR DDR_SIZE FOUND")
+        else:
+            print("TCL FILE GENERATOR DDR_SIZE NOT FOUND")
+
+    elif num_kern_with_ddr > 1:
+        for i in s_axis_array:
+            if i['kernel_inst']['ddr']:
+                if max_ddr_id_width < int(i['kernel_inst']['ddr_id_width']):
+                    max_ddr_id_width = int(i['kernel_inst']['ddr_id_width'])
+
+        print("IN APP: DDR_ID_WIDTH: ", max_ddr_id_width)
+        ddr4_AXI_id_width = max_ddr_id_width + math.ceil(math.log2(num_kern_with_ddr))
+        print("IN APP ID Width: ", ddr4_AXI_id_width)
+        ddr4_AXI_PROPERTIES = [
+            "CONFIG.DATA_WIDTH {512}",
+            "CONFIG.ADDR_WIDTH {34}",
+            "CONFIG.ID_WIDTH {" + str(ddr4_AXI_id_width) + "}",
+            "CONFIG.FREQ_HZ {199998001}"
+        ]
+        tcl_user_app.add_axi4_port('ddr4_AXI', 'Master')
+        tcl_user_app.setPortProperties('ddr4_AXI', ddr4_AXI_PROPERTIES)
+
+        tcl_user_app.createHierarchy("ddrRegion")
+
+        partitioner = MemoryPartitioner()
+        kern_array = []
+        for i in s_axis_array:
+            instName = i['kernel_inst']['inst']
+            print(instName)
+            ht_name = instName.split('/')[-1]
+            portName = ht_name + "_DDR_SAXI"
+            tcl_user_app.add_axi4_port(portName, 'Slave')
+
+            kernel_AXI_PROPERTIES = [
+                "CONFIG.DATA_WIDTH {512}",
+                "CONFIG.ADDR_WIDTH {34}",
+                "CONFIG.ID_WIDTH {" + i['kernel_inst']['ddr_id_width'] + "}",
+                "CONFIG.FREQ_HZ {199998001}"
+            ]
+
+            tcl_user_app.setPortProperties(portName, kernel_AXI_PROPERTIES)
+
+            if i['kernel_inst']['ddr_size']:
+                kern_array.append(i['kernel_inst'])
+                print("Kernel num: " + str(i['kernel_inst']['num']))
+                print("DDR_size FOUND in MULTI-KERN")
+
+        sorted_kern_array = sorted(kern_array, key=lambda k: ddr_size_to_bytes(k['ddr_size']), reverse = True)
+        for j in sorted_kern_array:
+            start, end = partitioner.allocate_partition(j['ddr_size'])
+            size_in_bytes = ddr_size_to_bytes(j['ddr_size']) - 1
+            vir_addr_len = size_in_bytes.bit_length()
+            phy_addr_prefix = start >> vir_addr_len
+            print(hex(phy_addr_prefix) + ", " + str(vir_addr_len))
+            createMemoryPartitioner(outDir + "/MemoryPartitioner_kern" + str(j['num']) + ".v", output_path + "/../middleware/python",
+                                    phy_addr_prefix, vir_addr_len, str(j['num']), str(j['ddr_id_width']))
+
+            verilog_path = outDir + "/MemoryPartitioner_kern" + str(j['num']) + ".v"
+            print(verilog_path)
+            tcl_user_app.addVerilog(verilog_path)
+            tcl_user_app.instModule(
+                {
+                    'name': 'addr_translator_kern' + str(j['num']),
+                    'inst': 'ddrRegion/addr_translator_kern' + str(j['num'])
+                }
+            )
+        DDR_INTERCONNECT_PROPERTIES = [
+            "CONFIG.NUM_MI {1}",
+            "CONFIG.NUM_SI {" + str(num_kern_with_ddr) + "}",
+            "CONFIG.M00_HAS_REGSLICE {1}"
+        ]
+
+        DDR_INSTANCE_SETTING = {
+            'name': 'axi_interconnect',
+            'properties': DDR_INTERCONNECT_PROPERTIES,
+            'inst': 'ddrRegion/ddr_inter',
+            'clks': ['ACLK', 'M00_ACLK'],
+            'resetns': ['ARESETN', 'M00_ARESETN'],
+            'resetns_port': 'rstn'
+        }
+        for i in range(num_kern_with_ddr):
+            DDR_INSTANCE_SETTING['clks'].append('S0' + str(i) + '_ACLK')
+            DDR_INSTANCE_SETTING['resetns'].append('S0' + str(i) + '_ARESETN')
+
+        tcl_user_app.instBlock(DDR_INSTANCE_SETTING)
+
+        tcl_user_app.makeConnection(
+            'intf',
+            {
+                'type': 'intf_port',
+                'port_name': 'ddr4_AXI'
+            },
+            {
+                'name': 'ddrRegion/ddr_inter',
+                'type': 'intf',
+                'port_name': 'M00_AXI'
+            }
+        )
+        count = 0
+        for i in s_axis_array:
+            instName = i['kernel_inst']['inst']
+            ht_name = instName.split('/')[-1]
+            portName = ht_name + "_DDR_SAXI"
+            tcl_user_app.makeConnection(
+                'intf',
+                {
+                    'type': 'intf_port',
+                    'port_name': portName
+                },
+                {
+                    'name': 'ddrRegion/addr_translator_kern' + str(i['kernel_inst']['num']),
+                    'type': 'intf',
+                    'port_name': 's0_axi'
+                }
+            )
+
+            tcl_user_app.makeConnection(
+                'net',
+                {
+                    'type': 'port',
+                    'port_name': 'CLK'
+                },
+                {
+                    'name': 'ddrRegion/addr_translator_kern' + str(i['kernel_inst']['num']),
+                    'type': 'pin',
+                    'port_name': 'clk'
+                }
+            )
+
+            tcl_user_app.makeConnection(
+                'net',
+                {
+                    'type': 'port',
+                    'port_name': 'rstn'
+                },
+                {
+                    'name': 'ddrRegion/addr_translator_kern' + str(i['kernel_inst']['num']),
+                    'type': 'pin',
+                    'port_name': 'resetn'
+                }
+            )
+
+            tcl_user_app.makeConnection(
+                'intf',
+                {
+                    'type': 'intf_port',
+                    'port_name': portName
+                },
+                {
+                    'name': 'ddrRegion/addr_translator_kern' + str(i['kernel_inst']['num']),
+                    'type': 'intf',
+                    'port_name': 's0_axi'
+                }
+            )
+
+            tcl_user_app.makeConnection(
+                'intf',
+                {
+                    'name': 'ddrRegion/addr_translator_kern' + str(i['kernel_inst']['num']),
+                    'type': 'intf',
+                    'port_name': 'm0_axi'
+                },
+                {
+                    'name': 'ddrRegion/ddr_inter',
+                    'type': 'intf',
+                    'port_name': 'S0' + str(count) + '_AXI'
+                },
+            )
+
+            count += 1
+
+        for i in s_axis_array:
+            portName = "ddrRegion/addr_translator_kern" + str(i['kernel_inst']['num']) + "/m0_axi"
+
+            tcl_user_app.assign_address(
+                None,
+                'ddr4_AXI',
+                'Reg'
+            )
+
+            prop = {'offset': "0x00000000"}
+            tcl_user_app.set_address_properties(None, 'ddr4_AXI', 'Reg', portName, **prop)
+            prop = {'range': '16G'}
+            tcl_user_app.set_address_properties(None, 'ddr4_AXI', 'Reg', portName, **prop)
+
+            #ddrRegion / addr_translator_kern2 / s0_axi / reg0  #  test_core_inst_2_DDR_SAXI/SEG_addr_translator_kern2_reg0
+            instName = i['kernel_inst']['inst']
+            ht_name = instName.split('/')[-1]
+            portName = ht_name + "_DDR_SAXI"
+
+            tcl_user_app.assign_address(
+                'ddrRegion/addr_translator_kern' + str(i['kernel_inst']['num']),
+                's0_axi',
+                'reg0'
+            )
+
+            prop = {'offset': "0x00000000"}
+            tcl_user_app.set_address_properties(None, 'addr_translator_kern' + str(i['kernel_inst']['num']), 'reg0', portName, **prop)
+            prop = {'range': i['kernel_inst']['ddr_size']}
+            tcl_user_app.set_address_properties(None, 'addr_translator_kern' + str(i['kernel_inst']['num']), 'reg0', portName, **prop)
+        # for idx, (start, end) in enumerate(partitioner.get_partitions()):
+        #     print(f"Partition {idx+1}: Start Address = {hex(start)}, End Address = {hex(end)}")
+        # createMemoryPartitioner(outDir + "/MemoryPartitioner.v", output_path + "/../middleware/python", phy_addr_prefix, vir_addr_len, partitioner.get_partitions(), tcl_user_app.fpga)
+
+def ddr_size_to_bytes(ddr_size):
+    match = re.match(r'(\d+)([KMG])', ddr_size)
+    if not match:
+        raise ValueError("INVALID ddr_size format")
+
+    size, unit = match.groups()
+    size = int(size)
+
+    if unit == 'K':
+        return size * 1024
+    elif unit == 'M':
+        return size * 1024 * 1024
+    elif unit == 'G':
+        return size * 1024 * 1024 * 1024
+###
 
 
 
@@ -2159,6 +2472,9 @@ def userApplicationRegion(project_name,outDir,output_path, fpga, sim,is_gw,api_i
     userApplicationLocalConnections(tcl_user_app)
     if tcl_user_app.fpga.has_control:
         userApplicationRegionControlInst(tcl_user_app,control_name_list,control_prop_list)
+    if tcl_user_app.fpga.has_ddr:
+        userApplicationRegionDDR(tcl_user_app, outDir, output_path)
+        print("DDR written!!!")
     tcl_user_app.setInterfacesCLK("CLK",clk_200_int)
     tcl_user_app.setInterfacesCLK("CLK300", clk_300_int)
     if fpga['multi_slr']:

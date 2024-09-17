@@ -22,4 +22,3 @@ module shellTop
   wire gt_1_ref_clk_p;
   wire [0:0]init_clk_n;
   wire [0:0]init_clk_p;
-
