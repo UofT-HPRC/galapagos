@@ -569,23 +569,24 @@ def write_direct_channel(CF,array):
         dest_array[elem["num"]] = elem["target"]
     CF.declare_var(CF.return_stream(512,48,0,16),"direct_in_target")
     CF.declare_var(CF.return_stream(512,8,8,8), "lan_out_target")
-    CF.cline("lan_out_target.last = 0")
+    #CF.cline("lan_out_target.last = 0")
     CF.declare_array("ap_uint<16>", "destination",length_of_mem,dest_array)
     if (length_of_mem > 50):
         CF.set_pragma("HLS bind_storage variable=destination type=ROM_1P impl=BRAM")
     else:
         CF.set_pragma("HLS bind_storage variable=destination type=ROM_1P impl=LUTRAM")
     CF.clines(["direct_in_target = direct_in.read()", "ap_uint<8> saved_dest = destination[direct_in_target.dest]"])
-    CF.start_block("while", "lan_out_target.last == 0")
+    CF.start_block("while", "direct_in_target.last == 0")
     CF.set_pragma("HLS PIPELINE")
-    CF.start_block("if", "!lan_out.full()")
+    CF.start_block("if", "(!lan_out.full()) && (!direct_in.empty())")
+    CF.cline("direct_in_target = direct_in.read()")  # new
     CF.object_write("lan_out_target",["data","dest","id","user","keep","last"],
                     ["direct_in_target.data","saved_dest",0,0,
                      "direct_in_target.keep","direct_in_target.last"])
     CF.cline("lan_out.write(lan_out_target)")
-    CF.start_block("if", "direct_in_target.last == 0")
-    CF.cline("direct_in_target = direct_in.read()")
-    CF.end_block()
+    # CF.start_block("if", "direct_in_target.last == 0")
+    # CF.cline("direct_in_target = direct_in.read()")
+    # CF.end_block()
     CF.end_block()
     CF.end_block()
     CF.end_function()
@@ -608,18 +609,20 @@ def write_broadcast_localizer(CF,array):
         CF.set_pragma("HLS bind_storage variable=destination type=ROM_1P impl=BRAM")
     else:
         CF.set_pragma("HLS bind_storage variable=destination type=ROM_1P impl=LUTRAM")
-    CF.clines(["direct_in_target = direct_in.read()","bc_info_target.last = 0"])
+    CF.cline("direct_in_target = direct_in.read()")
+    # CF.clines(["direct_in_target = direct_in.read()","bc_info_target.last = 0"])
     CF.cline("ap_uint<24> saved_dest = destination[direct_in_target.dest-" + str(array[0]["offset"]) + "]")
-    CF.start_block("while", "bc_info_target.last == 0")
+    CF.start_block("while", "direct_in_target.last == 0")
     CF.set_pragma("HLS PIPELINE")
-    CF.start_block("if", "!bc_info_out.full()")
+    CF.start_block("if", "(!bc_info_out.full()) && (!direct_in.empty())")
+    CF.cline("direct_in_target = direct_in.read()")
     CF.object_write("bc_info_target", ["data", "dest", "user", "keep", "last"],
                     ["direct_in_target.data", "saved_dest.range(15,0)", "saved_dest.range(23,16)",
                      "direct_in_target.keep", "direct_in_target.last"])
     CF.cline("bc_info_out.write(bc_info_target)")
-    CF.start_block("if", "direct_in_target.last == 0")
-    CF.cline("direct_in_target = direct_in.read()")
-    CF.end_block()
+    # CF.start_block("if", "direct_in_target.last == 0")
+    # CF.cline("direct_in_target = direct_in.read()")
+    # CF.end_block()
     CF.end_block()
     CF.end_block()
     CF.end_function()
