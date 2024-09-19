@@ -24,6 +24,9 @@ python_path = $(middleware_path)/python
 
 all: middleware hlsmiddleware
 
+merge: guard-PROJECTNAME
+	python3.7 ${python_path}/join_clusters.py --projectName=${PROJECTNAME} --clinfoFiles="$(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))"
+
 middleware: guard-LOGICALFILE guard-MAPFILE guard-PROJECTNAME ${LOGICALFILE} ${MAPFILE}
 	python3.7 ${python_path}/globalFPGAParser.py --logicalFile=${LOGICALFILE} \
 		--mapFile=${MAPFILE} --projectName=${PROJECTNAME}
@@ -33,7 +36,8 @@ laniakea_middleware: guard-PROJECTNAME guard-CLUSTERFILE ${CLUSTERFILE}
 	python3.7 ${python_path}/globalFPGAParser.py --clusterFile=${CLUSTERFILE} --projectName=${PROJECTNAME}
 	python3.7 ${python_path}/createTopLevel.py
 
-
+apiquery: guard-APIFILE guard-PROJECTNAME ${APIFILE}
+	python3.7 ${python_path}/queryAPIInfo.py --apiFile=${APIFILE} --projectName=${PROJECTNAME}
 
 hlsmiddleware:
 	 $(MAKE) -C $(hls_path)

@@ -1,0 +1,167 @@
+
+
+================================================================
+== Vivado HLS Report for 'arp_receive'
+================================================================
+* Date:           Thu Jul 25 00:18:22 2024
+
+* Version:        2019.1 (Build 2552052 on Fri May 24 15:28:33 MDT 2019)
+* Project:        arp_receive
+* Solution:       solution1
+* Product family: virtexuplus
+* Target device:  xcu200-fsgd2104-2-e
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |   3.10|     1.847|        0.39|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+-----+-----+-----+---------+
+    |  Latency  |  Interval | Pipeline|
+    | min | max | min | max |   Type  |
+    +-----+-----+-----+-----+---------+
+    |    0|    0|    0|    0|   none  |
+    +-----+-----+-----+-----+---------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        N/A
+
+
+
+================================================================
+== Utilization Estimates
+================================================================
+* Summary: 
++---------------------+---------+-------+---------+---------+-----+
+|         Name        | BRAM_18K| DSP48E|    FF   |   LUT   | URAM|
++---------------------+---------+-------+---------+---------+-----+
+|DSP                  |        -|      -|        -|        -|    -|
+|Expression           |        -|      -|        0|      216|    -|
+|FIFO                 |        -|      -|        -|        -|    -|
+|Instance             |        -|      -|        -|        -|    -|
+|Memory               |        -|      -|        -|        -|    -|
+|Multiplexer          |        -|      -|        -|       60|    -|
+|Register             |        -|      -|      557|        -|    -|
++---------------------+---------+-------+---------+---------+-----+
+|Total                |        0|      0|      557|      276|    0|
++---------------------+---------+-------+---------+---------+-----+
+|Available SLR        |     1440|   2280|   788160|   394080|  320|
++---------------------+---------+-------+---------+---------+-----+
+|Utilization SLR (%)  |        0|      0|    ~0   |    ~0   |    0|
++---------------------+---------+-------+---------+---------+-----+
+|Available            |     4320|   6840|  2364480|  1182240|  960|
++---------------------+---------+-------+---------+---------+-----+
+|Utilization (%)      |        0|      0|    ~0   |    ~0   |    0|
++---------------------+---------+-------+---------+---------+-----+
+
++ Detail: 
+    * Instance: 
+    N/A
+
+    * DSP48E: 
+    N/A
+
+    * Memory: 
+    N/A
+
+    * FIFO: 
+    N/A
+
+    * Expression: 
+    +------------------------+----------+-------+---+----+------------+------------+
+    |      Variable Name     | Operation| DSP48E| FF| LUT| Bitwidth P0| Bitwidth P1|
+    +------------------------+----------+-------+---+----+------------+------------+
+    |and_ln72_1_fu_302_p2    |    and   |      0|  0|   2|           1|           1|
+    |and_ln72_fu_296_p2      |    and   |      0|  0|   2|           1|           1|
+    |and_ln79_1_fu_391_p2    |    and   |      0|  0|   2|           1|           1|
+    |and_ln79_fu_385_p2      |    and   |      0|  0|   2|           1|           1|
+    |ap_condition_77         |    and   |      0|  0|   2|           1|           1|
+    |icmp_ln879_1_fu_278_p2  |   icmp   |      0|  0|  20|          32|          32|
+    |icmp_ln879_2_fu_266_p2  |   icmp   |      0|  0|  13|          16|           1|
+    |icmp_ln879_3_fu_284_p2  |   icmp   |      0|  0|  24|          48|           2|
+    |icmp_ln879_4_fu_290_p2  |   icmp   |      0|  0|  20|          32|          32|
+    |icmp_ln879_5_fu_355_p2  |   icmp   |      0|  0|  24|          48|          33|
+    |icmp_ln879_6_fu_361_p2  |   icmp   |      0|  0|  20|          32|          32|
+    |icmp_ln879_7_fu_367_p2  |   icmp   |      0|  0|  13|          16|           2|
+    |icmp_ln879_8_fu_373_p2  |   icmp   |      0|  0|  24|          48|           2|
+    |icmp_ln879_9_fu_379_p2  |   icmp   |      0|  0|  20|          32|          32|
+    |icmp_ln879_fu_272_p2    |   icmp   |      0|  0|  24|          48|          33|
+    |ap_condition_103        |    or    |      0|  0|   2|           1|           1|
+    |ret_V_fu_319_p2         |    or    |      0|  0|   2|           1|           1|
+    +------------------------+----------+-------+---+----+------------+------------+
+    |Total                   |          |      0|  0| 216|         359|         208|
+    +------------------------+----------+-------+---+----+------------+------------+
+
+    * Multiplexer: 
+    +--------------------------------+----+-----------+-----+-----------+
+    |              Name              | LUT| Input Size| Bits| Total Bits|
+    +--------------------------------+----+-----------+-----+-----------+
+    |ap_phi_mux_lhs_V_phi_fu_194_p8  |  21|          4|    1|          4|
+    |arptable_addrout_reg            |  15|          3|    8|         24|
+    |arptable_dataout_reg_1          |  15|          3|   80|        240|
+    |call_for_responce_re            |   9|          2|    1|          2|
+    +--------------------------------+----+-----------+-----+-----------+
+    |Total                           |  60|         12|   90|        270|
+    +--------------------------------+----+-----------+-----+-----------+
+
+    * Register: 
+    +------------------------+----+----+-----+-----------+
+    |          Name          | FF | LUT| Bits| Const Bits|
+    +------------------------+----+----+-----+-----------+
+    |ap_CS_fsm               |   1|   0|    1|          0|
+    |arp_in_reg_dst_ip_V     |  32|   0|   32|          0|
+    |arp_in_reg_dst_mac_V    |  48|   0|   48|          0|
+    |arp_in_reg_fixed_hea    |  48|   0|   48|          0|
+    |arp_in_reg_opcode_V     |  16|   0|   16|          0|
+    |arp_in_reg_src_ip_V     |  32|   0|   32|          0|
+    |arp_in_reg_src_mac_V    |  48|   0|   48|          0|
+    |arp_in_reg_valid_V      |   1|   0|    1|          0|
+    |arp_internal_resp_re    |  80|   0|   80|          0|
+    |arp_internal_resp_va    |   1|   0|    1|          0|
+    |arptable_addrout_reg    |   8|   0|    8|          0|
+    |arptable_dataout_reg    |   1|   0|    1|          0|
+    |arptable_dataout_reg_1  |  80|   0|   80|          0|
+    |call_for_responce_re    |   1|   0|    1|          0|
+    |call_for_responce_re_1  |  80|   0|   80|          0|
+    |eth_src_mac_V           |  48|   0|   48|          0|
+    |myIPReg_V               |  32|   0|   32|          0|
+    +------------------------+----+----+-----+-----------+
+    |Total                   | 557|   0|  557|          0|
+    +------------------------+----+----+-----+-----------+
+
+
+
+================================================================
+== Interface
+================================================================
+* Summary: 
++----------------------------+-----+-----+--------------+----------------------------+--------------+
+|          RTL Ports         | Dir | Bits|   Protocol   |        Source Object       |    C Type    |
++----------------------------+-----+-----+--------------+----------------------------+--------------+
+|ap_clk                      |  in |    1| ap_ctrl_none |         arp_receive        | return value |
+|ap_rst                      |  in |    1| ap_ctrl_none |         arp_receive        | return value |
+|myIP_V                      |  in |   32|    ap_none   |           myIP_V           |    scalar    |
+|arp_in_data_V               |  in |  336|    ap_none   |        arp_in_data_V       |    scalar    |
+|arp_in_valid_V              |  in |    1|    ap_none   |       arp_in_valid_V       |    scalar    |
+|arp_internal_resp_Mac_IP_V  |  in |   80|    ap_none   | arp_internal_resp_Mac_IP_V |    scalar    |
+|arp_internal_resp_valid_V   |  in |    1|    ap_none   |  arp_internal_resp_valid_V |    scalar    |
+|call_for_responce_Mac_IP_V  | out |   80|    ap_none   | call_for_responce_Mac_IP_V |    pointer   |
+|call_for_responce_valid_V   | out |    1|    ap_none   |  call_for_responce_valid_V |    pointer   |
+|arptable_dataout_Mac_IP_V   | out |   80|    ap_none   |  arptable_dataout_Mac_IP_V |    pointer   |
+|arptable_dataout_valid_V    | out |    1|    ap_none   |  arptable_dataout_valid_V  |    pointer   |
+|arptable_addrout_V          | out |    8|    ap_none   |     arptable_addrout_V     |    pointer   |
++----------------------------+-----+-----+--------------+----------------------------+--------------+
+

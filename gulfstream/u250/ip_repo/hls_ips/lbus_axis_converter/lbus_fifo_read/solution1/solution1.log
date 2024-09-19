@@ -1,0 +1,86 @@
+==============================================================
+Vivado(TM) HLS - High-Level Synthesis from C, C++ and SystemC v2019.1 (64-bit)
+Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
+==============================================================
+INFO: [HLS 200-10] Setting target device to 'xcu250-figd2104-2L-e'
+INFO: [SYN 201-201] Setting up clock 'default' with a period of 3.103ns.
+INFO: [SCHED 204-61] Option 'relax_ii_for_timing' is enabled, will increase II to preserve clock frequency constraints.
+INFO: [HLS 200-10] Analyzing design file '/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/lbus2axis/lbus_fifo_read.cpp' ... 
+INFO: [HLS 200-111] Finished Linking Time (s): cpu = 00:00:18 ; elapsed = 00:00:31 . Memory (MB): peak = 798.621 ; gain = 126.000 ; free physical = 29568 ; free virtual = 56802
+INFO: [HLS 200-111] Finished Checking Pragmas Time (s): cpu = 00:00:18 ; elapsed = 00:00:31 . Memory (MB): peak = 798.621 ; gain = 126.000 ; free physical = 29568 ; free virtual = 56802
+INFO: [HLS 200-10] Starting code transformations ...
+INFO: [HLS 200-111] Finished Standard Transforms Time (s): cpu = 00:00:19 ; elapsed = 00:00:32 . Memory (MB): peak = 798.621 ; gain = 126.000 ; free physical = 29543 ; free virtual = 56780
+INFO: [HLS 200-10] Checking synthesizability ...
+INFO: [HLS 200-111] Finished Checking Synthesizability Time (s): cpu = 00:00:19 ; elapsed = 00:00:33 . Memory (MB): peak = 798.621 ; gain = 126.000 ; free physical = 29531 ; free virtual = 56770
+INFO: [XFORM 203-1101] Packing variable 'lbus_fifo' (/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/lbus2axis/lbus_fifo_read.cpp:58) into a 544-bit variable.
+INFO: [XFORM 203-1101] Packing variable 'lbus_fifo_pkt_end' (/home/kevinliu/Documents/gulf_stream/u250/GULF-Stream/src/lbus2axis/lbus_fifo_read.cpp:59) into a 408-bit variable.
+INFO: [XFORM 203-102] Partitioning array 'outbuf.mty.V' automatically.
+INFO: [XFORM 203-102] Partitioning array 'outbuf.eop.V' automatically.
+INFO: [XFORM 203-102] Partitioning array 'outbuf.ena.V' automatically.
+INFO: [XFORM 203-102] Partitioning array 'outbuf.data.V' automatically.
+INFO: [XFORM 203-102] Partitioning array 'out_pktendbuf.sop.V' automatically.
+INFO: [XFORM 203-102] Partitioning array 'out_pktendbuf.mty.V' automatically.
+INFO: [XFORM 203-102] Partitioning array 'out_pktendbuf.err.V' automatically.
+INFO: [XFORM 203-102] Partitioning array 'out_pktendbuf.eop.V' automatically.
+INFO: [XFORM 203-102] Partitioning array 'out_pktendbuf.ena.V' automatically.
+INFO: [XFORM 203-102] Partitioning array 'out_pktendbuf.data.V' automatically.
+INFO: [XFORM 203-102] Partitioning array 'm_axis_keepbuf.V' automatically.
+INFO: [HLS 200-111] Finished Pre-synthesis Time (s): cpu = 00:00:20 ; elapsed = 00:00:33 . Memory (MB): peak = 862.621 ; gain = 190.000 ; free physical = 29482 ; free virtual = 56722
+INFO: [HLS 200-111] Finished Architecture Synthesis Time (s): cpu = 00:00:20 ; elapsed = 00:00:33 . Memory (MB): peak = 862.621 ; gain = 190.000 ; free physical = 29477 ; free virtual = 56718
+INFO: [HLS 200-10] Starting hardware synthesis ...
+INFO: [HLS 200-10] Synthesizing 'lbus_fifo_read' ...
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-42] -- Implementing module 'mty2keep' 
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [SCHED 204-11] Starting scheduling ...
+INFO: [SCHED 204-11] Finished scheduling.
+INFO: [HLS 200-111]  Elapsed time: 33.5 seconds; current allocated memory: 133.524 MB.
+INFO: [BIND 205-100] Starting micro-architecture generation ...
+INFO: [BIND 205-101] Performing variable lifetime analysis.
+INFO: [BIND 205-101] Exploring resource sharing.
+INFO: [BIND 205-101] Binding ...
+INFO: [BIND 205-100] Finished micro-architecture generation.
+INFO: [HLS 200-111]  Elapsed time: 0.04 seconds; current allocated memory: 133.724 MB.
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-42] -- Implementing module 'lbus_fifo_read' 
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [SCHED 204-11] Starting scheduling ...
+INFO: [SCHED 204-11] Finished scheduling.
+INFO: [HLS 200-111]  Elapsed time: 0.1 seconds; current allocated memory: 134.284 MB.
+INFO: [BIND 205-100] Starting micro-architecture generation ...
+INFO: [BIND 205-101] Performing variable lifetime analysis.
+INFO: [BIND 205-101] Exploring resource sharing.
+INFO: [BIND 205-101] Binding ...
+INFO: [BIND 205-100] Finished micro-architecture generation.
+INFO: [HLS 200-111]  Elapsed time: 0.1 seconds; current allocated memory: 135.046 MB.
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-10] -- Generating RTL for module 'mty2keep' 
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [RTGEN 206-100] Finished creating RTL model for 'mty2keep'.
+INFO: [HLS 200-111]  Elapsed time: 0.22 seconds; current allocated memory: 135.562 MB.
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-10] -- Generating RTL for module 'lbus_fifo_read' 
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_read/lbus_fifo' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_read/lbus_fifo_pkt_end' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_read/lbus_fifo_empty_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_read/lbus_fifo_pkt_end_empty_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_read/lbus_fifo_valid_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_read/lbus_fifo_pkt_end_valid_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_read/lbus_fifo_re_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'lbus_fifo_re_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_read/lbus_fifo_pkt_end_re_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'lbus_fifo_pkt_end_re_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_read/error_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'error_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_read/m_axis_data_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'm_axis_data_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_read/m_axis_keep_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'm_axis_keep_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_read/m_axis_last_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'm_axis_last_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_read/m_axis_valid_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'm_axis_valid_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on function 'lbus_fifo_read' to 'ap_ctrl_none'.
+INFO: [RTGEN 206-100] Finished creating RTL model for 'lbus_fifo_read'.
+INFO: [HLS 200-111] 

@@ -1,6 +1,7 @@
 
 import copy
 import tclFileGenerator
+import gatewayFileGenerator
 from abstractDict import abstractDict
 from kernel import kernel
 from collections import OrderedDict
@@ -85,7 +86,7 @@ class cluster(abstractDict):
             print("Unhandled exetension for " + file_name)
             return None
 
-    def __init__(self, name, kernel_file, map_file, supercluster, mode='file'):
+    def __init__(self, cluster_desc, lan_flow, mode='file'):
         """
         Initializes the cluster object using logical file and mapping file
 
@@ -94,21 +95,19 @@ class cluster(abstractDict):
             kernel_file (string): Filename of XML logical file
             map_file (string): Filename of XML mapping file
         """
+        name = cluster_desc['name']
+        kernel_file = cluster_desc['logic']
         self.name = name
         self.kernel_file = kernel_file
 
         if(mode=='file'):
             top_kern = self.getDict(kernel_file)['cluster']
-            top_map = self.getDict(map_file)['cluster']
+            top_map = self.getDict(cluster_desc['map'])['cluster']
         else:
             top_kern = kernel_file['cluster']
-            top_map = map_file['cluster']
+            top_map = cluster_desc['map']['cluster']
         logical_dict = top_kern['kernel']
         map_dict = top_map['node']
-        if "dns" in top_map:
-            dns_ip_address = top_map['dns']
-        else:
-            dns_ip_address = '0.0.0.0'
         if "userIpPath" in top_kern:
             user_ip_folder = top_kern['userIpPath']
             subprocess.run(["rm", "-rf", user_ip_folder + "/__galapagos_autogen_"+name])
@@ -119,13 +118,17 @@ class cluster(abstractDict):
         for log_inst in logical_dict:
             if(int(log_inst['num'])==0):
                 raise ValueError("There can not be any nodes pointing to kernel 0")
-        axis_array = OrderedDict([('scope','global'),('name','fakename')])
-        kern0=OrderedDict([('#text','garbage'),('type','open'),('num','0'),('control','false'),('clk','clk'),('aresetn','aresetn'),('s_axis',axis_array),('m_axis',axis_array)])
+        s_axis_array = OrderedDict([('scope','global'),('name','direct_rx')])
+        m_axis_array = OrderedDict([('scope', 'global'), ('name', 'lan_tx')])
+        wan_array = OrderedDict([('enabled', 'False'), ('name', 'wan_prt')])
+        kern0=OrderedDict([('#text','gateway'),('type','open'),('num','0'),('control','false'),('clk','CLK'),('aresetn','rstn'),('s_axis',s_axis_array),('m_axis',m_axis_array),('wan',wan_array)])
         logical_dict.insert(0, kern0)
         for kern_dict in logical_dict:
             if (('wan' in kern_dict) and (kern_dict['wan']['enabled'].lower()== 'true')):
                 kern_dict['wan_enabled'] = True
                 kern_dict['wan_name'] = kern_dict['wan']['name']
+                if not lan_flow:
+                    raise ValueError("WAN features require laniakea flow, not galapagos flow")
             else:
                 kern_dict['wan_enabled'] = False
                 kern_dict['wan_name'] = ""
@@ -188,11 +191,6 @@ class cluster(abstractDict):
                     else:
                         kern_dict_local['wire_slave']['master']['node'] = str(i + int(kern_dict_local['wire_slave']['master']['node']))
 
-
-
-
-
-
                 # This basically copies the dictionary parsed from the <kernel> tags into another dictionary,
                 # but it does also check the fields to make sure they're all valid and that no mandatory info
                 # is missing
@@ -220,18 +218,39 @@ class cluster(abstractDict):
                             raise ValueError("There can not be any nodes pointing to kernel 0")
                 elif(int(node_inst['kernel'])==0):
                     raise ValueError("There can not be any nodes pointing to kernel 0")
-        map0=OrderedDict([('type','sw'),('kernel','0'),('mac','00:00:00:00:00:00'),('ip','0.0.0.0')])
+        map0=OrderedDict([('type','hw'),('kernel','0'),('mac',cluster_desc['gatewayMac']),
+                          ('ip',cluster_desc['gatewayIP']),('autorun','False'),('comm','udp'),
+                          ('board',cluster_desc['gatewayBoard'])])
         map_dict.insert(0,map0)
+
         for node_idx, node_dict in enumerate(map_dict):
             # This basically copies the dictionary parsed from the <node> tags into another dictionary,
             # but it does also check the fields to make sure they're all valid and that no mandatory info
             # is missing
             node_inst = node(**node_dict)
+            has_ddr = False
+            max_ddr_id_width = 1
+            for i in node_inst['kernel']:
+                for j in self.kernels:
+                    if int(i) == int(j.data['num']) and j.data['ddr']:
+                        print(int(i))
+                        print(j.data['num'])
+                        node_inst.has_ddr = True
+                        has_ddr = True
+                        if max_ddr_id_width < int(j['ddr_id_width']):
+                            max_ddr_id_width = int(j['ddr_id_width'])
+                        node_inst.max_ddr_id_width = max_ddr_id_width
+            if has_ddr:
+                node_inst['use_ddr_shell'] = 1 #Charles use this flag to set which shell_bd to use. 0 uses shell_bd.tcl, 1 uses shell_bd_ddr.tcl
+            else:
+                node_inst['use_ddr_shell'] = 0
+            print("Use DDR Shell: " + str(node_inst['use_ddr_shell']))
             if ((node_inst['type']=='hw') and ('part' not in node_inst)):
                 node_inst['part']=board_pairs[node_inst['board']]
             node_inst['kernel'] = []
             node_inst['kernel_map'] = {}
-            node_inst['dns_ip']=dns_ip_address
+            node_inst['dns_ip']=cluster_desc['dns']
+            node_inst['has_wan'] = False
             node_inst['ip_folder']=user_ip_folder
             no_open = True
             if (('board' in node_inst) and (node_inst['board'] in multi_slr_boards)):
@@ -246,21 +265,24 @@ class cluster(abstractDict):
                          'SLR0': {'kernel': [], 'distance': 5, 'name': 'pb_slr0','clockregion': 'CLOCKREGION_X0Y0:CLOCKREGION_X5Y4'}
                     }
                     node_inst['main_slr'] = 'pb_slr2'
+                    node_inst['reset_slr'] = 'NONE'
                 elif node_inst['board'] == 'u250':
                     node_inst['slr_mappings'] = \
-                        {'SLR2': {'kernel': [], 'distance': 1, 'name': 'pb_slr2','clockregion': 'CLOCKREGION_X0Y10:CLOCKREGION_X5Y14'},
-                         'SLR1': {'kernel': [], 'distance': 3, 'name': 'pb_slr1','clockregion': 'CLOCKREGION_X0Y5:CLOCKREGION_X5Y9' },
-                         'SLR3': {'kernel': [], 'distance': 3, 'name': 'pb_slr3','clockregion': 'CLOCKREGION_X0Y5:CLOCKREGION_X5Y9'},
-                         'SLR0': {'kernel': [], 'distance': 5, 'name': 'pb_slr0','clockregion': 'CLOCKREGION_X0Y0:CLOCKREGION_X5Y4'}
+                        {'SLR3': {'kernel': [], 'distance': 3, 'name': 'pb_slr3','clockregion': 'CLOCKREGION_X0Y12:CLOCKREGION_X7Y15'},
+                         'SLR2': {'kernel': [], 'distance': 1, 'name': 'pb_slr2','clockregion': 'CLOCKREGION_X0Y8:CLOCKREGION_X7Y11'},
+                         'SLR1': {'kernel': [], 'distance': 3, 'name': 'pb_slr1','clockregion': 'CLOCKREGION_X0Y4:CLOCKREGION_X7Y7' },
+                         'SLR0': {'kernel': [], 'distance': 5, 'name': 'pb_slr0','clockregion': 'CLOCKREGION_X0Y0:CLOCKREGION_X7Y3'}
                     }
                     node_inst['main_slr'] = 'pb_slr2'
+                    node_inst['reset_slr'] = 'pb_slr3'
                 elif node_inst['board'] == 'u280':
                     node_inst['slr_mappings'] = \
-                        {'SLR2': { 'kernel' : [], 'distance': 1, 'name': 'pb_slr2','clockregion': 'CLOCKREGION_X0Y10:CLOCKREGION_X5Y14'},
-                         'SLR1': { 'kernel' : [], 'distance': 3, 'name': 'pb_slr1','clockregion': 'CLOCKREGION_X0Y5:CLOCKREGION_X5Y9' },
-                         'SLR0': {'kernel': [], 'distance': 5, 'name': 'pb_slr0','clockregion': 'CLOCKREGION_X0Y0:CLOCKREGION_X5Y4'}
+                        {'SLR2': { 'kernel' : [], 'distance': 1, 'name': 'pb_slr2','clockregion': 'CLOCKREGION_X0Y8:CLOCKREGION_X7Y11'},
+                         'SLR1': { 'kernel' : [], 'distance': 3, 'name': 'pb_slr1','clockregion': 'CLOCKREGION_X0Y4:CLOCKREGION_X7Y7' },
+                         'SLR0': {'kernel': [], 'distance': 5, 'name': 'pb_slr0','clockregion': 'CLOCKREGION_X0Y0:CLOCKREGION_X7Y3'}
                     }
                     node_inst['main_slr'] = 'pb_slr2'
+                    node_inst['reset_slr'] = 'NONE'
             else:
                 node_inst['multi_slr'] = False
             #
@@ -273,6 +295,7 @@ class cluster(abstractDict):
                         # kernel objects we just built) to find the one matching
                         # this number
                         if int(kern['num']) == int(kmap_node['num']):
+                            node_inst['has_wan'] = node_inst['has_wan'] or kern['wan_enabled'][0]
                             # Instead of having numbers in node_inst['kernel'], have
                             # pointers to our properly parsed kernel objects
                             node_inst['kernel_map'][kern['num']] = len(node_inst['kernel'])
@@ -291,6 +314,7 @@ class cluster(abstractDict):
                 for kmap_node in node_dict['kernel']:
                     for kern_idx, kern in enumerate(self.kernels):
                         if int(kern['num']) == int(kmap_node):
+                            node_inst['has_wan'] = node_inst['has_wan'] or kern['wan_enabled'][0]
                             # Instead of having numbers in node_inst['kernel'], have
                             # pointers to our properly parsed kernel objects
                             kern['distance']=1
@@ -317,6 +341,7 @@ class cluster(abstractDict):
             # Maintain array of pointer to node objects
             self.nodes.append(node_inst)
 
+
     def processMemoryBus(self):
         for i in range(len(self.nodes)):
             memories = []
@@ -330,25 +355,42 @@ class cluster(abstractDict):
                 self.nodes[i]['kernel'][mem[0]].data['control_size'] = mem[1]
                 self.nodes[i]['kernel'][mem[0]].data['control_address'] = mem[2]
             self.nodes[i].has_control = has_control
-
-
-
         return
-    def writeClusterTCL(self, output_path, sim):
+
+    # ### changes by Charles
+    # def checkDDR(self):
+    #     for i in range(len(self.nodes)):
+    #         #has_ddr = False
+    #         max_ddr_id_width = 1
+    #         for j in range(len(self.nodes[i]['kernel'])):
+    #             if self.nodes[i]['kernel'][j].data['ddr']:
+    #                 self.nodes[i]['kernel'][j].has_ddr = True
+    #                 #has_ddr = True
+    #                 if max_ddr_id_width < int(self.nodes[i]['kernel'][j]['ddr_id_width']):
+    #                     max_ddr_id_width = int(self.nodes[i]['kernel'][j]['ddr_id_width'])
+    #         #self.nodes[i].has_ddr = has_ddr
+    #         self.nodes[i].max_ddr_id_width = max_ddr_id_width
+    #     return
+    # ###
+
+    def writeClusterTCL(self, output_path, sim, has_GW,api_info,CAMILO_TEMP_DEBUG):
         #tclFileThreads = []
         for node_idx, node in enumerate(self.nodes):
-
-            if node_idx == 0:
+            if ((node_idx == 0) and (not has_GW)):
                 continue
             elif node['type'] == 'hw':
-                tclFileGenerator.makeTCLFiles(node, self.name, output_path, sim)
+                tclFileGenerator.makeTCLFiles(node, self.name, output_path, sim, node_idx==0,api_info,CAMILO_TEMP_DEBUG)
             elif node['type']=='sw':
                 tclFileGenerator.makeSWFile(node,self.name, output_path,self.getListOfKernelIPs())
-
-#        for thread in tclFileThreads:
-#            thread.join()
-
-
+    def writeGatewayFile(self,path,api_file):
+        api_info = {}
+        topAPI = self.getDict(api_file)['cluster']
+        for node_idx, node in enumerate(self.nodes):
+            if (node_idx == 0):
+                Gateway_ip = node['ip']
+                outDir = path + '/' + self.name + '/' + str(node['num'])
+                api_info = gatewayFileGenerator.makeGWFiles(node, outDir, topAPI,Gateway_ip)
+        return api_info
     def getListOfKernelIPs(self):
 
         kernelIndex = 0
@@ -461,7 +503,7 @@ class cluster(abstractDict):
             nodeFile.close()
         bramFile.close()
 
-    def makeProjectClusterScript(self, output_path):
+    def makeProjectClusterScript(self, output_path,hasGW):
         """
         As per the name, makes a project cluster script. You may be wondering what a
         project cluster script is. Me too.
@@ -493,9 +535,10 @@ class cluster(abstractDict):
         globalSimFile = open(output_path + "/" + self.name + '/simCluster.sh', 'w')
 
         globalConfigFile.write("cd " + str(os.environ.get('GALAPAGOS_PATH')) + "\n")
+        globalConfigFile.write("source " + str(os.environ.get('GALAPAGOS_PATH'))+"/environmental_reset.sh" + "\n")
         for node_idx, node_obj in enumerate(self.nodes):
             #only need vivado project for hw nodes
-            if node_idx == 0:
+            if ((node_idx == 0) and (not hasGW)):
                 continue
             elif node_obj['type'] == 'hw':
                 dirName = output_path + '/' + self.name + '/' + str(node_idx)
@@ -507,9 +550,9 @@ class cluster(abstractDict):
                 os.makedirs(dirName, exist_ok=True)
                 #currently only making flattened bitstreams
                 if node_obj['make_bit']:
-                    globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + "  --board " + node_obj['board'] + "  --part "+ node_obj['part'] + " --dir " + self.name +  " --start_synth 1" + "\n")
+                    globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + "  --board " + node_obj['board'] + "  --part "+ node_obj['part'] + " --dir " + self.name + " --start_synth 1 --use_ddr_shell " + str(node_obj['use_ddr_shell']) + "\n")
                 else:
-                    globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + "  --board " + node_obj['board'] + "  --part "+ node_obj['part'] + " --dir " + self.name +  " --start_synth 0" + "\n")
+                    globalConfigFile.write("vivado -mode batch -source shells/tclScripts/make_shell.tcl -tclargs --project_name " +  str(node_idx) + "  --pr_tcl " + dirName + "/" + str(node_idx) + ".tcl" + "  --board " + node_obj['board'] + "  --part "+ node_obj['part'] + " --dir " + self.name + " --start_synth 0 --use_ddr_shell " + str(node_obj['use_ddr_shell']) + "\n")
             elif node_obj['type'] == 'sw':
                 dirName = output_path + '/' + self.name + '/' + str(node_idx)
                 if os.path.exists(dirName):

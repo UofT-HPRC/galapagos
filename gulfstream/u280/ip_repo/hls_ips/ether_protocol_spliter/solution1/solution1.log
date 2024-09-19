@@ -1,0 +1,65 @@
+==============================================================
+Vivado(TM) HLS - High-Level Synthesis from C, C++ and SystemC v2019.1 (64-bit)
+Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
+==============================================================
+INFO: [HLS 200-10] Setting target device to 'xcu280-fsvh2892-2L-e'
+INFO: [SYN 201-201] Setting up clock 'default' with a period of 3.103ns.
+INFO: [SCHED 204-61] Option 'relax_ii_for_timing' is enabled, will increase II to preserve clock frequency constraints.
+INFO: [HLS 200-10] Analyzing design file '/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/ether_protocol_spliter/ether_protocol_spliter.cpp' ... 
+INFO: [HLS 200-111] Finished Linking Time (s): cpu = 00:00:17 ; elapsed = 00:00:28 . Memory (MB): peak = 798.621 ; gain = 126.000 ; free physical = 29503 ; free virtual = 56806
+INFO: [HLS 200-111] Finished Checking Pragmas Time (s): cpu = 00:00:17 ; elapsed = 00:00:28 . Memory (MB): peak = 798.621 ; gain = 126.000 ; free physical = 29513 ; free virtual = 56816
+INFO: [HLS 200-10] Starting code transformations ...
+INFO: [HLS 200-111] Finished Standard Transforms Time (s): cpu = 00:00:19 ; elapsed = 00:00:30 . Memory (MB): peak = 798.621 ; gain = 126.000 ; free physical = 29501 ; free virtual = 56804
+INFO: [HLS 200-10] Checking synthesizability ...
+INFO: [HLS 200-111] Finished Checking Synthesizability Time (s): cpu = 00:00:19 ; elapsed = 00:00:30 . Memory (MB): peak = 798.621 ; gain = 126.000 ; free physical = 29496 ; free virtual = 56799
+INFO: [XFORM 203-401] Performing if-conversion on hyperblock from (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/ether_protocol_spliter/ether_protocol_spliter.cpp:62:49) to (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/ether_protocol_spliter/ether_protocol_spliter.cpp:63:50) in function 'ether_protocol_spliter'... converting 3 basic blocks.
+INFO: [XFORM 203-401] Performing if-conversion on hyperblock to (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/ether_protocol_spliter/ether_protocol_spliter.cpp:68:6) in function 'ether_protocol_spliter'... converting 4 basic blocks.
+INFO: [XFORM 203-401] Performing if-conversion on hyperblock from (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/ether_protocol_spliter/ether_protocol_spliter.cpp:79:24) in function 'ether_protocol_spliter'... converting 5 basic blocks.
+INFO: [XFORM 203-401] Performing if-conversion on hyperblock from (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/ether_protocol_spliter/ether_protocol_spliter.cpp:85:31) to (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/ether_protocol_spliter/ether_protocol_spliter.cpp:85:140) in function 'ether_protocol_spliter'... converting 3 basic blocks.
+INFO: [XFORM 203-11] Balancing expressions in function 'ether_protocol_spliter' (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/ether_protocol_spliter/ether_protocol_spliter.cpp:35)...3 expression(s) balanced.
+INFO: [HLS 200-111] Finished Pre-synthesis Time (s): cpu = 00:00:19 ; elapsed = 00:00:30 . Memory (MB): peak = 798.621 ; gain = 126.000 ; free physical = 29447 ; free virtual = 56751
+INFO: [HLS 200-111] Finished Architecture Synthesis Time (s): cpu = 00:00:19 ; elapsed = 00:00:30 . Memory (MB): peak = 798.621 ; gain = 126.000 ; free physical = 29445 ; free virtual = 56749
+INFO: [HLS 200-10] Starting hardware synthesis ...
+INFO: [HLS 200-10] Synthesizing 'ether_protocol_spliter' ...
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-42] -- Implementing module 'ether_protocol_spliter' 
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [SCHED 204-11] Starting scheduling ...
+INFO: [SCHED 204-11] Finished scheduling.
+INFO: [HLS 200-111]  Elapsed time: 30.36 seconds; current allocated memory: 118.671 MB.
+INFO: [BIND 205-100] Starting micro-architecture generation ...
+INFO: [BIND 205-101] Performing variable lifetime analysis.
+INFO: [BIND 205-101] Exploring resource sharing.
+INFO: [BIND 205-101] Binding ...
+INFO: [BIND 205-100] Finished micro-architecture generation.
+INFO: [HLS 200-111]  Elapsed time: 0.06 seconds; current allocated memory: 119.290 MB.
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-10] -- Generating RTL for module 'ether_protocol_spliter' 
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [RTGEN 206-500] Setting interface mode on port 'ether_protocol_spliter/myMacAddr_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'ether_protocol_spliter/s_axis_data_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'ether_protocol_spliter/s_axis_keep_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'ether_protocol_spliter/s_axis_last_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'ether_protocol_spliter/s_axis_valid_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'ether_protocol_spliter/arp_data_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'arp_data_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'ether_protocol_spliter/arp_valid_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'arp_valid_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'ether_protocol_spliter/ip_data_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'ip_data_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'ether_protocol_spliter/ip_valid_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'ip_valid_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'ether_protocol_spliter/payload_data_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'payload_data_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'ether_protocol_spliter/payload_valid_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'payload_valid_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'ether_protocol_spliter/payload_last_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'payload_last_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'ether_protocol_spliter/payload_len_data_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'payload_len_data_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'ether_protocol_spliter/payload_len_valid_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'payload_len_valid_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on function 'ether_protocol_spliter' to 'ap_ctrl_none'.
+INFO: [RTGEN 206-100] Finished creating RTL model for 'ether_protocol_spliter'.
+INFO: [HLS 200-111]  Elapsed time: 0.15 seconds; current allocated memory: 120.059 MB.
+INFO: [HLS 200-111] Finished generating all RTL models Time (s): cpu = 00:00:20 ; elapsed = 00:00:32 . Memory (MB): peak = 864.727 ; gain = 192.105 ; free physical = 29423 ; free virtual = 56734

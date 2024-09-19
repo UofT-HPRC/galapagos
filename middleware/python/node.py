@@ -21,9 +21,11 @@ class node(abstractDict):
             **kwargs: The stuff to put in this dictionary
         """
         self.has_control = False
+        self.has_ddr = False  # Charles
+        self.max_ddr_id_width = 1  # Charles
         self.address_space = address_space
         mandatory_array = ('num', 'type', 'comm')
-        optional_array = ('board', 'part', 'mac', 'autorun', 'ip', 'app_bridge', 'debug', 'kernel', 'custom', 'kernel_map')
+        optional_array = ('board', 'part', 'mac', 'autorun', 'ip', 'app_bridge', 'debug', 'kernel', 'custom', 'kernel_map', 'use_ddr_shell')
 
         super().__init__(mandatory_array, optional_array, **kwargs)
 

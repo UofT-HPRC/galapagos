@@ -1,4 +1,5 @@
 .Xil/*
+environmental_reset.sh
 vivado.*
 hlsBuild/*
 oldhlsBuild/*

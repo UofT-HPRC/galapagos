@@ -69,6 +69,5 @@ interfaceBandwidth="100G"
   echo "export GALAPAGOS_BANDWIDTH=$interfaceBandwidth" >> $configFile
 } >> $configFile
 
-
 source $configFile
 export PATH=$vitisPath_append/bin:$PATH

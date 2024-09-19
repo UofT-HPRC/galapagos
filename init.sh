@@ -85,20 +85,6 @@ fi
 # TODO prefix all "shells" with galapagos_
 configFile=~/.galapagos
 
-if [[ "$#" == 1 ]]; then
-  if [[ $operation == "switch" ]]; then
-    unset "${!GALAPAGOS@}"
-    sed -i '/# added by galapagos/s/^/#/' ~/.bashrc
-
-    sed -i '/# added by shells/s/^#//' ~/.bashrc
-    source $configFile
-    return 0
-  else
-    echo "Unknown operation: $operation"
-    return 1
-  fi
-fi
-
 if [[ -f $configFile ]]; then
   echo "Updating galapagos initialization..."
   unset GALAPAGOS_BOARD
@@ -237,9 +223,3 @@ EOF
 source $configFile
 export PATH=$vitisPath_append/bin:$PATH
 
-# if it doesn't exist in the .bashrc, add it. Otherwise, uncomment it in case
-if ! grep -Fq "# added by galapagos" ~/.bashrc; then
-  echo "source $configFile # added by galapagos" >> ~/.bashrc
-else
-  sed -i '/# added by galapagos/s/^#//' ~/.bashrc
-fi

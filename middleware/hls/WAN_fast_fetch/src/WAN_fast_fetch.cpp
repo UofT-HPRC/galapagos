@@ -45,9 +45,9 @@ void WAN_fast_fetch(
     if (retrying_bin == 1)
     {
     	//Indicates we were unable to send to a bin, keep trying until we can and raise the second error bit.
+    	error_flags.bit(1)=1;    	
     	switch(affected_bin)
     	{
-    	error_flags.bit(1)=1;
     	//For the matching bin, forward the bin response and clear the fact we are re-trying
     	case 1:
     		if (!bin1_send.full())
@@ -111,7 +111,8 @@ void WAN_fast_fetch(
     		else
     		{
     			retrying_bin = 1;
-    		}    		break;
+    		}
+    		break;
     	case 3:
     		kernel_request.data = bin3.dest;
     		bin_response.user=bin3.sent_total;
@@ -246,7 +247,7 @@ void WAN_fast_fetch(
 				{
 					//Add this to unused bin 1, tell collector to forward it there and record there is 1 there
 					fetch_response.dest = 1;
-                    slow_fetch_response.dest=1;
+					slow_fetch_response.dest=1;
 					to_slow_fetch.write(slow_fetch_response);
 					bin1.occupied = 1;
 					bin1.sent_total = 1;
@@ -258,7 +259,7 @@ void WAN_fast_fetch(
 				{
 					//Add this to unused bin 2, tell collector to forward it there and record there is 1 there
 					fetch_response.dest = 2;
-                    slow_fetch_response.dest=2;
+					slow_fetch_response.dest=2;
 					to_slow_fetch.write(slow_fetch_response);
 					bin2.occupied = 1;
 					bin2.sent_total = 1;
@@ -270,7 +271,7 @@ void WAN_fast_fetch(
 				{
 					//Add this to unused bin 3, tell collector to forward it there and record there is 1 there
 					fetch_response.dest = 3;
-                    slow_fetch_response.dest=3;
+					slow_fetch_response.dest=3;
 					to_slow_fetch.write(slow_fetch_response);
 					bin3.occupied = 1;
 					bin3.sent_total = 1;

@@ -54,7 +54,7 @@ typedef galapagos::stream_packet <ap_uint<PACKET_DATA_LENGTH> > galapagos_packet
 #define RIP_ID_ROUTER 1
 #define RIP_ID_NETWORK_BRIDGE 2
 
-// New AXIS signals (Vitis HLS 2023.1+) <WData, WUser, WDest, WId>
+// New AXIS signals (Vitis HLS 2023.1+) <WData, WUser, WId, WDest>
 typedef ap_axis<PACKET_DATA_LENGTH, PACKET_USER_LENGTH, PACKET_DEST_LENGTH, PACKET_DEST_LENGTH> galapagos_packet;
 typedef hls::stream<galapagos_packet> galapagos_interface;
 
@@ -64,13 +64,13 @@ typedef hls::stream<ap_axis_net> netStream;
 typedef ap_axis<PACKET_DATA_LENGTH, 0, 0, 0> axis_gulfstream_t;
 typedef hls::stream<axis_gulfstream_t> gulfstream_interface;
 
-typedef ap_axis<32, 0, 3, 0> fetch_reply;
+typedef ap_axis<32, 0, 0, 3> fetch_reply;
 typedef hls::stream<fetch_reply> fetch_reply_interface;
 
 typedef ap_axis<32, 0, 3, PACKET_DEST_LENGTH> fetch_update;
 typedef hls::stream<fetch_update> fetch_update_interface;
 
-typedef ap_axis<PACKET_DEST_LENGTH, 0, 3, 0> slow_fetch_request;
+typedef ap_axis<PACKET_DEST_LENGTH, 0, 0, 3> slow_fetch_request;
 typedef hls::stream<slow_fetch_request> slow_fetch_request_interface;
 
 typedef ap_axis<PACKET_DEST_LENGTH, 0, 0, 0> ip_fetch_packet_t;

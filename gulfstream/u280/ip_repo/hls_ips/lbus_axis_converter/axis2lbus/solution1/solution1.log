@@ -1,0 +1,69 @@
+==============================================================
+Vivado(TM) HLS - High-Level Synthesis from C, C++ and SystemC v2019.1 (64-bit)
+Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
+==============================================================
+INFO: [HLS 200-10] Setting target device to 'xcu280-fsvh2892-2L-e'
+INFO: [SYN 201-201] Setting up clock 'default' with a period of 3.103ns.
+INFO: [SCHED 204-61] Option 'relax_ii_for_timing' is enabled, will increase II to preserve clock frequency constraints.
+INFO: [HLS 200-10] Analyzing design file '/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/axis2lbus/util.cpp' ... 
+INFO: [HLS 200-10] Analyzing design file '/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/axis2lbus/axis2lbus.cpp' ... 
+INFO: [HLS 200-111] Finished Linking Time (s): cpu = 00:00:32 ; elapsed = 00:00:51 . Memory (MB): peak = 798.621 ; gain = 126.000 ; free physical = 29621 ; free virtual = 56829
+INFO: [HLS 200-111] Finished Checking Pragmas Time (s): cpu = 00:00:32 ; elapsed = 00:00:51 . Memory (MB): peak = 798.621 ; gain = 126.000 ; free physical = 29621 ; free virtual = 56829
+INFO: [HLS 200-10] Starting code transformations ...
+INFO: [XFORM 203-603] Inlining function 'keep2mty' into 'axis2lbus' (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/axis2lbus/axis2lbus.cpp:73).
+INFO: [XFORM 203-603] Inlining function 'keep2mty' into 'axis2lbus' (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/axis2lbus/axis2lbus.cpp:72).
+INFO: [XFORM 203-603] Inlining function 'keep2mty' into 'axis2lbus' (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/axis2lbus/axis2lbus.cpp:71).
+INFO: [XFORM 203-603] Inlining function 'keep2mty' into 'axis2lbus' (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/axis2lbus/axis2lbus.cpp:70).
+INFO: [HLS 200-111] Finished Standard Transforms Time (s): cpu = 00:00:33 ; elapsed = 00:00:53 . Memory (MB): peak = 798.621 ; gain = 126.000 ; free physical = 29611 ; free virtual = 56820
+INFO: [HLS 200-10] Checking synthesizability ...
+INFO: [HLS 200-111] Finished Checking Synthesizability Time (s): cpu = 00:00:33 ; elapsed = 00:00:53 . Memory (MB): peak = 798.621 ; gain = 126.000 ; free physical = 29603 ; free virtual = 56813
+INFO: [XFORM 203-101] Partitioning array 'lbus.data.V' (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/axis2lbus/axis2lbus.cpp:34) in dimension 1 completely.
+INFO: [XFORM 203-101] Partitioning array 'lbus.ena.V' (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/axis2lbus/axis2lbus.cpp:34) in dimension 1 completely.
+INFO: [XFORM 203-101] Partitioning array 'lbus.sop.V' (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/axis2lbus/axis2lbus.cpp:34) in dimension 1 completely.
+INFO: [XFORM 203-101] Partitioning array 'lbus.eop.V' (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/axis2lbus/axis2lbus.cpp:34) in dimension 1 completely.
+INFO: [XFORM 203-101] Partitioning array 'lbus.err.V' (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/axis2lbus/axis2lbus.cpp:34) in dimension 1 completely.
+INFO: [XFORM 203-101] Partitioning array 'lbus.mty.V' (/home/kevinliu/Documents/gulf_stream/u280/GULF-Stream/src/axis2lbus/axis2lbus.cpp:34) in dimension 1 completely.
+INFO: [HLS 200-111] Finished Pre-synthesis Time (s): cpu = 00:00:33 ; elapsed = 00:00:53 . Memory (MB): peak = 862.621 ; gain = 190.000 ; free physical = 29554 ; free virtual = 56765
+INFO: [HLS 200-111] Finished Architecture Synthesis Time (s): cpu = 00:00:34 ; elapsed = 00:00:54 . Memory (MB): peak = 862.621 ; gain = 190.000 ; free physical = 29552 ; free virtual = 56764
+INFO: [HLS 200-10] Starting hardware synthesis ...
+INFO: [HLS 200-10] Synthesizing 'axis2lbus' ...
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-42] -- Implementing module 'axis2lbus' 
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [SCHED 204-11] Starting scheduling ...
+INFO: [SCHED 204-11] Finished scheduling.
+INFO: [HLS 200-111]  Elapsed time: 53.8 seconds; current allocated memory: 122.166 MB.
+INFO: [BIND 205-100] Starting micro-architecture generation ...
+INFO: [BIND 205-101] Performing variable lifetime analysis.
+INFO: [BIND 205-101] Exploring resource sharing.
+INFO: [BIND 205-101] Binding ...
+INFO: [BIND 205-100] Finished micro-architecture generation.
+INFO: [HLS 200-111]  Elapsed time: 0.07 seconds; current allocated memory: 123.062 MB.
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-10] -- Generating RTL for module 'axis2lbus' 
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [RTGEN 206-500] Setting interface mode on port 'axis2lbus/s_axis_data_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'axis2lbus/s_axis_keep_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'axis2lbus/s_axis_last_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'axis2lbus/s_axis_valid_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'axis2lbus/lbus_0_data_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'lbus_0_data_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'axis2lbus/lbus_1_data_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'lbus_1_data_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'axis2lbus/lbus_2_data_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'lbus_2_data_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'axis2lbus/lbus_3_data_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'lbus_3_data_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'axis2lbus/lbus_0_ena_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'lbus_0_ena_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'axis2lbus/lbus_1_ena_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'lbus_1_ena_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'axis2lbus/lbus_2_ena_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'lbus_2_ena_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'axis2lbus/lbus_3_ena_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'lbus_3_ena_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'axis2lbus/lbus_0_sop_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'lbus_0_sop_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'axis2lbus/lbus_1_sop_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'lbus_1_sop_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'axis2lbus/lbus_2_sop_V' to 'ap_none'.

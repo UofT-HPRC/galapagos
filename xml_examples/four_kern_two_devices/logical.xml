@@ -18,7 +18,7 @@
             <name> out_r </name>
         </m_axis>
         <wan>
-            <enabled> True </enabled>
+            <enabled> False </enabled>
             <name> laniakea_wan </name>
         </wan>
         <aresetn> ap_rst_n </aresetn>

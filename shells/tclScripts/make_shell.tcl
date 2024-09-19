@@ -28,6 +28,7 @@ if { $::argc > 0 } {
       "--start_synth" { incr i; set start_synth [lindex $::argv $i] }
       "--dir" { incr i; set default_dir [lindex $::argv $i] }
       "--sim_dir" { incr i; set sim_dir [lindex $::argv $i] }
+      "--use_ddr_shell" { incr i; set ddr_shell [lindex $::argv $i] }
       "--help"         { help }
       default {
         if { [regexp {^-} $option] } {
@@ -130,7 +131,11 @@ update_ip_catalog -rebuild
 
 create_bd_design "shell"
 # open_bd_design $project_path/$project_name.srcs/sources_1/bd/shell/shell.bd
-set ret_val [source $shell_path/tclScripts/shell_bd.tcl]
+if {$ddr_shell == 1} {
+  set ret_val [source $shell_path/tclScripts/shell_bd_ddr.tcl]
+} else {
+  set ret_val [source $shell_path/tclScripts/shell_bd.tcl]
+}
 if { $ret_val != 0 } {
   puts "Error in shell_bd script"
   return $ret_val
