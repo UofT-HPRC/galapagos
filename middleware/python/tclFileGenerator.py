@@ -377,7 +377,7 @@ def buildControlToNBSwitch(tcl_user_app, path, num_ctrl_instances):
     ]
     tcl_user_app.setProperties(switch_name, properties)
 
-def buildControlAPIInst(tcl_user_app, kernel_id, kernel_dict, axil_addr_width, has_wstrb=True, has_reliability=True, rel_timeout=500):
+def buildControlAPIInst(tcl_user_app, kernel_id, kernel_dict, axil_addr_width, has_wstrb=True, has_reliability=True, rel_timeout=500, request_buffer_capacity=64):
     """
     Builds an instance of the Control API hierarchy for a kernel, and performs all internal connections
 
@@ -388,6 +388,7 @@ def buildControlAPIInst(tcl_user_app, kernel_id, kernel_dict, axil_addr_width, h
         kernel_dict (dict): Dictionary consisting of 2 entries:
                 'inst': Instance name of the kernel, with 'applicationRegion' removed
                 'control_type': 'm_axil', 's_axil', or 'both' 
+                NOTE: Everything is relative to the user. Being type 's_axil' means the user wants an S_AXIL port, which means it needs a Network-to-AXILite converter
         axil_addr_width (int): Width of the AXI-Lite Address channels
         has_wstrb (bool): Does the AXI-Lite WDATA interface have WSTRB enabled?
         has_reliability (bool): Does the user want to use reliability?
@@ -406,35 +407,214 @@ def buildControlAPIInst(tcl_user_app, kernel_id, kernel_dict, axil_addr_width, h
                           ]
         }
     )
-    # Add AXI-Lite to Network Converter and connect to Kernel ID
-    tcl_user_app.instBlock(
-        {
-            'name': 'axi_lite_to_network_converter',
-            'inst':  hierarchy_name + '/anc',
-            'clks': ['i_clk'],
-            'resetns': ['i_ap_rst_n'],
-            'resetns_port': 'rstn',
-            'properties': [ 
-                            'CONFIG.AXI_LITE_ADDR_WIDTH {' + str(axil_addr_width) + '}',
-                            'CONFIG.AXI_LITE_WSTRB_ENABLED {' + str(has_wstrb) + '}'
-                          ]
-        }
-    )
-    tcl_user_app.makeConnection(
-        'net', 
-        {
-            'type': 'pin',
-            'name': hierarchy_name + '/kernel_id',
-            'port_name': 'dout'
-        },
-        {
-            'type': 'pin',
-            'name': hierarchy_name + '/anc',
-            'port_name': 'i_kernel_id'
-        }
-    )
-    # If the control type is only 'm_axil' or 's_axil', connect the unused AXIL ports to 0
-    if kernel_dict['control_type'] != 'both':
+    # Add AXI-Lite <-> Network Converters depending on user preference and connect to Kernel ID
+    if kernel_dict['control_type'] == 'm_axil' or kernel_dict['control_type'] == 'both':
+        tcl_user_app.instBlock(
+            {
+                'name': 'axi_lite_to_network_converter',
+                'inst':  hierarchy_name + '/anc',
+                'clks': ['i_clk'],
+                'resetns': ['i_ap_rst_n'],
+                'resetns_port': 'rstn',
+                'properties': [ 
+                                'CONFIG.AXI_LITE_ADDR_WIDTH {' + str(axil_addr_width) + '}',
+                                'CONFIG.AXI_LITE_WSTRB_ENABLED {' + str(has_wstrb) + '}'
+                            ]
+            }
+        )
+        tcl_user_app.makeConnection(
+            'net', 
+            {
+                'type': 'pin',
+                'name': hierarchy_name + '/kernel_id',
+                'port_name': 'dout'
+            },
+            {
+                'type': 'pin',
+                'name': hierarchy_name + '/anc',
+                'port_name': 'i_kernel_id'
+            }
+        )
+    if kernel_dict['control_type'] == 's_axil' or kernel_dict['control_type'] == 'both':
+        tcl_user_app.instBlock(
+            {
+                'name': 'network_to_axi_lite_converter',
+                'inst':  hierarchy_name + '/nac',
+                'clks': ['i_clk'],
+                'resetns': ['i_ap_rst_n'],
+                'resetns_port': 'rstn',
+                'properties': [ 
+                                'CONFIG.AXI_LITE_ADDR_WIDTH {' + str(axil_addr_width) + '}',
+                                'CONFIG.AXI_LITE_WSTRB_ENABLED {' + str(has_wstrb) + '}',
+                                'CONFIG.REQUEST_BUFFER_CAPACITY {' + str(request_buffer_capacity) + '}',
+                            ]
+            }
+        )
+        tcl_user_app.makeConnection(
+            'net', 
+            {
+                'type': 'pin',
+                'name': hierarchy_name + '/kernel_id',
+                'port_name': 'dout'
+            },
+            {
+                'type': 'pin',
+                'name': hierarchy_name + '/nac',
+                'port_name': 'i_kernel_id'
+            }
+        )
+        # Network to AXI-Lite Converter uses a request buffer to store outstanding network requests
+        tcl_user_app.instBlock(
+            {
+                'name': 'axis_data_fifo',
+                'inst':  hierarchy_name + '/request_buffer',
+                'clks': ['s_axis_aclk'],
+                'resetns': ['s_axis_aresetn'],
+                'resetns_port': 'rstn',
+                'properties': [ 
+                                'CONFIG.HAS_TLAST.VALUE_SRC USER',
+                                'CONFIG.HAS_TKEEP.VALUE_SRC USER',
+                                'CONFIG.TID_WIDTH.VALUE_SRC USER',
+                                'CONFIG.TDATA_NUM_BYTES.VALUE_SRC USER',
+                                'CONFIG.TDEST_WIDTH.VALUE_SRC USER',
+                                'CONFIG.TUSER_WIDTH.VALUE_SRC USE'
+                            ]
+            }
+        )
+        request_buffer_properties = [
+            'CONFIG.FIFO_DEPTH {' + str(request_buffer_capacity) + '}',
+            'CONFIG.HAS_TKEEP {1}',
+            'CONFIG.HAS_TLAST {1}',
+            'CONFIG.TDATA_NUM_BYTES {64}',
+            'CONFIG.TDEST_WIDTH {8}',
+            'CONFIG.TID_WIDTH {8}',
+            'CONFIG.TUSER_WIDTH {64}'
+        ]
+        tcl_user_app.setProperties(hierarchy_name + '/request_buffer', request_buffer_properties)
+        tcl_user_app.makeConnection(
+                'intf', 
+                {
+                    'type': 'intf',
+                    'name': hierarchy_name + '/nac',
+                    'port_name': 'to_request_buffer'
+                },
+                {
+                    'type': 'intf',
+                    'name': hierarchy_name + '/request_buffer',
+                    'port_name': 'S_AXIS'
+                }
+        )
+        tcl_user_app.makeConnection(
+                'intf', 
+                {
+                    'type': 'intf',
+                    'name': hierarchy_name + '/request_buffer',
+                    'port_name': 'M_AXIS'
+                },
+                {
+                    'type': 'intf',
+                    'name': hierarchy_name + '/nac',
+                    'port_name': 'from_request_buffer'
+                }
+        )
+    # If both S_AXIL and M_AXIL are being used, outgoing paths need to be combined and incoming paths need to be split
+    if kernel_dict['control_type'] == 'both':
+        # Install a message splitter to split incoming packets between ANC (responses) and NAC (requests)
+        tcl_user_app.instBlock(
+            {
+                'name': 'control_from_network_bridge_splitter',
+                'inst':  hierarchy_name + '/ctrl_from_nb_splitter',
+                'clks': ['i_clk'],
+                'resetns': ['i_ap_rst_n'],
+                'resetns_port': 'rstn',
+            }
+        )
+        tcl_user_app.makeConnection(
+            'intf', 
+            {
+                'type': 'intf',
+                'name': hierarchy_name + '/ctrl_from_nb_splitter',
+                'port_name': 'to_anc'
+            },
+            {
+                'type': 'intf',
+                'name': hierarchy_name + '/anc',
+                'port_name': 'from_network_bridge'
+            }
+        )
+        tcl_user_app.makeConnection(
+            'intf', 
+            {
+                'type': 'intf',
+                'name': hierarchy_name + '/ctrl_from_nb_splitter',
+                'port_name': 'to_nac'
+            },
+            {
+                'type': 'intf',
+                'name': hierarchy_name + '/nac',
+                'port_name': 'from_network_bridge'
+            }
+        )
+        # Both ANC and NAC need a connection to the to_LAN port
+        tcl_user_app.instBlock(
+            {
+                'name':'axis_switch',
+                'inst': hierarchy_name + '/to_LAN_switch',
+                'clks':['aclk'],
+                'resetns_port': 'rstn',
+                'resetns':['aresetn']
+            }
+        )
+        # Configure the switch to have 1 Manager per kernel, 1 subordinate, and arbitrate on TLAST only.
+        properties = [
+            'CONFIG.NUM_SI {2}',
+            'CONFIG.NUM_MI {1}',
+            'CONFIG.HAS_TLAST.VALUE_SRC USER',
+            'CONFIG.M00_AXIS_HIGHTDEST {0xffffffff}'
+        ]
+        tcl_user_app.setProperties(hierarchy_name + '/to_LAN_switch',properties)
+        properties = [
+            'CONFIG.HAS_TLAST {1}'
+        ]
+        # Fixed Priority Arbitration
+        tcl_user_app.setProperties(hierarchy_name + '/to_LAN_switch', properties)
+        properties = [
+            'CONFIG.ARB_ON_MAX_XFERS {0}',
+            'CONFIG.ARB_ON_TLAST {1}',
+            'CONFIG.ARB_ALGORITHM {1}'
+        ]
+        tcl_user_app.setProperties(hierarchy_name + '/to_LAN_switch', properties)
+        # Connect the NAC and ANC to the switch
+        # ANC has priority because it will only ever send 1 message at a time, thus won't clog the switch
+        tcl_user_app.makeConnection(
+            'intf', 
+            {
+                'type': 'intf',
+                'name': hierarchy_name + '/anc',
+                'port_name': 'to_LAN'
+            },
+            {
+                'type': 'intf',
+                'name': hierarchy_name + '/to_LAN_switch',
+                'port_name': 'S00_AXIS'
+            }
+        )
+        tcl_user_app.makeConnection(
+            'intf', 
+            {
+                'type': 'intf',
+                'name': hierarchy_name + '/nac',
+                'port_name': 'to_LAN'
+            },
+            {
+                'type': 'intf',
+                'name': hierarchy_name + '/to_LAN_switch',
+                'port_name': 'S01_AXIS'
+            }
+        )
+
+    # TODO: Currently in some edge cases certain signals need to be tied to 0
+    if has_reliability or (not has_reliability and kernel_dict['control_type'] != 'both'):
         tcl_user_app.instBlock(
             {
                 'name': 'xlconstant',
@@ -445,39 +625,20 @@ def buildControlAPIInst(tcl_user_app, kernel_id, kernel_dict, axil_addr_width, h
                             ]
             }
         )
-        # Case 1: in 'm_axil' mode M_AXIL port of control is unused
-        if kernel_dict['control_type'] == 'm_axil':
-            port_name = 'M_AXIL_'
-            pin_names = ['awready', 'wready', 'bvalid', 'arready', 'rvalid']
-        else:
-            port_name = 'S_AXIL_'
-            pin_names = ['awvalid', 'wvalid', 'bready', 'arvalid', 'rready']
-        for pin_name in pin_names:
-            tcl_user_app.makeConnection(
-                'net', 
-                {
-                    'type': 'pin',
-                    'name': hierarchy_name + '/const_0',
-                    'port_name': 'dout'
-                },
-                {
-                    'type': 'pin',
-                    'name': hierarchy_name + '/anc',
-                    'port_name': port_name + pin_name
-                }
-            )
 
-    # If Reliability is selected, build Reliability Protocol Module and connect to the AXI-Lite to Network Converter
+    # If Reliability is selected, build Reliability Protocol Module and connect to the Converters
+    # It doesn't matter if the user is only using S_AXIL/M_AXIL only, they will still require both outbound and inbound reliability modules (for incoming/outgoing requests, and responses going in the opposite direction)
     if has_reliability:
+        # TODO: Refactor reliability protocol modules to have separate outbound/inbound modules. For now, certain values must be tied to 0
+        # Outbound Path
         tcl_user_app.instBlock(
             {
                 'name': 'reliability_protocol_module',
-                'inst':  hierarchy_name + '/rpm',
+                'inst':  hierarchy_name + '/rpm_outbound',
                 'clks': ['i_clk'],
                 'resetns': ['i_ap_rst_n'],
                 'resetns_port': 'rstn',
                 'properties': [ 
-                                'CONFIG.IS_WAN_RX {false}',
                                 'CONFIG.PUBREC_TIMEOUT {' + str(rel_timeout) + '}',
                                 'CONFIG.PUBCOMP_TIMEOUT {' + str(rel_timeout) + '}'
                               ]
@@ -492,90 +653,353 @@ def buildControlAPIInst(tcl_user_app, kernel_id, kernel_dict, axil_addr_width, h
             },
             {
                 'type': 'pin',
-                'name': hierarchy_name + '/rpm',
+                'name': hierarchy_name + '/rpm_outbound',
                 'port_name': 'i_kernel_id'
             }
         )
-        # Connect IP Address and Control Port Number to AXI-Lite to Network Converter. That way only ANC needs to be connected to the outside world
-        tcl_user_app.makeConnection(
-            'net', 
+        # Inbound path
+        tcl_user_app.instBlock(
             {
-                'type': 'pin',
-                'name': hierarchy_name + '/anc',
-                'port_name': 'i_kernel_ip_address'
-            },
-            {
-                'type': 'pin',
-                'name': hierarchy_name + '/rpm',
-                'port_name': 'i_kernel_ip_address'
+                'name': 'reliability_protocol_module',
+                'inst':  hierarchy_name + '/rpm_inbound',
+                'clks': ['i_clk'],
+                'resetns': ['i_ap_rst_n'],
+                'resetns_port': 'rstn',
+                'properties': [ 
+                                'CONFIG.PUBREC_TIMEOUT {' + str(rel_timeout) + '}',
+                                'CONFIG.PUBCOMP_TIMEOUT {' + str(rel_timeout) + '}'
+                              ]
             }
         )
         tcl_user_app.makeConnection(
             'net', 
             {
                 'type': 'pin',
-                'name': hierarchy_name + '/anc',
-                'port_name': 'i_control_port_number'
+                'name': hierarchy_name + '/kernel_id',
+                'port_name': 'dout'
             },
             {
                 'type': 'pin',
-                'name': hierarchy_name + '/rpm',
-                'port_name': 'i_KIP_port_number'
+                'name': hierarchy_name + '/rpm_inbound',
+                'port_name': 'i_kernel_id'
             }
         )
-        # Connect Reliability Protocol Module to AXI-Lite to Network Converter    
+        # TODO: Connect KIP Port Number, kernel IP Address to reliability, control modules
+        # Message splitter ensures the correct reliability messages reach outbound/inbound paths
+        tcl_user_app.instBlock(
+            {
+                'name': 'reliability_from_network_bridge_splitter',
+                'inst':  hierarchy_name + '/rpm_from_nb_splitter',
+                'clks': ['i_clk'],
+                'resetns': ['i_ap_rst_n'],
+                'resetns_port': 'rstn',
+            }
+        )
         tcl_user_app.makeConnection(
             'intf', 
             {
                 'type': 'intf',
-                'name': hierarchy_name + '/anc',
-                'port_name': 'to_LAN'
+                'name': hierarchy_name + '/rpm_from_nb_splitter',
+                'port_name': 'to_rel_outbound'
             },
             {
                 'type': 'intf',
-                'name': hierarchy_name + '/rpm',
-                'port_name': 'from_ctrl_LAN'
+                'name': hierarchy_name + '/rpm_outbound',
+                'port_name': 'from_nb'
             }
         )
         tcl_user_app.makeConnection(
             'intf', 
             {
                 'type': 'intf',
-                'name': hierarchy_name + '/anc',
-                'port_name': 'to_WAN'
+                'name': hierarchy_name + '/rpm_from_nb_splitter',
+                'port_name': 'to_rel_inbound'
             },
             {
                 'type': 'intf',
-                'name': hierarchy_name + '/rpm',
-                'port_name': 'from_ctrl_WAN'
+                'name': hierarchy_name + '/rpm_inbound',
+                'port_name': 'from_nb'
             }
         )
+        # Connect Reliability Protocol Modules to Network Converter(s)
+        # Outbound path
+        # Outbound to_LAN interface
+        if kernel_dict['control_type'] == 'both':
+            tcl_user_app.makeConnection(
+                'intf', 
+                {
+                    'type': 'intf',
+                    'name': hierarchy_name + '/to_LAN_switch',
+                    'port_name': 'M00_AXIS'
+                },
+                {
+                    'type': 'intf',
+                    'name': hierarchy_name + '/rpm_outbound',
+                    'port_name': 'from_ctrl_LAN'
+                }
+            )
+        elif kernel_dict['control_type'] == 'm_axil':
+            tcl_user_app.makeConnection(
+                'intf', 
+                {
+                    'type': 'intf',
+                    'name': hierarchy_name + '/anc',
+                    'port_name': 'to_LAN'
+                },
+                {
+                    'type': 'intf',
+                    'name': hierarchy_name + '/rpm_outbound',
+                    'port_name': 'from_ctrl_LAN'
+                }
+            )
+        else: # S_AXIL
+            tcl_user_app.makeConnection(
+                'intf', 
+                {
+                    'type': 'intf',
+                    'name': hierarchy_name + '/nac',
+                    'port_name': 'to_LAN'
+                },
+                {
+                    'type': 'intf',
+                    'name': hierarchy_name + '/rpm_outbound',
+                    'port_name': 'from_ctrl_LAN'
+                }
+            )
+        # Outbound to_WAN interface
+        # Only ANC would use WAN interface
+        if kernel_dict['control_type'] == 'm_axil' or kernel_dict['control_type'] == 'both':
+            tcl_user_app.makeConnection(
+                'intf', 
+                {
+                    'type': 'intf',
+                    'name': hierarchy_name + '/anc',
+                    'port_name': 'to_WAN'
+                },
+                {
+                    'type': 'intf',
+                    'name': hierarchy_name + '/rpm_outbound',
+                    'port_name': 'from_ctrl_WAN'
+                }
+            )
+        else:
+            tcl_user_app.makeConnection(
+                'net', 
+                {
+                    'type': 'pin',
+                    'name': hierarchy_name + '/const_0',
+                    'port_name': 'dout'
+                },
+                {
+                    'type': 'pin',
+                    'name': hierarchy_name + '/rpm_outbound',
+                    'port_name': 'from_ctrl_WAN_tvalid'
+                }
+            )
+        # Outbound to_KIP interface
+        # Only NAC would use WAN interface
+        if kernel_dict['control_type'] == 's_axil' or kernel_dict['control_type'] == 'both':
+            tcl_user_app.makeConnection(
+                'intf', 
+                {
+                    'type': 'intf',
+                    'name': hierarchy_name + '/nac',
+                    'port_name': 'to_KIP'
+                },
+                {
+                    'type': 'intf',
+                    'name': hierarchy_name + '/rpm_outbound',
+                    'port_name': 'from_ctrl_KIP'
+                }
+            )
+        else:
+            tcl_user_app.makeConnection(
+                'net', 
+                {
+                    'type': 'pin',
+                    'name': hierarchy_name + '/const_0',
+                    'port_name': 'dout'
+                },
+                {
+                    'type': 'pin',
+                    'name': hierarchy_name + '/rpm_outbound',
+                    'port_name': 'from_ctrl_KIP_tvalid'
+                }
+            )
+        # Inbound path
+        # Inbound to_ctrl interface
+        if kernel_dict['control_type'] == 'both':
+            to_ctrl_target = "/ctrl_from_nb_splitter"
+        elif kernel_dict['control_type'] == 'm_axil':
+            to_ctrl_target = "/anc"
+        else: # S_AXIL
+            to_ctrl_target = "/nac"
         tcl_user_app.makeConnection(
             'intf', 
             {
                 'type': 'intf',
-                'name': hierarchy_name + '/anc',
-                'port_name': 'to_KIP'
-            },
-            {
-                'type': 'intf',
-                'name': hierarchy_name + '/rpm',
-                'port_name': 'from_ctrl_KIP'
-            }
-        )
-        tcl_user_app.makeConnection(
-            'intf', 
-            {
-                'type': 'intf',
-                'name': hierarchy_name + '/rpm',
+                'name': hierarchy_name + '/rpm_inbound',
                 'port_name': 'to_ctrl'
             },
             {
                 'type': 'intf',
-                'name': hierarchy_name + '/anc',
+                'name': hierarchy_name + to_ctrl_target,
                 'port_name': 'from_network_bridge'
             }
         )
+        # Connect Reliability modules to the network
+        # Both Outbound and Inbound paths share a to_KIP path (only RPM Outbound will use to_LAN or to_WAN)
+        # Outbound path has priority because it will only send one message at a time, so it won't clog the switch
+        reliability_switch_name = hierarchy_name + "/rpm_to_KIP_switch"
+        tcl_user_app.instBlock(
+            {
+                'name':'axis_switch',
+                'inst': reliability_switch_name,
+                'clks':['aclk'],
+                'resetns_port': 'rstn',
+                'resetns':['aresetn']
+            }
+        )
+        # Configure the switch to have 1 Manager per kernel, 1 subordinate, and arbitrate on TLAST only.
+        properties = [
+            'CONFIG.NUM_SI {2}',
+            'CONFIG.NUM_MI {1}',
+            'CONFIG.HAS_TLAST.VALUE_SRC USER',
+            'CONFIG.M00_AXIS_HIGHTDEST {0xffffffff}'
+        ]
+        tcl_user_app.setProperties(reliability_switch_name,properties)
+        properties = [
+            'CONFIG.HAS_TLAST {1}'
+        ]
+        # Fixed Priority Arbitration
+        tcl_user_app.setProperties(reliability_switch_name, properties)
+        properties = [
+            'CONFIG.ARB_ON_MAX_XFERS {0}',
+            'CONFIG.ARB_ON_TLAST {1}',
+            'CONFIG.ARB_ALGORITHM {1}'
+        ]
+        tcl_user_app.setProperties(reliability_switch_name, properties)
+        # Outbound path has priority because it will only ever send 1 message at a time, thus won't clog the switch
+        reliability_port_name = "to_nb_KIP"
+        tcl_user_app.makeConnection(
+            'intf', 
+            {
+                'type': 'intf',
+                'name': hierarchy_name + '/rpm_outbound',
+                'port_name': reliability_port_name
+            },
+            {
+                'type': 'intf',
+                'name': reliability_switch_name,
+                'port_name': 'S00_AXIS'
+            }
+        )
+        tcl_user_app.makeConnection(
+            'intf', 
+            {
+                'type': 'intf',
+                'name': hierarchy_name + '/rpm_inbound',
+                'port_name': reliability_port_name
+            },
+            {
+                'type': 'intf',
+                'name': reliability_switch_name,
+                'port_name': 'S01_AXIS'
+            }
+        )
+        # Tie off unused reliability interfaces to 0. (TODO: Refactor reliability module and remove these interfaces)
+        # Outbound path unused interfaces
+        tcl_user_app.makeConnection(
+            'net', 
+            {
+                'type': 'pin',
+                'name': hierarchy_name + '/const_0',
+                'port_name': 'dout'
+            },
+            {
+                'type': 'pin',
+                'name': hierarchy_name + '/rpm_outbound',
+                'port_name': 'to_ctrl_tready'
+            }
+        )
+        # Inbound path unused interfaces
+        for path in ["LAN", "WAN", "KIP"]:
+            tcl_user_app.makeConnection(
+                'net', 
+                {
+                    'type': 'pin',
+                    'name': hierarchy_name + '/const_0',
+                    'port_name': 'dout'
+                },
+                {
+                    'type': 'pin',
+                    'name': hierarchy_name + '/rpm_inbound',
+                    'port_name': 'from_ctrl_' + path + '_tvalid'
+                }
+            )
+        for path in ["LAN", "WAN"]:
+            tcl_user_app.makeConnection(
+                'net', 
+                {
+                    'type': 'pin',
+                    'name': hierarchy_name + '/const_0',
+                    'port_name': 'dout'
+                },
+                {
+                    'type': 'pin',
+                    'name': hierarchy_name + '/rpm_inbound',
+                    'port_name': 'to_nb_' + path + '_tready'
+                }
+            )
+        
+    # Edge case 1: If Reliability is not selected, and only ANC is present, KIP line must be tied to 0
+    if not has_reliability and kernel_dict['control_type'] == 'm_axil':
+        tcl_user_app.instBlock(
+            {
+                'name':'axis_register_slice',
+                'inst': hierarchy_name + '/dummy_KIP',
+                'clks':['aclk'],
+                'resetns_port': 'rstn',
+                'resetns':['aresetn']
+            }
+        )
+        tcl_user_app.makeConnection(
+            'net', 
+            {
+                'type': 'pin',
+                'name': hierarchy_name + '/const_0',
+                'port_name': 'dout'
+            },
+            {
+                'type': 'pin',
+                'name': hierarchy_name + '/dummy_KIP',
+                'port_name': 'S_AXIS_tvalid'
+            }
+        )
+    # Edge case 2: If Reliability is not selected, and only NAC is present, WAN line must be tied to 0
+    elif not has_reliability and kernel_dict['control_type'] == 's_axil':
+        tcl_user_app.instBlock(
+            {
+                'name':'axis_register_slice',
+                'inst': hierarchy_name + '/dummy_WAN',
+                'clks':['aclk'],
+                'resetns_port': 'rstn',
+                'resetns':['aresetn']
+            }
+        )
+        tcl_user_app.makeConnection(
+            'net', 
+            {
+                'type': 'pin',
+                'name': hierarchy_name + '/const_0',
+                'port_name': 'dout'
+            },
+            {
+                'type': 'pin',
+                'name': hierarchy_name + '/dummy_WAN',
+                'port_name': 'S_AXIS_tvalid'
+            }
+        )  
 
 def setControlAXILPortProperties(tcl_user_app, port_name, axil_addr_width):
     """
@@ -663,6 +1087,7 @@ def userApplicationRegionControlInst(tcl_user_app):
     has_reliability = True
     rel_timeout = 500
     axil_addr_width = 64
+    request_buffer_capacity = 16
     # Construct kernel dictionary indexed by kernel ID. 
     ctrl_kernel_dict = makeControlKernelDictionary(tcl_user_app, "num")
     num_ctrl_instances = len(ctrl_kernel_dict)
@@ -674,7 +1099,7 @@ def userApplicationRegionControlInst(tcl_user_app):
         kernel_ids_ascending_order = getSortedListofKeys(ctrl_kernel_dict)
         # 1. Build Control API hierarchies
         for kernel_id in ctrl_kernel_dict.keys():
-            buildControlAPIInst(tcl_user_app, kernel_id, ctrl_kernel_dict[kernel_id], axil_addr_width, has_wstrb, has_reliability, rel_timeout)
+            buildControlAPIInst(tcl_user_app, kernel_id, ctrl_kernel_dict[kernel_id], axil_addr_width, has_wstrb, has_reliability, rel_timeout, request_buffer_capacity)
         # 2. Build control infrastructure in Application Region
         tcl_user_app.instBlock(
             {
@@ -769,7 +1194,7 @@ def userApplicationRegionControlInst(tcl_user_app):
             kernel_dict = ctrl_kernel_dict[kernel_id]
             ctrl_kernel_type = kernel_dict['control_type']
             presuffix_port_name = kernel_dict['inst']
-            kernel_axil_net_converter_name = hierarchy_name + '/control_api_inst_%d/anc' % (kernel_id)
+            ctrl_api_hierarchy_name = hierarchy_name + '/control_api_inst_%d' % (kernel_id)
             if ctrl_kernel_type == 'm_axil' or ctrl_kernel_type == 'both':
                 # Everything is relative to user. Control Kernel's M_AXIL will connect to PR's M_AXIL port, which connects to S_AXIL port of network converter
                 axil_port_name = presuffix_port_name + '_M_AXIL'
@@ -783,7 +1208,7 @@ def userApplicationRegionControlInst(tcl_user_app):
                     },
                     {
                         'type': 'intf',
-                        'name': kernel_axil_net_converter_name,
+                        'name': ctrl_api_hierarchy_name + '/anc',
                         'port_name': 'S_AXIL'
                     }
                 )
@@ -797,7 +1222,7 @@ def userApplicationRegionControlInst(tcl_user_app):
                     'intf', 
                     {
                         'type': 'intf',
-                        'name': kernel_axil_net_converter_name,
+                        'name': ctrl_api_hierarchy_name + '/nac',
                         'port_name': 'M_AXIL'
                     },
                     {
@@ -808,96 +1233,194 @@ def userApplicationRegionControlInst(tcl_user_app):
                 ctrl_axi_lite_ports.append(axil_port_name)
         # Assign all AXI-Lite ports to 200 MHz clock
         tcl_user_app.setInterfacesCLK("CLK", ctrl_axi_lite_ports)
-        # # Configure ARM processor link
-        # properties = ['CONFIG.PROTOCOL AXI4']
-        # tcl_user_app.setPortProperties('S_AXI_CONTROL', properties)
-        # properties = ['CONFIG.ADDR_WIDTH {40}',
-        #             'CONFIG.DATA_WIDTH {128}',
-        #             'CONFIG.ARUSER_WIDTH {16}',
-        #             'CONFIG.AWUSER_WIDTH {16}',
-        #             'CONFIG.ID_WIDTH {16}'
-        #             ]
-        # tcl_user_app.setPortProperties('S_AXI_CONTROL', properties)
         # 4. Connect Control API Instances to inbound/outbound paths
-        # Connect all control instances to IP Address and Ports
-        # Only need to connect to ANC module because ANC and RPM IP addresses are already wired together in buildControlAPIInst
+        # Connect control instances to IP address and port number
         for kernel_id in ctrl_kernel_dict.keys():
-            sink_kernel = hierarchy_name + '/control_api_inst_%d/anc' % (kernel_id)
-            tcl_user_app.makeConnection(
-                'net', 
-                {
-                    'type': 'pin',
-                    'name': 'network/ip_constant_block_inst',
-                    'port_name': 'ip'
-                },
-                {
-                    'type': 'pin',
-                    'name': sink_kernel,
-                    'port_name': 'i_kernel_ip_address'
-                }
-            )
-            tcl_user_app.makeConnection(
-                'net', 
-                {
-                    'type': 'pin',
-                    'name': hierarchy_name + '/KIP_port_number',
-                    'port_name': 'dout'
-                },
-                {
-                    'type': 'pin',
-                    'name': sink_kernel,
-                    'port_name': 'i_control_port_number'
-                }
-            )
+            kernel_dict = ctrl_kernel_dict[kernel_id]
+            ctrl_kernel_type = kernel_dict['control_type']
+            ctrl_api_hierarchy_name = hierarchy_name + '/control_api_inst_%d' % (kernel_id)
+            # Connect ANC to local IP Address, and NAC to KIP Port Number
+            if ctrl_kernel_type == 'm_axil' or ctrl_kernel_type == 'both':
+                tcl_user_app.makeConnection(
+                    'net', 
+                    {
+                        'type': 'pin',
+                        'name': 'network/ip_constant_block_inst',
+                        'port_name': 'ip'
+                    },
+                    {
+                        'type': 'pin',
+                        'name': ctrl_api_hierarchy_name + "/anc",
+                        'port_name': 'i_kernel_ip_address'
+                    }
+                )
+            if ctrl_kernel_type == 's_axil' or ctrl_kernel_type == 'both':
+                tcl_user_app.makeConnection(
+                    'net', 
+                    {
+                        'type': 'pin',
+                        'name': hierarchy_name + '/KIP_port_number',
+                        'port_name': 'dout'
+                    },
+                    {
+                        'type': 'pin',
+                        'name': ctrl_api_hierarchy_name + "/nac",
+                        'port_name': 'i_KIP_port_number'
+                    }
+                )
+            # Connect reliability modules to IP address and Port Number
+            if has_reliability:
+                for path in ["outbound", "inbound"]:
+                    tcl_user_app.makeConnection(
+                        'net', 
+                        {
+                            'type': 'pin',
+                            'name': 'network/ip_constant_block_inst',
+                            'port_name': 'ip'
+                        },
+                        {
+                            'type': 'pin',
+                            'name': ctrl_api_hierarchy_name + "/rpm_" + path,
+                            'port_name': 'i_kernel_ip_address'
+                        }
+                    )
+                    tcl_user_app.makeConnection(
+                        'net', 
+                        {
+                            'type': 'pin',
+                            'name': hierarchy_name + '/KIP_port_number',
+                            'port_name': 'dout'
+                        },
+                        {
+                            'type': 'pin',
+                            'name': ctrl_api_hierarchy_name + "/rpm_" + path,
+                            'port_name': 'i_KIP_port_number'
+                        }
+                    )
         # Path Case 1: Multiple Control API Instances on the same device
         if num_ctrl_instances > 1:
             # Inbound/Outbound pathway: Lowest index kernel connects to port 0, second lowest to port 1, etc.
             for i in range(0, num_ctrl_instances):
-                kernel_id = kernel_ids_ascending_order[i]
-                ctrl_api_hierarchy_name = hierarchy_name + '/control_api_inst_%d' % (kernel_id)
-                if has_reliability:
-                    kern_name = ctrl_api_hierarchy_name + '/rpm'
-                    inbound_port = 'from_nb'
-                    outbound_port_prefix = 'to_nb_'
-                else:
-                    kern_name = ctrl_api_hierarchy_name + '/anc'
-                    inbound_port = 'from_network_bridge'
-                    outbound_port_prefix = 'to_'
                 if i < 10:
                     inbound_switch_port = 'M0' + str(i) + '_AXIS'
                     outbound_switch_port = 'S0' + str(i) + '_AXIS'
                 else:
                     inbound_switch_port = 'M' + str(i) + '_AXIS'
                     outbound_switch_port = 'S' + str(i) + '_AXIS'
+                kernel_id = kernel_ids_ascending_order[i]
+                kernel_dict = ctrl_kernel_dict[kernel_id]
+                ctrl_kernel_type = kernel_dict['control_type']
+                ctrl_api_hierarchy_name = hierarchy_name + '/control_api_inst_%d' % (kernel_id)
                 # Inbound pathway
+                # Inbound Path Case 1: If Reliability is active, all inbound paths go through RPM modules
+                if has_reliability:
+                    inbound_kern_name = 'rpm_from_nb_splitter'
+                # Inbound Path Case 2: No Reliability, but both ANC and NAC are present
+                elif ctrl_kernel_type == 'both':
+                    inbound_kern_name = 'ctrl_from_nb_splitter'
+                # Inbound Path Case 3: Only ANC present
+                elif ctrl_kernel_type == 'm_axil':
+                    inbound_kern_name = 'anc'
+                # Inbound Path Case 4: Only NAC present
+                elif ctrl_kernel_type == 's_axil':
+                    inbound_kern_name = 'nac'
+                inbound_port = "from_network_bridge"
                 tcl_user_app.makeConnection(
-                        'intf', 
-                        {
-                            'type': 'intf',
-                            'name': hierarchy_name + '/ctrl_from_nb_switch',
-                            'port_name': inbound_switch_port
-                        },
-                        {
-                            'type': 'intf',
-                            'name': kern_name,
-                            'port_name': inbound_port
-                        }
-                    )
-                # Connect all 3 output interface ports to switches
-                for path in ["LAN", "WAN", "KIP"]:
-                    tcl_user_app.makeConnection(
-                        'intf', 
-                        {
-                            'type': 'intf',
-                            'name': kern_name,
-                            'port_name': outbound_port_prefix + path
-                        },
-                        {
-                            'type': 'intf',
-                            'name': hierarchy_name + '/ctrl_to_nb_' + path + '_switch',
-                            'port_name': outbound_switch_port
-                        }
-                    )
+                    'intf', 
+                    {
+                        'type': 'intf',
+                        'name': hierarchy_name + '/ctrl_from_nb_switch',
+                        'port_name': inbound_switch_port
+                    },
+                    {
+                        'type': 'intf',
+                        'name': ctrl_api_hierarchy_name + '/' + inbound_kern_name,
+                        'port_name': inbound_port
+                    }
+                )
+                # Outbound LAN pathway
+                # Outbound LAN Path Case 1: If Reliability is active, only outbound RPM path uses to_LAN
+                if has_reliability:
+                    outbound_LAN_kern_name = 'rpm_outbound'
+                    outbound_LAN_source_port = 'to_nb_LAN'
+                # Outbound LAN Path Case 2: No Reliability, but both ANC and NAC are present. Both require switches
+                elif ctrl_kernel_type == 'both':
+                    outbound_LAN_kern_name = 'to_LAN_switch'
+                    outbound_LAN_source_port = 'M00_AXIS'
+                # Inbound Path Case 3: Only ANC present
+                elif ctrl_kernel_type == 'm_axil':
+                    outbound_LAN_kern_name = 'anc'
+                    outbound_LAN_source_port = 'to_LAN'
+                # Inbound Path Case 4: Only NAC present
+                elif ctrl_kernel_type == 's_axil':
+                    outbound_LAN_kern_name = 'nac'
+                    outbound_LAN_source_port = 'to_LAN'
+                tcl_user_app.makeConnection(
+                    'intf', 
+                    {
+                        'type': 'intf',
+                        'name': ctrl_api_hierarchy_name + '/' + outbound_LAN_kern_name,
+                        'port_name': outbound_LAN_source_port
+                    },
+                    {
+                        'type': 'intf',
+                        'name': hierarchy_name + '/ctrl_to_nb_LAN_switch',
+                        'port_name': outbound_switch_port
+                    }
+                )
+                # Outbound WAN Pathway
+                # Outbound WAN Path Case 1: If Reliability is active, only outbound RPM path uses to_LAN
+                if has_reliability:
+                    outbound_WAN_kern_name = 'rpm_outbound'
+                    outbound_WAN_source_port = 'to_nb_WAN'
+                # Outbound WAN Path Case 2: No Reliability, ANC is present
+                elif ctrl_kernel_type == 'm_axil' or ctrl_kernel_type == 'both':
+                    outbound_WAN_kern_name = 'anc'
+                    outbound_WAN_source_port = 'to_WAN'
+                # Outbound WAN Path Case 3: Only NAC present
+                elif ctrl_kernel_type == 's_axil':
+                    outbound_WAN_kern_name = 'dummy_WAN'
+                    outbound_WAN_source_port = 'M_AXIS'
+                tcl_user_app.makeConnection(
+                    'intf', 
+                    {
+                        'type': 'intf',
+                        'name': ctrl_api_hierarchy_name + '/' + outbound_WAN_kern_name,
+                        'port_name': outbound_WAN_source_port
+                    },
+                    {
+                        'type': 'intf',
+                        'name': hierarchy_name + '/ctrl_to_nb_WAN_switch',
+                        'port_name': outbound_switch_port
+                    }
+                )
+                    
+                # Outbound KIP Pathway
+                # Outbound KIP Path Case 1: If Reliability is active, only outbound RPM path uses to_LAN
+                if has_reliability:
+                    outbound_KIP_kern_name = 'rpm_to_KIP_switch'
+                    outbound_KIP_source_port = 'M00_AXIS'
+                # Outbound KIP Path Case 2: No Reliability, NAC is present
+                elif ctrl_kernel_type == 's_axil' or ctrl_kernel_type == 'both':
+                    outbound_KIP_kern_name = 'nac'
+                    outbound_KIP_source_port = 'to_KIP'
+                # Outbound KIP Path Case 3: Only ANC present
+                elif ctrl_kernel_type == 'm_axil':
+                    outbound_KIP_kern_name = 'dummy_KIP'
+                    outbound_KIP_source_port = 'M_AXIS'
+                tcl_user_app.makeConnection(
+                    'intf', 
+                    {
+                        'type': 'intf',
+                        'name': ctrl_api_hierarchy_name + '/' + outbound_KIP_kern_name,
+                        'port_name': outbound_KIP_source_port
+                    },
+                    {
+                        'type': 'intf',
+                        'name': hierarchy_name + '/ctrl_to_nb_KIP_switch',
+                        'port_name': outbound_switch_port
+                    }
+                )
             # Connect output switches to outbound pathways
             tcl_user_app.makeConnection(
                 'intf', 
@@ -912,7 +1435,19 @@ def userApplicationRegionControlInst(tcl_user_app):
                     'port_name': 'S00_AXIS'
                 }
             )
-            # TODO: Connect NB WAN switch
+            tcl_user_app.makeConnection(
+                'intf', 
+                {
+                    'type': 'intf',
+                    'name': hierarchy_name + '/ctrl_to_nb_WAN_switch',
+                    'port_name': 'M00_AXIS'
+                },
+                {
+                    'type': 'intf',
+                    'name': 'applicationRegion/WAN_switch',
+                    'port_name': 'S00_AXIS'
+                }
+            )
             tcl_user_app.makeConnection(
                 'intf', 
                 {
@@ -930,15 +1465,20 @@ def userApplicationRegionControlInst(tcl_user_app):
         else:
             kernel_id = kernel_ids_ascending_order[0]
             ctrl_api_hierarchy_name = hierarchy_name + '/control_api_inst_%d' % (kernel_id)
-            if has_reliability:
-                kern_name = ctrl_api_hierarchy_name + '/rpm'
-                inbound_port = 'from_nb'
-                outbound_port_prefix = 'to_nb_'
-            else:
-                kern_name = ctrl_api_hierarchy_name + '/anc'
-                inbound_port = 'from_network_bridge'
-                outbound_port_prefix = 'to_'
             # Single kernel inbound pathway
+            # Inbound Path Case 1: If Reliability is active, all inbound paths go through RPM modules
+            if has_reliability:
+                inbound_kern_name = 'rpm_from_nb_splitter'
+            # Inbound Path Case 2: No Reliability, but both ANC and NAC are present
+            elif ctrl_kernel_type == 'both':
+                inbound_kern_name = 'ctrl_from_nb_splitter'
+            # Inbound Path Case 3: Only ANC present
+            elif ctrl_kernel_type == 'm_axil':
+                inbound_kern_name = 'anc'
+            # Inbound Path Case 4: Only NAC present
+            elif ctrl_kernel_type == 's_axil':
+                inbound_kern_name = 'nac'
+            inbound_port = "from_network_bridge"
             tcl_user_app.makeConnection(
                 'intf', 
                 {
@@ -948,31 +1488,85 @@ def userApplicationRegionControlInst(tcl_user_app):
                 },
                 {
                     'type': 'intf',
-                    'name': kern_name,
+                    'name': ctrl_api_hierarchy_name + '/' + inbound_kern_name,
                     'port_name': inbound_port
                 }
             )
-            # Single kernel outbound pathway
+            # Single kernel outbound LAN pathway
+            # Outbound LAN Path Case 1: If Reliability is active, all outbound paths go through RPM modules
+            if has_reliability:
+                outbound_LAN_kern_name = 'rpm_outbound'
+                outbound_LAN_source_port = 'to_nb_LAN'
+            # Outbound LAN Path Case 2: No Reliability, but both ANC and NAC are present
+            elif ctrl_kernel_type == 'both':
+                outbound_LAN_kern_name = 'to_LAN_switch'
+                outbound_LAN_source_port = 'M00_AXIS'
+            # Inbound Path Case 3: Only ANC present
+            elif ctrl_kernel_type == 'm_axil':
+                outbound_LAN_kern_name = 'anc'
+                outbound_LAN_source_port = 'to_LAN'
+            # Inbound Path Case 4: Only NAC present
+            elif ctrl_kernel_type == 's_axil':
+                outbound_LAN_kern_name = 'nac'
+                outbound_LAN_source_port = 'to_LAN'
             tcl_user_app.makeConnection(
                 'intf', 
                 {
                     'type': 'intf',
-                    'name': kern_name,
-                    'port_name': outbound_port_prefix + 'LAN'
+                    'name': ctrl_api_hierarchy_name + '/' + outbound_LAN_kern_name,
+                    'port_name': outbound_LAN_source_port
                 },
                 {
                     'type': 'intf',
-                    'name': hierarchy_name + '/output_switch',
+                    'name': 'applicationRegion/output_switch',
                     'port_name': 'S00_AXIS'
                 }
             )
-            # TODO: Connect NB WAN switch
+            # Single kernel outbound WAN pathway
+            # Outbound WAN Path Case 1: If Reliability is active, only outbound RPM path uses to_LAN
+            if has_reliability:
+                outbound_WAN_kern_name = 'rpm_outbound'
+                outbound_WAN_source_port = 'to_nb_WAN'
+            # Outbound WAN Path Case 2: No Reliability, ANC is present
+            elif ctrl_kernel_type == 'm_axil' or ctrl_kernel_type == 'both':
+                outbound_WAN_kern_name = 'anc'
+                outbound_WAN_source_port = 'to_WAN'
+            # Outbound WAN Path Case 3: Only NAC present
+            elif ctrl_kernel_type == 's_axil':
+                outbound_WAN_kern_name = 'dummy_WAN'
+                outbound_WAN_source_port = 'M_AXIS'
             tcl_user_app.makeConnection(
                 'intf', 
                 {
                     'type': 'intf',
-                    'name': kern_name,
-                    'port_name': outbound_port_prefix + 'KIP'
+                    'name': ctrl_api_hierarchy_name + '/' + outbound_WAN_kern_name,
+                    'port_name': outbound_WAN_source_port
+                },
+                {
+                    'type': 'intf',
+                    'name': 'applicationRegion/WAN_switch',
+                    'port_name': 'S00_AXIS'
+                }
+            )
+            # Single kernel outbound KIP Pathway
+            # Outbound KIP Path Case 1: If Reliability is active, only outbound RPM path uses to_LAN
+            if has_reliability:
+                outbound_KIP_kern_name = 'rpm_to_KIP_switch'
+                outbound_KIP_source_port = 'M00_AXIS'
+            # Outbound KIP Path Case 2: No Reliability, NAC is present
+            elif ctrl_kernel_type == 's_axil' or ctrl_kernel_type == 'both':
+                outbound_KIP_kern_name = 'nac'
+                outbound_KIP_source_port = 'to_KIP'
+            # Outbound KIP Path Case 3: Only ANC present
+            elif ctrl_kernel_type == 'm_axil':
+                outbound_KIP_kern_name = 'dummy_KIP'
+                outbound_KIP_source_port = 'M_AXIS'
+            tcl_user_app.makeConnection(
+                'intf', 
+                {
+                    'type': 'intf',
+                    'name': ctrl_api_hierarchy_name + '/' + outbound_KIP_kern_name,
+                    'port_name': outbound_KIP_source_port
                 },
                 {
                     'type': 'intf',
@@ -1095,7 +1689,7 @@ def userApplicationRegionControlInst(tcl_user_app):
                 tcl_user_app.set_address_properties(ctrl_api_inst, inst_port, base, manager, **prop)
             # Case 2: User is using S_AXIL port (User kernel is subordinate)
             if kernel_dict['control_type'] == 's_axil' or kernel_dict['control_type'] == 'both':
-                manager = hierarchy_name + '/control_api_inst_%d/anc/M_AXIL' % (kernel_id)
+                manager = hierarchy_name + '/control_api_inst_%d/nac/M_AXIL' % (kernel_id)
                 # In this case, we supply the name of the PR AXI-Lite port that will be connected to the kernel
                 subordinate_port = kernel_dict['inst'] + '_S_AXIL'
                 base = 'Reg' # That's just what it says in Vivado
