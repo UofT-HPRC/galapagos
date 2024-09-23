@@ -421,18 +421,6 @@ class cluster(abstractDict):
     def writeBRAMFile(self, output_path, addr_type):
         its_mac = False
         print("Writing BRAM FILE")
-        """
-        Creates a COE coefficient file containing the IP or MAC address of every kernel in the cluster. This file is indexed by kernel ID, and is used by various bridges to determine the destination address of each kernel. Requires kernel IDs to start from 1 and be sequential. A dummy kernel 0 is inserted to preserve indexing by kernel ID
-        
-        A COE file consists of IP or MAC addresses indexed by kernel ID, separated by 3 zeros:
-        167839746,0, 0, 0,167839746,0, 0, 0,167839747,0, 0, 0,167839747,0, 0, 0,167839748,0, 0, 0,167839748,0, 0, 0;
-        
-        If an IP COE file is created, a node COE file is also created, which contains the node ID of the FPGA that each kernel is located on (also indexed by kernel ID). This is only used for TCP-based projects.
-
-        Args:
-            output_path (string): Where to create the COE file
-            addr_type (string): Either 'mac' or 'ip'
-        """
         if addr_type == 'mac':
             bramFile = open(output_path + '/' + self.name + '/mac.coe', 'w')
             bramFile.write('memory_initialization_radix=16;\n')
@@ -452,26 +440,13 @@ class cluster(abstractDict):
         bram_address = 0
         node_address = 0
         #iterate through kernels in order of tdest, populating the ipaddress at that location
-        # Find the largest kernel ID in the cluster
-        maxKernelIndex = 1
+        maxKernelIndex = 0
         for kern in self.kernels:
             if kern['num'] > maxKernelIndex:
                 maxKernelIndex = kern['num']
 
-        # Edge Case: Insert a dummy kernel MAC or IP address for kernel 0
-        # TODO: Replace with gateway kernel IP and MAC address
-        if addr_type == "mac":
-            writeStr = '0, 0, 0, 0, '
-            bramFile.write(writeStr)
-        else: #ip
-            writeStr = '0, 0, 0, 0, '
-            bramFile.write(writeStr)
-            nodeFile.write(writeStr)
-
-        # kernel IDs must be sequential and start from 1 (eg. cannot have 1 2 5 6)
-        for currIndex in range(1, maxKernelIndex + 1):
+        for currIndex in range(0, maxKernelIndex + 1):
             found = 0
-            # Find the kernel corresponding to this kernel ID, and write its IP/MAC address into the COE file
             for kern in self.kernels:
                 if currIndex == int(kern['num']):
                     found = 1
@@ -479,8 +454,9 @@ class cluster(abstractDict):
                         writeStr = kern['mac'].replace(":", "")
                     else: #ip
                         writeStr = str(struct.unpack("!L", socket.inet_aton(kern['ip']))[0])
-                    if currIndex != (maxKernelIndex):
-                        bramFile.write(writeStr + ', 0, 0, 0, ')
+
+                    if currIndex != (len(self.kernels) - 1):
+                        bramFile.write(writeStr + ',0, 0, 0,')
                     else:
                         bramFile.write(writeStr + ',0, 0, 0;')
                     if its_mac:
@@ -496,8 +472,9 @@ class cluster(abstractDict):
                     defaultStr = 'ffffffffffff'
                 else: #ip
                     defaultStr = str(struct.unpack("!L", socket.inet_aton('1.1.1.1'))[0])
-                if currIndex != (maxKernelIndex):
-                    bramFile.write(defaultStr + ', 0, 0, 0, ')
+
+                if currIndex != (len(self.kernels) - 1):
+                    bramFile.write(defaultStr + ',0, 0, 0,')
                 else:
                     bramFile.write(defaultStr + ',0, 0, 0;')
                 if its_mac:
@@ -513,8 +490,8 @@ class cluster(abstractDict):
                     for kern in node["kernel"]:
                         if currIndex == int(kern["num"]):
                             writeStr = str(node["num"])
-                            if currIndex != (maxKernelIndex):
-                                nodeFile.write(writeStr + ', 0, 0, 0, ')
+                            if currIndex != (len(self.kernels) - 1):
+                                nodeFile.write(writeStr + ',0, 0, 0,')
                             else:
                                 nodeFile.write(writeStr + ',0, 0, 0;')
                             nodeFilevck.write(self.BRAM_entry_formatter(node_address, writeStr))

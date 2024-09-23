@@ -19,7 +19,7 @@ class tclMeFile():
         
         Args:
             fileName (string): The file name
-            fpga: The node object for the FPGA of interest. See middleware/python/node.py for details
+            fpga: The node object for the FPGA of interest
         """
         self.fileHandle = open(fileName + '.tcl', 'w')
         self.fpga = fpga
@@ -94,21 +94,10 @@ class tclMeFile():
         first_config = True
         for intf in intfs:
             if not first_config:
-                self.tprint(":"," ")
-            self.tprint(str(intf) , " ")
+                self.tprint(":","")
+            self.tprint(str(intf) , "")
         self.tprint("} [get_bd_ports /"+clk_name+"]")
-        
     def setProperties(self, inst_name, properties):
-        """
-        Sets the properties for the specified module
-        
-        Args:
-            inst_name (string): pathname of the module eg. applicationRegion/blk_mem_switch_rom
-            properties (list): List of properties in TCL format (same syntax as seen in TCL console)
-                eg.  properties =['CONFIG.Memory_Type {Single_Port_ROM}',
-                                  'CONFIG.Enable_32bit_Address {true}'
-                                 ]
-        """
         self.setGeneralProperies(inst_name,properties,'cells')
     def setPortProperties(self, inst_name, properties):
         self.setGeneralProperies(inst_name, properties, 'intf_ports')
@@ -144,49 +133,11 @@ class tclMeFile():
     def add_intf_port(self, port_name, intf_type, type):
         self.tprint('create_bd_intf_port -mode '+type+' -vlnv '+intf_type+' '+port_name)
     def add_axis_port(self, port_name, type):
-        """
-        Creates an AXI-Stream port 
-        
-        Args:
-            - port_name (string): name of port
-            - type (string): 'Master' or 'Slave'
-        """
         self.add_intf_port(port_name, 'xilinx.com:interface:axis_rtl:1.0', type)
     def add_axi4_port(self, port_name, type):
-        """
-        Creates an AXI port 
-        
-        Args:
-            - port_name (string): name of port
-            - type (string): 'Master' or 'Slave'
-        """
         self.add_intf_port(port_name, 'xilinx.com:interface:aximm_rtl:1.0', type)
     def instBlockcc(self,ip,clk):
-        """
-        Creates an instance of the specified IP, sets properties, and connects clocks and resets 
-        
-        Args:
-            - ip (dict): Description of the module, with the following entries:
-                - name (string): IP name
-                - inst (string): What you want the IP to be called (must be absolute path)
-                    - eg. 'applicationRegion/arbiter'
-                - (optional) clks (list): List of clock pins on the IP to be connected to the 200MHz PR CLK
-                    - Very useful for switches that require multiple clock inputs
-                    - eg. ['ACLK', 'S00_ACLK', 'M00_ACLK']
-                - (optional) resetns (list): List of reset pins on the IP to be connected to the port specified in 'resetns_port'
-                    - eg. ['ARESETN', 'S00_ARESETN']
-                - (optional) resetns_port (string): The name of the reset port to which all the resets in 'resetns' will be connected
-                    - instBlock will connect all the resets in the 'resetns' list to this port
-                    - IMPORTANT: This must be set to the absolute path of a reset port, not a hierarchy/bd pin
-                    - Default: ARESETN
-                - (optional) properties (list): List of properties for the IP in TCL format (same syntax as seen in TCL console)
-                    - eg. ['CONFIG.Memory_Type {Single_Port_ROM}',
-                           'CONFIG.Enable_32bit_Address {true}'
-                          ]
-                DEPRECATED:
-                - (deprecated) vendor (string): IP vendor (eg. 'xilinx.com')
-                - (deprecated) lib (string): Library IP belongs to (eg. 'hls')
-        """
+
         self.tprint('addip ' + ip['name'] + ' ' +  ip['inst'])
         
         if 'properties' in ip and ip['properties'] != None:
@@ -290,21 +241,6 @@ class tclMeFile():
     def save(self):
         self.tprint('save_bd_design')
     def makeConnection(self, conn_type, source, sink):
-        """
-        Connects ports from source and sink together
-        
-        Args:
-            conn_type (string): 'net' or 'intf' depending on if net or interface connection
-            source/sink (dict): Dictionary that describes the source/sink with the following fields:
-                name: Module name
-                type: should be 'pin', 'port', 'intf' or 'intf_port'
-                port_name: Name of the port to be connected
-                eg. {
-                    'name':'network/ip_constant_block_inst',
-                    'type':'pin',
-                    'port_name':'mac_big'
-                    }
-        """
         if conn_type == 'net':
             self.tprint('connect_bd_net [', end = '')
         elif conn_type == 'intf':
@@ -322,6 +258,8 @@ class tclMeFile():
         elif source['type'] == 'pin':
             self.tprint_raw('get_bd_pins ', end = '')
             self.tprint_raw(source['name'] + '/' + source['port_name'] + '] [', end = '')
+
+
 
         if sink['type'] == 'port':
             self.tprint_raw('get_bd_ports ', end='')
