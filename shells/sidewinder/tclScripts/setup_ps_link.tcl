@@ -22,17 +22,4 @@ connect_bd_net [get_bd_pins ps_sector/ps_link/pl_resetn0] [get_bd_pins ps_sector
 
 connect_bd_net [get_bd_pins ps_sector/ps_link/pl_resetn0] [get_bd_pins ps_sector/CLK_200_RES/ext_reset_in]
 
-<<<<<<< HEAD
 connect_bd_net [get_bd_pins ps_sector/CLK_200_RES/interconnect_aresetn] [get_bd_pins ps_sector/rstn]
-=======
-# connect_bd_net [get_bd_pins ps_sector/CLK_200_RES/interconnect_aresetn] [get_bd_pins ps_sector/PS_to_PL_AXI/ARESETN]
-# connect_bd_net [get_bd_pins ps_sector/CLK_200_RES/interconnect_aresetn] [get_bd_pins ps_sector/PS_to_PL_AXI/S00_ARESETN]
-# connect_bd_net [get_bd_pins ps_sector/CLK_200_RES/interconnect_aresetn] [get_bd_pins ps_sector/PS_to_PL_AXI/M00_ARESETN]
-# connect_bd_net [get_bd_pins ps_sector/CLK_200_RES/interconnect_aresetn] [get_bd_pins ps_sector/PS_to_PL_AXI/M01_ARESETN]
-connect_bd_net [get_bd_pins ps_sector/CLK_200_RES/interconnect_aresetn] [get_bd_pins ps_sector/rstn]
-
-#Connect Interfaces
-
-# connect_bd_intf_net [get_bd_intf_pins ps_sector/ps_link/M_AXI_HPM0_FPD] -boundary_type upper [get_bd_intf_pins ps_sector/PS_to_PL_AXI/S00_AXI]
-# connect_bd_intf_net [get_bd_intf_pins ps_sector/S_AXI_PS_CONTROL] -boundary_type upper [get_bd_intf_pins ps_sector/PS_to_PL_AXI/M00_AXI]
->>>>>>> Added Control to Scripting
