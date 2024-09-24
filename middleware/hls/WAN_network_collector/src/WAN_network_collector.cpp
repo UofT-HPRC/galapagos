@@ -42,7 +42,6 @@ void WAN_network_collector(
                  )
 {
 	#pragma HLS INTERFACE ap_ctrl_none port=return
-	#pragma HLS DATAFLOW
 	#pragma HLS INTERFACE axis port=lbTxDataIn register_mode=off
 	#pragma HLS INTERFACE axis port=lbTxDataOut register_mode=off
 	#pragma HLS INTERFACE axis port=fetch_in register_mode=off
@@ -119,7 +118,7 @@ void WAN_network_collector(
     	if (!lbTxDataOut.full() && !lbTxDataIn.empty())
     	{
     		packet = lbTxDataIn.read();
-    		packet_out = extender(packet,last_packet.user);
+    		packet_out = extender(packet,last_packet.user.range(31,0));
 			lbTxDataOut.write(packet_out);
 			sinkState = (packet.last==1) ? TX_IDLE : FORWARD_NET;
     	}
@@ -203,3 +202,4 @@ ap_axis_net shrinker(axis_gulfstream_extend_t in_data)
     out_data.user = in_data.user.range(63,48);
     return out_data;
 }
+
