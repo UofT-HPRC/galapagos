@@ -1,0 +1,292 @@
+#-----------------------------------------------------------
+# Vivado v2023.1 (64-bit)
+# SW Build 3865809 on Sun May  7 15:04:56 MDT 2023
+# IP Build 3864474 on Sun May  7 20:36:21 MDT 2023
+# SharedData Build 3865790 on Sun May 07 13:33:03 MDT 2023
+# Start of session at: Fri Oct  4 15:10:35 2024
+# Process ID: 18731
+# Current directory: /home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.runs/bd_c443_bsip_0_synth_1
+# Command line: vivado -log bd_c443_bsip_0.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source bd_c443_bsip_0.tcl
+# Log file: /home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.runs/bd_c443_bsip_0_synth_1/bd_c443_bsip_0.vds
+# Journal file: /home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.runs/bd_c443_bsip_0_synth_1/vivado.jou
+# Running On: agent-4, OS: Linux, CPU Frequency: 1207.306 MHz, CPU Physical cores: 12, Host memory: 67325 MB
+#-----------------------------------------------------------
+source bd_c443_bsip_0.tcl -notrace
+create_project: Time (s): cpu = 00:00:11 ; elapsed = 00:00:13 . Memory (MB): peak = 2491.676 ; gain = 136.047 ; free physical = 47028 ; free virtual = 146101
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1700] Loaded user IP repository '/home/justin/controlapi/galapagos_network_bridge/galapagos/ctrlBuild'.
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository '/mnt/shares/tools/Xilinx/Vivado/2023.1/data/ip'.
+INFO: [IP_Flow 19-6924] IPCACHE: Running cache check for IP inst: bd_c443_bsip_0
+Command: synth_design -top bd_c443_bsip_0 -part xczu19eg-ffvc1760-2-i -incremental_mode off -mode out_of_context
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xczu19eg'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xczu19eg'
+INFO: [Device 21-403] Loading part xczu19eg-ffvc1760-2-i
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 4 processes.
+INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
+INFO: [Synth 8-7075] Helper process launched with PID 19008
+---------------------------------------------------------------------------------
+Starting RTL Elaboration : Time (s): cpu = 00:00:06 ; elapsed = 00:00:16 . Memory (MB): peak = 3985.855 ; gain = 269.797 ; free physical = 39829 ; free virtual = 138806
+---------------------------------------------------------------------------------
+INFO: [Synth 8-6157] synthesizing module 'bd_c443_bsip_0' [/home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.gen/sources_1/bd/design_1/ip/design_1_debug_bridge_0_0/bd_0/ip/ip_1/synth/bd_c443_bsip_0.v:53]
+INFO: [Synth 8-6155] done synthesizing module 'bd_c443_bsip_0' (0#1) [/home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.gen/sources_1/bd/design_1/ip/design_1_debug_bridge_0_0/bd_0/ip/ip_1/synth/bd_c443_bsip_0.v:53]
+WARNING: [Synth 8-7129] Port prim_tdo in module bsip_v1_1_0_bsip is either unconnected or has no load
+WARNING: [Synth 8-7129] Port prim_drck in module bsip_v1_1_0_bsip is either unconnected or has no load
+WARNING: [Synth 8-7129] Port prim_reset in module bsip_v1_1_0_bsip is either unconnected or has no load
+WARNING: [Synth 8-7129] Port prim_sel in module bsip_v1_1_0_bsip is either unconnected or has no load
+WARNING: [Synth 8-7129] Port prim_capture in module bsip_v1_1_0_bsip is either unconnected or has no load
+WARNING: [Synth 8-7129] Port prim_shift in module bsip_v1_1_0_bsip is either unconnected or has no load
+WARNING: [Synth 8-7129] Port prim_runtest in module bsip_v1_1_0_bsip is either unconnected or has no load
+WARNING: [Synth 8-7129] Port prim_tdi in module bsip_v1_1_0_bsip is either unconnected or has no load
+WARNING: [Synth 8-7129] Port prim_tck in module bsip_v1_1_0_bsip is either unconnected or has no load
+WARNING: [Synth 8-7129] Port prim_tms in module bsip_v1_1_0_bsip is either unconnected or has no load
+WARNING: [Synth 8-7129] Port prim_update in module bsip_v1_1_0_bsip is either unconnected or has no load
+---------------------------------------------------------------------------------
+Finished RTL Elaboration : Time (s): cpu = 00:00:09 ; elapsed = 00:00:27 . Memory (MB): peak = 4055.809 ; gain = 339.750 ; free physical = 38769 ; free virtual = 137692
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:09 ; elapsed = 00:00:28 . Memory (MB): peak = 4055.809 ; gain = 339.750 ; free physical = 38730 ; free virtual = 137681
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:09 ; elapsed = 00:00:28 . Memory (MB): peak = 4055.809 ; gain = 339.750 ; free physical = 38730 ; free virtual = 137681
+---------------------------------------------------------------------------------
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 4063.809 ; gain = 0.000 ; free physical = 38619 ; free virtual = 137602
+INFO: [Netlist 29-17] Analyzing 1 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+
+Processing XDC Constraints
+Initializing timing engine
+Parsing XDC File [/home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.gen/sources_1/bd/design_1/ip/design_1_debug_bridge_0_0/bd_0/ip/ip_1/bd_c443_bsip_0_ooc.xdc] for cell 'inst'
+create_clock: Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 4186.254 ; gain = 2.969 ; free physical = 37549 ; free virtual = 136623
+Finished Parsing XDC File [/home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.gen/sources_1/bd/design_1/ip/design_1_debug_bridge_0_0/bd_0/ip/ip_1/bd_c443_bsip_0_ooc.xdc] for cell 'inst'
+Parsing XDC File [/home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.runs/bd_c443_bsip_0_synth_1/dont_touch.xdc]
+Finished Parsing XDC File [/home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.runs/bd_c443_bsip_0_synth_1/dont_touch.xdc]
+Parsing XDC File [/home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.gen/sources_1/bd/design_1/ip/design_1_debug_bridge_0_0/bd_0/ip/ip_1/constraints/bsip.xdc] for cell 'inst'
+Finished Parsing XDC File [/home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.gen/sources_1/bd/design_1/ip/design_1_debug_bridge_0_0/bd_0/ip/ip_1/constraints/bsip.xdc] for cell 'inst'
+INFO: [Project 1-236] Implementation specific constraints were found while reading constraint file [/home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.gen/sources_1/bd/design_1/ip/design_1_debug_bridge_0_0/bd_0/ip/ip_1/constraints/bsip.xdc]. These constraints will be ignored for synthesis but will be used in implementation. Impacted constraints are listed in the file [.Xil/bd_c443_bsip_0_propImpl.xdc].
+Resolution: To avoid this warning, move constraints listed in [.Xil/bd_c443_bsip_0_propImpl.xdc] to another XDC file and exclude this new file from synthesis with the used_in_synthesis property (File Properties dialog in GUI) and re-run elaboration/synthesis.
+Completed Processing XDC Constraints
+
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 4186.254 ; gain = 0.000 ; free physical = 37549 ; free virtual = 136623
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 1 instances were transformed.
+  BUFG => BUFGCE: 1 instance 
+
+Constraint Validation Runtime : Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00.06 . Memory (MB): peak = 4186.254 ; gain = 0.000 ; free physical = 37547 ; free virtual = 136622
+INFO: [Designutils 20-5008] Incremental synthesis strategy off
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:25 ; elapsed = 00:01:10 . Memory (MB): peak = 4186.254 ; gain = 470.195 ; free physical = 36735 ; free virtual = 135729
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xczu19eg-ffvc1760-2-i
+INFO: [Synth 8-6742] Reading net delay rules and data
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:25 ; elapsed = 00:01:10 . Memory (MB): peak = 4186.254 ; gain = 470.195 ; free physical = 36731 ; free virtual = 135718
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying 'set_property' XDC Constraints
+---------------------------------------------------------------------------------
+Applied set_property KEEP_HIERARCHY = SOFT for inst. (constraint file  /home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.runs/bd_c443_bsip_0_synth_1/dont_touch.xdc, line 6).
+---------------------------------------------------------------------------------
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:25 ; elapsed = 00:01:11 . Memory (MB): peak = 4186.254 ; gain = 470.195 ; free physical = 36583 ; free virtual = 135615
+---------------------------------------------------------------------------------
+INFO: [Synth 8-802] inferred FSM for state register 'current_state_reg' in module 'bsip_v1_1_0_jtag_tapctl'
+INFO: [Synth 8-6159] Found Keep on FSM register 'current_state_reg' in module 'bsip_v1_1_0_jtag_tapctl', re-encoding will not be performed
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+                  tlr_st |                             1111 |                             1111
+                  rti_st |                             1100 |                             1100
+                seldr_st |                             0111 |                             0111
+                selir_st |                             0100 |                             0100
+                capir_st |                             1110 |                             1110
+                 shir_st |                             1010 |                             1010
+                ex1ir_st |                             1001 |                             1001
+                  pir_st |                             1011 |                             1011
+                ex2ir_st |                             1000 |                             1000
+                  uir_st |                             1101 |                             1101
+                capdr_st |                             0110 |                             0110
+                 shdr_st |                             0010 |                             0010
+                ex1dr_st |                             0001 |                             0001
+                  pdr_st |                             0011 |                             0011
+                ex2dr_st |                             0000 |                             0000
+                  udr_st |                             0101 |                             0101
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:26 ; elapsed = 00:01:11 . Memory (MB): peak = 4186.254 ; gain = 470.195 ; free physical = 36530 ; free virtual = 135592
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Registers : 
+	               32 Bit    Registers := 2     
+	                6 Bit    Registers := 2     
+	                1 Bit    Registers := 13    
++---Muxes : 
+	   2 Input   32 Bit        Muxes := 1     
+	   2 Input    6 Bit        Muxes := 1     
+	  16 Input    4 Bit        Muxes := 1     
+	   2 Input    4 Bit        Muxes := 23    
+	   2 Input    3 Bit        Muxes := 9     
+	   2 Input    2 Bit        Muxes := 8     
+	   3 Input    2 Bit        Muxes := 1     
+	   2 Input    1 Bit        Muxes := 14    
+	   3 Input    1 Bit        Muxes := 1     
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 1968 (col length:264)
+BRAMs: 1968 (col length: RAMB18 264 RAMB36 132)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+WARNING: [Synth 8-7080] Parallel synthesis criteria is not met
+WARNING: [Synth 8-7129] Port prim_tdo in module bsip_v1_1_0_bsip is either unconnected or has no load
+WARNING: [Synth 8-7129] Port prim_drck in module bsip_v1_1_0_bsip is either unconnected or has no load
+WARNING: [Synth 8-7129] Port prim_reset in module bsip_v1_1_0_bsip is either unconnected or has no load
+WARNING: [Synth 8-7129] Port prim_sel in module bsip_v1_1_0_bsip is either unconnected or has no load
+WARNING: [Synth 8-7129] Port prim_capture in module bsip_v1_1_0_bsip is either unconnected or has no load
+WARNING: [Synth 8-7129] Port prim_shift in module bsip_v1_1_0_bsip is either unconnected or has no load
+WARNING: [Synth 8-7129] Port prim_runtest in module bsip_v1_1_0_bsip is either unconnected or has no load
+WARNING: [Synth 8-7129] Port prim_tdi in module bsip_v1_1_0_bsip is either unconnected or has no load
+WARNING: [Synth 8-7129] Port prim_tck in module bsip_v1_1_0_bsip is either unconnected or has no load
+WARNING: [Synth 8-7129] Port prim_tms in module bsip_v1_1_0_bsip is either unconnected or has no load
+WARNING: [Synth 8-7129] Port prim_update in module bsip_v1_1_0_bsip is either unconnected or has no load
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:27 ; elapsed = 00:01:13 . Memory (MB): peak = 4186.254 ; gain = 470.195 ; free physical = 36443 ; free virtual = 135492
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying XDC Timing Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:44 ; elapsed = 00:01:56 . Memory (MB): peak = 4632.082 ; gain = 916.023 ; free physical = 33373 ; free virtual = 132464
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:44 ; elapsed = 00:01:56 . Memory (MB): peak = 4632.082 ; gain = 916.023 ; free physical = 33365 ; free virtual = 132456
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:44 ; elapsed = 00:01:56 . Memory (MB): peak = 4661.129 ; gain = 945.070 ; free physical = 33306 ; free virtual = 132397
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:00:48 ; elapsed = 00:02:01 . Memory (MB): peak = 4661.129 ; gain = 945.070 ; free physical = 32530 ; free virtual = 131621
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:48 ; elapsed = 00:02:01 . Memory (MB): peak = 4661.129 ; gain = 945.070 ; free physical = 32529 ; free virtual = 131620
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:48 ; elapsed = 00:02:01 . Memory (MB): peak = 4661.129 ; gain = 945.070 ; free physical = 32529 ; free virtual = 131620
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:48 ; elapsed = 00:02:01 . Memory (MB): peak = 4661.129 ; gain = 945.070 ; free physical = 32529 ; free virtual = 131620
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:48 ; elapsed = 00:02:01 . Memory (MB): peak = 4661.129 ; gain = 945.070 ; free physical = 32529 ; free virtual = 131619
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:48 ; elapsed = 00:02:01 . Memory (MB): peak = 4661.129 ; gain = 945.070 ; free physical = 32529 ; free virtual = 131620
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+-----+------+
+|      |Cell |Count |
++------+-----+------+
+|1     |BUFG |     1|
+|2     |LUT2 |     4|
+|3     |LUT3 |     7|
+|4     |LUT4 |    11|
+|5     |LUT5 |     4|
+|6     |LUT6 |     3|
+|7     |FDCE |     5|
+|8     |FDPE |     2|
+|9     |FDRE |    43|
+|10    |FDSE |     8|
++------+-----+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:48 ; elapsed = 00:02:01 . Memory (MB): peak = 4661.129 ; gain = 945.070 ; free physical = 32529 ; free virtual = 131620
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 12 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:39 ; elapsed = 00:01:47 . Memory (MB): peak = 4661.129 ; gain = 814.625 ; free physical = 32524 ; free virtual = 131614
+Synthesis Optimization Complete : Time (s): cpu = 00:00:48 ; elapsed = 00:02:01 . Memory (MB): peak = 4661.137 ; gain = 945.070 ; free physical = 32517 ; free virtual = 131608
+INFO: [Project 1-571] Translating synthesized netlist
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 4661.137 ; gain = 0.000 ; free physical = 32777 ; free virtual = 131868
+INFO: [Netlist 29-17] Analyzing 1 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 4733.770 ; gain = 0.000 ; free physical = 32658 ; free virtual = 131752
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 1 instances were transformed.
+  BUFG => BUFGCE: 1 instance 
+
+Synth Design complete | Checksum: df89c560
+INFO: [Common 17-83] Releasing license: Synthesis
+27 Infos, 23 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:01:05 ; elapsed = 00:02:43 . Memory (MB): peak = 4733.770 ; gain = 2174.406 ; free physical = 32655 ; free virtual = 131749
+INFO: [Common 17-2834] synth_design peak Physical Memory [PSS] (MB): overall = 3893.060; main = 3612.539; forked = 458.101
+INFO: [Common 17-2834] synth_design peak Virtual Memory [VSS] (MB): overall = 5641.988; main = 4733.773; forked = 980.871
+INFO: [Common 17-1381] The checkpoint '/home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.runs/bd_c443_bsip_0_synth_1/bd_c443_bsip_0.dcp' has been generated.
+INFO: [Coretcl 2-1648] Added synthesis output to IP cache for IP bd_c443_bsip_0, cache-ID = eb2d69f47a8c06a6
+INFO: [Coretcl 2-1174] Renamed 7 cell refs.
+INFO: [Common 17-1381] The checkpoint '/home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.runs/bd_c443_bsip_0_synth_1/bd_c443_bsip_0.dcp' has been generated.
+INFO: [runtcl-4] Executing : report_utilization -file bd_c443_bsip_0_utilization_synth.rpt -pb bd_c443_bsip_0_utilization_synth.pb
+INFO: [Common 17-206] Exiting Vivado at Fri Oct  4 15:14:40 2024...

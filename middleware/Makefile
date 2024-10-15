@@ -21,7 +21,7 @@ old_hls_path = $(middleware_path)/old_hls
 ctrl_path = $(middleware_path)/control_api/src
 python_path = $(middleware_path)/python
 
-export CTRL_IP_REPO_PATH = $(GALAPAGOS_PATH)/ctrlBuild/$(BOARD_NAME)/ip
+export CTRL_IP_REPO_PATH = $(GALAPAGOS_PATH)/ctrlBuild/$(GALAPAGOS_BOARD_NAME)/ip
 export CTRL_PROJECT_PART = $(GALAPAGOS_PART)
 
 .PHONY: middleware oldhls

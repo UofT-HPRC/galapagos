@@ -115,6 +115,7 @@ set obj [get_filesets sources_1]
 set_property ip_repo_paths [list \
   $top_path/hlsBuild/$top_board \
   $top_path/gulfstream/$top_board \
+  $top_path/ctrlBuild/$top_board \
   $top_shells/shell_ips \
   userIP] [current_project]
 

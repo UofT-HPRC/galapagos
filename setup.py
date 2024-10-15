@@ -142,6 +142,8 @@ while invalid:
         out_file.write("source init.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['vitis_dir'] + ' 2023.1 2023.1 ' + answers['par_name'] + ' ' + answers['boa_name'] +'\n')
 
         out_file.write("make hlsmiddleware\n")
+        # Build Control Modules
+        out_file.write("make ctrlmiddleware\n")
         print("Are there other boards you wish to install in this project? (Y/N)")
         answer = str(input()).strip().lower()
         while ((answer not in ['y','yes','n','no'])):

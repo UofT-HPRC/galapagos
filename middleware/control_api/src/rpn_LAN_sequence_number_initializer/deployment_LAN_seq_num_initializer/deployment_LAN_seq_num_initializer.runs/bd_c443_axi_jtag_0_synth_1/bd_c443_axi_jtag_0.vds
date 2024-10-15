@@ -1,0 +1,271 @@
+#-----------------------------------------------------------
+# Vivado v2023.1 (64-bit)
+# SW Build 3865809 on Sun May  7 15:04:56 MDT 2023
+# IP Build 3864474 on Sun May  7 20:36:21 MDT 2023
+# SharedData Build 3865790 on Sun May 07 13:33:03 MDT 2023
+# Start of session at: Fri Oct  4 15:10:35 2024
+# Process ID: 18735
+# Current directory: /home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.runs/bd_c443_axi_jtag_0_synth_1
+# Command line: vivado -log bd_c443_axi_jtag_0.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source bd_c443_axi_jtag_0.tcl
+# Log file: /home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.runs/bd_c443_axi_jtag_0_synth_1/bd_c443_axi_jtag_0.vds
+# Journal file: /home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.runs/bd_c443_axi_jtag_0_synth_1/vivado.jou
+# Running On: agent-4, OS: Linux, CPU Frequency: 2323.573 MHz, CPU Physical cores: 12, Host memory: 67325 MB
+#-----------------------------------------------------------
+source bd_c443_axi_jtag_0.tcl -notrace
+create_project: Time (s): cpu = 00:00:11 ; elapsed = 00:00:13 . Memory (MB): peak = 2491.676 ; gain = 136.047 ; free physical = 47028 ; free virtual = 146101
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1700] Loaded user IP repository '/home/justin/controlapi/galapagos_network_bridge/galapagos/ctrlBuild'.
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository '/mnt/shares/tools/Xilinx/Vivado/2023.1/data/ip'.
+update_ip_catalog: Time (s): cpu = 00:00:02 ; elapsed = 00:00:08 . Memory (MB): peak = 2523.363 ; gain = 31.688 ; free physical = 46849 ; free virtual = 145926
+INFO: [IP_Flow 19-6924] IPCACHE: Running cache check for IP inst: bd_c443_axi_jtag_0
+Command: synth_design -top bd_c443_axi_jtag_0 -part xczu19eg-ffvc1760-2-i -incremental_mode off -mode out_of_context
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xczu19eg'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xczu19eg'
+INFO: [Device 21-403] Loading part xczu19eg-ffvc1760-2-i
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 4 processes.
+INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
+INFO: [Synth 8-7075] Helper process launched with PID 19075
+---------------------------------------------------------------------------------
+Starting RTL Elaboration : Time (s): cpu = 00:00:06 ; elapsed = 00:00:21 . Memory (MB): peak = 3983.770 ; gain = 267.828 ; free physical = 38730 ; free virtual = 137681
+---------------------------------------------------------------------------------
+INFO: [Synth 8-6157] synthesizing module 'bd_c443_axi_jtag_0' [/home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.gen/sources_1/bd/design_1/ip/design_1_debug_bridge_0_0/bd_0/ip/ip_0/synth/bd_c443_axi_jtag_0.v:53]
+INFO: [Synth 8-6155] done synthesizing module 'bd_c443_axi_jtag_0' (0#1) [/home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.gen/sources_1/bd/design_1/ip/design_1_debug_bridge_0_0/bd_0/ip/ip_0/synth/bd_c443_axi_jtag_0.v:53]
+WARNING: [Synth 8-7129] Port s_axi_awprot[2] in module axi_jtag_v1_0_0_axi4liteif is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_awprot[1] in module axi_jtag_v1_0_0_axi4liteif is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_awprot[0] in module axi_jtag_v1_0_0_axi4liteif is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_arprot[2] in module axi_jtag_v1_0_0_axi4liteif is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_arprot[1] in module axi_jtag_v1_0_0_axi4liteif is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_arprot[0] in module axi_jtag_v1_0_0_axi4liteif is either unconnected or has no load
+---------------------------------------------------------------------------------
+Finished RTL Elaboration : Time (s): cpu = 00:00:08 ; elapsed = 00:00:26 . Memory (MB): peak = 4060.707 ; gain = 344.766 ; free physical = 38047 ; free virtual = 137127
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:08 ; elapsed = 00:00:26 . Memory (MB): peak = 4063.676 ; gain = 347.734 ; free physical = 37987 ; free virtual = 137066
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:08 ; elapsed = 00:00:26 . Memory (MB): peak = 4063.676 ; gain = 347.734 ; free physical = 37987 ; free virtual = 137066
+---------------------------------------------------------------------------------
+Netlist sorting complete. Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00.01 . Memory (MB): peak = 4063.676 ; gain = 0.000 ; free physical = 37985 ; free virtual = 137065
+INFO: [Project 1-570] Preparing netlist for logic optimization
+
+Processing XDC Constraints
+Initializing timing engine
+Parsing XDC File [/home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.gen/sources_1/bd/design_1/ip/design_1_debug_bridge_0_0/bd_0/ip/ip_0/bd_c443_axi_jtag_0_ooc.xdc] for cell 'inst'
+create_clock: Time (s): cpu = 00:00:07 ; elapsed = 00:00:13 . Memory (MB): peak = 4219.410 ; gain = 2.969 ; free physical = 37499 ; free virtual = 136366
+Finished Parsing XDC File [/home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.gen/sources_1/bd/design_1/ip/design_1_debug_bridge_0_0/bd_0/ip/ip_0/bd_c443_axi_jtag_0_ooc.xdc] for cell 'inst'
+Parsing XDC File [/home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.runs/bd_c443_axi_jtag_0_synth_1/dont_touch.xdc]
+Finished Parsing XDC File [/home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.runs/bd_c443_axi_jtag_0_synth_1/dont_touch.xdc]
+Parsing XDC File [/home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.gen/sources_1/bd/design_1/ip/design_1_debug_bridge_0_0/bd_0/ip/ip_0/constraints/axi_jtag.xdc] for cell 'inst'
+Finished Parsing XDC File [/home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.gen/sources_1/bd/design_1/ip/design_1_debug_bridge_0_0/bd_0/ip/ip_0/constraints/axi_jtag.xdc] for cell 'inst'
+INFO: [Project 1-236] Implementation specific constraints were found while reading constraint file [/home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.gen/sources_1/bd/design_1/ip/design_1_debug_bridge_0_0/bd_0/ip/ip_0/constraints/axi_jtag.xdc]. These constraints will be ignored for synthesis but will be used in implementation. Impacted constraints are listed in the file [.Xil/bd_c443_axi_jtag_0_propImpl.xdc].
+Resolution: To avoid this warning, move constraints listed in [.Xil/bd_c443_axi_jtag_0_propImpl.xdc] to another XDC file and exclude this new file from synthesis with the used_in_synthesis property (File Properties dialog in GUI) and re-run elaboration/synthesis.
+Completed Processing XDC Constraints
+
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 4219.410 ; gain = 0.000 ; free physical = 37494 ; free virtual = 136364
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Constraint Validation Runtime : Time (s): cpu = 00:00:00.04 ; elapsed = 00:00:01 . Memory (MB): peak = 4219.410 ; gain = 0.000 ; free physical = 37437 ; free virtual = 136304
+INFO: [Designutils 20-5008] Incremental synthesis strategy off
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:25 ; elapsed = 00:01:14 . Memory (MB): peak = 4219.410 ; gain = 503.469 ; free physical = 35036 ; free virtual = 134118
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xczu19eg-ffvc1760-2-i
+INFO: [Synth 8-6742] Reading net delay rules and data
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:25 ; elapsed = 00:01:14 . Memory (MB): peak = 4219.410 ; gain = 503.469 ; free physical = 35008 ; free virtual = 134090
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying 'set_property' XDC Constraints
+---------------------------------------------------------------------------------
+Applied set_property KEEP_HIERARCHY = SOFT for inst. (constraint file  /home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.runs/bd_c443_axi_jtag_0_synth_1/dont_touch.xdc, line 6).
+---------------------------------------------------------------------------------
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:25 ; elapsed = 00:01:14 . Memory (MB): peak = 4219.410 ; gain = 503.469 ; free physical = 34958 ; free virtual = 134039
+---------------------------------------------------------------------------------
+INFO: [Synth 8-802] inferred FSM for state register 'state_reg' in module 'axi_jtag_v1_0_0_jtagproc'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+*
+                    IDLE |                              001 |                              001
+                    TCKL |                              010 |                              010
+                    TCKH |                              100 |                              100
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3898] No Re-encoding of one hot register 'state_reg' in module 'axi_jtag_v1_0_0_jtagproc'
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:26 ; elapsed = 00:01:14 . Memory (MB): peak = 4219.410 ; gain = 503.469 ; free physical = 34419 ; free virtual = 133502
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input    8 Bit       Adders := 1     
+	   2 Input    5 Bit       Adders := 1     
++---Registers : 
+	               32 Bit    Registers := 9     
+	                8 Bit    Registers := 1     
+	                5 Bit    Registers := 3     
+	                2 Bit    Registers := 2     
+	                1 Bit    Registers := 43    
++---Muxes : 
+	   2 Input   32 Bit        Muxes := 9     
+	   6 Input   32 Bit        Muxes := 5     
+	   2 Input   31 Bit        Muxes := 2     
+	   2 Input    8 Bit        Muxes := 1     
+	   4 Input    3 Bit        Muxes := 1     
+	   2 Input    3 Bit        Muxes := 2     
+	   2 Input    2 Bit        Muxes := 1     
+	   2 Input    1 Bit        Muxes := 78    
+	   4 Input    1 Bit        Muxes := 3     
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 1968 (col length:264)
+BRAMs: 1968 (col length: RAMB18 264 RAMB36 132)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+WARNING: [Synth 8-7080] Parallel synthesis criteria is not met
+WARNING: [Synth 8-7129] Port s_axi_awprot[2] in module axi_jtag_v1_0_0_axi_jtag is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_awprot[1] in module axi_jtag_v1_0_0_axi_jtag is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_awprot[0] in module axi_jtag_v1_0_0_axi_jtag is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_arprot[2] in module axi_jtag_v1_0_0_axi_jtag is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_arprot[1] in module axi_jtag_v1_0_0_axi_jtag is either unconnected or has no load
+WARNING: [Synth 8-7129] Port s_axi_arprot[0] in module axi_jtag_v1_0_0_axi_jtag is either unconnected or has no load
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:29 ; elapsed = 00:01:17 . Memory (MB): peak = 4219.410 ; gain = 503.469 ; free physical = 32072 ; free virtual = 131155
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying XDC Timing Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:45 ; elapsed = 00:01:55 . Memory (MB): peak = 4642.379 ; gain = 926.438 ; free physical = 32793 ; free virtual = 131884
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:46 ; elapsed = 00:01:56 . Memory (MB): peak = 4684.426 ; gain = 968.484 ; free physical = 32674 ; free virtual = 131767
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:46 ; elapsed = 00:01:56 . Memory (MB): peak = 4684.426 ; gain = 968.484 ; free physical = 32655 ; free virtual = 131749
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:00:51 ; elapsed = 00:02:01 . Memory (MB): peak = 4684.426 ; gain = 968.484 ; free physical = 32440 ; free virtual = 131533
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:51 ; elapsed = 00:02:01 . Memory (MB): peak = 4684.426 ; gain = 968.484 ; free physical = 32440 ; free virtual = 131533
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:51 ; elapsed = 00:02:01 . Memory (MB): peak = 4684.426 ; gain = 968.484 ; free physical = 32438 ; free virtual = 131530
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:51 ; elapsed = 00:02:01 . Memory (MB): peak = 4684.426 ; gain = 968.484 ; free physical = 32438 ; free virtual = 131530
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:51 ; elapsed = 00:02:01 . Memory (MB): peak = 4684.426 ; gain = 968.484 ; free physical = 32436 ; free virtual = 131529
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:51 ; elapsed = 00:02:01 . Memory (MB): peak = 4684.426 ; gain = 968.484 ; free physical = 32436 ; free virtual = 131528
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+-------+------+
+|      |Cell   |Count |
++------+-------+------+
+|1     |CARRY8 |     4|
+|2     |LUT1   |     4|
+|3     |LUT2   |    10|
+|4     |LUT3   |    42|
+|5     |LUT4   |    49|
+|6     |LUT5   |    26|
+|7     |LUT6   |   176|
+|8     |FDRE   |   353|
+|9     |FDSE   |     1|
++------+-------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:51 ; elapsed = 00:02:01 . Memory (MB): peak = 4684.426 ; gain = 968.484 ; free physical = 32436 ; free virtual = 131528
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 7 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:42 ; elapsed = 00:01:41 . Memory (MB): peak = 4684.426 ; gain = 812.750 ; free physical = 32433 ; free virtual = 131526
+Synthesis Optimization Complete : Time (s): cpu = 00:00:51 ; elapsed = 00:02:01 . Memory (MB): peak = 4684.434 ; gain = 968.484 ; free physical = 32434 ; free virtual = 131527
+INFO: [Project 1-571] Translating synthesized netlist
+Netlist sorting complete. Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00.01 . Memory (MB): peak = 4692.426 ; gain = 0.000 ; free physical = 32676 ; free virtual = 131769
+INFO: [Netlist 29-17] Analyzing 4 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 4752.223 ; gain = 0.000 ; free physical = 32559 ; free virtual = 131678
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Synth Design complete | Checksum: 64d8a2b5
+INFO: [Common 17-83] Releasing license: Synthesis
+25 Infos, 13 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:01:08 ; elapsed = 00:02:46 . Memory (MB): peak = 4752.223 ; gain = 2192.922 ; free physical = 32553 ; free virtual = 131671
+INFO: [Common 17-2834] synth_design peak Physical Memory [PSS] (MB): overall = 3879.958; main = 3649.890; forked = 264.932
+INFO: [Common 17-2834] synth_design peak Virtual Memory [VSS] (MB): overall = 5666.504; main = 4752.227; forked = 982.074
+INFO: [Common 17-1381] The checkpoint '/home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.runs/bd_c443_axi_jtag_0_synth_1/bd_c443_axi_jtag_0.dcp' has been generated.
+INFO: [Coretcl 2-1648] Added synthesis output to IP cache for IP bd_c443_axi_jtag_0, cache-ID = c5b520fa31becde6
+INFO: [Coretcl 2-1174] Renamed 3 cell refs.
+INFO: [Common 17-1381] The checkpoint '/home/justin/controlapi/galapagos_network_bridge/galapagos/middleware/control_api/src/rpn_LAN_sequence_number_initializer/deployment_LAN_seq_num_initializer/deployment_LAN_seq_num_initializer.runs/bd_c443_axi_jtag_0_synth_1/bd_c443_axi_jtag_0.dcp' has been generated.
+INFO: [runtcl-4] Executing : report_utilization -file bd_c443_axi_jtag_0_utilization_synth.rpt -pb bd_c443_axi_jtag_0_utilization_synth.pb
+INFO: [Common 17-206] Exiting Vivado at Fri Oct  4 15:14:48 2024...

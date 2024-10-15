@@ -159,3 +159,28 @@ connect_bd_net [get_bd_ports rstn300] [get_bd_pins network/receptionist/resetn]
 
 
 connect_bd_intf_net [get_bd_intf_pins network/network_bridge_inst/axis_clock_converter_1/S_AXIS] [get_bd_intf_pins network/network_bridge_udp/txGalapagosBridge]
+
+# Control
+# TODO: Add to pr_udp100_bridge.tcl and pr_udp100_bridge_gw.tcl
+# RX NB
+addip control_rx_network_bridge network/ctrl_rx_nb
+connect_bd_net [get_bd_ports CLK300] [get_bd_pins network/ctrl_rx_nb/i_clk]
+connect_bd_net [get_bd_ports rstn300] [get_bd_pins network/ctrl_rx_nb/i_ap_rst_n]
+# # RX NB CDC
+addip axis_clock_converter network/ctrl_rx_nb_CDC
+set_property CONFIG.SYNCHRONIZATION_STAGES {5} [get_bd_cells network/ctrl_rx_nb_CDC]
+connect_bd_net [get_bd_ports CLK300] [get_bd_pins network/ctrl_rx_nb_CDC/s_axis_aclk]
+connect_bd_net [get_bd_ports rstn300] [get_bd_pins network/ctrl_rx_nb_CDC/s_axis_aresetn]
+connect_bd_net [get_bd_ports CLK] [get_bd_pins network/ctrl_rx_nb_CDC/m_axis_aclk]
+connect_bd_net [get_bd_ports rstn] [get_bd_pins network/ctrl_rx_nb_CDC/m_axis_aresetn]
+# NB KIP CDC
+addip axis_clock_converter network/ctrl_to_nb_KIP_CDC
+set_property CONFIG.SYNCHRONIZATION_STAGES {5} [get_bd_cells network/ctrl_to_nb_KIP_CDC]
+connect_bd_net [get_bd_ports CLK] [get_bd_pins network/ctrl_to_nb_KIP_CDC/s_axis_aclk]
+connect_bd_net [get_bd_ports rstn] [get_bd_pins network/ctrl_to_nb_KIP_CDC/s_axis_aresetn]
+connect_bd_net [get_bd_ports CLK300] [get_bd_pins network/ctrl_to_nb_KIP_CDC/m_axis_aclk]
+connect_bd_net [get_bd_ports rstn300] [get_bd_pins network/ctrl_to_nb_KIP_CDC/m_axis_aresetn]
+# # Control Connections
+connect_bd_intf_net [get_bd_intf_pins network/direct_ip_rx_switch/M01_AXIS] [get_bd_intf_pins network/ctrl_rx_nb/from_receptionist]
+connect_bd_intf_net [get_bd_intf_pins network/ctrl_rx_nb/to_ctrl] [get_bd_intf_pins network/ctrl_rx_nb_CDC/S_AXIS]
+connect_bd_intf_net [get_bd_intf_pins network/ctrl_to_nb_KIP_CDC/M_AXIS] [get_bd_intf_pins network/direct_ip_switch/S00_AXIS]

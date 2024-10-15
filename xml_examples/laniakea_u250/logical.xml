@@ -27,7 +27,7 @@
         <rep> 3 </rep>
         <type> open </type>
         <control> False </control>
-        <control_range> 4k </control_range>
+        <control_type> both </control_type>
         <clk> ap_clk </clk>
         <s_axis>
             <scope> global </scope>

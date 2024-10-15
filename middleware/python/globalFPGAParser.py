@@ -48,7 +48,7 @@ else:
 
 for cluster_loc in list_of_clusters:
     cluster_inst = cluster(cluster_loc,lan_flow)
-    cluster_inst.processMemoryBus()
+    cluster_inst.processControlProtocol()
     #cluster_inst.checkDDR()  # Charles
     cluster_inst.makeProjectClusterScript(path,cluster_loc['has_dns'])
     if cluster_loc['has_dns']:
@@ -62,6 +62,8 @@ for cluster_loc in list_of_clusters:
 
     cluster_inst.writeBRAMFile(path, 'mac')
     cluster_inst.writeBRAMFile(path, 'ip')
+    # For control, even if it's not used
+    cluster_inst.writeNodeToKernelFile(path)
 if lan_flow:
     clusterFilepath = str(os.environ.get('GALAPAGOS_PATH'))+ "/projects/"+projectName+"_cluster_files/"
     os.makedirs(clusterFilepath, exist_ok=True)
