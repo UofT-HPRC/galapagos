@@ -50,6 +50,25 @@ def memory_sort_and_validate(memories):
         raise ValueError('Exposed control memory in FPGA exceeds maximum 255M size')
     return final_memory
 
+def stripWhiteSpace(entry):
+    """ Recursively strips the whitespace from a dictionary that contains sub-dictionaries, lists, and entries. Assumes that the base entry will be a string """
+    # Base case
+    if type(entry) is str:
+        return entry.strip(' ')
+    # If entry is a list, preserve the order
+    elif type(entry) is list:
+        new_list = []
+        for i in range(len(entry)):
+            new_list.append(stripWhiteSpace(entry[i]))
+        return new_list
+    # Else, entry is a dictionary
+    else:
+        new_dict = {}
+        for entry_key in entry:
+            new_dict[entry_key] = stripWhiteSpace(entry[entry_key])
+        return new_dict
+
+    
 
 
 class cluster(abstractDict):
@@ -106,6 +125,9 @@ class cluster(abstractDict):
         else:
             top_kern = kernel_file['cluster']
             top_map = cluster_desc['map']['cluster']
+        # Strip all whitespace from values in the kernel and map files
+        top_kern = stripWhiteSpace(top_kern)
+        top_map = stripWhiteSpace(top_map)
         logical_dict = top_kern['kernel']
         map_dict = top_map['node']
         if "userIpPath" in top_kern:

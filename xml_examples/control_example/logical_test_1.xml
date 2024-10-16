@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cluster>
-    <userIpPath> /home/justin/controlapi/galapagos_network_bridge/galapagos/user_ip </userIpPath>
+    <userIpPath> /home/justin/galapagos_network_bridge/galapagos/user_ip </userIpPath>
     <kernel> node_A_test_manager 
         <type> open </type>
         <num> 1 </num>
@@ -16,10 +16,6 @@
             <name> out_data </name>
         </m_axis>
         <aresetn> ap_rst_n </aresetn>
-        <wan>
-            <enabled> True </enabled>
-            <name> laniakea_wan </name>
-        </wan>
     </kernel>
     <kernel> node_A_test_subordinate 
         <type> open </type>
