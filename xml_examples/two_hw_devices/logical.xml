@@ -5,7 +5,7 @@
         <type> open </type>
         <num> 1 </num>
         <control> False </control>
-        <control_range> 4k </control_range>
+        <control_type> both </control_type>
         <clk> ap_clk </clk>
         <s_axis>
             <scope> global </scope>
@@ -25,7 +25,7 @@
         <num> 2 </num>
         <type> open </type>
         <control> False </control>
-        <control_range> 4k </control_range>
+        <control_type> both </control_type>
         <clk> ap_clk </clk>
         <s_axis>
             <scope> global </scope>

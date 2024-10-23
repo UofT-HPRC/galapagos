@@ -50,6 +50,25 @@ def memory_sort_and_validate(memories):
         raise ValueError('Exposed control memory in FPGA exceeds maximum 255M size')
     return final_memory
 
+def stripWhiteSpace(entry):
+    """ Recursively strips the whitespace from a dictionary that contains sub-dictionaries, lists, and entries. Assumes that the base entry will be a string """
+    # Base case
+    if type(entry) is str:
+        return entry.strip(' ')
+    # If entry is a list, preserve the order
+    elif type(entry) is list:
+        new_list = []
+        for i in range(len(entry)):
+            new_list.append(stripWhiteSpace(entry[i]))
+        return new_list
+    # Else, entry is a dictionary
+    else:
+        new_dict = {}
+        for entry_key in entry:
+            new_dict[entry_key] = stripWhiteSpace(entry[entry_key])
+        return new_dict
+
+    
 
 
 class cluster(abstractDict):
@@ -106,6 +125,9 @@ class cluster(abstractDict):
         else:
             top_kern = kernel_file['cluster']
             top_map = cluster_desc['map']['cluster']
+        # Strip all whitespace from values in the kernel and map files
+        top_kern = stripWhiteSpace(top_kern)
+        top_map = stripWhiteSpace(top_map)
         logical_dict = top_kern['kernel']
         map_dict = top_map['node']
         if "userIpPath" in top_kern:
@@ -228,6 +250,8 @@ class cluster(abstractDict):
             # but it does also check the fields to make sure they're all valid and that no mandatory info
             # is missing
             node_inst = node(**node_dict)
+            node_inst['total_node_num'] = len(map_dict) # Includes gateway node
+            node_inst['total_kernel_num'] = len(self.kernels) # Includes gateway kernel
             has_ddr = False
             max_ddr_id_width = 1
             for i in node_inst['kernel']:
@@ -342,18 +366,19 @@ class cluster(abstractDict):
             self.nodes.append(node_inst)
 
 
-    def processMemoryBus(self):
+    def processControlProtocol(self):
         for i in range(len(self.nodes)):
             memories = []
             has_control = False
-            for j in range(len(self.nodes[i]['kernel'])):
-                if self.nodes[i]['kernel'][j].data['control']:
-                    memories.append([j,self.nodes[i]['kernel'][j].data['control_range']])
+            ctrl_kernel_dict = {}
+            for kernel in self.nodes[i]['kernel']:
+                if kernel['control'] is True:
                     has_control = True
-            ext_memories = memory_sort_and_validate(memories)
-            for mem in ext_memories:
-                self.nodes[i]['kernel'][mem[0]].data['control_size'] = mem[1]
-                self.nodes[i]['kernel'][mem[0]].data['control_address'] = mem[2]
+                    ctrl_kernel_dict[int(kernel['num'])] = {
+                                                            'num': int(kernel['num']),
+                                                            'control_type': kernel['control_type']
+                                                        }
+            self.nodes[i]['ctrl_kernel_dict'] = ctrl_kernel_dict
             self.nodes[i].has_control = has_control
         return
 
@@ -435,6 +460,11 @@ class cluster(abstractDict):
             nodeFile = open(output_path + '/' + self.name + '/node.coe', 'w')
             nodeFile.write('memory_initialization_radix=10;\n')
             nodeFile.write('memory_initialization_vector=\n')
+            # Control
+            # This file is identical to node.coe, but without the 3 0's separating each entry
+            kernelToNodeFile = open(output_path + '/' + self.name + '/kernel_to_node.coe', 'w')
+            kernelToNodeFile.write('memory_initialization_radix=10;\n')
+            kernelToNodeFile.write('memory_initialization_vector=\n')
             nodeFilevck = open(output_path + '/' + self.name + '/node.mem', 'w')
         bramFile.write('memory_initialization_vector=\n')
         bram_address = 0
@@ -492,8 +522,10 @@ class cluster(abstractDict):
                             writeStr = str(node["num"])
                             if currIndex != (len(self.kernels) - 1):
                                 nodeFile.write(writeStr + ',0, 0, 0,')
+                                kernelToNodeFile.write(writeStr + ", ")
                             else:
                                 nodeFile.write(writeStr + ',0, 0, 0;')
+                                kernelToNodeFile.write(writeStr + ";")
                             nodeFilevck.write(self.BRAM_entry_formatter(node_address, writeStr))
                             nodeFilevck.write(self.BRAM_entry_formatter(node_address + 4, '0'))
                             nodeFilevck.write(self.BRAM_entry_formatter(node_address + 8, '0'))
@@ -501,7 +533,25 @@ class cluster(abstractDict):
                             node_address = node_address +16
         if addr_type == "ip":
             nodeFile.close()
+            kernelToNodeFile.close()
         bramFile.close()
+
+    def writeNodeToKernelFile(self, output_path):
+        """
+            The control protocol on Galapagos/Laniakea uses sequence numbers between FPGAs (nodes) to guarantee reliable communication. However, LAN communications use kernel IDs as TDEST, not node ID. The reliability protocol converts between Node TDEST and kernel ID TDEST. Since every node is guaranteed to have at least 1 kernel on it, this function just places the ID of the first kernel listed on each node into the COE file
+        """
+        # Output path refers to the path to GALAPAGOS_PATH/projects
+        n2kFile = open(output_path + '/' + self.name + '/node_to_kernel.coe', 'w')
+        n2kFile.write('memory_initialization_radix=10;\n') # Write in decimal
+        # Node 0 represents the gateway, so insert a dummy kernel there
+        n2kFile.write('memory_initialization_vector=0')
+        # Iterate through the nodes in order, but skip node 0 because it's the gateway
+        for i in range(1, len(self.nodes)):
+            kernel_on_node = self.nodes[i]['kernel'][0]
+            kernel_id = str(kernel_on_node['num'])
+            n2kFile.write(', ' + kernel_id)
+        n2kFile.write(';')
+        n2kFile.close()
 
     def makeProjectClusterScript(self, output_path,hasGW):
         """

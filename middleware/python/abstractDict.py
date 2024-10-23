@@ -40,8 +40,8 @@ class abstractDict():
             else:
                 raise ValueError('Init with ' + key + ' failed. Key does not exist')
         if self.data['control']:
-            if 'control_range' not in self.data:
-                raise ValueError('control_range missing when control is True')
+            if 'control_type' not in self.data:
+                raise ValueError('control_type missing when control is True')
         self.check_elements(mandatory_array, optional_array)
 
     def check_elements(self, mandatory_array, optional_array):

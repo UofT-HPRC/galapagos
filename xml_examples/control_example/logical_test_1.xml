@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cluster>
+    <userIpPath> /home/justin/galapagos_network_bridge/galapagos/user_ip </userIpPath>
+    <kernel> node_A_test_manager 
+        <type> open </type>
+        <num> 1 </num>
+        <control> True </control>
+        <control_type> m_axil </control_type>
+        <clk> ap_clk </clk>
+        <s_axis>
+            <scope> global </scope>
+            <name> in_data </name>
+        </s_axis>
+        <m_axis>
+            <scope> global </scope>
+            <name> out_data </name>
+        </m_axis>
+        <aresetn> ap_rst_n </aresetn>
+    </kernel>
+    <kernel> node_A_test_subordinate 
+        <type> open </type>
+        <num> 2 </num>
+        <control> True </control>
+        <control_type> s_axil </control_type>
+        <clk> ap_clk </clk>
+        <s_axis>
+            <scope> global </scope>
+            <name> in_data </name>
+        </s_axis>
+        <m_axis>
+            <scope> global </scope>
+            <name> out_data </name>
+        </m_axis>
+        <aresetn> ap_rst_n </aresetn>
+    </kernel>
+    <kernel> node_B_test_manager 
+        <type> open </type>
+        <num> 3 </num>
+        <control> True </control>
+        <control_type> m_axil </control_type>
+        <clk> ap_clk </clk>
+        <s_axis>
+            <scope> global </scope>
+            <name> in_data </name>
+        </s_axis>
+        <m_axis>
+            <scope> global </scope>
+            <name> out_data </name>
+        </m_axis>
+        <aresetn> ap_rst_n </aresetn>
+    </kernel>
+    <kernel> node_B_test_subordinate 
+        <type> open </type>
+        <num> 4 </num>
+        <control> True </control>
+        <control_type> s_axil </control_type>
+        <clk> ap_clk </clk>
+        <s_axis>
+            <scope> global </scope>
+            <name> in_data </name>
+        </s_axis>
+        <m_axis>
+            <scope> global </scope>
+            <name> out_data </name>
+        </m_axis>
+        <aresetn> ap_rst_n </aresetn>
+    </kernel>
+</cluster>
