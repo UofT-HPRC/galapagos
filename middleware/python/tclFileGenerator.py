@@ -321,6 +321,15 @@ def buildControlOutboundSwitch(tcl_user_app, switch_name, num_ctrl_instances):
     tcl_user_app.setProperties(switch_name, properties)
 
 def buildControlFixedPrioritySwitch(tcl_user_app, switch_name, num_ctrl_instances):
+    """
+    Creates a single output switch for control kernels. The output switch uses a Fixed-Priority Arbitration algorithm    
+
+    Args:
+        tcl_user_app: a tclMe object (which contains references to the FPGA's
+                      node object and a handle to the output file)
+        switch_name (str): Full name of the switch
+        num_ctrl_instances (int): Number of inputs to the switch
+    """
     buildControlOutboundSwitch(tcl_user_app, switch_name, num_ctrl_instances)
     properties = ['CONFIG.ARB_ALGORITHM {1}']
     tcl_user_app.setProperties(switch_name, properties)
@@ -357,14 +366,14 @@ def buildControlAPIInst(tcl_user_app, parent_hierarchy, kernel_id, kernel_dict, 
     Args:
         tcl_user_app: a tclMe object (which contains references to the FPGA's
                       node object and a handle to the output file)
+        parent_hierarchy (str): The name of the block diagram hierarchy that this hierarchy will sit in
         kernel_id (int): The ID of the kernel that this instance will be connected to
         kernel_dict (dict): Dictionary consisting of 2 entries:
                 'inst': Instance name of the kernel, with 'applicationRegion' removed
                 'control_type': 'm_axil', 's_axil', or 'both' 
         axil_addr_width (int): Width of the AXI-Lite Address channels
         has_wstrb (bool): Does the AXI-Lite WDATA interface have WSTRB enabled?
-        has_reliability (bool): Does the user want to use reliability?
-        rel_timeout (int): Number of cycles that the reliability module will wait before sending a re-transmission
+        request_buffer_capacity (int): The size of the request buffer that will be used by the Network-to-AXI-Lite converter
     """
     hierarchy_name = parent_hierarchy + "/control_api_inst_%d" % (kernel_id)
     tcl_user_app.createHierarchy(hierarchy_name)
@@ -572,6 +581,16 @@ def buildControlAPIInst(tcl_user_app, parent_hierarchy, kernel_id, kernel_dict, 
         )
 
 def buildControlReliabilityInst(tcl_user_app, parent_hierarchy, LAN_timeout=500, WAN_timeout=1000):
+    """
+    Instantiates and connects the modules used by the Reliability Protocol-Node (RPN). These modules guarantee exactly once reliable communications between Galapagos kernels. 
+
+    Args:
+        tcl_user_app: a tclMe object (which contains references to the FPGA's
+                      node object and a handle to the output file)
+        parent_hierarchy (str): The name of the block diagram hierarchy that this hierarchy will sit in
+        LAN_timeout (int): Number of cycles the RPN modules will wait for a reply before re-transmitting a LAN packet
+        WAN_timeout (int): Number of cycles the RPN modules will wait for a reply before re-transmitting a WAN packet
+    """
     # Parameters
     num_nodes = tcl_user_app.fpga['total_node_num'] # Total number of FPGA nodes in this cluster, including gateway
     num_kernels = tcl_user_app.fpga['total_kernel_num'] # Total number of FPGA kernels in this cluster, including gateway
@@ -590,7 +609,7 @@ def buildControlReliabilityInst(tcl_user_app, parent_hierarchy, LAN_timeout=500,
                           ]
         }
     )
-    # RPN LAN TX Pathway
+    # Create RPN LAN TX Pathway
     tcl_user_app.instBlock(
         {
             'name': 'rpn_LAN_node_finder',
@@ -784,7 +803,7 @@ def buildControlReliabilityInst(tcl_user_app, parent_hierarchy, LAN_timeout=500,
             'port_name':'i_sequence_numbers_initialized'
         }
     )
-    # RPN LAN RX Pathway
+    # Create RPN LAN RX Pathway
     tcl_user_app.instBlock(
         {
             'name': 'rpn_LAN_RX',
@@ -937,9 +956,7 @@ def getMaxAddressRangeByWidth(addr_width):
 
 def userApplicationRegionControlInst(tcl_user_app):
     """
-    Connects the AXI control interface from the shell (through an AXI interconnect)
-    to the various kernels in this FPGA (provided they declared control interfaces
-    in the logical file).
+    Creates and connects the infrastructure for Galapagos/Laniakea's control protocol
 
     Args:
         tcl_user_app: a tclMe object (which contains references to the FPGA's
@@ -1589,7 +1606,6 @@ def userApplicationRegionControlInst(tcl_user_app):
         }
     )
 
-
     # 9. Assign Control instances AXI-Lite addresses
     for kernel_id in ctrl_kernel_dict.keys():
         kernel_dict = ctrl_kernel_dict[kernel_id]
@@ -1627,19 +1643,8 @@ def tieOffControlInfrastructure(tcl_user_app):
         If control is not used, certain pre-instantiated control IP cores must be tied off to 0.
 
     Args:
-        fpga: node object for this particular FPGA
-        intf (string): the type of itnerface to look for. For example, "s_axi"
-        flag: If specified, can ask the getInterfaces function to only match
-              certain interfaces. Right now, the only thing you can do with it
-              is set it to "scope" or leave it blank for no special behaviour
-        scope: If flag is set to "scope", this variable is the scope to look for
-               Can be "local" or "global", or left blank for no special behaviour
-
-    Returns:
-        An array of Python dicts, where each one is a subtree from the original
-        mapping file. Note that this also adds a 'kernel_inst' member to the
-        interface dict which contains a pointer to its parent kernel dict (this
-        is used in userApplicationRegionKernelConnectSwitches, among others)
+        tcl_user_app: a tclMe object (which contains references to the FPGA's
+            node object and a handle to the output file)
     """
     hierarchy_name = 'network'
     tcl_user_app.instBlock(
@@ -1647,7 +1652,7 @@ def tieOffControlInfrastructure(tcl_user_app):
             'name': 'xlconstant',
             'inst':  hierarchy_name + '/ctrl_const_0',
             'properties': [ 
-                            'CONFIG.CONST_WIDTH {1}',
+                            'CONFIG.CONST_WIDTH {16}',
                             'CONFIG.CONST_VAL {0}'
                         ]
         }
@@ -1688,6 +1693,20 @@ def tieOffControlInfrastructure(tcl_user_app):
             'port_name': 'M_AXIS_tready'
         }
     )
+    tcl_user_app.makeConnection(
+        'net', 
+        {
+            'type': 'pin',
+            'name': hierarchy_name + '/ctrl_const_0',
+            'port_name': 'dout'
+        },
+        {
+            'type': 'pin',
+            'name': 'network/ctrl_rx_nb',
+            'port_name': 'i_CTRL_KIP_port_number'
+        }
+    )
+
 
 def getInterfaces(fpga, intf, flag = None, scope = None):
     """
@@ -3674,7 +3693,6 @@ def userApplicationRegion(project_name,outDir,output_path, fpga, sim,is_gw,api_i
     userApplicationLocalConnections(tcl_user_app)
     if tcl_user_app.fpga.has_control:
         # Currently Control is only tested on Sidewinder with no WAN
-        # if 
         if tcl_user_app.fpga['board'] != 'sidewinder':
             raise ValueError("Control currently only supported for sidewinder")
         elif tcl_user_app.fpga['has_wan']:
