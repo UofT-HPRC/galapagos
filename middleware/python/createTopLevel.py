@@ -32,7 +32,7 @@ aw_ddr_fields = ["id","addr","len","size","burst","lock","cache","prot","qos","v
 aw_ddr_sizes = [16,40,8,3,2,1,4,3,4,1,1]
 ar_ddr_fields = ["id","addr","len","size","burst","lock","cache","prot","qos","valid","ready"]
 ar_ddr_sizes = [16,40,8,3,2,1,4,3,4,1,1]
-ddr_fields = ["act_n","adr","ba","bg","ck_c","ck_t","cke","cs_n","dm_n","dq","dqs_c","dqs_t","odt","reset_n"]
+ddr_fields = ["act_n","adr","ba","bg","ck_c","ck_t","cke","cs_n","dq","dqs_c","dqs_t","odt","reset_n","par"]
 b_ddr_sizes = [16,2,1,1]
 ###
 
@@ -142,25 +142,29 @@ def construct_ddr_axi_wire(preamble,name,id_size,data_size,addr_size):
     result_str=result_str+add_axi_wire_field(preamble,name,"r",r_fields,r_sizes,id_size,data_size,addr_size)
     return(result_str+"\n")
 
-def construct_ddr_wire(preamble):
+def construct_ddr_wire(preamble, name):
     result_str = ""
     for i in range(len(ddr_fields)):
-        if ddr_fields[i] == "act_n":
-            result_str = result_str + preamble + "wire [0:0] C0_DDR4_0_" + ddr_fields[i] + ";\n"
+        if ddr_fields[i] == "ba":
+            result_str = result_str + preamble + "wire [1:0] " + name + ddr_fields[i] + ";\n"
+        elif ddr_fields[i] == "bg":
+            result_str = result_str + preamble + "wire [1:0] " + name + ddr_fields[i] + ";\n"
         elif ddr_fields[i] == "adr":
-            result_str = result_str + preamble + "wire [16:0] C0_DDR4_0_" + ddr_fields[i] + ";\n"
-        elif ddr_fields[i] == "dm_n":
-            result_str = result_str + preamble + "wire [7:0] C0_DDR4_0_" + ddr_fields[i] + ";\n"
+            result_str = result_str + preamble + "wire [16:0] " + name + ddr_fields[i] + ";\n"
         elif ddr_fields[i] == "dq":
-            result_str = result_str + preamble + "wire [63:0] C0_DDR4_0_" + ddr_fields[i] + ";\n"
+            result_str = result_str + preamble + "wire [71:0] " + name + ddr_fields[i] + ";\n"
         elif ddr_fields[i] == "dqs_c":
-            result_str = result_str + preamble + "wire [7:0] C0_DDR4_0_" + ddr_fields[i] + ";\n"
+            result_str = result_str + preamble + "wire [17:0] " + name + ddr_fields[i] + ";\n"
         elif ddr_fields[i] == "dqs_t":
-            result_str = result_str + preamble + "wire [7:0] C0_DDR4_0_" + ddr_fields[i] + ";\n"
-        elif ddr_fields[i] == "reset_n":
-            result_str = result_str + preamble + "wire [0:0] C0_DDR4_0_" + ddr_fields[i] + ";\n"
+            result_str = result_str + preamble + "wire [17:0] " + name + ddr_fields[i] + ";\n"
         else:
-            result_str = result_str + preamble + "wire [1:0] C0_DDR4_0_" + ddr_fields[i] + ";\n"
+            result_str = result_str + preamble + "wire [0:0] " + name + ddr_fields[i] + ";\n"
+    return(result_str+"\n")
+
+def construct_ddr_defn(preamble, name, portname):
+    result_str = ""
+    for i in range(len(ddr_fields)):
+        result_str = result_str + preamble + ",." + portname + "_" + ddr_fields[i] + "(" + name + "_" + ddr_fields[i] + ")\n"
     return(result_str+"\n")
 
 def construct_ddr_axi_defn(preamble,name,portname,has_id,has_user):
@@ -198,7 +202,25 @@ def copy_file(dest_fp,src_filename):
 def createTopLevelVerilog(target_files, source_dir, kernel_properties,ctrl_kernel_dict,fpga,is_gw):
     dst_file = open(target_files,"w")
     if fpga['board'] in ('u200','u250','u280'):
-        copy_file(dst_file, source_dir + "/../verilog/shellTop_pt1_u2xx.v")
+        if fpga.has_ddr:
+            copy_file(dst_file, source_dir + "/../verilog/shellTop_u2xx_ddr/shellTop_u2xx_ddr_pt1.v")
+            if fpga['slr_mappings']['SLR0']['kernel']:
+                dst_file.write(",\n    SYSCLK0_300_clk_p")
+                dst_file.write(",\n    SYSCLK0_300_clk_n")
+                for i in range(len(ddr_fields)):
+                    dst_file.write(",\n    c0_ddr4_" + ddr_fields[i])
+            if fpga['slr_mappings']['SLR1']['kernel']:
+                dst_file.write(",\n    SYSCLK1_300_clk_p")
+                dst_file.write(",\n    SYSCLK1_300_clk_n")
+                for i in range(len(ddr_fields)):
+                    dst_file.write(",\n    c1_ddr4_" + ddr_fields[i])
+            copy_file(dst_file, source_dir + "/../verilog/shellTop_u2xx_ddr/shellTop_u2xx_ddr_pt2.v")
+            if fpga['slr_mappings']['SLR0']['kernel']:
+                copy_file(dst_file, source_dir + "/../verilog/shellTop_u2xx_ddr/shellTop_u2xx_ddr_c0_inout.v")
+            if fpga['slr_mappings']['SLR1']['kernel']:
+                copy_file(dst_file, source_dir + "/../verilog/shellTop_u2xx_ddr/shellTop_u2xx_ddr_c1_inout.v")
+        else:
+            copy_file(dst_file, source_dir + "/../verilog/shellTop_pt1_u2xx.v")
     elif fpga.has_ddr:
         copy_file(dst_file, source_dir + "/../verilog/shellTop_pt1_ddr.v") # Charles
     else:
@@ -214,10 +236,19 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,ctrl_kerne
         if kernel_dict['control_type'] == 's_axil' or kernel_dict['control_type'] == 'both':
             dst_file.write(construct_axi_lite_wire("  ", kern+"_S_AXIL",32,64))
     if fpga.has_ddr:
-        dst_file.write(
-            construct_ddr_axi_wire("  ", "ddr4_AXI", fpga.max_ddr_id_width + math.ceil(math.log2(len(fpga['kernel']))),512, 34))  # Charles
+        if fpga['board'] in ('u200','u250','u280'):
+            if fpga['slr_mappings']['SLR0']['kernel']:
+                dst_file.write("  wire [0:0]SYSCLK0_300_clk_p;\n")
+                dst_file.write("  wire [0:0]SYSCLK0_300_clk_n;\n")
+                dst_file.write(construct_ddr_wire("  ", "c0_ddr4_"))
+            if fpga['slr_mappings']['SLR1']['kernel']:
+                dst_file.write("  wire [0:0]SYSCLK1_300_clk_p;\n")
+                dst_file.write("  wire [0:0]SYSCLK1_300_clk_n;\n")
+                dst_file.write(construct_ddr_wire("  ", "c1_ddr4_"))
+        else:
+            dst_file.write(construct_ddr_axi_wire("  ", "ddr4_AXI", fpga.max_ddr_id_width + math.ceil(math.log2(len(fpga['kernel']))),512, 34))
         for i in range(len(fpga['kernel'])):
-            dst_file.write(construct_ddr_axi_wire("  ", "kernel" + str(fpga['kernel'][i]['num']) + "_ddr4_AXI", 8, 512,34))  # Charles
+            dst_file.write(construct_ddr_axi_wire("  ", "kernel" + str(fpga['kernel'][i]['num']) + "_ddr4_AXI", 8, 512,34))
     for props in kernel_properties:
         name=props['inst']
         dst_file.write(construct_axis_wire("  ", str(name) + "_MAXIS", 512, 24, True))
@@ -237,14 +268,23 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,ctrl_kerne
     dst_file.write(construct_axis_base_defn("    ","M_AXIS","eth_tx",True))
     dst_file.write(construct_axis_base_defn("    ","S_AXIS","eth_rx",False))
     if fpga.has_ddr:
-        dst_file.write(construct_ddr_axi_defn("    ", "ddr4_AXI", "ddr4_AXI", True, True))  # Charles
-    
-    # Instantiate PR, and write additional connections under it
+        if fpga['board'] not in ('u200', 'u250', 'u280'):
+            dst_file.write(construct_ddr_axi_defn("    ", "ddr4_AXI", "ddr4_AXI", True, True))  # Charles
     copy_file(dst_file,source_dir+"/../verilog/shellTop_pt3.v")
     dst_file.write(construct_axis_base_defn("    ","M_AXIS","M_AXIS",True))
     dst_file.write(construct_axis_base_defn("    ","S_AXIS","S_AXIS",False))
     if fpga.has_ddr:
-        dst_file.write(construct_ddr_axi_defn("    ", "ddr4_AXI", "ddr4_AXI", True, True))  # Charles
+        if fpga['board'] not in ('u200', 'u250', 'u280'):
+            dst_file.write(construct_ddr_axi_defn("    ", "ddr4_AXI", "ddr4_AXI", True, True))
+        else:
+            if fpga['slr_mappings']['SLR0']['kernel']:
+                dst_file.write("    ,.SYSCLK0_300_clk_p(SYSCLK0_300_clk_p)\n")
+                dst_file.write("    ,.SYSCLK0_300_clk_n(SYSCLK0_300_clk_n)\n")
+                dst_file.write(construct_ddr_defn("    ", "c0_ddr4", "c0_ddr4"))
+            if fpga['slr_mappings']['SLR1']['kernel']:
+                dst_file.write("    ,.SYSCLK1_300_clk_p(SYSCLK1_300_clk_p)\n")
+                dst_file.write("    ,.SYSCLK1_300_clk_n(SYSCLK1_300_clk_n)\n")
+                dst_file.write(construct_ddr_defn("    ", "c1_ddr4", "c1_ddr4"))
     for props in kernel_properties:
         name=props['inst']
         dst_file.write("\n\n    //User: "+str(name)+"\n")
@@ -254,7 +294,9 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,ctrl_kerne
             dst_file.write(construct_axis_defn("      ",str(name)+"_MAXIS",str(name)+"_MAXIS",True,True,True))
         dst_file.write(add_axi_defn_field_set_id_user("      ",str(name)+"_SAXIS",str(name)+"_SAXIS","t",axis_fields,props['id'],0))
         if fpga.has_ddr:
-            dst_file.write(construct_ddr_axi_defn("    ", "kernel" + str(name)[-1] + "_ddr4_AXI", str(name) + "_DDR_SAXI", True,True))  # Charles
+            for i in fpga['kernel']:
+                if str(i['num']) == name[-1] and i['ddr']:
+                    dst_file.write(construct_ddr_axi_defn("    ", "kernel" + str(name)[-1] + "_ddr4_AXI", str(name) + "_DDR_SAXI", True,True))  # Charles
         if props['wan_enabled'][0]:
             dst_file.write(add_axi_defn_field("      ",str(name) + "_SWAN",str(name) + "_SWAN","t",wan_axis_fields,False,True)+"\n")
         if is_gw:
@@ -282,7 +324,9 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,ctrl_kerne
         dst_file.write(construct_axis_defn("    ",str(name)+"_MAXIS",Sname,True,True, (not is_gw)))
         dst_file.write(construct_axis_defn("    ",str(name)+"_SAXIS",Mname,True,False,False))
         if fpga.has_ddr:
-            dst_file.write(construct_ddr_axi_defn("    ", "kernel" + str(name)[-1] + "_ddr4_AXI", "out_ddr", True,True))  # Charles
+            for i in fpga['kernel']:
+                if str(i['num']) == name[-1] and i['ddr']:
+                    dst_file.write(construct_ddr_axi_defn("    ", "kernel" + str(name)[-1] + "_ddr4_AXI", "out_ddr", True,True))  # Charles
         if props['wan_enabled'][0]:
             dst_file.write(add_axi_defn_field("      ", str(name) + "_SWAN", props['wan_name'][0], "t", wan_axis_fields, False, True) + "\n")
         if is_gw:

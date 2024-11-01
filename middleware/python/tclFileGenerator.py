@@ -63,7 +63,7 @@ def createHierarchyTCL(project_name,outFile,kernel_properties,ctrl_kernel_dict, 
                 if i['num'] == int(kern[-1]) and i['ddr']:
                     hier_file.tprint("create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 out_ddr\n")
                     hier_file.tprint("set_property -dict [list CONFIG.DATA_WIDTH {512} CONFIG.ADDR_WIDTH {34} CONFIG.ID_WIDTH {1} CONFIG.FREQ_HZ {199998001} ] [get_bd_intf_ports out_ddr]\n")
-                    print("DDR FOUND IN KERNEL BD")
+                    print("DDR FOUND IN KERNEL BD, KERNEL out_ddr port created!")
         ###
         if wanena:
             hier_file.add_axis_port(wannam, "Master")
@@ -2586,10 +2586,11 @@ def userApplicationRegionDDR(tcl_user_app, outDir, output_path):
     max_ddr_id_width = 1
     for i in s_axis_array:
         if i['kernel_inst']['ddr']:
+            print(i['kernel_inst']['num'])
             num_kern_with_ddr += 1
             if max_ddr_id_width < int(i['kernel_inst']['ddr_id_width']):
                 max_ddr_id_width = int(i['kernel_inst']['ddr_id_width'])
-
+    print("num_kern_with_ddr: " + str(num_kern_with_ddr))
     if num_kern_with_ddr == 1:
         ddr4_AXI_PROPERTIES = [
             "CONFIG.DATA_WIDTH {512}",
@@ -2603,69 +2604,69 @@ def userApplicationRegionDDR(tcl_user_app, outDir, output_path):
             "CONFIG.ID_WIDTH {" + str(max_ddr_id_width) + "}",
             "CONFIG.FREQ_HZ {199998001}"
         ]
+        for i in s_axis_array:
+            if i['kernel_inst']['ddr']:
+                instName = i['kernel_inst']['inst']
+                ht_name = instName.split('/')[-1]
+                portName = ht_name + "_DDR_SAXI"
+                tcl_user_app.add_axi4_port(portName, 'Slave')
+                tcl_user_app.add_axi4_port('ddr4_AXI', 'Master')
+                tcl_user_app.setPortProperties(portName, kernel_AXI_PROPERTIES)
+                tcl_user_app.setPortProperties('ddr4_AXI', ddr4_AXI_PROPERTIES)
 
-        if s_axis_array[0]['kernel_inst']['ddr']:
-            instName = s_axis_array[0]['kernel_inst']['inst']
-            ht_name = instName.split('/')[-1]
-            portName = ht_name + "_DDR_SAXI"
-            tcl_user_app.add_axi4_port(portName, 'Slave')
-            tcl_user_app.add_axi4_port('ddr4_AXI', 'Master')
-            tcl_user_app.setPortProperties(portName, kernel_AXI_PROPERTIES)
-            tcl_user_app.setPortProperties('ddr4_AXI', ddr4_AXI_PROPERTIES)
+                tcl_user_app.instBlock(
+                    {
+                        'name': 'axi_interconnect',
+                        'inst': 'ddr_inter',
+                        'clks': ['ACLK', 'S00_ACLK', 'M00_ACLK', 'M01_ACLK'],
+                        'resetns': ['ARESETN', 'S00_ARESETN', 'M00_ARESETN', 'M01_ARESETN'],
+                        'resetns_port': 'rstn'
+                    }
+                )
 
-            tcl_user_app.instBlock(
-                {
-                    'name': 'axi_interconnect',
-                    'inst': 'ddr_inter',
-                    'clks': ['ACLK', 'S00_ACLK', 'M00_ACLK', 'M01_ACLK'],
-                    'resetns': ['ARESETN', 'S00_ARESETN', 'M00_ARESETN', 'M01_ARESETN'],
-                    'resetns_port': 'rstn'
-                }
-            )
+                tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                        'type': 'intf_port',
+                        'port_name': portName
+                    },
+                    {
+                        'name': 'ddr_inter',
+                        'type': 'intf',
+                        'port_name': 'S00_AXI'
+                    }
+                )
 
-            tcl_user_app.makeConnection(
-                'intf',
-                {
-                    'type': 'intf_port',
-                    'port_name': portName
-                },
-                {
-                    'name': 'ddr_inter',
-                    'type': 'intf',
-                    'port_name': 'S00_AXI'
-                }
-            )
+                tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                        'type': 'intf_port',
+                        'port_name': 'ddr4_AXI'
+                    },
+                    {
+                        'name': 'ddr_inter',
+                        'type': 'intf',
+                        'port_name': 'M00_AXI'
+                    }
+                )
 
-            tcl_user_app.makeConnection(
-                'intf',
-                {
-                    'type': 'intf_port',
-                    'port_name': 'ddr4_AXI'
-                },
-                {
-                    'name': 'ddr_inter',
-                    'type': 'intf',
-                    'port_name': 'M00_AXI'
-                }
-            )
+                tcl_user_app.assign_address(
+                    None,
+                    'ddr4_AXI',
+                    'Reg'
+                )
 
-            tcl_user_app.assign_address(
-                None,
-                'ddr4_AXI',
-                'Reg'
-            )
-
-            prop = {'offset': "0x00000000"}
-            tcl_user_app.set_address_properties(None, 'ddr4_AXI', 'Reg', portName, **prop)
-            prop = {'range': '16G'}
-            tcl_user_app.set_address_properties(None, 'ddr4_AXI', 'Reg', portName, **prop)
-            print("TCL FILE GENERATOR DDR FOUND")
-        else:
-            print("TCL FILE GENERATOR DDR NOT FOUND")
-        if s_axis_array[0]['kernel_inst']['ddr_size']:
-            print("TCL FILE GENERATOR DDR_SIZE FOUND")
-        else:
-            print("TCL FILE GENERATOR DDR_SIZE NOT FOUND")
+                prop = {'offset': "0x00000000"}
+                tcl_user_app.set_address_properties(None, 'ddr4_AXI', 'Reg', portName, **prop)
+                prop = {'range': '16G'}
+                tcl_user_app.set_address_properties(None, 'ddr4_AXI', 'Reg', portName, **prop)
+                print("TCL FILE GENERATOR DDR FOUND")
+            else:
+                print("TCL FILE GENERATOR DDR NOT FOUND")
+            if s_axis_array[0]['kernel_inst']['ddr_size']:
+                print("TCL FILE GENERATOR DDR_SIZE FOUND")
+            else:
+                print("TCL FILE GENERATOR DDR_SIZE NOT FOUND")
 
     elif num_kern_with_ddr > 1:
         for i in s_axis_array:
@@ -2690,25 +2691,26 @@ def userApplicationRegionDDR(tcl_user_app, outDir, output_path):
         partitioner = MemoryPartitioner()
         kern_array = []
         for i in s_axis_array:
-            instName = i['kernel_inst']['inst']
-            print(instName)
-            ht_name = instName.split('/')[-1]
-            portName = ht_name + "_DDR_SAXI"
-            tcl_user_app.add_axi4_port(portName, 'Slave')
+            if i['kernel_inst']['ddr']:
+                instName = i['kernel_inst']['inst']
+                print(instName)
+                ht_name = instName.split('/')[-1]
+                portName = ht_name + "_DDR_SAXI"
+                tcl_user_app.add_axi4_port(portName, 'Slave')
 
-            kernel_AXI_PROPERTIES = [
-                "CONFIG.DATA_WIDTH {512}",
-                "CONFIG.ADDR_WIDTH {34}",
-                "CONFIG.ID_WIDTH {" + i['kernel_inst']['ddr_id_width'] + "}",
-                "CONFIG.FREQ_HZ {199998001}"
-            ]
+                kernel_AXI_PROPERTIES = [
+                    "CONFIG.DATA_WIDTH {512}",
+                    "CONFIG.ADDR_WIDTH {34}",
+                    "CONFIG.ID_WIDTH {" + i['kernel_inst']['ddr_id_width'] + "}",
+                    "CONFIG.FREQ_HZ {199998001}"
+                ]
 
-            tcl_user_app.setPortProperties(portName, kernel_AXI_PROPERTIES)
+                tcl_user_app.setPortProperties(portName, kernel_AXI_PROPERTIES)
 
-            if i['kernel_inst']['ddr_size']:
-                kern_array.append(i['kernel_inst'])
-                print("Kernel num: " + str(i['kernel_inst']['num']))
-                print("DDR_size FOUND in MULTI-KERN")
+                if i['kernel_inst']['ddr_size']:
+                    kern_array.append(i['kernel_inst'])
+                    print("Kernel num: " + str(i['kernel_inst']['num']))
+                    print("DDR_size FOUND in MULTI-KERN")
 
         sorted_kern_array = sorted(kern_array, key=lambda k: ddr_size_to_bytes(k['ddr_size']), reverse = True)
         for j in sorted_kern_array:
@@ -2763,109 +2765,111 @@ def userApplicationRegionDDR(tcl_user_app, outDir, output_path):
         )
         count = 0
         for i in s_axis_array:
-            instName = i['kernel_inst']['inst']
-            ht_name = instName.split('/')[-1]
-            portName = ht_name + "_DDR_SAXI"
-            tcl_user_app.makeConnection(
-                'intf',
-                {
-                    'type': 'intf_port',
-                    'port_name': portName
-                },
-                {
-                    'name': 'ddrRegion/addr_translator_kern' + str(i['kernel_inst']['num']),
-                    'type': 'intf',
-                    'port_name': 's0_axi'
-                }
-            )
+            if i['kernel_inst']['ddr']:
+                instName = i['kernel_inst']['inst']
+                ht_name = instName.split('/')[-1]
+                portName = ht_name + "_DDR_SAXI"
+                tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                        'type': 'intf_port',
+                        'port_name': portName
+                    },
+                    {
+                        'name': 'ddrRegion/addr_translator_kern' + str(i['kernel_inst']['num']),
+                        'type': 'intf',
+                        'port_name': 's0_axi'
+                    }
+                )
 
-            tcl_user_app.makeConnection(
-                'net',
-                {
-                    'type': 'port',
-                    'port_name': 'CLK'
-                },
-                {
-                    'name': 'ddrRegion/addr_translator_kern' + str(i['kernel_inst']['num']),
-                    'type': 'pin',
-                    'port_name': 'clk'
-                }
-            )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'type': 'port',
+                        'port_name': 'CLK'
+                    },
+                    {
+                        'name': 'ddrRegion/addr_translator_kern' + str(i['kernel_inst']['num']),
+                        'type': 'pin',
+                        'port_name': 'clk'
+                    }
+                )
 
-            tcl_user_app.makeConnection(
-                'net',
-                {
-                    'type': 'port',
-                    'port_name': 'rstn'
-                },
-                {
-                    'name': 'ddrRegion/addr_translator_kern' + str(i['kernel_inst']['num']),
-                    'type': 'pin',
-                    'port_name': 'resetn'
-                }
-            )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'type': 'port',
+                        'port_name': 'rstn'
+                    },
+                    {
+                        'name': 'ddrRegion/addr_translator_kern' + str(i['kernel_inst']['num']),
+                        'type': 'pin',
+                        'port_name': 'resetn'
+                    }
+                )
 
-            tcl_user_app.makeConnection(
-                'intf',
-                {
-                    'type': 'intf_port',
-                    'port_name': portName
-                },
-                {
-                    'name': 'ddrRegion/addr_translator_kern' + str(i['kernel_inst']['num']),
-                    'type': 'intf',
-                    'port_name': 's0_axi'
-                }
-            )
+                tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                        'type': 'intf_port',
+                        'port_name': portName
+                    },
+                    {
+                        'name': 'ddrRegion/addr_translator_kern' + str(i['kernel_inst']['num']),
+                        'type': 'intf',
+                        'port_name': 's0_axi'
+                    }
+                )
 
-            tcl_user_app.makeConnection(
-                'intf',
-                {
-                    'name': 'ddrRegion/addr_translator_kern' + str(i['kernel_inst']['num']),
-                    'type': 'intf',
-                    'port_name': 'm0_axi'
-                },
-                {
-                    'name': 'ddrRegion/ddr_inter',
-                    'type': 'intf',
-                    'port_name': 'S0' + str(count) + '_AXI'
-                },
-            )
+                tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                        'name': 'ddrRegion/addr_translator_kern' + str(i['kernel_inst']['num']),
+                        'type': 'intf',
+                        'port_name': 'm0_axi'
+                    },
+                    {
+                        'name': 'ddrRegion/ddr_inter',
+                        'type': 'intf',
+                        'port_name': 'S0' + str(count) + '_AXI'
+                    },
+                )
 
-            count += 1
+                count += 1
 
         for i in s_axis_array:
-            portName = "ddrRegion/addr_translator_kern" + str(i['kernel_inst']['num']) + "/m0_axi"
+            if i['kernel_inst']['ddr']:
+                portName = "ddrRegion/addr_translator_kern" + str(i['kernel_inst']['num']) + "/m0_axi"
 
-            tcl_user_app.assign_address(
-                None,
-                'ddr4_AXI',
-                'Reg'
-            )
+                tcl_user_app.assign_address(
+                    None,
+                    'ddr4_AXI',
+                    'Reg'
+                )
 
-            prop = {'offset': "0x00000000"}
-            tcl_user_app.set_address_properties(None, 'ddr4_AXI', 'Reg', portName, **prop)
-            prop = {'range': '16G'}
-            tcl_user_app.set_address_properties(None, 'ddr4_AXI', 'Reg', portName, **prop)
+                prop = {'offset': "0x00000000"}
+                tcl_user_app.set_address_properties(None, 'ddr4_AXI', 'Reg', portName, **prop)
+                prop = {'range': '16G'}
+                tcl_user_app.set_address_properties(None, 'ddr4_AXI', 'Reg', portName, **prop)
 
-            #ddrRegion / addr_translator_kern2 / s0_axi / reg0  #  test_core_inst_2_DDR_SAXI/SEG_addr_translator_kern2_reg0
-            instName = i['kernel_inst']['inst']
-            ht_name = instName.split('/')[-1]
-            portName = ht_name + "_DDR_SAXI"
+                #ddrRegion / addr_translator_kern2 / s0_axi / reg0  #  test_core_inst_2_DDR_SAXI/SEG_addr_translator_kern2_reg0
+                instName = i['kernel_inst']['inst']
+                ht_name = instName.split('/')[-1]
+                portName = ht_name + "_DDR_SAXI"
 
-            tcl_user_app.assign_address(
-                'ddrRegion/addr_translator_kern' + str(i['kernel_inst']['num']),
-                's0_axi',
-                'reg0'
-            )
+                tcl_user_app.assign_address(
+                    'ddrRegion/addr_translator_kern' + str(i['kernel_inst']['num']),
+                    's0_axi',
+                    'reg0'
+                )
 
-            prop = {'offset': "0x00000000"}
-            tcl_user_app.set_address_properties(None, 'addr_translator_kern' + str(i['kernel_inst']['num']), 'reg0', portName, **prop)
-            prop = {'range': i['kernel_inst']['ddr_size']}
-            tcl_user_app.set_address_properties(None, 'addr_translator_kern' + str(i['kernel_inst']['num']), 'reg0', portName, **prop)
-        # for idx, (start, end) in enumerate(partitioner.get_partitions()):
-        #     print(f"Partition {idx+1}: Start Address = {hex(start)}, End Address = {hex(end)}")
-        # createMemoryPartitioner(outDir + "/MemoryPartitioner.v", output_path + "/../middleware/python", phy_addr_prefix, vir_addr_len, partitioner.get_partitions(), tcl_user_app.fpga)
+                prop = {'offset': "0x00000000"}
+                tcl_user_app.set_address_properties(None, 'addr_translator_kern' + str(i['kernel_inst']['num']), 'reg0', portName, **prop)
+                prop = {'range': i['kernel_inst']['ddr_size']}
+                tcl_user_app.set_address_properties(None, 'addr_translator_kern' + str(i['kernel_inst']['num']), 'reg0', portName, **prop)
+            # for idx, (start, end) in enumerate(partitioner.get_partitions()):
+            #     print(f"Partition {idx+1}: Start Address = {hex(start)}, End Address = {hex(end)}")
+            # createMemoryPartitioner(outDir + "/MemoryPartitioner.v", output_path + "/../middleware/python", phy_addr_prefix, vir_addr_len, partitioner.get_partitions(), tcl_user_app.fpga)
 
 def ddr_size_to_bytes(ddr_size):
     match = re.match(r'(\d+)([KMG])', ddr_size)
@@ -2881,9 +2885,713 @@ def ddr_size_to_bytes(ddr_size):
         return size * 1024 * 1024
     elif unit == 'G':
         return size * 1024 * 1024 * 1024
+
+def userApplicationRegionDDRMultiSLR(tcl_user_app, mappings, outDir, output_path):
+    for regions in mappings:
+        print(regions + " " + str(len(mappings[regions]['kernel'])))
+        if len(mappings[regions]['kernel']) == 1:
+            kernel_AXI_PROPERTIES = [
+                "CONFIG.DATA_WIDTH {512}",
+                "CONFIG.ADDR_WIDTH {34}",
+                "CONFIG.ID_WIDTH {" + str(mappings[regions]['kernel'][0]['ddr_id_width']) + "}",
+                "CONFIG.FREQ_HZ {199998001}"
+            ]
+            if mappings[regions]['kernel'][0]['ddr']:
+                instName = mappings[regions]['kernel'][0]['inst']
+                ht_name = instName.split('/')[-1]
+                portName = ht_name + "_DDR_SAXI"
+                tcl_user_app.add_axi4_port(portName, 'Slave')
+                tcl_user_app.setPortProperties(portName, kernel_AXI_PROPERTIES)
+                hier_name = "ddrRegion_kern_" + ht_name[-1]
+                clk_name = "SYSCLK" + regions[-1] + "_300"
+                tcl_user_app.add_intf_port(clk_name, 'xilinx.com:interface:diff_clock_rtl:1.0', 'Slave')
+                tcl_user_app.tprint("set_property CONFIG.FREQ_HZ 333111000 [get_bd_intf_ports " + clk_name + "]")
+                ddr4_portname = "c" + regions[-1] + "_ddr4"
+                tcl_user_app.add_intf_port(ddr4_portname, 'xilinx.com:interface:ddr4_rtl:1.0', 'Master')
+                tcl_user_app.createHierarchy(hier_name)
+                tcl_user_app.tprint("create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 " + hier_name + '/ddr4_inter_kern_' + ht_name[-1])
+                tcl_user_app.tprint("create_bd_cell -type ip -vlnv xilinx.com:ip:ddr4:2.2 " + hier_name + '/ddr4_hub_kern_' + ht_name[-1])
+                tcl_user_app.tprint("create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 " + hier_name + '/ddr4_rst_hub_kern_' + ht_name[-1])
+                tcl_user_app.tprint("set_property -dict [list CONFIG.C0.DDR4_TimePeriod {938} CONFIG.C0.DDR4_InputClockPeriod {3001} CONFIG.C0.DDR4_CLKOUT0_DIVIDE {5} CONFIG.C0.DDR4_MemoryType {RDIMMs} CONFIG.C0.DDR4_MemoryPart {MTA18ASF2G72PZ-2G3} CONFIG.C0.DDR4_DataWidth {72} CONFIG.C0.DDR4_CasLatency {15} CONFIG.C0.DDR4_AxiDataWidth {512} CONFIG.C0.DDR4_AxiAddressWidth {34} CONFIG.C0.CK_WIDTH {2} CONFIG.C0.CKE_WIDTH {2} CONFIG.C0.CS_WIDTH {2} CONFIG.C0.ODT_WIDTH {2}] [get_bd_cells " + hier_name + "/ddr4_hub_kern_" + ht_name[-1] + "]")
+                tcl_user_app.tprint("set_property -dict [list CONFIG.NUM_SI {1} CONFIG.NUM_MI {2} CONFIG.ENABLE_ADVANCED_OPTIONS {1} CONFIG.XBAR_DATA_WIDTH {512} CONFIG.SYNCHRONIZATION_STAGES {5} CONFIG.S00_HAS_REGSLICE {1}] [get_bd_cells " + hier_name + "/ddr4_inter_kern_" + ht_name[-1] + "]")
+
+                tcl_user_app.instBlock(
+                    {
+                        'name': 'constant',
+                        'inst': hier_name + '/constant_zero',
+                    }
+                )
+                tcl_user_app.setProperties(hier_name + '/constant_zero', ['CONFIG.CONST_VAL {0}'])
+                tcl_user_app.instBlock(
+                    {
+                        'name': 'constant',
+                        'inst': hier_name + '/constant_one',
+                    }
+                )
+                tcl_user_app.setProperties(hier_name + '/constant_one', ['CONFIG.CONST_VAL {1}'])
+                tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                        'type': 'intf_port',
+                        'port_name': clk_name
+                    },
+                    {
+                        'name': hier_name + '/ddr4_hub_kern_' + ht_name[-1],
+                        'type': 'intf',
+                        'port_name': 'C0_SYS_CLK'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                        'type': 'intf_port',
+                        'port_name': portName
+                    },
+                    {
+                        'name': hier_name + '/ddr4_inter_kern_' + ht_name[-1],
+                        'type': 'intf',
+                        'port_name': 'S00_AXI'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                        'type': 'intf_port',
+                        'port_name': ddr4_portname
+                    },
+                    {
+                        'name': hier_name + '/ddr4_hub_kern_' + ht_name[-1],
+                        'type': 'intf',
+                        'port_name': 'C0_DDR4'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                        'name': hier_name + '/ddr4_inter_kern_' + ht_name[-1],
+                        'type': 'intf',
+                        'port_name': '/M00_AXI'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_hub_kern_' + ht_name[-1],
+                        'type': 'intf',
+                        'port_name': 'C0_DDR4_S_AXI'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'type': 'port',
+                        'port_name': 'CLK'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_inter_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'S00_ACLK'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'type': 'port',
+                        'port_name': 'rstn'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_inter_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'S00_ARESETN'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'type': 'port',
+                        'port_name': 'rstn'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_rst_hub_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'ext_reset_in'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/ddr4_hub_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'c0_ddr4_ui_clk'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_rst_hub_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'slowest_sync_clk'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/ddr4_hub_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'c0_ddr4_ui_clk'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_inter_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'ACLK'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/ddr4_hub_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'c0_ddr4_ui_clk'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_inter_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'M00_ACLK'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/ddr4_hub_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'c0_ddr4_ui_clk'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_inter_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'M01_ACLK'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/ddr4_rst_hub_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'peripheral_reset'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_hub_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'sys_rst'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/ddr4_rst_hub_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'interconnect_aresetn'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_hub_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'c0_ddr4_aresetn'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/ddr4_rst_hub_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'interconnect_aresetn'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_inter_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'ARESETN'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/ddr4_rst_hub_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'interconnect_aresetn'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_inter_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'M00_ARESETN'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/ddr4_rst_hub_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'interconnect_aresetn'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_inter_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'M01_ARESETN'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/constant_zero',
+                        'type': 'pin',
+                        'port_name': 'dout'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_hub_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'c0_ddr4_s_axi_ctrl_arvalid'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/constant_zero',
+                        'type': 'pin',
+                        'port_name': 'dout'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_hub_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'c0_ddr4_s_axi_ctrl_awvalid'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/constant_zero',
+                        'type': 'pin',
+                        'port_name': 'dout'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_hub_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'c0_ddr4_s_axi_ctrl_wvalid'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/constant_one',
+                        'type': 'pin',
+                        'port_name': 'dout'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_hub_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'c0_ddr4_s_axi_ctrl_bready'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/constant_one',
+                        'type': 'pin',
+                        'port_name': 'dout'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_hub_kern_' + ht_name[-1],
+                        'type': 'pin',
+                        'port_name': 'c0_ddr4_s_axi_ctrl_rready'
+                    }
+                )
+                tcl_user_app.tprint("assign_bd_address")
+
+        elif len(mappings[regions]['kernel']) > 1:
+            has_ddr = False
+            kern_array = []
+            sorted_kern_array = []
+            num_kern_with_ddr = 0
+            for i in range(len(mappings[regions]['kernel'])):
+                if mappings[regions]['kernel'][i]['ddr']:
+                    num_kern_with_ddr = num_kern_with_ddr + 1
+                    has_ddr = True
+                    kernel_AXI_PROPERTIES = [
+                        "CONFIG.DATA_WIDTH {512}",
+                        "CONFIG.ADDR_WIDTH {34}",
+                        "CONFIG.ID_WIDTH {" + str(mappings[regions]['kernel'][i]['ddr_id_width']) + "}",
+                        "CONFIG.FREQ_HZ {199998001}"
+                    ]
+                    instName = mappings[regions]['kernel'][i]['inst']
+                    ht_name = instName.split('/')[-1]
+                    portName = ht_name + "_DDR_SAXI"
+                    tcl_user_app.add_axi4_port(portName, 'Slave')
+                    tcl_user_app.setPortProperties(portName, kernel_AXI_PROPERTIES)
+                    kern_array.append(mappings[regions]['kernel'][i])
+                    print("Kernel num: " + str(mappings[regions]['kernel'][i]['num']))
+            if has_ddr:
+                clk_name = "SYSCLK" + regions[-1] + "_300"
+                hier_name = "ddrRegion_SLR" + regions[-1]
+                tcl_user_app.add_intf_port(clk_name, 'xilinx.com:interface:diff_clock_rtl:1.0', 'Slave')
+                tcl_user_app.tprint("set_property CONFIG.FREQ_HZ 333111000 [get_bd_intf_ports " + clk_name + "]")
+                ddr4_portname = "c" + regions[-1] + "_ddr4"
+                tcl_user_app.add_intf_port(ddr4_portname, 'xilinx.com:interface:ddr4_rtl:1.0', 'Master')
+                tcl_user_app.createHierarchy(hier_name)
+
+                partitioner = MemoryPartitioner()
+                sorted_kern_array = sorted(kern_array, key=lambda k: ddr_size_to_bytes(k['ddr_size']), reverse=True)
+                for j in sorted_kern_array:
+                    start, end = partitioner.allocate_partition(j['ddr_size'])
+                    size_in_bytes = ddr_size_to_bytes(j['ddr_size']) - 1
+                    vir_addr_len = size_in_bytes.bit_length()
+                    phy_addr_prefix = start >> vir_addr_len
+                    print(hex(phy_addr_prefix) + ", " + str(vir_addr_len))
+                    createMemoryPartitioner(outDir + "/MemoryPartitioner_kern" + str(j['num']) + ".v",
+                                            output_path + "/../middleware/python",
+                                            phy_addr_prefix, vir_addr_len, str(j['num']), str(j['ddr_id_width']))
+
+                    verilog_path = outDir + "/MemoryPartitioner_kern" + str(j['num']) + ".v"
+                    print(verilog_path)
+                    tcl_user_app.addVerilog(verilog_path)
+                    tcl_user_app.instModule(
+                        {
+                            'name': 'addr_translator_kern' + str(j['num']),
+                            'inst': 'ddrRegion_SLR' + regions[-1] + '/addr_translator_kern' + str(j['num'])
+                        }
+                    )
+
+                DDR_INTERCONNECT_PROPERTIES = [
+                    "CONFIG.NUM_MI {1}",
+                    "CONFIG.NUM_SI {" + str(num_kern_with_ddr) + "}",
+                    "CONFIG.M00_HAS_REGSLICE {1}"
+                ]
+                DDR_INSTANCE_SETTING = {
+                    'name': 'axi_interconnect',
+                    'properties': DDR_INTERCONNECT_PROPERTIES,
+                    'inst': 'ddrRegion_SLR' + regions[-1] + '/ddr4_inter_SLR' + regions[-1]
+                }
+
+                tcl_user_app.instBlock(DDR_INSTANCE_SETTING)
+
+                count = 0
+                for i in range(len(mappings[regions]['kernel'])):
+                    if mappings[regions]['kernel'][i]['ddr']:
+                        instName = mappings[regions]['kernel'][i]['inst']
+                        ht_name = instName.split('/')[-1]
+                        portName = ht_name + "_DDR_SAXI"
+                        tcl_user_app.makeConnection(
+                            'intf',
+                            {
+                                'type': 'intf_port',
+                                'port_name': portName
+                            },
+                            {
+                                'name': 'ddrRegion_SLR' + regions[-1] + '/addr_translator_kern' + str(mappings[regions]['kernel'][i]['num']),
+                                'type': 'intf',
+                                'port_name': 's0_axi'
+                            }
+                        )
+                        tcl_user_app.makeConnection(
+                            'net',
+                            {
+                                'type': 'port',
+                                'port_name': 'CLK'
+                            },
+                            {
+                                'name': 'ddrRegion_SLR' + regions[-1] + '/addr_translator_kern' + str(mappings[regions]['kernel'][i]['num']),
+                                'type': 'pin',
+                                'port_name': 'clk'
+                            }
+                        )
+
+                        tcl_user_app.makeConnection(
+                            'net',
+                            {
+                                'type': 'port',
+                                'port_name': 'rstn'
+                            },
+                            {
+                                'name': 'ddrRegion_SLR' + regions[-1] + '/addr_translator_kern' + str(mappings[regions]['kernel'][i]['num']),
+                                'type': 'pin',
+                                'port_name': 'resetn'
+                            }
+                        )
+
+                        tcl_user_app.makeConnection(
+                            'intf',
+                            {
+                                'name': 'ddrRegion_SLR' + regions[-1] + '/addr_translator_kern' + str(mappings[regions]['kernel'][i]['num']),
+                                'type': 'intf',
+                                'port_name': 'm0_axi'
+                            },
+                            {
+                                'name': 'ddrRegion_SLR' + regions[-1] + '/ddr4_inter_SLR' + regions[-1],
+                                'type': 'intf',
+                                'port_name': 'S0' + str(count) + '_AXI'
+                            },
+                        )
+                        count += 1
+                #hier_name = "ddrRegion_SLR" + regions[-1]
+                tcl_user_app.tprint("create_bd_cell -type ip -vlnv xilinx.com:ip:ddr4:2.2 " + hier_name + '/ddr4_hub_SLR' + regions[-1])
+                tcl_user_app.tprint("create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 " + hier_name + '/ddr4_rst_hub_SLR' + regions[-1])
+                tcl_user_app.tprint("set_property -dict [list CONFIG.C0.DDR4_TimePeriod {938} CONFIG.C0.DDR4_InputClockPeriod {3001} CONFIG.C0.DDR4_CLKOUT0_DIVIDE {5} CONFIG.C0.DDR4_MemoryType {RDIMMs} CONFIG.C0.DDR4_MemoryPart {MTA18ASF2G72PZ-2G3} CONFIG.C0.DDR4_DataWidth {72} CONFIG.C0.DDR4_CasLatency {15} CONFIG.C0.DDR4_AxiDataWidth {512} CONFIG.C0.DDR4_AxiAddressWidth {34} CONFIG.C0.CK_WIDTH {2} CONFIG.C0.CKE_WIDTH {2} CONFIG.C0.CS_WIDTH {2} CONFIG.C0.ODT_WIDTH {2}] [get_bd_cells " + hier_name + "/ddr4_hub_SLR" + regions[-1] + "]")
+
+                tcl_user_app.instBlock(
+                    {
+                        'name': 'constant',
+                        'inst': hier_name + '/constant_zero',
+                    }
+                )
+                tcl_user_app.setProperties(hier_name + '/constant_zero', ['CONFIG.CONST_VAL {0}'])
+                tcl_user_app.instBlock(
+                    {
+                        'name': 'constant',
+                        'inst': hier_name + '/constant_one',
+                    }
+                )
+                tcl_user_app.setProperties(hier_name + '/constant_one', ['CONFIG.CONST_VAL {1}'])
+                tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                        'type': 'intf_port',
+                        'port_name': clk_name
+                    },
+                    {
+                        'name': hier_name + '/ddr4_hub_SLR' + regions[-1],
+                        'type': 'intf',
+                        'port_name': 'C0_SYS_CLK'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                        'type': 'intf_port',
+                        'port_name': ddr4_portname
+                    },
+                    {
+                        'name': hier_name + '/ddr4_hub_SLR' + regions[-1],
+                        'type': 'intf',
+                        'port_name': 'C0_DDR4'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                        'name': hier_name + '/ddr4_inter_SLR' + regions[-1],
+                        'type': 'intf',
+                        'port_name': '/M00_AXI'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_hub_SLR' + regions[-1],
+                        'type': 'intf',
+                        'port_name': 'C0_DDR4_S_AXI'
+                    }
+                )
+                for i in range(num_kern_with_ddr):
+                    tcl_user_app.makeConnection(
+                        'net',
+                        {
+                            'type': 'port',
+                            'port_name': 'CLK'
+                        },
+                        {
+                            'name': hier_name + '/ddr4_inter_SLR' + regions[-1],
+                            'type': 'pin',
+                            'port_name': 'S0' + str(i) + '_ACLK'
+                        }
+                    )
+                    tcl_user_app.makeConnection(
+                        'net',
+                        {
+                            'type': 'port',
+                            'port_name': 'rstn'
+                        },
+                        {
+                            'name': hier_name + '/ddr4_inter_SLR' + regions[-1],
+                            'type': 'pin',
+                            'port_name': 'S0' + str(i) + '_ARESETN'
+                        }
+                    )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'type': 'port',
+                        'port_name': 'rstn'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_rst_hub_SLR' + regions[-1],
+                        'type': 'pin',
+                        'port_name': 'ext_reset_in'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/ddr4_hub_SLR' + regions[-1],
+                        'type': 'pin',
+                        'port_name': 'c0_ddr4_ui_clk'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_rst_hub_SLR' + regions[-1],
+                        'type': 'pin',
+                        'port_name': 'slowest_sync_clk'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/ddr4_hub_SLR' + regions[-1],
+                        'type': 'pin',
+                        'port_name': 'c0_ddr4_ui_clk'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_inter_SLR' + regions[-1],
+                        'type': 'pin',
+                        'port_name': 'ACLK'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/ddr4_hub_SLR' + regions[-1],
+                        'type': 'pin',
+                        'port_name': 'c0_ddr4_ui_clk'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_inter_SLR' + regions[-1],
+                        'type': 'pin',
+                        'port_name': 'M00_ACLK'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/ddr4_rst_hub_SLR' + regions[-1],
+                        'type': 'pin',
+                        'port_name': 'peripheral_reset'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_hub_SLR' + regions[-1],
+                        'type': 'pin',
+                        'port_name': 'sys_rst'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/ddr4_rst_hub_SLR' + regions[-1],
+                        'type': 'pin',
+                        'port_name': 'interconnect_aresetn'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_hub_SLR' + regions[-1],
+                        'type': 'pin',
+                        'port_name': 'c0_ddr4_aresetn'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/ddr4_rst_hub_SLR' + regions[-1],
+                        'type': 'pin',
+                        'port_name': 'interconnect_aresetn'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_inter_SLR' + regions[-1],
+                        'type': 'pin',
+                        'port_name': 'ARESETN'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/ddr4_rst_hub_SLR' + regions[-1],
+                        'type': 'pin',
+                        'port_name': 'interconnect_aresetn'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_inter_SLR' + regions[-1],
+                        'type': 'pin',
+                        'port_name': 'M00_ARESETN'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/constant_zero',
+                        'type': 'pin',
+                        'port_name': 'dout'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_hub_SLR' + regions[-1],
+                        'type': 'pin',
+                        'port_name': 'c0_ddr4_s_axi_ctrl_arvalid'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/constant_zero',
+                        'type': 'pin',
+                        'port_name': 'dout'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_hub_SLR' + regions[-1],
+                        'type': 'pin',
+                        'port_name': 'c0_ddr4_s_axi_ctrl_awvalid'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/constant_zero',
+                        'type': 'pin',
+                        'port_name': 'dout'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_hub_SLR' + regions[-1],
+                        'type': 'pin',
+                        'port_name': 'c0_ddr4_s_axi_ctrl_wvalid'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/constant_one',
+                        'type': 'pin',
+                        'port_name': 'dout'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_hub_SLR' + regions[-1],
+                        'type': 'pin',
+                        'port_name': 'c0_ddr4_s_axi_ctrl_bready'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hier_name + '/constant_one',
+                        'type': 'pin',
+                        'port_name': 'dout'
+                    },
+                    {
+                        'name': hier_name + '/ddr4_hub_SLR' + regions[-1],
+                        'type': 'pin',
+                        'port_name': 'c0_ddr4_s_axi_ctrl_rready'
+                    }
+                )
+                for i in range(len(mappings[regions]['kernel'])):
+                    if mappings[regions]['kernel'][i]['ddr']:
+                        instName = mappings[regions]['kernel'][i]['inst']
+                        ht_name = instName.split('/')[-1]
+                        portName = ht_name + "_DDR_SAXI"
+
+                        tcl_user_app.assign_address(
+                            'ddrRegion/addr_translator_kern' + str(mappings[regions]['kernel'][i]['num']),
+                            's0_axi',
+                            'reg0'
+                        )
+
+                        prop = {'offset': "0x00000000"}
+                        tcl_user_app.set_address_properties(None, 'addr_translator_kern' + str(mappings[regions]['kernel'][i]['num']),
+                                                            'reg0', portName, **prop)
+                        prop = {'range': mappings[regions]['kernel'][i]['ddr_size']}
+                        tcl_user_app.set_address_properties(None, 'addr_translator_kern' + str(mappings[regions]['kernel'][i]['num']),
+                                                            'reg0', portName, **prop)
+
+
 ###
-
-
 
 def userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, tcl_user_app, sim,is_gw,api_info,CAMILO_TEMP_DEBUG):
     """
@@ -3621,6 +4329,8 @@ def userApplicationRegionMultiSLR(tcl_user_app, mappings,outDir,main_slr,reset_s
         for kernel_inst in mappings[region]['kernel']:
             port_name = "user_"+kernel_inst['name'] + "_inst_" + str(kernel_inst['num'])+'_i_i'
             ec_file.write(' '+port_name)
+            if kernel_inst['ddr']:
+                ec_file.write(' ' + "pr_i/ddrRegion_kern_" + str(kernel_inst['num']))
         if active:
             ec_file.write(']]\nresize_pblock [get_pblocks ' + mappings[region]['name'] + '] -add {'+mappings[region]['clockregion']+"}\n\n\n")
 def userApplicationRegionGWShellChanges(tcl_user_app):
@@ -3700,13 +4410,14 @@ def userApplicationRegion(project_name,outDir,output_path, fpga, sim,is_gw,api_i
         userApplicationRegionControlInst(tcl_user_app)
     else:
         tieOffControlInfrastructure(tcl_user_app)
-    if tcl_user_app.fpga.has_ddr:
+    if tcl_user_app.fpga.has_ddr and not fpga['multi_slr']:
         userApplicationRegionDDR(tcl_user_app, outDir, output_path)
         print("DDR written!!!")
     tcl_user_app.setInterfacesCLK("CLK",clk_200_int)
     tcl_user_app.setInterfacesCLK("CLK300", clk_300_int)
     if fpga['multi_slr']:
         userApplicationRegionMultiSLR(tcl_user_app,fpga['slr_mappings'],outDir, fpga['main_slr'],fpga['reset_slr'],fpga['board'])
+        userApplicationRegionDDRMultiSLR(tcl_user_app, fpga['slr_mappings'], outDir, output_path)
     if is_gw:
         userApplicationRegionGWShellChanges(tcl_user_app)
     tcl_user_app.close()

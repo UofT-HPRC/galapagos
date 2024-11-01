@@ -254,21 +254,28 @@ class cluster(abstractDict):
             node_inst['total_kernel_num'] = len(self.kernels) # Includes gateway kernel
             has_ddr = False
             max_ddr_id_width = 1
-            for i in node_inst['kernel']:
-                for j in self.kernels:
-                    if int(i) == int(j.data['num']) and j.data['ddr']:
-                        print(int(i))
-                        print(j.data['num'])
-                        node_inst.has_ddr = True
-                        has_ddr = True
-                        if max_ddr_id_width < int(j['ddr_id_width']):
-                            max_ddr_id_width = int(j['ddr_id_width'])
-                        node_inst.max_ddr_id_width = max_ddr_id_width
-            if has_ddr:
-                node_inst['use_ddr_shell'] = 1 #Charles use this flag to set which shell_bd to use. 0 uses shell_bd.tcl, 1 uses shell_bd_ddr.tcl
+            if not (('board' in node_inst) and (node_inst['board'] in multi_slr_boards)):
+                for i in node_inst['kernel']:
+                    for j in self.kernels:
+                        if int(i) == int(j.data['num']) and j.data['ddr']:
+                            node_inst.has_ddr = True
+                            has_ddr = True
+                            if max_ddr_id_width < int(j['ddr_id_width']):
+                                max_ddr_id_width = int(j['ddr_id_width'])
+                            node_inst.max_ddr_id_width = max_ddr_id_width
+                if has_ddr:
+                    node_inst['use_ddr_shell'] = 1 #Charles use this flag to set which shell_bd to use. 0 uses shell_bd.tcl, 1 uses shell_bd_ddr.tcl
+                else:
+                    node_inst['use_ddr_shell'] = 0
+                print("Use DDR Shell: " + str(node_inst['use_ddr_shell']))
             else:
-                node_inst['use_ddr_shell'] = 0
-            print("Use DDR Shell: " + str(node_inst['use_ddr_shell']))
+                for i in node_inst['kernel']:
+                    for j in self.kernels:
+                        if int(i['num']) == int(j.data['num']) and j.data['ddr']:
+                            node_inst.has_ddr = True
+                            if max_ddr_id_width < int(j['ddr_id_width']):
+                                max_ddr_id_width = int(j['ddr_id_width'])
+                            node_inst.max_ddr_id_width = max_ddr_id_width
             if ((node_inst['type']=='hw') and ('part' not in node_inst)):
                 node_inst['part']=board_pairs[node_inst['board']]
             node_inst['kernel'] = []
@@ -381,22 +388,6 @@ class cluster(abstractDict):
             self.nodes[i]['ctrl_kernel_dict'] = ctrl_kernel_dict
             self.nodes[i].has_control = has_control
         return
-
-    # ### changes by Charles
-    # def checkDDR(self):
-    #     for i in range(len(self.nodes)):
-    #         #has_ddr = False
-    #         max_ddr_id_width = 1
-    #         for j in range(len(self.nodes[i]['kernel'])):
-    #             if self.nodes[i]['kernel'][j].data['ddr']:
-    #                 self.nodes[i]['kernel'][j].has_ddr = True
-    #                 #has_ddr = True
-    #                 if max_ddr_id_width < int(self.nodes[i]['kernel'][j]['ddr_id_width']):
-    #                     max_ddr_id_width = int(self.nodes[i]['kernel'][j]['ddr_id_width'])
-    #         #self.nodes[i].has_ddr = has_ddr
-    #         self.nodes[i].max_ddr_id_width = max_ddr_id_width
-    #     return
-    # ###
 
     def writeClusterTCL(self, output_path, sim, has_GW,api_info,CAMILO_TEMP_DEBUG):
         #tclFileThreads = []
