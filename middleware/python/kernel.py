@@ -72,7 +72,6 @@ class kernel(abstractDict):
             'board',
             'note',
             'control',
-            'control_type',
             'ddr',
             'ddr_size',
             'ddr_id_width'

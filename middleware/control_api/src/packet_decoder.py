@@ -70,11 +70,13 @@ def packet_decoder(packet_type, packet):
         packet_wstrb = extract_bits_by_width(packet, AXIS_LAN_WSTRB_OFFSET, AXIS_LAN_WSTRB_WIDTH)
         requestor_tid = extract_bits_by_width(packet, AXIS_LAN_TID_OFFSET, AXIS_LAN_TID_WIDTH)
         requestor_ip = extract_bits_by_width(packet, AXIS_LAN_IP_OFFSET, AXIS_LAN_IP_WIDTH)
+        requestor_ctid = extract_bits_by_width(packet, AXIS_LAN_CTID_OFFSET, AXIS_LAN_CTID_WIDTH)
         print("Packet Data: 0x%x" % packet_data)
         print("Packet Register Address: 0x%x" % packet_address)
         print("Packet WSTRB: 0x%x" % packet_wstrb)
         print("Requestor TID: 0x%x" % requestor_tid)
         print("Requestor IP: 0x%x" % requestor_ip)
+        print("Requestor CTID: 0x%x" % requestor_ctid)
     # WAN packet
     elif (packet_type == 1):
         print("WAN Packet")

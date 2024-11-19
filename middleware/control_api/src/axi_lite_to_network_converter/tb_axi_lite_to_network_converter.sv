@@ -1,27 +1,14 @@
 `timescale 1ns / 1ps
 
-module tb();
+module tb #(
+    `include "ctrl_api_header_parameters.vh"
+) ();
     // Parameters 
-    parameter BUSY_RESPONSE_PAUSE_DURATION = 5; //cycles
-    parameter AXI_LITE_BRESP_WIDTH = 2;
-    parameter AXI_LITE_RRESP_WIDTH = 2;
-    parameter AXI_LITE_WSTRB_ENABLED = 1;
-    parameter AXI_LITE_ADDR_WIDTH = 64;
-    parameter AXI_LITE_DATA_WIDTH = 32;
-    parameter AXI_LITE_WSTRB_WIDTH = 4;
-    parameter AXIS_DATA_WIDTH = 512;
-    parameter AXIS_KEEP_WIDTH = 64;
-    parameter AXIS_LAN_TDEST_WIDTH = 8;
-    parameter AXIS_LAN_TUSER_WIDTH = 8;
-    parameter AXIS_WAN_TDEST_WIDTH = 32;
-    parameter AXIS_WAN_TUSER_WIDTH = 16;
-    parameter AXIS_KIP_TUSER_WIDTH = 64;
-    parameter AXIS_FROM_NB_TDEST_WIDTH = 8;
-    parameter AXIS_FROM_NB_TUSER_WIDTH = 64;
-    parameter IP_ADDRESS_WIDTH = 32;
-    parameter IP_PORT_WIDTH = 16;
-    parameter DUT_ID = 'hF0;
-    parameter DUT_IP_ADDRESS = 'h0A010702;
+    localparam BUSY_RESPONSE_PAUSE_DURATION = 5; //cycles
+    localparam AXI_LITE_WSTRB_ENABLED = 1;
+    localparam DUT_ID = 'hF0;
+    localparam DUT_IP_ADDRESS = 'h0A010702;
+    localparam DUT_CLUSTER_ID = 'hBACEBACE;
 
     `include "ctrl_api_message_parameters.vh"
 
@@ -101,6 +88,7 @@ module tb();
         .i_ap_rst_n(r_reset),
         .i_kernel_id(DUT_ID),
         .i_kernel_ip_address(DUT_IP_ADDRESS),
+        .i_cluster_id(DUT_CLUSTER_ID),
         // Input AXI-Lite Write Address Interface
         .S_AXIL_awvalid(r_s_awvalid),
         .S_AXIL_awready(w_s_awready),
@@ -178,15 +166,15 @@ module tb();
 
     // Test logic: Initial signals
     initial begin
-        // // Test AXI-Lite Write and Read
-        // r_remote_enable <= 0;
-        // r_s_awvalid <= 0;
-        // r_s_awaddr <= 0;
-        // r_s_wvalid <= 0;
-        // r_s_wdata <= 0;
-        // r_s_arvalid <= 0;
-        // r_s_araddr <= 0;
-        // #100
+        // Test AXI-Lite Write and Read
+        r_remote_enable <= 0;
+        r_s_awvalid <= 0;
+        r_s_awaddr <= 0;
+        r_s_wvalid <= 0;
+        r_s_wdata <= 0;
+        r_s_arvalid <= 0;
+        r_s_araddr <= 0;
+        #100
         // // 64-bit LAN Read from address ABCDABCDABCDABCD of kernel EF
         // r_s_araddr[AXIL_IS_WAN_OFFSET] <= 0;
         // r_s_araddr[AXIL_LAN_TDEST_OFFSET+:AXIS_LAN_TDEST_WIDTH] <= 'hEF;
@@ -208,20 +196,20 @@ module tb();
         // r_s_awvalid <= 0;
         // r_s_wvalid <= 0;
         // #100
-        // r_s_awvalid <= 1;
-        // r_s_wvalid <= 1;
-        // // 64-bit WAN Write 77776666 to cluster AFAFFCFC port 7E0E, Register Address BCBC
-        // r_s_awaddr[AXIL_IS_WAN_OFFSET] <= 1;
-        // r_s_awaddr[AXIL_WAN_BASE_PORT_OFFSET+:AXIL_WAN_BASE_PORT_WIDTH] <= 'h7E0E;
-        // r_s_awaddr[AXIL_WAN_BASE_CTDEST_OFFSET+:AXIL_WAN_BASE_CTDEST_WIDTH] <= 'hFCFC;
-        // r_s_awaddr[AXIL_WAN_EXTENDED_PORT_OFFSET] <= 0;
-        // r_s_awaddr[AXIL_WAN_EXTENDED_CTDEST_OFFSET+:AXIL_WAN_EXTENDED_CTDEST_WIDTH] <= 'hAFAF;
-        // r_s_awaddr[AXIL_CREG_ADDR_OFFSET+:AXIL_CREG_ADDR_WIDTH] <= 'hBCBC;
-        // r_s_wdata <= 'h77776666;
-        // r_s_wstrb = 'hB;
-        // #10
-        // r_s_awvalid <= 0;
-        // r_s_wvalid <= 0;
+        r_s_awvalid <= 1;
+        r_s_wvalid <= 1;
+        // 64-bit WAN Write 77776666 to cluster AFAFFCFC port 7E0E, Register Address BCBC
+        r_s_awaddr[AXIL_IS_WAN_OFFSET] <= 1;
+        r_s_awaddr[AXIL_WAN_BASE_PORT_OFFSET+:AXIL_WAN_BASE_PORT_WIDTH] <= 'h7E0E;
+        r_s_awaddr[AXIL_WAN_BASE_CTDEST_OFFSET+:AXIL_WAN_BASE_CTDEST_WIDTH] <= 'hFCFC;
+        r_s_awaddr[AXIL_WAN_EXTENDED_PORT_OFFSET] <= 0;
+        r_s_awaddr[AXIL_WAN_EXTENDED_CTDEST_OFFSET+:AXIL_WAN_EXTENDED_CTDEST_WIDTH] <= 'hAFAF;
+        r_s_awaddr[AXIL_CREG_ADDR_OFFSET+:AXIL_CREG_ADDR_WIDTH] <= 'hBCBC;
+        r_s_wdata <= 'h77776666;
+        r_s_wstrb = 'hB;
+        #10
+        r_s_awvalid <= 0;
+        r_s_wvalid <= 0;
         // #100
         // // 64-bit LAN Read from Address BCBCBCBCBCBCBC of kernel CD 
         // r_s_araddr[AXIL_IS_WAN_OFFSET] <= 0;
@@ -235,18 +223,18 @@ module tb();
         // r_s_awvalid <= 0;
         // r_s_wvalid <= 0;
         // #100
-        // // 64-bit WAN Read from cluster FBFBFAFA port E0E0, Register Address ABAB
-        // r_s_araddr[AXIL_IS_WAN_OFFSET] <= 1;
-        // r_s_araddr[AXIL_WAN_BASE_PORT_OFFSET+:AXIL_WAN_BASE_PORT_WIDTH] <= 'h60E0;
-        // r_s_araddr[AXIL_WAN_BASE_CTDEST_OFFSET+:AXIL_WAN_BASE_CTDEST_WIDTH] <= 'hFAFA;
-        // r_s_araddr[AXIL_WAN_EXTENDED_PORT_OFFSET] <= 1;
-        // r_s_araddr[AXIL_WAN_EXTENDED_CTDEST_OFFSET+:AXIL_WAN_EXTENDED_CTDEST_WIDTH] <= 'hFBFB;
-        // r_s_araddr[AXIL_CREG_ADDR_OFFSET+:AXIL_CREG_ADDR_WIDTH] <= 'hABAB;   
-        // r_s_arvalid <= 1;     
-        // #10
-        // r_s_arvalid <= 1;
-        // #1000
-        // $finish;
+        // 64-bit WAN Read from cluster FBFBFAFA port E0E0, Register Address ABAB
+        r_s_araddr[AXIL_IS_WAN_OFFSET] <= 1;
+        r_s_araddr[AXIL_WAN_BASE_PORT_OFFSET+:AXIL_WAN_BASE_PORT_WIDTH] <= 'h60E0;
+        r_s_araddr[AXIL_WAN_BASE_CTDEST_OFFSET+:AXIL_WAN_BASE_CTDEST_WIDTH] <= 'hFAFA;
+        r_s_araddr[AXIL_WAN_EXTENDED_PORT_OFFSET] <= 1;
+        r_s_araddr[AXIL_WAN_EXTENDED_CTDEST_OFFSET+:AXIL_WAN_EXTENDED_CTDEST_WIDTH] <= 'hFBFB;
+        r_s_araddr[AXIL_CREG_ADDR_OFFSET+:AXIL_CREG_ADDR_WIDTH] <= 'hABAB;   
+        r_s_arvalid <= 1;     
+        #10
+        r_s_arvalid <= 1;
+        #1000
+        $finish;
 
         // Test Different Orders of Operations
         // r_remote_enable <= 0;

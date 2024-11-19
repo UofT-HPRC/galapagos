@@ -126,6 +126,7 @@ module network_to_axi_lite_converter #(
     // Store Requestor TID and IP Address for forwarded packets
     logic [AXIS_LAN_TDEST_WIDTH-1:0] r_requestor_tid;
     logic [IP_ADDRESS_WIDTH-1:0] r_requestor_ip_address;
+    logic [AXIS_WAN_TDEST_WIDTH-1:0] r_requestor_ctid;
     // Other
     logic [MSG_TYPE_WIDTH-1:0] w_from_network_bridge_msg_type;
     logic [MSG_TYPE_WIDTH-1:0] w_from_request_buffer_msg_type;
@@ -166,7 +167,8 @@ module network_to_axi_lite_converter #(
     assign to_KIP_tdata[AXIS_KIP_DATA_OFFSET+:AXIS_KIP_DATA_WIDTH] = r_to_KIP_message_data;
     assign to_KIP_tdata[AXIS_KIP_TID_OFFSET+:AXIS_KIP_TID_WIDTH] = r_to_KIP_requestor_tid;
     assign to_KIP_tdata[AXIS_KIP_SENDER_TID_OFFSET+:AXIS_KIP_SENDER_TID_WIDTH] = i_kernel_id;
-    assign to_KIP_tdata[AXIS_DATA_WIDTH-1:(AXIS_KIP_SENDER_TID_OFFSET+AXIS_KIP_SENDER_TID_WIDTH)] = 0;
+    assign to_KIP_tdata[AXIS_KIP_CTDEST_OFFSET+:AXIS_KIP_CTDEST_WIDTH] = r_requestor_ctid;
+    assign to_KIP_tdata[AXIS_DATA_WIDTH-1:(AXIS_KIP_CTDEST_OFFSET+AXIS_KIP_CTDEST_WIDTH)] = 0;
     assign to_KIP_tkeep = 'hFFFFFFFFFFFFFFFF;
     // to-KnownIP TUSER channel
     assign to_KIP_tuser[IP_ADDRESS_WIDTH-1:0] = r_to_KIP_tuser_dest_IP_addr;
@@ -580,6 +582,7 @@ module network_to_axi_lite_converter #(
             r_m_axil_tid <= 0;
             r_requestor_tid <= 0;
             r_requestor_ip_address <= 0;
+            r_requestor_ctid <= 0;
         end
         else if (r_core_state == STATE_IDLE) begin
             // Case 1: There are already buffered network requests
@@ -603,6 +606,7 @@ module network_to_axi_lite_converter #(
                     // Read requestor TID and IP Address. If this is a forwarded LAN packet, these values will be non-zero
                     r_requestor_tid <= from_request_buffer_tdata[AXIS_LAN_TID_OFFSET+:AXIS_LAN_TID_WIDTH];
                     r_requestor_ip_address <= from_request_buffer_tdata[AXIS_LAN_IP_OFFSET+:AXIS_LAN_IP_WIDTH];
+                    r_requestor_ctid <= from_request_buffer_tdata[AXIS_LAN_CTID_OFFSET+:AXIS_LAN_CTID_WIDTH];
                 end
                 else begin
                     r_m_axil_awaddr <= 0;
@@ -612,6 +616,7 @@ module network_to_axi_lite_converter #(
                     r_m_axil_tid <= 0;
                     r_requestor_tid <= 0;
                     r_requestor_ip_address <= 0;
+                    r_requestor_ctid <= 0;
                 end
             end
             // Case 2: No buffered requests, so read from the network
@@ -634,6 +639,7 @@ module network_to_axi_lite_converter #(
                 // Read requestor TID and IP Address. If this is a forwarded LAN packet, these values will be non-zero
                 r_requestor_tid <= from_network_bridge_tdata[AXIS_LAN_TID_OFFSET+:AXIS_LAN_TID_WIDTH];
                 r_requestor_ip_address <= from_network_bridge_tdata[AXIS_LAN_IP_OFFSET+:AXIS_LAN_IP_WIDTH];
+                r_requestor_ctid <= from_network_bridge_tdata[AXIS_LAN_CTID_OFFSET+:AXIS_LAN_CTID_WIDTH];
             end
             else begin
                 r_m_axil_awaddr <= 0;
@@ -643,6 +649,7 @@ module network_to_axi_lite_converter #(
                 r_m_axil_tid <= 0;
                 r_requestor_tid <= 0;
                 r_requestor_ip_address <= 0;
+                r_requestor_ctid <= 0;
            end
         end
         else begin
@@ -653,6 +660,7 @@ module network_to_axi_lite_converter #(
             r_m_axil_tid <= r_m_axil_tid;
             r_requestor_tid <= r_requestor_tid;
             r_requestor_ip_address <= r_requestor_ip_address;
+            r_requestor_ctid <= r_requestor_ctid;
         end
     end
 

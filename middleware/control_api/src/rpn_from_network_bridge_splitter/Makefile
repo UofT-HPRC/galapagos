@@ -1,4 +1,4 @@
-export IP_NAME := reliability_from_network_bridge_splitter
+export IP_NAME := rpn_from_network_bridge_splitter
 export PROJECT_NAME := vivado_$(IP_NAME)
 export SOURCE_PATH := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 export PARAMETER_SOURCE_PATH := $(SOURCE_PATH)/../include

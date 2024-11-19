@@ -9,6 +9,7 @@ module axi_lite_to_network_converter #(
     input i_ap_rst_n,
     input [AXIS_LAN_TDEST_WIDTH-1:0] i_kernel_id,
     input [IP_ADDRESS_WIDTH-1:0] i_kernel_ip_address, // In decimal form
+    input [CLUSTER_ID_WIDTH-1:0] i_cluster_id,
     // Input AXI-Lite Write Address Interface
     input S_AXIL_awvalid,
     output S_AXIL_awready,
@@ -149,7 +150,8 @@ module axi_lite_to_network_converter #(
     assign to_WAN_tdata[AXIS_WAN_WSTRB_OFFSET+:AXIS_WAN_WSTRB_WIDTH] = r_to_WAN_wstrb;
     assign to_WAN_tdata[AXIS_WAN_TID_OFFSET+:AXIS_WAN_TID_WIDTH] = r_to_WAN_requestor_tid;
     assign to_WAN_tdata[AXIS_WAN_IP_OFFSET+:AXIS_WAN_IP_WIDTH] = r_to_WAN_requestor_ip_addr;
-    assign to_WAN_tdata[AXIS_DATA_WIDTH-1:(AXIS_WAN_IP_OFFSET+AXIS_WAN_IP_WIDTH)] = 0;
+    assign to_WAN_tdata[AXIS_WAN_CTID_OFFSET+:AXIS_WAN_CTID_WIDTH] = i_cluster_id;
+    assign to_WAN_tdata[AXIS_DATA_WIDTH-1:(AXIS_WAN_CTID_OFFSET+AXIS_WAN_CTID_WIDTH)] = 0;
     assign to_WAN_tkeep = 'hFFFFFFFFFFFFFFFF;
     assign to_WAN_tdest = r_to_WAN_ctdest;
     assign to_WAN_tuser = r_to_WAN_dest_port;

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<cluster>
+    <port>
+        <form> direct </form>
+        <tag> direct_to_2 </tag>
+        <target> 2 </target>
+    </port>
+    <port>
+        <form> broadcast </form>
+        <tag> bc_12 </tag>
+        <target> 1 </target>
+        <target> 2 </target>
+    </port>
+    <port>
+        <form> direct </form>
+        <tag> direct_to_1 </tag>
+        <target> 1 </target>
+    </port>
+</cluster>
+

@@ -13,22 +13,22 @@ localparam RPN_MSG_TYPE_LAN_SEQ_NUM_CHECK = 2;
 localparam RPN_MSG_TYPE_LAN_SEQ_NUM_REPLY = 3;
 localparam RPN_MSG_TYPE_WAN_PUB = 4;
 localparam RPN_MSG_TYPE_WAN_ACK = 5;
-localparam RPN_MSG_TYPE_WAN_NUM_SEQ_NUM_CHECK = 6; // Sent by WAN Num TX to WAN Num Node to receive a sequence number for WAN->GW communications
-localparam RPN_MSG_TYPE_WAN_NUM_SEQ_NUM_REPLY = 7;
+localparam RPN_MSG_TYPE_WAN_SEQ_NUM_CHECK = 6; // Used by WNN Repos to query gateways for their currently stored Sequence numbers
+localparam RPN_MSG_TYPE_WAN_SEQ_NUM_REPLY = 7;
 localparam RPN_MSG_TYPE_WAN_OUTGOING_SEQ_NUM_REQUEST = 8; // Sent by WAN TX to Gateway to request a sequence number to send the WAN message. Uses WAN->GW sequence number received using RPN_MSG_TYPE_WAN_GW_SEQ_NUM_CHECK
-localparam RPN_MSG_TYPE_WAN_OUTGOING_SEQ_NUM_REPLY = 9;
-localparam RPN_MSG_TYPE_WAN_OUTGOING_SEQ_NUM_WRITE = 10; // Also serves to unlock the sequence number for another usage
-localparam RPN_MSG_TYPE_WAN_OUTGOING_SEQ_NUM_BRESP = 11;
-localparam RPN_MSG_TYPE_WAN_INCOMING_SEQ_NUM_REQUEST = 12; // Sent by WAN TX to Gateway to request a sequence number to send the WAN message. Uses WAN->GW sequence number received using RPN_MSG_TYPE_WAN_GW_SEQ_NUM_CHECK
-localparam RPN_MSG_TYPE_WAN_INCOMING_SEQ_NUM_REPLY = 13;
-localparam RPN_MSG_TYPE_WAN_INCOMING_SEQ_NUM_WRITE = 14; // Also serves to unlock the sequence number for another usage
-localparam RPN_MSG_TYPE_WAN_INCOMING_SEQ_NUM_BRESP = 15;
-localparam RPN_MSG_TYPE_WAN_SEQ_NUM_CHECK = 16; // Used by WNN Repos to query gateways for their currently stored Sequence numbers
-localparam RPN_MSG_TYPE_WAN_SEQ_NUM_REPLY = 17;
-localparam RPN_MSG_TYPE_KIP_PUB = 18;
-localparam RPN_MSG_TYPE_KIP_ACK = 19;
-localparam RPN_MSG_TYPE_WAN_OUTGOING_SEQ_NUM_CHECK = 20; // Used by KIP RX to verify the WAN sequence number and owner of the received KIP transmission. 
-localparam RPN_MSG_TYPE_WAN_OUTGOING_SEQ_NUM_RDATA = 21;
+localparam RPN_MSG_TYPE_WAN_OUTGOING_SEQ_NUM_REPLY = 14;
+localparam RPN_MSG_TYPE_WAN_OUTGOING_SEQ_NUM_WRITE = 9; // Also serves to unlock the sequence number for another usage
+localparam RPN_MSG_TYPE_WAN_OUTGOING_SEQ_NUM_BRESP = 15;
+localparam RPN_MSG_TYPE_WAN_OUTGOING_SEQ_NUM_CHECK = 10; // Used by KIP RX to verify the WAN sequence number and owner of the received KIP transmission. 
+localparam RPN_MSG_TYPE_WAN_OUTGOING_SEQ_NUM_RDATA = 16;
+localparam RPN_MSG_TYPE_WAN_INCOMING_SEQ_NUM_REQUEST = 11; // Sent by WAN TX to Gateway to request a sequence number to send the WAN message. Uses WAN->GW sequence number received using RPN_MSG_TYPE_WAN_GW_SEQ_NUM_CHECK
+localparam RPN_MSG_TYPE_WAN_INCOMING_SEQ_NUM_REPLY = 17;
+localparam RPN_MSG_TYPE_WAN_INCOMING_SEQ_NUM_WRITE = 12; // Also serves to unlock the sequence number for another usage
+localparam RPN_MSG_TYPE_WAN_INCOMING_SEQ_NUM_BRESP = 18;
+localparam RPN_MSG_TYPE_WAN_NUM_SEQ_NUM_CHECK = 13; // Sent by WAN Num TX to WAN Num Node to receive a sequence number for WAN->GW communications
+localparam RPN_MSG_TYPE_WAN_NUM_SEQ_NUM_REPLY = 19;
+localparam RPN_MSG_TYPE_KIP_PUB = 20;
+localparam RPN_MSG_TYPE_KIP_ACK = 21;
 
 // Packet Offsets
 // LAN messages
