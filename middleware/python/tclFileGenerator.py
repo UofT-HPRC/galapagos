@@ -1547,18 +1547,40 @@ def buildControlReliabilityInst(tcl_user_app, parent_hierarchy, has_wan, build_W
         )
     # Edge case: If only WAN request or response path is used, tie off the unused interfaces
     if build_WAN_request_path != build_WAN_response_path:
-        tcl_user_app.instBlock(
-            {
-                'name': 'xlconstant',
-                'inst':  hierarchy_name + '/const_1',
-                'properties': [ 
-                                'CONFIG.CONST_WIDTH {1}',
-                                'CONFIG.CONST_VAL {1}'
-                            ]
-            }
-        )
+        # tcl_user_app.instBlock(
+        #     {
+        #         'name': 'xlconstant',
+        #         'inst':  hierarchy_name + '/const_1',
+        #         'properties': [ 
+        #                         'CONFIG.CONST_WIDTH {1}',
+        #                         'CONFIG.CONST_VAL {1}'
+        #                     ]
+        #     }
+        # )
         if not build_WAN_request_path:
             for i in [0, 2]:
+                tcl_user_app.instBlock(
+                    {
+                        'name': 'axis_register_slice',
+                        'inst':  hierarchy_name + '/rpn_from_WNN_switch_tieoff_' + str(i),
+                        'clks': ['aclk'],
+                        'resetns': ['aresetn'],
+                        'resetns_port': 'rstn'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                        'name': hierarchy_name + '/rpn_from_WNN_switch',
+                        'type':'intf',
+                        'port_name': 'M0' + str(i) + '_AXIS'
+                    },
+                    {
+                        'name': hierarchy_name + '/rpn_from_WNN_switch_tieoff_' + str(i),
+                        'type':'intf',
+                        'port_name':'S_AXIS'
+                    }
+                ) 
                 tcl_user_app.makeConnection(
                     'net', 
                     {
@@ -1568,11 +1590,33 @@ def buildControlReliabilityInst(tcl_user_app, parent_hierarchy, has_wan, build_W
                     },
                     {
                         'type': 'pin',
-                        'name': hierarchy_name + '/rpn_from_WNN_switch',
-                        'port_name': 'M0' + str(i) + '_AXIS_tready'
+                        'name': hierarchy_name + '/rpn_from_WNN_switch_tieoff_' + str(i),
+                        'port_name': 'M_AXIS_tready'
                     }
                 )
         else:
+            tcl_user_app.instBlock(
+                {
+                    'name': 'axis_register_slice',
+                    'inst':  hierarchy_name + '/rpn_from_WNN_switch_tieoff_1',
+                    'clks': ['aclk'],
+                    'resetns': ['aresetn'],
+                    'resetns_port': 'rstn'
+                }
+            )
+            tcl_user_app.makeConnection(
+                'intf',
+                {
+                    'name': hierarchy_name + '/rpn_from_WNN_switch',
+                    'type':'intf',
+                    'port_name': 'M01_AXIS'
+                },
+                {
+                    'name': hierarchy_name + '/rpn_from_WNN_switch_tieoff_1',
+                    'type':'intf',
+                    'port_name':'S_AXIS'
+                }
+            ) 
             tcl_user_app.makeConnection(
                 'net', 
                 {
@@ -1582,8 +1626,8 @@ def buildControlReliabilityInst(tcl_user_app, parent_hierarchy, has_wan, build_W
                 },
                 {
                     'type': 'pin',
-                    'name': hierarchy_name + '/rpn_from_WNN_switch',
-                    'port_name': 'M01_AXIS_tready'
+                    'name': hierarchy_name + '/rpn_from_WNN_switch_tieoff_1',
+                    'port_name': 'M_AXIS_tready'
                 }
             )
     # Connect RPN WAN Output pathway
@@ -1657,6 +1701,28 @@ def buildControlReliabilityInst(tcl_user_app, parent_hierarchy, has_wan, build_W
         )
         if not build_WAN_request_path:
             for i in [0, 2]:
+                tcl_user_app.instBlock(
+                    {
+                        'name': 'axis_register_slice',
+                        'inst':  hierarchy_name + '/rpn_to_WNN_switch_tieoff_' + str(i),
+                        'clks': ['aclk'],
+                        'resetns': ['aresetn'],
+                        'resetns_port': 'rstn'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                        'name': hierarchy_name + '/rpn_to_WNN_switch_tieoff_' + str(i),
+                        'type':'intf',
+                        'port_name': 'M_AXIS'
+                    },
+                    {
+                        'name': hierarchy_name + '/rpn_to_WNN_switch',
+                        'type':'intf',
+                        'port_name': 'S0' + str(i) + '_AXIS'
+                    }
+                ) 
                 tcl_user_app.makeConnection(
                     'net', 
                     {
@@ -1666,12 +1732,34 @@ def buildControlReliabilityInst(tcl_user_app, parent_hierarchy, has_wan, build_W
                     },
                     {
                         'type': 'pin',
-                        'name': hierarchy_name + '/rpn_to_WNN_switch',
-                        'port_name': 'S0' + str(i) + '_AXIS_tready'
+                        'name': hierarchy_name + '/rpn_to_WNN_switch_tieoff_' + str(i),
+                        'port_name': 'S_AXIS_tvalid'
                     }
                 )
         else:
             for i in [1, 3]:
+                tcl_user_app.instBlock(
+                    {
+                        'name': 'axis_register_slice',
+                        'inst':  hierarchy_name + '/rpn_to_WNN_switch_tieoff_' + str(i),
+                        'clks': ['aclk'],
+                        'resetns': ['aresetn'],
+                        'resetns_port': 'rstn'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                        'name': hierarchy_name + '/rpn_to_WNN_switch_tieoff_' + str(i),
+                        'type':'intf',
+                        'port_name': 'M_AXIS'
+                    },
+                    {
+                        'name': hierarchy_name + '/rpn_to_WNN_switch',
+                        'type':'intf',
+                        'port_name': 'S0' + str(i) + '_AXIS'
+                    }
+                ) 
                 tcl_user_app.makeConnection(
                     'net', 
                     {
@@ -1681,8 +1769,8 @@ def buildControlReliabilityInst(tcl_user_app, parent_hierarchy, has_wan, build_W
                     },
                     {
                         'type': 'pin',
-                        'name': hierarchy_name + '/rpn_to_WNN_switch',
-                        'port_name': 'S0' + str(i) + '_AXIS_tready'
+                        'name': hierarchy_name + '/rpn_to_WNN_switch_tieoff_' + str(i),
+                        'port_name': 'S_AXIS_tvalid'
                     }
                 )
     # Create and connect inbound path from network bridge
@@ -2469,8 +2557,6 @@ def userApplicationRegionControlInst(tcl_user_app):
             build_WAN_response_path = True
         else:
             build_WAN_response_path = False
-        print("Path: ", build_WAN_request_path)
-        print("Path: ", build_WAN_response_path)
         buildControlReliabilityInst(tcl_user_app, hierarchy_name, has_wan, build_WAN_request_path, build_WAN_response_path)
         # Connect Reliability Instance to control modules
         # LAN connection
@@ -2773,7 +2859,7 @@ def userApplicationRegionControlInst(tcl_user_app):
         # If reliability is used, the following switch will connect to RPN output. Otherwise, it will connect directly to packet inputs
         if has_reliability:
             # Case 1: If there's WAN TX enabled, then LAN RX and KIP RX will both connect to this switch
-            if has_wan and num_anc_instances > 1:
+            if has_wan and num_anc_instances > 0:
                 num_sub_interfaces = 2
             # Case 2: No WAN TX, only LAN RX sends messages to kernels
             else:
@@ -2944,44 +3030,119 @@ def userApplicationRegionControlInst(tcl_user_app):
         }
     )
     # Outbound WAN Path
+    num_WAN_data_kernels = getNumWANDataKernels(tcl_user_app)
+    print("Has WAN:", has_wan)
+    print("Has Reliability", has_reliability)
+    print("Num ANC Instances:", num_anc_instances)
+    print("Num WAN Data Kernels:", num_WAN_data_kernels)
     if has_wan:
-        # WAN Path Case 1: Reliability is enabled
-        if has_reliability:
-            src_kernel_name = hierarchy_name + '/reliability_protocol_node/rpn_WAN_TX'
-            src_kernel_port_name = 'to_nb_WAN'
-        # WAN Path Case 2: No reliability, but there's more than 1 ANC instance on this FPGA
-        elif num_anc_instances > 1:
-            src_kernel_name = hierarchy_name + '/ctrl_to_WAN_switch'
-            src_kernel_port_name = 'M00_AXIS'
-        # WAN Path Case 3: No reliability, only 1 ANC instance. Connect directly
-        else: 
-            src_kernel_id = instances_with_anc[0]
-            src_kernel_hierarchy = hierarchy_name + "/control_api_inst_%d" % (src_kernel_id)
-            src_kernel_name = src_kernel_hierarchy + "/anc"
-            src_kernel_port_name = 'to_WAN'
-        num_WAN_data_kernels = getNumWANDataKernels(tcl_user_app)
-        # WAN Path Case A: At least 1 data kernel on the FPGA uses a WAN connection, connect output to WAN Switch 
-        if num_WAN_data_kernels > 0: 
-            dest_kernel_name = 'applicationRegion/WAN_switch'
-            dest_kernel_port_name = 'S00_AXIS'
-        # WAN Path Case B: Only control is using WAN connection (eg. Node 1), connect control output directly to WAN Bridge
+        # Edge case: If this is node 1, and RPN WNN repo is the only WAN component on the node, skip making the connection
+        if has_reliability and node_id == 1 and num_WAN_data_kernels == 0:
+            # Check to see if we actually have ANC instances with WAN connections
+            print("Checking Node 1 for ANC Instances that need WAN")
+            anc_instances_need_WAN = False
+            for kernel_id in ctrl_kernel_dict:
+                kernel = ctrl_kernel_dict[kernel_id]
+                # ignore NAC modules
+                if kernel['control_type'] == 's_axil':
+                    continue
+                elif kernel['has_wan'] == True:
+                    anc_instances_need_WAN = True
+            print("ANC Instances Need WAN: ", anc_instances_need_WAN)
+            skip_making_connection = not anc_instances_need_WAN
         else:
-            dest_kernel_name = 'applicationRegion/WAN_bridge'
-            dest_kernel_port_name = 'g2N_input'
-        tcl_user_app.makeBufferedIntfConnection(
-            {
-                'name': src_kernel_name,
-                'type': 'intf',
-                'port_name': src_kernel_port_name
-            },
-            {
-                'name': dest_kernel_name,
-                'type': 'intf',
-                'port_name': dest_kernel_port_name
-            },
-            hierarchy_name + '/output_WAN_path',
-            1
-        )
+            skip_making_connection = False
+        print("Skip making WAN connection: ", skip_making_connection)
+        if not skip_making_connection:
+            # WAN Path Case 1: Reliability is enabled
+            if has_reliability:
+                # Case 1A: There is at least 1 ANC instance on this board, meaning that rpn WAN TX will be built
+                if num_anc_instances > 0:
+                    src_kernel_name = hierarchy_name + '/reliability_protocol_node/rpn_WAN_TX'
+                    src_kernel_port_name = 'to_nb_WAN'
+                # Case 1B: No ANC instances, so even with reliability there's no WAN. Tie off the WAN switch to 0
+                else:
+                    tcl_user_app.instBlock(
+                        {
+                            'name': 'xlconstant',
+                            'inst':  hierarchy_name + '/reliability_protocol_node/rpn_WAN_TX_const_0',
+                            'properties': [ 
+                                            'CONFIG.CONST_WIDTH {1}',
+                                            'CONFIG.CONST_VAL {0}'
+                                        ]
+                        }
+                    )
+                    tcl_user_app.instBlock(
+                        {
+                            'name': 'axis_register_slice',
+                            'inst':  hierarchy_name + '/reliability_protocol_node/rpn_WAN_TX_tieoff',
+                            'clks': ['aclk'],
+                            'resetns': ['aresetn'],
+                            'resetns_port': 'rstn'
+                        }
+                    )
+                    tcl_user_app.makeConnection(
+                        'net', 
+                        {
+                            'type': 'pin',
+                            'name': hierarchy_name + '/reliability_protocol_node/rpn_WAN_TX_const_0',
+                            'port_name': 'dout'
+                        },
+                        {
+                            'type': 'pin',
+                            'name': hierarchy_name + '/reliability_protocol_node/rpn_WAN_TX_tieoff',
+                            'port_name': 'S_AXIS_tvalid'
+                        }
+                    )
+                    src_kernel_name = hierarchy_name + '/reliability_protocol_node/rpn_WAN_TX_tieoff'
+                    src_kernel_port_name = 'M_AXIS'
+            # WAN Path Case 2: No reliability, but there's more than 1 ANC instance on this FPGA
+            elif num_anc_instances > 1:
+                src_kernel_name = hierarchy_name + '/ctrl_to_WAN_switch'
+                src_kernel_port_name = 'M00_AXIS'
+            # WAN Path Case 3: No reliability, only 1 ANC instance. Connect directly
+            else: 
+                src_kernel_id = instances_with_anc[0]
+                src_kernel_hierarchy = hierarchy_name + "/control_api_inst_%d" % (src_kernel_id)
+                src_kernel_name = src_kernel_hierarchy + "/anc"
+                src_kernel_port_name = 'to_WAN'
+            # WAN Path Case A: At least 1 data kernel on the FPGA uses a WAN connection, connect output to WAN Switch 
+            if num_WAN_data_kernels > 0: 
+                dest_kernel_name = 'applicationRegion/WAN_switch'
+                dest_kernel_port_name = 'S00_AXIS'
+            # WAN Path Case B: Only control is using WAN connection (eg. Node 1), connect control output directly to WAN Bridge
+            else:
+                dest_kernel_name = 'applicationRegion/WAN_bridge'
+                dest_kernel_port_name = 'g2N_input'
+            tcl_user_app.makeBufferedIntfConnection(
+                {
+                    'name': src_kernel_name,
+                    'type': 'intf',
+                    'port_name': src_kernel_port_name
+                },
+                {
+                    'name': dest_kernel_name,
+                    'type': 'intf',
+                    'port_name': dest_kernel_port_name
+                },
+                hierarchy_name + '/output_WAN_path',
+                1
+            )
+        # If we're skipping making the WAN connection, tie off WAN TX
+        elif has_reliability:
+            tcl_user_app.makeConnection(
+                'net', 
+                {
+                    'type': 'pin',
+                    'name': hierarchy_name + '/reliability_protocol_node/const_1',
+                    'port_name': 'dout'
+                },
+                {
+                    'type': 'pin',
+                    'name': hierarchy_name + '/reliability_protocol_node/rpn_WAN_TX',
+                    'port_name': 'to_nb_WAN_tready'
+                }
+            )
     # Outbound KIP Path
     if has_reliability:
         # Reliability Case 1: WAN is enabled, there will be a KIP switch connecting all KIP components
