@@ -88,7 +88,8 @@ def generate_api_report(api_info,header):
     return string
 
 def generate_parser (api_info,gatewayFile):
-    number_of_MI = 3
+    number_of_MI = 4 # Control needs 2 ports
+    KIP_PORT_NUMBER = 32769
     if len(api_info["direct"]) == 0:
         number_of_MI = number_of_MI - 1
     else:
@@ -102,10 +103,13 @@ def generate_parser (api_info,gatewayFile):
         gatewayFile.add_intf_pin("broadcast/direct_in", "xilinx.com:interface:axis_rtl:1.0", "Slave")
         gatewayFile.add_intf_pin("broadcast/lan_out", "xilinx.com:interface:axis_rtl:1.0", "Master")
     if (len(api_info["control_preprogrammed"]) == 0 and len(api_info["control_multiple"]) == 0):
-        number_of_MI = number_of_MI - 1
+        # Remove 2 ports, 1 for control, 1 for reliability KIP
+        number_of_MI = number_of_MI - 2
     else:
         gatewayFile.createHierarchy("control")
         gatewayFile.add_intf_pin("control/direct_in", "xilinx.com:interface:axis_rtl:1.0", "Slave")
+        # KIP_in used for reliability, if it's used
+        gatewayFile.add_intf_pin("control/KIP_in", "xilinx.com:interface:axis_rtl:1.0", "Slave")
         gatewayFile.add_intf_pin("control/direct_out", "xilinx.com:interface:axis_rtl:1.0", "Master")
         gatewayFile.add_intf_pin("control/lan_out", "xilinx.com:interface:axis_rtl:1.0", "Master")
     if number_of_MI == 0:
@@ -355,6 +359,26 @@ def generate_parser (api_info,gatewayFile):
             is_props.append("CONFIG.M" + str_port + "_BASETDEST {" + start_address + "}")
             is_props.append("CONFIG.M" + str_port + "_HIGHTDEST {" + end_address   + "}")
             current_port = current_port + 1
+            # KIP Ports go directly to the RPN LAN TX
+            str_port = str(current_port).zfill(2)+"_AXIS"
+            kip_port = str(hex(KIP_PORT_NUMBER))
+            gatewayFile.makeBufferedIntfConnection(
+                {
+                    'name': 'parser/input_switch',
+                    'type': 'intf',
+                    'port_name': 'M'+str_port
+                },
+                {
+                    'name': 'control',
+                    'type': 'intf',
+                    'port_name': 'KIP_in'
+                 },
+                "parser/input_switch_KIP",
+                1
+            )
+            is_props.append("CONFIG.M" + str_port + "_BASETDEST {" + kip_port + "}")
+            is_props.append("CONFIG.M" + str_port + "_HIGHTDEST {" + kip_port + "}")
+
         gatewayFile.setProperties("parser/input_switch", is_props)
 
 def implement_direct_section(gatewayFile):
@@ -751,46 +775,6 @@ def implement_control_reliability_instance(gatewayFile, parent_hierarchy, LAN_ti
             'port_name': 'from_LAN_node_finder'
         }
     )
-    # Build and connect inbound path
-    gatewayFile.instBlock(
-        {
-            'name': 'rpn_gw_from_network_bridge_splitter',
-            'inst':  hierarchy_name + '/rpn_gw_from_nb_splitter',
-            'clks': ['i_clk'],
-            'resetns': ['i_ap_rst_n'],
-            'resetns_port': 'rstn'
-        }
-    )
-    # RPN LAN TX is expecting a FROM-NB interface (TID and TDEST set to kernel IDs, TUSER set to source/dest port and source IP Address).
-    # Technically a converter should be placed between the splitter (which forwards WAN packets) to this FROM-NB interface. However, the LAN TX actually doesn't require the TID, TDEST or TUSER to function, so we can just connect it to the splitter directly
-    gatewayFile.makeBufferedIntfConnection(
-        {
-            'name': hierarchy_name + '/rpn_gw_from_nb_splitter',
-            'type': 'intf',
-            'port_name': 'to_rpn_LAN_TX'
-        },
-        {
-            'name': hierarchy_name + '/rpn_LAN_TX',
-            'type': 'intf',
-            'port_name': 'from_nb'
-        },
-        hierarchy_name + '/LAN_TX_from_nb',
-        1
-    )
-    gatewayFile.makeBufferedIntfConnection(
-        {
-            'name': hierarchy_name + '/rpn_gw_from_nb_splitter',
-            'type': 'intf',
-            'port_name': 'to_rpn_WAN_RX'
-        },
-        {
-            'name': hierarchy_name + '/rpn_WAN_RX',
-            'type': 'intf',
-            'port_name': 'from_nb'
-        },
-        hierarchy_name + '/WAN_RX_from_nb',
-        1
-    )
 
 def write_control_preprogrammed_coe_files(sorted_array, outDir):
     # Two files have to be written: 
@@ -1015,6 +999,42 @@ def implement_control_section(array,multiple_array,gatewayFile,outDir):
                 'port_name': dest_port_name
             }
         )
+    # All incoming packets will first go through a network bridge to strip headers
+    gatewayFile.instBlock(
+        {
+            'name': 'control_gw_network_bridge',
+            'inst':  hierarchy_name + '/gw_rx_network_bridge',
+            'clks': ['i_clk'],
+            'resetns': ['i_ap_rst_n'],
+            'resetns_port': 'rstn'
+        }
+    )
+    # Connect Gateway RX network bridge to control or reliability modules
+    # Case 1: If reliability is used, everything goes through RPN
+    if has_reliability:
+        dest_kernel = hierarchy_name + '/reliability_protocol_node/rpn_WAN_RX'
+        dest_port_name = 'from_nb'
+    # Case 2: If there are multiple control modules, connect to inbound switch
+    elif num_ctrl_modules > 1:
+        dest_kernel = hierarchy_name + '/ctrl_from_nb_switch'
+        dest_port_name = 'S00_AXIS'
+    # Case 3: Only 1 control module, connect directly
+    else:
+        dest_kernel = hierarchy_name + '/' + gateway_control_modules[0] + '_0'
+        dest_port_name = 'from_WAN'
+    gatewayFile.makeConnection(
+        "intf",
+        {
+            'name': hierarchy_name + '/gw_rx_network_bridge',
+            'type': 'intf',
+            'port_name': 'to_ctrl'
+        },
+        {
+            'name': dest_kernel,
+            'type': 'intf',
+            'port_name': dest_port_name
+        },
+    )
     # 5. Connect inputs and outputs to the parser
     # Outbound path
     # Case 1: If reliability is enabled, everything goes through RPN
@@ -1058,18 +1078,7 @@ def implement_control_section(array,multiple_array,gatewayFile,outDir):
             }
         )
     # Inbound Path
-    # Case 1: If reliability is used, everything goes through RPN
-    if has_reliability:
-        dest_kernel = hierarchy_name + '/reliability_protocol_node/rpn_gw_from_nb_splitter'
-        dest_port_name = 'from_network_bridge'
-    # Case 2: If there are multiple control modules, connect to inbound switch
-    elif num_ctrl_modules > 1:
-        dest_kernel = hierarchy_name + '/ctrl_from_nb_switch'
-        dest_port_name = 'S00_AXIS'
-    # Case 3: Only 1 control module, connect directly
-    else:
-        dest_kernel = hierarchy_name + '/' + gateway_control_modules[0] + '_0'
-        dest_port_name = 'from_WAN'
+    # All inbound WAN packets go through the network bridge
     gatewayFile.makeConnection(
         "intf",
         {
@@ -1078,25 +1087,72 @@ def implement_control_section(array,multiple_array,gatewayFile,outDir):
             'port_name': 'direct_in'
         },
         {
-            'name': dest_kernel,
+            'name': hierarchy_name + '/gw_rx_network_bridge',
             'type': 'intf',
-            'port_name': dest_port_name
+            'port_name': 'from_network_bridge'
         },
     )
-    # gatewayFile.makeBufferedIntfConnection(
-    #     {
-    #         'name': hierarchy_name,
-    #         'type': 'intf',
-    #         'port_name': 'direct_in'
-    #     },
-    #     {
-    #         'name': dest_kernel,
-    #         'type': 'intf_port',
-    #         'port_name': dest_port_name
-    #     },
-    #     "ctrl_inbound",
-    #     1
-    # )
+    # If reliability is used, route KIP packets to reliability. If not, tie it off
+    if has_reliability:
+        gatewayFile.makeConnection(
+            "intf",
+            {
+                'name': hierarchy_name,
+                'type': 'intf',
+                'port_name': 'KIP_in'
+            },
+            {
+                'name': hierarchy_name + '/reliability_protocol_node/rpn_LAN_TX',
+                'type': 'intf',
+                'port_name': 'from_nb'
+            },
+        )
+    else:
+        tcl_user_app.instBlock(
+            {
+                'name': 'xlconstant',
+                'inst':  hierarchy_name + '/KIP_in_tieoff_tready',
+                'properties': [ 
+                                'CONFIG.CONST_WIDTH {1}',
+                                'CONFIG.CONST_VAL {1}'
+                            ]
+            }
+        )
+        tcl_user_app.instBlock(
+            {
+                'name': 'axis_register_slice',
+                'inst':  hierarchy_name + '/KIP_in_tieoff',
+                'clks': ['aclk'],
+                'resetns': ['aresetn'],
+                'resetns_port': 'rstn'
+            }
+        )
+        tcl_user_app.makeConnection(
+            'intf',
+            {
+                'name': hierarchy_name,
+                'type':'intf',
+                'port_name': 'KIP_in'
+            },
+            {
+                'name': hierarchy_name + '/KIP_in_tieoff',
+                'type':'intf',
+                'port_name':'S_AXIS'
+            }
+        ) 
+        tcl_user_app.makeConnection(
+            'net', 
+            {
+                'type': 'pin',
+                'name': hierarchy_name + '/KIP_in_tieoff_tready',
+                'port_name': 'dout'
+            },
+            {
+                'type': 'pin',
+                'name': hierarchy_name + '/KIP_in_tieoff',
+                'port_name': 'M_AXIS_tready'
+            }
+        )
     return
 def query_API(outDir,topAPI,Gateway_ip):
     api_info = parseAPI(topAPI,Gateway_ip)
