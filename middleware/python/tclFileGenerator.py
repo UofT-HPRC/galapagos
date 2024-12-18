@@ -1026,7 +1026,7 @@ def buildControlWNNRepoInst(tcl_user_app, parent_hierarchy, WAN_timeout=1800):
         }
     )
 
-def buildControlReliabilityInst(tcl_user_app, parent_hierarchy, has_wan, build_WAN_request_path, build_WAN_response_path, LAN_timeout=500, WAN_timeout=1000):
+def buildControlReliabilityInst(tcl_user_app, parent_hierarchy, has_wan, build_WAN_request_path, build_WAN_response_path, LAN_timeout=500, WAN_timeout=300000):
     """
     Instantiates and connects the modules used by the Reliability Protocol-Node (RPN). These modules guarantee exactly once reliable communications between Galapagos kernels. 
 
@@ -1432,6 +1432,11 @@ def buildControlReliabilityInst(tcl_user_app, parent_hierarchy, has_wan, build_W
         #TODO: See if fixed priority works even if signals are tied off
         # buildControlFixedPrioritySwitch(tcl_user_app, hierarchy_name + "/rpn_to_WNN_switch", 3)
         buildControlOutboundSwitch(tcl_user_app, hierarchy_name + "/rpn_to_WNN_switch", 4)
+        # Edge case: WNN Signals do not use TLAST, so get rid of them
+        properties = [
+            'CONFIG.HAS_TLAST.VALUE_SRC PROPAGATED'
+        ]
+        tcl_user_app.setProperties(hierarchy_name + '/rpn_to_WNN_switch', properties)
         tcl_user_app.makeConnection(
             'intf',
             {

@@ -17,5 +17,10 @@
         <tag> direct_to_1 </tag>
         <target> 1 </target>
     </port>
+    <port>
+        <form> control_preprogrammed </form>
+        <tag> ctrl_preprog_a </tag>
+        <target> 1 </target>
+        <address> 5 </address>
+    </port>
 </cluster>
-

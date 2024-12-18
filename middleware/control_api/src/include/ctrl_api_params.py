@@ -25,8 +25,8 @@ AXIS_FROM_NB_TDEST_WIDTH = AXIS_LAN_TDEST_WIDTH
 AXIS_FROM_NB_TUSER_WIDTH = AXIS_KIP_TUSER_WIDTH
 # Other
 CLUSTER_ID_WIDTH = 32
-# ctrl_api_reliability_header_parameters.vh
 BRAM_ADDR_WIDTH = 32 # All BRAMs have 32-bit wide addresses regardless of actual address length
+# ctrl_api_reliability_header_parameters.vh
 BRAM_WEN_WIDTH = 4 # WEN also functions as WSTRB
 RPN_MSG_TYPE_WIDTH = 8 # Extra bits added for future proofing
 # LAN Sequence Number:
@@ -187,6 +187,9 @@ AXIS_LAN_HDR_TID_OFFSET = 8
 AXIS_LAN_HDR_TID_WIDTH = AXIS_LAN_TDEST_WIDTH
 AXIS_LAN_HDR_TDEST_OFFSET = AXIS_LAN_HDR_TID_OFFSET + AXIS_LAN_HDR_TID_WIDTH
 AXIS_LAN_HDR_TDEST_WIDTH = AXIS_LAN_TDEST_WIDTH
+# AXI-Stream LAN Port Numbers
+AXIS_LAN_PORT_INFRASTRUCTURE = 1
+AXIS_LAN_PORT_USER = 2
 # ctrl_api_reliability_message_parameters.vh
 # *****************************************************************************
 # Reliability Messages
@@ -203,22 +206,22 @@ RPN_MSG_TYPE_LAN_SEQ_NUM_CHECK = 2
 RPN_MSG_TYPE_LAN_SEQ_NUM_REPLY = 3
 RPN_MSG_TYPE_WAN_PUB = 4
 RPN_MSG_TYPE_WAN_ACK = 5
-RPN_MSG_TYPE_WAN_NUM_SEQ_NUM_CHECK = 6 # Sent by WAN Num TX to WAN Num Node to receive a sequence number for WAN->GW communications
-RPN_MSG_TYPE_WAN_NUM_SEQ_NUM_REPLY = 7
+RPN_MSG_TYPE_WAN_SEQ_NUM_CHECK = 6 # Used by WNN Repos to query gateways for their currently stored Sequence numbers
+RPN_MSG_TYPE_WAN_SEQ_NUM_REPLY = 7
 RPN_MSG_TYPE_WAN_OUTGOING_SEQ_NUM_REQUEST = 8 # Sent by WAN TX to Gateway to request a sequence number to send the WAN message. Uses WAN->GW sequence number received using RPN_MSG_TYPE_WAN_GW_SEQ_NUM_CHECK
-RPN_MSG_TYPE_WAN_OUTGOING_SEQ_NUM_REPLY = 9
-RPN_MSG_TYPE_WAN_OUTGOING_SEQ_NUM_WRITE = 10 # Also serves to unlock the sequence number for another usage
-RPN_MSG_TYPE_WAN_OUTGOING_SEQ_NUM_BRESP = 11
-RPN_MSG_TYPE_WAN_INCOMING_SEQ_NUM_REQUEST = 12 # Sent by WAN TX to Gateway to request a sequence number to send the WAN message. Uses WAN->GW sequence number received using RPN_MSG_TYPE_WAN_GW_SEQ_NUM_CHECK
-RPN_MSG_TYPE_WAN_INCOMING_SEQ_NUM_REPLY = 13
-RPN_MSG_TYPE_WAN_INCOMING_SEQ_NUM_WRITE = 14 # Also serves to unlock the sequence number for another usage
-RPN_MSG_TYPE_WAN_INCOMING_SEQ_NUM_BRESP = 15
-RPN_MSG_TYPE_WAN_SEQ_NUM_CHECK = 16 # Used by WNN Repos to query gateways for their currently stored Sequence numbers
-RPN_MSG_TYPE_WAN_SEQ_NUM_REPLY = 17
-RPN_MSG_TYPE_KIP_PUB = 18
-RPN_MSG_TYPE_KIP_ACK = 19
-RPN_MSG_TYPE_WAN_OUTGOING_SEQ_NUM_CHECK = 20 # Used by KIP RX to verify the WAN sequence number and owner of the received KIP transmission.
-RPN_MSG_TYPE_WAN_OUTGOING_SEQ_NUM_RDATA = 21
+RPN_MSG_TYPE_WAN_OUTGOING_SEQ_NUM_REPLY = 14
+RPN_MSG_TYPE_WAN_OUTGOING_SEQ_NUM_WRITE = 9 # Also serves to unlock the sequence number for another usage
+RPN_MSG_TYPE_WAN_OUTGOING_SEQ_NUM_BRESP = 15
+RPN_MSG_TYPE_WAN_OUTGOING_SEQ_NUM_CHECK = 10 # Used by KIP RX to verify the WAN sequence number and owner of the received KIP transmission.
+RPN_MSG_TYPE_WAN_OUTGOING_SEQ_NUM_RDATA = 16
+RPN_MSG_TYPE_WAN_INCOMING_SEQ_NUM_REQUEST = 11 # Sent by WAN TX to Gateway to request a sequence number to send the WAN message. Uses WAN->GW sequence number received using RPN_MSG_TYPE_WAN_GW_SEQ_NUM_CHECK
+RPN_MSG_TYPE_WAN_INCOMING_SEQ_NUM_REPLY = 17
+RPN_MSG_TYPE_WAN_INCOMING_SEQ_NUM_WRITE = 12 # Also serves to unlock the sequence number for another usage
+RPN_MSG_TYPE_WAN_INCOMING_SEQ_NUM_BRESP = 18
+RPN_MSG_TYPE_WAN_NUM_SEQ_NUM_CHECK = 13 # Sent by WAN Num TX to WAN Num Node to receive a sequence number for WAN->GW communications
+RPN_MSG_TYPE_WAN_NUM_SEQ_NUM_REPLY = 19
+RPN_MSG_TYPE_KIP_PUB = 20
+RPN_MSG_TYPE_KIP_ACK = 21
 
 # Packet Offsets
 # LAN messages
@@ -237,6 +240,7 @@ PUB_LAN_SEQUENCE_NUMBER_OFFSET = PUB_LAN_SENDER_NODE_ID_OFFSET + PUB_LAN_SENDER_
 PUB_LAN_SEQUENCE_NUMBER_WIDTH = LAN_SEQUENCE_NUMBER_WIDTH
 PUB_LAN_FWD_CTID_OFFSET = PUB_LAN_SEQUENCE_NUMBER_OFFSET + PUB_LAN_SEQUENCE_NUMBER_WIDTH
 PUB_LAN_FWD_CTID_WIDTH = CLUSTER_ID_WIDTH
+# Currently PUB_LAN_FWD_WAN_SEQ_NUM is not used (sequence numbers are not forwarded in LAN messages)
 PUB_LAN_FWD_WAN_SEQ_NUM_OFFSET = PUB_LAN_FWD_CTID_OFFSET + PUB_LAN_FWD_CTID_WIDTH
 PUB_LAN_FWD_WAN_SEQ_NUM_WIDTH = WAN_SEQUENCE_NUMBER_WIDTH
 PUB_LAN_DATA_OFFSET = PUB_LAN_FWD_WAN_SEQ_NUM_OFFSET + PUB_LAN_FWD_WAN_SEQ_NUM_WIDTH

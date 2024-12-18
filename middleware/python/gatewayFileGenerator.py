@@ -72,7 +72,7 @@ def generate_api_report(api_info,header):
             string = string + "\n"
     if len(api_info["control_preprogrammed"]) != 0:
         if header:
-            string = string + "\n\Preprogrammed Control Ports:\nname,type,port number,target, address, range\n"
+            string = string + "\n\Preprogrammed Control Ports:\nname,type,port number,target, address (hex), range\n"
         for port in api_info["control_preprogrammed"]:
             string = (string + str(port["tag"])+",direct,"+str(port["num"])+","+str(port["target"])+
                       ","+str(port["address"])+"\n")
@@ -89,7 +89,7 @@ def generate_api_report(api_info,header):
 
 def generate_parser (api_info,gatewayFile):
     number_of_MI = 4 # Control needs 2 ports
-    KIP_PORT_NUMBER = 32769
+    KIP_PORT_NUMBER = 32768
     if len(api_info["direct"]) == 0:
         number_of_MI = number_of_MI - 1
     else:
@@ -525,7 +525,7 @@ def implement_control_reliability_instance(gatewayFile, parent_hierarchy, LAN_ti
     num_nodes = gatewayFile.fpga['total_node_num'] # Total number of FPGA nodes in this cluster, including gateway
     num_clusters = gatewayFile.fpga['num_clusters']
     num_kernels = gatewayFile.fpga['total_kernel_num'] # Total number of FPGA kernels in this cluster, including gateway
-    KIP_PORT_NUMBER = 32769
+    KIP_PORT_NUMBER = 32768
     # Initial modules
     hierarchy_name = parent_hierarchy + '/reliability_protocol_node'
     gatewayFile.createHierarchy(hierarchy_name)
@@ -801,7 +801,12 @@ def write_control_preprogrammed_coe_files(sorted_array, outDir):
         port_num = control_entry['num']
         # Convert register address from hex to decimal
         dest_register_address = str(int(control_entry['address'], 16))
-        tdest = str(control_entry['target'])
+        # TDEST ROM entries are of the following format:
+        # | TDEST | IS_INFRA |
+        # |8     1|     0    |
+        # For now, Infra is not supported, so set IS_INFRA to 0
+        # For consistency, TDEST will remain decimal
+        tdest = str(int(control_entry['target']) << 1)
         if port_num != 0:
             dest_register_address = ',' + dest_register_address
             tdest = ',' + tdest
@@ -852,6 +857,7 @@ def implement_control_section(array,multiple_array,gatewayFile,outDir):
             'CONFIG.Memory_Type {Single_Port_ROM}',
             'CONFIG.ENABLE_32BIT_ADDRESS {true}',
             'CONFIG.Register_PortA_Output_of_Memory_Primitives {false}',
+            'CONFIG.Write_Width_A {64}',
             'CONFIG.Write_Depth_A {' + str(preprogrammed_ROM_capacity) + '}',
             'CONFIG.Load_Init_File {True}',
             'CONFIG.Coe_File $top_path/projects/$default_dir/0/ctrl_preprogrammed_reg_addr.coe'

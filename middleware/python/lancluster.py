@@ -129,7 +129,7 @@ def process_api_info(files,destination_folder):
             First = False
             if dns_ip != info['dns_ip']:
                 raise ValueError ("DNS IP is inconsistent between the clusters being merged")
-            test_list.write(str(cur_num)+":"+info['gateway_ip'])
+            test_list.write(str(cur_num)+":"+info['gateway_ip']+"\n")
             api_info_file.write("Gateway: "+info['name']+"\n")
             api_csv_file.write(info['name']+"\n"+str(info["length"])+"\n")
             api_info_file.write("With Laniakea Cluster Number: " + str(cur_num) + "\n")

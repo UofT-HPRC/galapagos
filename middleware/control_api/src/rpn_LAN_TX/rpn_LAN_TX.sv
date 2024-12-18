@@ -70,11 +70,13 @@ module rpn_LAN_TX #(
     logic [LAN_SEQUENCE_NUMBER_WIDTH-1:0] r_sequence_number; // Tracks the sequence number of the current transaction
     logic [LAN_SEQUENCE_NUMBER_WIDTH-1:0] w_sequence_number;
     // To Network Bridge LAN Interface
+    logic [CLUSTER_ID_WIDTH-1:0] r_to_nb_LAN_ctid;
     logic [PUB_LAN_DATA_WIDTH-1:0] r_to_nb_LAN_packet_data; 
     logic [AXIS_KEEP_WIDTH-1:0] r_to_nb_LAN_tkeep;
     logic [AXIS_LAN_TDEST_WIDTH-1:0] r_to_nb_LAN_tid;
     logic [AXIS_LAN_TDEST_WIDTH-1:0] r_to_nb_LAN_tdest;
     logic [PUB_LAN_DATA_WIDTH-1:0] w_to_nb_LAN_packet_data;
+    logic [CLUSTER_ID_WIDTH-1:0] w_to_nb_LAN_ctid;
     logic [AXIS_KEEP_WIDTH-1:0] w_to_nb_LAN_tkeep;
     logic [AXIS_LAN_TDEST_WIDTH-1:0] w_to_nb_LAN_tid;
     logic [AXIS_LAN_TDEST_WIDTH-1:0] w_to_nb_LAN_tdest;
@@ -98,7 +100,7 @@ module rpn_LAN_TX #(
     assign to_nb_LAN_tdata[RPN_MSG_TYPE_WIDTH-1:0] = RPN_MSG_TYPE_LAN_PUB;
     assign to_nb_LAN_tdata[PUB_LAN_SENDER_NODE_ID_OFFSET+:PUB_LAN_SENDER_NODE_ID_WIDTH] = i_node_id;
     assign to_nb_LAN_tdata[PUB_LAN_SEQUENCE_NUMBER_OFFSET+:PUB_LAN_SEQUENCE_NUMBER_WIDTH] = r_sequence_number;
-    assign to_nb_LAN_tdata[PUB_LAN_FWD_CTID_OFFSET+:PUB_LAN_FWD_CTID_OFFSET] = 0; // Only used for forwarded LAN messages
+    assign to_nb_LAN_tdata[PUB_LAN_FWD_CTID_OFFSET+:PUB_LAN_FWD_CTID_OFFSET] = r_to_nb_LAN_ctid; // Only used for forwarded LAN messages
     assign to_nb_LAN_tdata[PUB_LAN_FWD_WAN_SEQ_NUM_OFFSET+:PUB_LAN_FWD_WAN_SEQ_NUM_WIDTH] = 0; // Only used for forwarded LAN messages
     assign to_nb_LAN_tdata[PUB_LAN_DATA_OFFSET+:PUB_LAN_DATA_WIDTH] = r_to_nb_LAN_packet_data;
     assign to_nb_LAN_tkeep = r_to_nb_LAN_tkeep;
@@ -232,6 +234,7 @@ module rpn_LAN_TX #(
         if (r_core_state == STATE_IDLE) begin
             if (from_LAN_node_finder_tvalid == 1) begin
                 w_to_nb_LAN_packet_data = from_LAN_node_finder_tdata[PUB_LAN_DATA_WIDTH-1:0];
+                w_to_nb_LAN_ctid = from_LAN_node_finder_tdata[AXIS_LAN_CTID_OFFSET+:AXIS_LAN_CTID_WIDTH]; // This will only be non-zero from gateway communications. Otherwise, ANC will always set this to 0
                 w_to_nb_LAN_tkeep = from_LAN_node_finder_tkeep;
                 w_to_nb_LAN_tid = from_LAN_node_finder_tid;
                 w_to_nb_LAN_tdest = from_LAN_node_finder_tdest;
@@ -239,6 +242,7 @@ module rpn_LAN_TX #(
             // Only reset to-LAN channel in IDLE. This way, we can re-transmit without having to re-write the data
             else begin
                 w_to_nb_LAN_packet_data = 0;
+                w_to_nb_LAN_ctid = 0;
                 w_to_nb_LAN_tkeep = 0;
                 w_to_nb_LAN_tid = 0;
                 w_to_nb_LAN_tdest = 0;
@@ -246,6 +250,7 @@ module rpn_LAN_TX #(
         end
         else begin
             w_to_nb_LAN_packet_data = r_to_nb_LAN_packet_data;
+            w_to_nb_LAN_ctid = r_to_nb_LAN_ctid;
             w_to_nb_LAN_tkeep = r_to_nb_LAN_tkeep;
             w_to_nb_LAN_tid = r_to_nb_LAN_tid;
             w_to_nb_LAN_tdest = r_to_nb_LAN_tdest;
@@ -254,12 +259,14 @@ module rpn_LAN_TX #(
     always_ff @(posedge i_clk, negedge i_ap_rst_n) begin
         if (i_ap_rst_n == 0) begin
             r_to_nb_LAN_packet_data <= 0;
+            r_to_nb_LAN_ctid <= 0;
             r_to_nb_LAN_tkeep <= 0;
             r_to_nb_LAN_tid <= 0;
             r_to_nb_LAN_tdest <= 0;
         end
         else begin
             r_to_nb_LAN_packet_data <= w_to_nb_LAN_packet_data;
+            r_to_nb_LAN_ctid <= w_to_nb_LAN_ctid;
             r_to_nb_LAN_tkeep <= w_to_nb_LAN_tkeep;
             r_to_nb_LAN_tid <= w_to_nb_LAN_tid;
             r_to_nb_LAN_tdest <= w_to_nb_LAN_tdest;

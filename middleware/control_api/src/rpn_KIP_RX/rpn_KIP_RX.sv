@@ -46,6 +46,7 @@ module rpn_KIP_RX #(
 
     // Parameters
     `include "ctrl_api_reliability_message_parameters.vh"
+    `include "ctrl_api_message_parameters.vh"
     localparam STATE_IDLE = 0;
     localparam STATE_SEND_WAN_SEQ_NUM_CHECK_TO_WNN = 1;
     localparam STATE_WAIT_WAN_SEQ_NUM_RDATA_FROM_WNN = 2;
@@ -184,8 +185,9 @@ module rpn_KIP_RX #(
             if (from_nb_tvalid == 1) begin
                 w_to_ctrl_tdata[PUB_KIP_DATA_WIDTH-1:0] = from_nb_tdata[PUB_KIP_DATA_OFFSET+:PUB_KIP_DATA_WIDTH]; 
                 w_to_ctrl_tkeep = from_nb_tkeep;
-                w_to_ctrl_tid = from_nb_tid;
-                w_to_ctrl_tdest = from_nb_tdest;
+                // TID and TDEST from Control RX Network Bridge will be incorrect for KIP PUB packets, get these fields from the KIP packet data itself
+                w_to_ctrl_tid = from_nb_tdata[(PUB_KIP_DATA_OFFSET+AXIS_KIP_SENDER_TID_OFFSET)+:AXIS_KIP_SENDER_TID_WIDTH];
+                w_to_ctrl_tdest = from_nb_tdata[(PUB_KIP_DATA_OFFSET+AXIS_KIP_TID_OFFSET)+:AXIS_KIP_TID_WIDTH];
                 w_to_ctrl_tuser = from_nb_tuser;
                 w_sender_sequence_number = from_nb_tdata[PUB_KIP_SEQUENCE_NUMBER_OFFSET+:PUB_KIP_SEQUENCE_NUMBER_WIDTH]; 
                 w_sender_ctid = from_nb_tdata[PUB_KIP_SENDER_CTID_OFFSET+:PUB_KIP_SENDER_CTID_WIDTH]; 
