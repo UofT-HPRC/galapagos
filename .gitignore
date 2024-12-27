@@ -1,3 +1,7 @@
+xml_examples/generated_demo_xmls/logical*
+xml_examples/generated_demo_xmls/map*
+xml_examples/generated_demo_xmls/api*
+xml_examples/generated_demo_xmls/cluster*
 .Xil/*
 environmental_reset.sh
 vivado.*
