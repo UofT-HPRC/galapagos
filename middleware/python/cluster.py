@@ -407,16 +407,16 @@ class cluster(abstractDict):
             self.nodes[i]['has_ctrl_wan'] = has_control_WAN
         # If WAN is present, each node needs to know the ID and IP address of the node holding the WNN repo
         if control_needs_WNN_repo:
+            # WNN repo does not require WAN infrastructure, just KIP, so no need to set 'has_wan' to 1
+            self.nodes[1]['has_ctrl_wan'] = True
+            # IP Address is in X.X.X.XXX Mode, must be converted to a decimal mode
+            WNN_repo_ip_decimal = struct.unpack("!L", socket.inet_aton(self.nodes[1]['ip']))[0]
+            WNN_repo_ip_hex = str(hex(WNN_repo_ip_decimal))
             for i in range(len(self.nodes)):
                 # Node 1 is the host of the WNN Repo
                 self.nodes[i]['ctrl_WNN_repo_id'] = 1 
-                # IP Address is in X.X.X.XXX Mode, must be converted to a decimal mode
-                WNN_repo_ip_decimal = struct.unpack("!L", socket.inet_aton(self.nodes[i]['ip']))[0]
-                WNN_repo_ip_hex = str(hex(WNN_repo_ip_decimal))
                 # self.nodes[i]['ctrl_WNN_repo_ip'] = self.nodes[i]['ip']
                 self.nodes[i]['ctrl_WNN_repo_ip'] = WNN_repo_ip_hex
-            # WNN repo does not require WAN infrastructure, just KIP, so no need to set 'has_wan' to 1
-            self.nodes[1]['has_ctrl_wan'] = True
         return
 
     def writeClusterTCL(self, output_path, sim, has_GW,api_info,CAMILO_TEMP_DEBUG):
