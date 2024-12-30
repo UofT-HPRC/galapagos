@@ -342,6 +342,8 @@ class cluster(abstractDict):
                                 no_open=False
                             node_inst['slr_mappings'][kmap_node['slr']]['kernel'].append(kern)
             else:
+                if not (type(node_dict['kernel']) is list):
+                    node_dict['kernel']=[node_dict['kernel']]
                 for kmap_node in node_dict['kernel']:
                     for kern_idx, kern in enumerate(self.kernels):
                         if int(kern['num']) == int(kmap_node):

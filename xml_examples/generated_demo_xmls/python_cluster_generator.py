@@ -3,7 +3,7 @@ cwd = os.getcwd()+"/"
 ip_top = "10.2."
 mac_top = "0c:c5:2b:3e:"
 num_clusters = 200
-num_kernels_per_cluster = 200
+num_kernels_per_cluster = 201
 user_ip_path = "/home/savi/Desktop/imperial/imperial_ip_repo2"
 
 #library variables
@@ -49,7 +49,7 @@ def make_cluster_entry(i):
   axp("mapFile",cwd+"map_{:03d}.xml".format(i))
   axp("apiFile",cwd+"api_{:03d}.xml".format(i))
   axp("gatewayIP",ip_top+str(i)+".0")
-  axp("gatewayMac",mac_top+"{:02d}:00".format(i))
+  axp("gatewayMac",mac_top+"{:02x}:00".format(i))
   axp("hasGateway","True")
   axp("gatewayBoard", "sidewinder")
   xml_close("cluster")
@@ -72,10 +72,29 @@ def make_logicalfile_xml():
     setup_file("logical_{:03d}.xml".format(i))
     xml_open("cluster")
     axp("userIpPath",user_ip_path)
-    xml_open("kernel"," test_core")
+    xml_open("kernel"," agregator core")
     axp("type", "open")
-    axp("num","1")
-    axp("rep",str(num_kernels_per_cluster))
+    axp("num", "1")
+    axp("control", "False")
+    axp("clk","ap_clk")
+    xml_open("s_axis")
+    axp("scope","global")
+    axp("name","in_data")
+    xml_close("s_axis")
+    xml_open("m_axis")
+    axp("scope","global")
+    axp("name","in_data")
+    xml_close("m_axis")
+    xml_open("wan")
+    axp("enabled","True")
+    axp("name","lanniakea_wan")
+    xml_close("wan")
+    axp("aresetn","ap_rst_n")
+    xml_close("kernel")
+    xml_open("kernel"," worker_core")
+    axp("type", "open")
+    axp("num","2")
+    axp("rep",str(num_kernels_per_cluster-1))
     axp("control","False")
     axp("clk","ap_clk")
     xml_open("s_axis")
@@ -110,7 +129,7 @@ def make_mapfile_xml():
       axp("type","hw")
       axp("kernel",str(j))
       axp("autorun","False")
-      axp("mac",mac_top+"{:02d}".format(i)+"{:02d}".format(j))
+      axp("mac",mac_top+"{:02x}".format(i)+":{:02x}".format(j))
       axp("ip",ip_top+str(i)+"."+str(j))
       xml_close("node")
     xml_close("cluster")

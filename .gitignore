@@ -5,6 +5,7 @@ xml_examples/generated_demo_xmls/cluster*
 .Xil/*
 environmental_reset.sh
 vivado.*
+ctrlBuild/*
 hlsBuild/*
 oldhlsBuild/*
 projects/*
