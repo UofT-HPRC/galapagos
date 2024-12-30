@@ -6,6 +6,23 @@ import pickle
 import subprocess
 import gatewayFileGenerator
 
+def stripWhiteSpace(entry):
+    """ Recursively strips the whitespace from a dictionary that contains sub-dictionaries, lists, and entries. Assumes that the base entry will be a string """
+    # Base case
+    if type(entry) is str:
+        return entry.strip(' ')
+    # If entry is a list, preserve the order
+    elif type(entry) is list:
+        new_list = []
+        for i in range(len(entry)):
+            new_list.append(stripWhiteSpace(entry[i]))
+        return new_list
+    # Else, entry is a dictionary
+    else:
+        new_dict = {}
+        for entry_key in entry:
+            new_dict[entry_key] = stripWhiteSpace(entry[entry_key])
+        return new_dict
 
 class lancluster(abstractDict):
     """ This class is the top-level interface to the myriad other objects used
@@ -62,6 +79,8 @@ class lancluster(abstractDict):
             topClus = cluster_file
         if 'dns' not in topClus:
             raise ValueError ("dns must be specified in the cluster file")
+        # Strip all whitespace from values in the cluster file
+        topClus = stripWhiteSpace(topClus)
 
         for cluster_inst in topClus['cluster']:
             cluster_name = name+"/"+cluster_inst["name"]
@@ -110,7 +129,7 @@ def process_api_info(files,destination_folder):
             First = False
             if dns_ip != info['dns_ip']:
                 raise ValueError ("DNS IP is inconsistent between the clusters being merged")
-            test_list.write(str(cur_num)+":"+info['gateway_ip'])
+            test_list.write(str(cur_num)+":"+info['gateway_ip']+"\n")
             api_info_file.write("Gateway: "+info['name']+"\n")
             api_csv_file.write(info['name']+"\n"+str(info["length"])+"\n")
             api_info_file.write("With Laniakea Cluster Number: " + str(cur_num) + "\n")

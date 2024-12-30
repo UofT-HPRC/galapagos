@@ -256,19 +256,24 @@ def makeControlKernelDictionary(tcl_user_app, index):
     """
     ctrl_kernel_dict = {}
     for kernel in tcl_user_app.fpga['kernel']:
-        if kernel['control'] is True:
+        if kernel['control'] is False:
+            continue
+        if kernel['control']['enabled'].lower() == 'true':
             instance_name = kernel['inst'].split('/')[-1] # Remove applicationRegion
             # ctrl_kernel_dict indexed by kernel ID or instance name
             if index == 'num':
-                ctrl_kernel_dict[int(kernel['num'])] = {
-                                                        'inst': instance_name, 
-                                                        'control_type': kernel['control_type']
-                                                    }
-            elif index == 'inst':
-                ctrl_kernel_dict[instance_name] = {
-                                                        'inst': instance_name, 
-                                                        'control_type': kernel['control_type']
-                                                    }
+                dict_key = int(kernel['num'])
+            else:
+                dict_key = instance_name
+            ctrl_kernel_dict[dict_key] = {
+                                            'inst': instance_name, 
+                                            'control_type': kernel['control']['control_type']
+                                        }
+            if 'has_wan' in kernel['control']:
+                if kernel['control']['has_wan'].lower()== 'true':
+                    ctrl_kernel_dict[dict_key]['has_wan'] = True
+                else:
+                    ctrl_kernel_dict[dict_key]['has_wan'] = False    
     return ctrl_kernel_dict
 
 def getSortedListofKeys(input_dict):
@@ -358,8 +363,61 @@ def setSwitchManagerPortRouting(tcl_user_app, switch_name, tdest_list):
         properties.append(high_tdest_setting)
     tcl_user_app.setProperties(switch_name, properties)
 
+def setSwitchManagerPortRoutingRange(tcl_user_app, switch_name, tdest_range_list):
+    num_tdest = len(tdest_range_list)
+    properties = []
+    for i in range(0, num_tdest):
+        if i < 10:
+            manager_port = 'M0' + str(i)
+        else:
+            manager_port = 'M' + str(i)
+        tdest_range = tdest_range_list[i]
+        base_tdest_str = "0x{:08x}".format(tdest_range[0])
+        high_tdest_str = "0x{:08x}".format(tdest_range[1])
+        base_tdest_setting = 'CONFIG.' + manager_port + '_AXIS_BASETDEST {' + base_tdest_str + '}'
+        properties.append(base_tdest_setting)
+        high_tdest_setting = 'CONFIG.' + manager_port + '_AXIS_HIGHTDEST {' + high_tdest_str + '}'
+        properties.append(high_tdest_setting)
+    tcl_user_app.setProperties(switch_name, properties)
 
-def buildControlAPIInst(tcl_user_app, parent_hierarchy, kernel_id, kernel_dict, axil_addr_width=64, has_wstrb=True, request_buffer_capacity=16):
+def buildControlInboundSwitch(tcl_user_app, switch_name, num_tdests, tdest_list):
+    tcl_user_app.instBlock(
+        {
+            'name':'axis_switch',
+            'inst': switch_name,
+            'clks':['aclk'],
+            'resetns_port': 'rstn',
+            'resetns':['aresetn']
+        }
+    )
+    # Configure the switch to have 1 Manager per TDEST and arbitrate on TLAST only.
+    properties = [
+        'CONFIG.NUM_SI {1}',
+        'CONFIG.NUM_MI {' + str(num_tdests) + '}',
+        'CONFIG.HAS_TLAST.VALUE_SRC USER'
+    ]
+    tcl_user_app.setProperties(switch_name,properties)
+    properties = [
+        'CONFIG.HAS_TLAST {1}'
+    ]
+    tcl_user_app.setProperties(switch_name, properties)
+    properties = [
+        'CONFIG.ARB_ON_MAX_XFERS {0}',
+        'CONFIG.ARB_ON_TLAST {1}',
+    ]
+    tcl_user_app.setProperties(switch_name, properties)
+    # TDEST used are 1, 2, 3, referring to WAN_TX, KIP_TX, KIP_RX, respectively
+    setSwitchManagerPortRouting(tcl_user_app, switch_name, tdest_list)
+
+def getNumWANDataKernels(tcl_user_app):
+    m_axis_array = getInterfaces(tcl_user_app.fpga, 'm_axis', 'scope', 'global')
+    num_WAN_data_kernels = 0
+    for idx, m_axis in enumerate(m_axis_array):
+        if m_axis['kernel_inst']['wan_enabled'][0]:
+            num_WAN_data_kernels += 1
+    return num_WAN_data_kernels
+
+def buildControlAPIInst(tcl_user_app, parent_hierarchy, kernel_id, kernel_dict, has_wan, axil_addr_width=64, has_wstrb=True, request_buffer_capacity=16):
     """
     Builds an instance of the Control API hierarchy for a kernel, and performs all internal connections
 
@@ -540,7 +598,262 @@ def buildControlAPIInst(tcl_user_app, parent_hierarchy, kernel_id, kernel_dict, 
                     'port_name': 'from_network_bridge'
                 }
             )
-    #TODO: currently WAN is disabled, tie off WAN connections to 0
+    # Tie off WAN connections to 0 if WAN is not used
+    if not has_wan:
+        tcl_user_app.instBlock(
+            {
+                'name': 'xlconstant',
+                'inst':  hierarchy_name + '/const_1',
+                'properties': [ 
+                                'CONFIG.CONST_WIDTH {1}',
+                                'CONFIG.CONST_VAL {1}'
+                            ]
+            }
+        )
+        if kernel_dict['control_type'] == 'm_axil' or kernel_dict['control_type'] == 'both':
+            tcl_user_app.makeConnection(
+                'net', 
+                {
+                    'type': 'pin',
+                    'name': hierarchy_name + '/const_1',
+                    'port_name': 'dout'
+                },
+                {
+                    'type': 'pin',
+                    'name': hierarchy_name + '/anc',
+                    'port_name': 'to_WAN_tready'
+                }
+            )
+        if kernel_dict['control_type'] == 's_axil' or kernel_dict['control_type'] == 'both':
+            tcl_user_app.makeConnection(
+                'net', 
+                {
+                    'type': 'pin',
+                    'name': hierarchy_name + '/const_1',
+                    'port_name': 'dout'
+                },
+                {
+                    'type': 'pin',
+                    'name': hierarchy_name + '/nac',
+                    'port_name': 'to_KIP_tready'
+                }
+            )
+
+def buildControlWNNRepoInst(tcl_user_app, parent_hierarchy, WAN_timeout=1800):
+    # Parameters
+    hierarchy_name = parent_hierarchy + "/WNN_repo"
+    tcl_user_app.createHierarchy(hierarchy_name)
+    num_nodes = tcl_user_app.fpga['total_node_num'] # Total number of FPGA nodes in this cluster, including gateway
+    num_clusters = tcl_user_app.fpga['num_clusters']
+    # GW_CTRL_PORT_NUMBER = 3 # TODO: Fix this
+    # This BRAM is used by both WNN Repos to verify that the incoming message from a WNN Node is the current one
+    tcl_user_app.instBlock(
+        {
+            'name': 'blk_mem_gen',
+            'inst':  hierarchy_name + '/WNN_seq_num_BRAM'
+        }
+    )
+    properties = [
+        'CONFIG.use_bram_block {Stand_Alone}',
+        'CONFIG.Memory_Type {True_Dual_Port_RAM}',
+        'CONFIG.ENABLE_32BIT_ADDRESS {true}',
+        'CONFIG.Register_PortA_Output_of_Memory_Primitives {false}',
+        'CONFIG.Register_PortB_Output_of_Memory_Primitives {false}',
+        'CONFIG.Assume_Synchronous_Clk {true}',
+        'CONFIG.Write_Depth_A {' + str(num_nodes) + '}', # BRAM has dummy Node 0
+        'CONFIG.Load_Init_File {false}', # Instead of COE, initialize all sequence numbers to 0
+        'CONFIG.Fill_Remaining_Memory_Locations {true}',
+        'CONFIG.Remaining_Memory_Locations {0}'
+    ]
+    tcl_user_app.setProperties(hierarchy_name + '/WNN_seq_num_BRAM', properties)
+    # Build Outgoing WAN Sequence Number modules
+    tcl_user_app.instBlock(
+        {
+            'name': 'rpn_WNN_repo',
+            'inst':  hierarchy_name + '/outgoing_WNN_repo',
+            'clks': ['i_clk'],
+            'resetns': ['i_ap_rst_n'],
+            'resetns_port': 'rstn',
+            'properties': [ 
+                            'CONFIG.IS_OUTGOING {1}',
+                            'CONFIG.NUM_FPGA_NODES {' + str(num_nodes) + '}'
+                          ]
+        }
+    )
+    # This BRAM tracks the most recently used outgoing WAN sequence number
+    tcl_user_app.instBlock(
+        {
+            'name': 'blk_mem_gen',
+            'inst':  hierarchy_name + '/outgoing_WAN_seq_num_BRAM'
+        }
+    )
+    properties = [
+        'CONFIG.use_bram_block {Stand_Alone}',
+        'CONFIG.Memory_Type {True_Dual_Port_RAM}',
+        'CONFIG.ENABLE_32BIT_ADDRESS {true}',
+        'CONFIG.Register_PortA_Output_of_Memory_Primitives {false}',
+        'CONFIG.Register_PortB_Output_of_Memory_Primitives {false}',
+        'CONFIG.Assume_Synchronous_Clk {true}',
+        'CONFIG.Write_Depth_A {' + str(num_clusters) + '}', # BRAM has dummy Node 0
+        'CONFIG.Load_Init_File {false}', # Instead of COE, initialize all sequence numbers to 0
+        'CONFIG.Fill_Remaining_Memory_Locations {true}',
+        'CONFIG.Remaining_Memory_Locations {0}'
+    ]
+    tcl_user_app.setProperties(hierarchy_name + '/outgoing_WAN_seq_num_BRAM', properties)
+    tcl_user_app.makeConnection(
+        'intf',
+        {
+            'name': hierarchy_name + '/outgoing_WNN_repo',
+            'type':'intf',
+            'port_name':'to_WAN_sequence_number_BRAM'
+        },
+        {
+            'name': hierarchy_name + '/outgoing_WAN_seq_num_BRAM',
+            'type':'intf',
+            'port_name':'BRAM_PORTA'
+        }
+    )
+    # This BRAM tracks the current owner of the outgoing WAN sequence number
+    tcl_user_app.instBlock(
+        {
+            'name': 'blk_mem_gen',
+            'inst':  hierarchy_name + '/outgoing_WAN_owner_BRAM'
+        }
+    )
+    properties = [
+        'CONFIG.use_bram_block {Stand_Alone}',
+        'CONFIG.Memory_Type {Single_Port_RAM}',
+        'CONFIG.ENABLE_32BIT_ADDRESS {true}',
+        'CONFIG.Register_PortA_Output_of_Memory_Primitives {false}',
+        'CONFIG.Write_Depth_A {' + str(num_clusters) + '}', # BRAM has dummy node 0
+        'CONFIG.Load_Init_File {false}', # Instead of COE, initialize all sequence numbers to 0
+        'CONFIG.Fill_Remaining_Memory_Locations {true}',
+        'CONFIG.Remaining_Memory_Locations {0}'
+    ]
+    tcl_user_app.setProperties(hierarchy_name + '/outgoing_WAN_owner_BRAM', properties)
+    tcl_user_app.makeConnection(
+        'intf',
+        {
+            'name': hierarchy_name + '/outgoing_WNN_repo',
+            'type':'intf',
+            'port_name':'to_WAN_number_owner_BRAM'
+        },
+        {
+            'name': hierarchy_name + '/outgoing_WAN_owner_BRAM',
+            'type':'intf',
+            'port_name':'BRAM_PORTA'
+        }
+    )
+    # Outgoing WAN sequence numbers have to be initialized
+    # TODO: For now WAN sequence number initialization is disabled
+    # tcl_user_app.instBlock(
+    #     {
+    #         'name': 'rpn_WAN_sequence_number_initializer',
+    #         'inst':  hierarchy_name + '/rpn_outgoing_WAN_seq_num_initializer',
+    #         'clks': ['i_clk'],
+    #         'resetns': ['i_ap_rst_n'],
+    #         'resetns_port': 'rstn',
+    #         'properties': [ 
+    #                         'CONFIG.NUM_CLUSTERS {' + str(num_clusters) + '}',
+    #                         'CONFIG.SEQUENCE_NUMBER_REPLY_TIMEOUT {' + str(WAN_timeout) + '}'
+    #                       ]
+    #     }
+    # )
+    # tcl_user_app.instBlock(
+    #     {
+    #         'name': 'xlconstant',
+    #         'inst':  hierarchy_name + '/gateway_ctrl_port_number',
+    #         'properties': [ 
+    #                         'CONFIG.CONST_WIDTH {16}',
+    #                         'CONFIG.CONST_VAL {' + str(GW_CTRL_PORT_NUMBER) + '}'
+    #                     ]
+    #     }
+    # )
+    # tcl_user_app.makeConnection(
+    #     'net',
+    #     {
+    #         'name': hierarchy_name + '/gateway_ctrl_port_number',
+    #         'type':'pin',
+    #         'port_name':'dout'
+    #     },
+    #     {
+    #         'name': hierarchy_name + '/rpn_outgoing_WAN_seq_num_initializer',
+    #         'type':'pin',
+    #         'port_name':'i_gateway_control_port_number'
+    #     }
+    # )
+    # tcl_user_app.makeConnection(
+    #     'intf',
+    #     {
+    #         'name': hierarchy_name + '/rpn_outgoing_WAN_seq_num_initializer',
+    #         'type':'intf',
+    #         'port_name':'node_to_WAN_seq_num_BRAM'
+    #     },
+    #     {
+    #         'name': hierarchy_name + '/outgoing_WAN_seq_num_BRAM',
+    #         'type':'intf',
+    #         'port_name':'BRAM_PORTB'
+    #     }
+    # )
+    # tcl_user_app.makeConnection(
+    #     'net',
+    #     {
+    #         'name': hierarchy_name + '/rpn_outgoing_WAN_seq_num_initializer',
+    #         'type':'pin',
+    #         'port_name':'o_sequence_numbers_initialized'
+    #     },
+    #     {
+    #         'name': hierarchy_name + '/outgoing_WNN_repo',
+    #         'type':'pin',
+    #         'port_name':'i_sequence_numbers_initialized'
+    #     }
+    # )
+    # Build Incoming WAN Sequence Number modules
+    tcl_user_app.instBlock(
+        {
+            'name': 'rpn_WNN_repo',
+            'inst':  hierarchy_name + '/incoming_WNN_repo',
+            'clks': ['i_clk'],
+            'resetns': ['i_ap_rst_n'],
+            'resetns_port': 'rstn',
+            'properties': [ 
+                            'CONFIG.IS_OUTGOING {0}',
+                            'CONFIG.NUM_FPGA_NODES {' + str(num_nodes) + '}'
+                          ]
+        }
+    )
+    # This BRAM tracks the most recently used incoming WAN sequence number
+    tcl_user_app.instBlock(
+        {
+            'name': 'blk_mem_gen',
+            'inst':  hierarchy_name + '/incoming_WAN_seq_num_BRAM'
+        }
+    )
+    properties = [
+        'CONFIG.use_bram_block {Stand_Alone}',
+        'CONFIG.Memory_Type {Single_Port_RAM}',
+        'CONFIG.ENABLE_32BIT_ADDRESS {true}',
+        'CONFIG.Register_PortA_Output_of_Memory_Primitives {false}',
+        'CONFIG.Write_Depth_A {' + str(num_clusters) + '}', # BRAM has dummy Node 0
+        'CONFIG.Load_Init_File {false}', # Instead of COE, initialize all sequence numbers to 0
+        'CONFIG.Fill_Remaining_Memory_Locations {true}',
+        'CONFIG.Remaining_Memory_Locations {0}'
+    ]
+    tcl_user_app.setProperties(hierarchy_name + '/incoming_WAN_seq_num_BRAM', properties)
+    tcl_user_app.makeConnection(
+        'intf',
+        {
+            'name': hierarchy_name + '/incoming_WNN_repo',
+            'type':'intf',
+            'port_name':'to_WAN_sequence_number_BRAM'
+        },
+        {
+            'name': hierarchy_name + '/incoming_WAN_seq_num_BRAM',
+            'type':'intf',
+            'port_name':'BRAM_PORTA'
+        }
+    )
+    # Incoming WAN Sequence numbers do not have to be initialized
     tcl_user_app.instBlock(
         {
             'name': 'xlconstant',
@@ -548,39 +861,172 @@ def buildControlAPIInst(tcl_user_app, parent_hierarchy, kernel_id, kernel_dict, 
             'properties': [ 
                             'CONFIG.CONST_WIDTH {1}',
                             'CONFIG.CONST_VAL {1}'
-                          ]
+                        ]
         }
     )
-    if kernel_dict['control_type'] == 'm_axil' or kernel_dict['control_type'] == 'both':
-        tcl_user_app.makeConnection(
-            'net', 
-            {
-                'type': 'pin',
-                'name': hierarchy_name + '/const_1',
-                'port_name': 'dout'
-            },
-            {
-                'type': 'pin',
-                'name': hierarchy_name + '/anc',
-                'port_name': 'to_WAN_tready'
-            }
-        )
-    if kernel_dict['control_type'] == 's_axil' or kernel_dict['control_type'] == 'both':
-        tcl_user_app.makeConnection(
-            'net', 
-            {
-                'type': 'pin',
-                'name': hierarchy_name + '/const_1',
-                'port_name': 'dout'
-            },
-            {
-                'type': 'pin',
-                'name': hierarchy_name + '/nac',
-                'port_name': 'to_KIP_tready'
-            }
-        )
+    tcl_user_app.makeConnection(
+        'net',
+        {
+            'name': hierarchy_name + '/const_1',
+            'type':'pin',
+            'port_name':'dout'
+        },
+        {
+            'name': hierarchy_name + '/incoming_WNN_repo',
+            'type':'pin',
+            'port_name':'i_sequence_numbers_initialized'
+        }
+    )
+    # TODO: For now Outgoing WAN sequence numbers are not initialized either
+    tcl_user_app.makeConnection(
+        'net',
+        {
+            'name': hierarchy_name + '/const_1',
+            'type':'pin',
+            'port_name':'dout'
+        },
+        {
+            'name': hierarchy_name + '/outgoing_WNN_repo',
+            'type':'pin',
+            'port_name':'i_sequence_numbers_initialized'
+        }
+    )
+    # Connect Outgoing and Incoming paths to WNN sequence number BRAM
+    tcl_user_app.makeConnection(
+        'intf',
+        {
+            'name': hierarchy_name + '/outgoing_WNN_repo',
+            'type':'intf',
+            'port_name':'to_WNN_sequence_number_BRAM'
+        },
+        {
+            'name': hierarchy_name + '/WNN_seq_num_BRAM',
+            'type':'intf',
+            'port_name':'BRAM_PORTA'
+        }
+    )
+    tcl_user_app.makeConnection(
+        'intf',
+        {
+            'name': hierarchy_name + '/incoming_WNN_repo',
+            'type':'intf',
+            'port_name':'to_WNN_sequence_number_BRAM'
+        },
+        {
+            'name': hierarchy_name + '/WNN_seq_num_BRAM',
+            'type':'intf',
+            'port_name':'BRAM_PORTB'
+        }
+    )
+    # Connect Outgoing and Incoming paths to input interface from network bridge
+    # RPN Message Types have been divided so that all outgoing requests are numbered 6-8, and all incoming requests are numbered 9-11.
+    # The WAN sequence number initializer will expect only WAN SEQ NUM REPLY messages, which are number 19
+    tcl_user_app.instBlock(
+        {
+            'name': 'rpn_WNN_repo_from_network_bridge_splitter',
+            'inst':  hierarchy_name + '/rpn_repo_from_nb_splitter',
+            'clks': ['i_clk'],
+            'resetns': ['i_ap_rst_n'],
+            'resetns_port': 'rstn'
+        }
+    )
+    tcl_user_app.makeConnection(
+        'intf',
+        {
+            'name': hierarchy_name + '/rpn_repo_from_nb_splitter',
+            'type': 'intf',
+            'port_name': 'to_rpn_WNN_outgoing_repo'
+        },
+        {
+            'name': hierarchy_name + '/outgoing_WNN_repo',
+            'type': 'intf',
+            'port_name': 'from_nb'
+        }
+    )
+    tcl_user_app.makeConnection(
+        'intf',
+        {
+            'name': hierarchy_name + '/rpn_repo_from_nb_splitter',
+            'type': 'intf',
+            'port_name': 'to_rpn_WNN_incoming_repo'
+        },
+        {
+            'name': hierarchy_name + '/incoming_WNN_repo',
+            'type': 'intf',
+            'port_name': 'from_nb'
+        }
+    )
+    # For now, WAN Sequence Number Initializer is disabled
+    tcl_user_app.makeConnection(
+        'net',
+        {
+            'name': hierarchy_name + '/const_1',
+            'type':'pin',
+            'port_name':'dout'
+        },
+        {
+            'name': hierarchy_name + '/rpn_repo_from_nb_splitter',
+            'type':'pin',
+            'port_name':'to_rpn_WAN_seq_num_initializer_tready'
+        }
+    )
+    # tcl_user_app.makeConnection(
+    #     'intf',
+    #     {
+    #         'name': hierarchy_name + '/rpn_repo_from_nb_splitter',
+    #         'type': 'intf',
+    #         'port_name': 'to_rpn_WAN_seq_num_initializer'
+    #     },
+    #     {
+    #         'name': hierarchy_name + '/rpn_outgoing_WAN_seq_num_initializer',
+    #         'type': 'intf',
+    #         'port_name': 'from_nb'
+    #     }
+    # )
+    # Connect Outgoing and Incoming paths to the output interface
+    buildControlOutboundSwitch(tcl_user_app, hierarchy_name + "/rpn_WNN_to_KIP_switch", 2)
+    tcl_user_app.makeConnection(
+        'intf',
+        {
+            'name': hierarchy_name + '/outgoing_WNN_repo',
+            'type': 'intf',
+            'port_name': 'to_nb_KIP'
+        },
+        {
+            'name': hierarchy_name + '/rpn_WNN_to_KIP_switch',
+            'type': 'intf',
+            'port_name': 'S00_AXIS'
+        }
+    )
+    tcl_user_app.makeConnection(
+        'intf',
+        {
+            'name': hierarchy_name + '/incoming_WNN_repo',
+            'type': 'intf',
+            'port_name': 'to_nb_KIP'
+        },
+        {
+            'name': hierarchy_name + '/rpn_WNN_to_KIP_switch',
+            'type': 'intf',
+            'port_name': 'S01_AXIS'
+        }
+    )
+    # Connect KIP port numbers together so that only a single connection has to be made
+    tcl_user_app.makeConnection(
+        'net',
+        {
+            'name': hierarchy_name + '/incoming_WNN_repo',
+            'type':'pin',
+            'port_name':'i_KIP_port_number'
+        },
+        {
+            'name': hierarchy_name + '/outgoing_WNN_repo',
+            'type':'pin',
+            'port_name':'i_KIP_port_number'
+        }
+    )
 
-def buildControlReliabilityInst(tcl_user_app, parent_hierarchy, LAN_timeout=500, WAN_timeout=1000):
+def buildControlReliabilityInst(tcl_user_app, parent_hierarchy, has_wan, build_WAN_request_path, build_WAN_response_path, LAN_timeout=500, WAN_timeout=300000):
     """
     Instantiates and connects the modules used by the Reliability Protocol-Node (RPN). These modules guarantee exactly once reliable communications between Galapagos kernels. 
 
@@ -597,7 +1043,7 @@ def buildControlReliabilityInst(tcl_user_app, parent_hierarchy, LAN_timeout=500,
     hierarchy_name = parent_hierarchy + "/reliability_protocol_node"
     tcl_user_app.createHierarchy(hierarchy_name)
     # Instantiate and connect all reliability modules
-    # Node ID for this FPGA
+    # Node and Cluster ID for this FPGA
     node_id = tcl_user_app.fpga['num']
     tcl_user_app.instBlock(
         {
@@ -608,7 +1054,37 @@ def buildControlReliabilityInst(tcl_user_app, parent_hierarchy, LAN_timeout=500,
                             'CONFIG.CONST_VAL {' + str(node_id) + '}'
                           ]
         }
-    )
+    )        
+    # If this is node 1, instantiate WNN Repo for the cluster on this FPGA
+    if has_wan and node_id == 1:
+        buildControlWNNRepoInst(tcl_user_app, hierarchy_name, WAN_timeout)
+        for module in ['outgoing_WNN_repo', 'incoming_WNN_repo']:
+            tcl_user_app.makeConnection(
+                'net',
+                {
+                    'name': hierarchy_name + '/node_id',
+                    'type':'pin',
+                    'port_name':'dout'
+                },
+                {
+                    'name': hierarchy_name + '/WNN_repo/' + module,
+                    'type':'pin',
+                    'port_name':'i_node_id'
+                }
+            )
+        # tcl_user_app.makeConnection(
+        #         'net',
+        #         {
+        #             'name': hierarchy_name + '/cluster_id',
+        #             'type':'pin',
+        #             'port_name':'dout'
+        #         },
+        #         {
+        #             'name': hierarchy_name + '/WNN_repo/rpn_outgoing_WAN_seq_num_initializer',
+        #             'type':'pin',
+        #             'port_name':'i_cluster_id'
+        #         }
+        #     )
     # Create RPN LAN TX Pathway
     tcl_user_app.instBlock(
         {
@@ -661,81 +1137,115 @@ def buildControlReliabilityInst(tcl_user_app, parent_hierarchy, LAN_timeout=500,
                         ]
         }
     )
-    tcl_user_app.instBlock(
-        {
-            'name': 'rpn_LAN_sequence_number_initializer',
-            'inst':  hierarchy_name + '/rpn_LAN_seq_num_initializer',
-            'clks': ['i_clk'],
-            'resetns': ['i_ap_rst_n'],
-            'resetns_port': 'rstn',
-            'properties': [ 
-                'CONFIG.SEQUENCE_NUMBER_REPLY_TIMEOUT {' + str(LAN_timeout) + '}',
-                'CONFIG.NUM_FPGA_NODES {' + str(num_nodes-1) + '}' # Module starts from 1
-            ]
-        }
-    )
-    # This BRAM is used by the LAN Sequence Number Initializer to find a kernel TDEST that sits on the destination node
-    tcl_user_app.instBlock(
-        {
-            'name': 'blk_mem_gen',
-            'inst':  hierarchy_name + '/node_to_kernel_ROM'
-        }
-    )
-    properties = [
-        'CONFIG.use_bram_block {Stand_Alone}',
-        'CONFIG.Memory_Type {Single_Port_ROM}',
-        'CONFIG.ENABLE_32BIT_ADDRESS {true}',
-        'CONFIG.Register_PortA_Output_of_Memory_Primitives {false}',
-        'CONFIG.Write_Depth_A {' + str(num_nodes) + '}', # BRAM has dummy node 0
-        'CONFIG.Load_Init_File {True}',
-        'CONFIG.Coe_File $top_path/projects/$default_dir/node_to_kernel.coe'
-    ]
-    tcl_user_app.setProperties(hierarchy_name + '/node_to_kernel_ROM', properties)
-    tcl_user_app.makeConnection(
-        'intf',
-        {
-            'name': hierarchy_name + '/rpn_LAN_seq_num_initializer',
-            'type': 'intf',
-            'port_name': 'node_to_kernel_ROM'
-        },
-        {
-            'name': hierarchy_name + '/node_to_kernel_ROM',
-            'type': 'intf',
-            'port_name': 'BRAM_PORTA'
-        }
-    )
+    # tcl_user_app.instBlock(
+    #     {
+    #         'name': 'rpn_LAN_sequence_number_initializer',
+    #         'inst':  hierarchy_name + '/rpn_LAN_seq_num_initializer',
+    #         'clks': ['i_clk'],
+    #         'resetns': ['i_ap_rst_n'],
+    #         'resetns_port': 'rstn',
+    #         'properties': [ 
+    #             'CONFIG.SEQUENCE_NUMBER_REPLY_TIMEOUT {' + str(LAN_timeout) + '}',
+    #             'CONFIG.NUM_FPGA_NODES {' + str(num_nodes-1) + '}' # Module starts from 1
+    #         ]
+    #     }
+    # )
+    # # This BRAM is used by the LAN Sequence Number Initializer to find a kernel TDEST that sits on the destination node
+    # tcl_user_app.instBlock(
+    #     {
+    #         'name': 'blk_mem_gen',
+    #         'inst':  hierarchy_name + '/node_to_kernel_ROM'
+    #     }
+    # )
+    # properties = [
+    #     'CONFIG.use_bram_block {Stand_Alone}',
+    #     'CONFIG.Memory_Type {Single_Port_ROM}',
+    #     'CONFIG.ENABLE_32BIT_ADDRESS {true}',
+    #     'CONFIG.Register_PortA_Output_of_Memory_Primitives {false}',
+    #     'CONFIG.Write_Depth_A {' + str(num_nodes) + '}', # BRAM has dummy node 0
+    #     'CONFIG.Load_Init_File {True}',
+    #     'CONFIG.Coe_File $top_path/projects/$default_dir/node_to_kernel.coe'
+    # ]
+    # tcl_user_app.setProperties(hierarchy_name + '/node_to_kernel_ROM', properties)
+    # tcl_user_app.makeConnection(
+    #     'intf',
+    #     {
+    #         'name': hierarchy_name + '/rpn_LAN_seq_num_initializer',
+    #         'type': 'intf',
+    #         'port_name': 'node_to_kernel_ROM'
+    #     },
+    #     {
+    #         'name': hierarchy_name + '/node_to_kernel_ROM',
+    #         'type': 'intf',
+    #         'port_name': 'BRAM_PORTA'
+    #     }
+    # )
     tcl_user_app.instBlock(
         {
             'name': 'blk_mem_gen',
             'inst':  hierarchy_name + '/LAN_TX_sequence_number_BRAM'
         }
     )
+    # TODO: For now, LAN Sequence Number Initialization has been disabled. Instead, tie off sequence_numbers_initialized to 1
+    tcl_user_app.instBlock(
+        {
+            'name': 'xlconstant',
+            'inst':  hierarchy_name + '/const_1',
+            'properties': [ 
+                            'CONFIG.CONST_WIDTH {1}',
+                            'CONFIG.CONST_VAL {1}'
+                        ]
+        }
+    )
+    tcl_user_app.makeConnection(
+        'net', 
+        {
+            'type': 'pin',
+            'name': hierarchy_name + '/const_1',
+            'port_name': 'dout'
+        },
+        {
+            'type': 'pin',
+            'name': hierarchy_name + '/rpn_LAN_TX',
+            'port_name': 'i_sequence_numbers_initialized'
+        }
+    )
+    # properties = [
+    #     'CONFIG.use_bram_block {Stand_Alone}',
+    #     'CONFIG.Memory_Type {True_Dual_Port_RAM}',
+    #     'CONFIG.ENABLE_32BIT_ADDRESS {true}',
+    #     'CONFIG.Register_PortA_Output_of_Memory_Primitives {false}',
+    #     'CONFIG.Register_PortB_Output_of_Memory_Primitives {false}',
+    #     'CONFIG.Assume_Synchronous_Clk {true}',
+    #     'CONFIG.Write_Depth_A {' + str(num_nodes) + '}', # BRAM has dummy Node 0
+    #     'CONFIG.Load_Init_File {false}', # Instead of COE, initialize all sequence numbers to 0
+    #     'CONFIG.Fill_Remaining_Memory_Locations {true}',
+    #     'CONFIG.Remaining_Memory_Locations {0}'
+    # ]
     properties = [
         'CONFIG.use_bram_block {Stand_Alone}',
-        'CONFIG.Memory_Type {True_Dual_Port_RAM}',
+        'CONFIG.Memory_Type {Single_Port_RAM}',
         'CONFIG.ENABLE_32BIT_ADDRESS {true}',
         'CONFIG.Register_PortA_Output_of_Memory_Primitives {false}',
-        'CONFIG.Register_PortB_Output_of_Memory_Primitives {false}',
-        'CONFIG.Assume_Synchronous_Clk {true}',
         'CONFIG.Write_Depth_A {' + str(num_nodes) + '}', # BRAM has dummy Node 0
         'CONFIG.Load_Init_File {false}', # Instead of COE, initialize all sequence numbers to 0
         'CONFIG.Fill_Remaining_Memory_Locations {true}',
         'CONFIG.Remaining_Memory_Locations {0}'
     ]
     tcl_user_app.setProperties(hierarchy_name + '/LAN_TX_sequence_number_BRAM', properties)
-    tcl_user_app.makeConnection(
-        'intf',
-        {
-            'name': hierarchy_name + '/rpn_LAN_seq_num_initializer',
-            'type': 'intf',
-            'port_name': 'node_to_LAN_seq_num_BRAM'
-        },
-        {
-            'name': hierarchy_name + '/LAN_TX_sequence_number_BRAM',
-            'type': 'intf',
-            'port_name': 'BRAM_PORTA'
-        }
-    )
+    # tcl_user_app.makeConnection(
+    #     'intf',
+    #     {
+    #         'name': hierarchy_name + '/rpn_LAN_seq_num_initializer',
+    #         'type': 'intf',
+    #         'port_name': 'node_to_LAN_seq_num_BRAM'
+    #     },
+    #     {
+    #         'name': hierarchy_name + '/LAN_TX_sequence_number_BRAM',
+    #         'type': 'intf',
+    #         'port_name': 'BRAM_PORTA'
+    #     }
+    # )
     tcl_user_app.makeConnection(
         'intf',
         {
@@ -746,7 +1256,7 @@ def buildControlReliabilityInst(tcl_user_app, parent_hierarchy, LAN_timeout=500,
         {
             'name': hierarchy_name + '/LAN_TX_sequence_number_BRAM',
             'type': 'intf',
-            'port_name': 'BRAM_PORTB'
+            'port_name': 'BRAM_PORTA'
         }
     )
     tcl_user_app.makeConnection(
@@ -763,46 +1273,46 @@ def buildControlReliabilityInst(tcl_user_app, parent_hierarchy, LAN_timeout=500,
         }
     )
     # RPN LAN TX and LAN Sequence Number Initializer share a connection to the LAN pathway
-    buildControlOutboundSwitch(tcl_user_app, hierarchy_name + "/rpn_to_LAN_switch", 2)
-    tcl_user_app.makeConnection(
-        'intf',
-        {
-            'name': hierarchy_name + '/rpn_LAN_seq_num_initializer',
-            'type': 'intf',
-            'port_name': 'to_nb_LAN'
-        },
-        {
-            'name': hierarchy_name + '/rpn_to_LAN_switch',
-            'type': 'intf',
-            'port_name': 'S00_AXIS'
-        }
-    )
-    tcl_user_app.makeConnection(
-        'intf',
-        {
-            'name': hierarchy_name + '/rpn_LAN_TX',
-            'type': 'intf',
-            'port_name': 'to_nb_LAN'
-        },
-        {
-            'name': hierarchy_name + '/rpn_to_LAN_switch',
-            'type': 'intf',
-            'port_name': 'S01_AXIS'
-        }
-    )
-    tcl_user_app.makeConnection(
-        'net',
-        {
-            'name': hierarchy_name + '/rpn_LAN_seq_num_initializer',
-            'type':'pin',
-            'port_name':'o_sequence_numbers_initialized'
-        },
-        {
-            'name': hierarchy_name + '/rpn_LAN_TX',
-            'type':'pin',
-            'port_name':'i_sequence_numbers_initialized'
-        }
-    )
+    # buildControlOutboundSwitch(tcl_user_app, hierarchy_name + "/rpn_to_LAN_switch", 2)
+    # tcl_user_app.makeConnection(
+    #     'intf',
+    #     {
+    #         'name': hierarchy_name + '/rpn_LAN_seq_num_initializer',
+    #         'type': 'intf',
+    #         'port_name': 'to_nb_LAN'
+    #     },
+    #     {
+    #         'name': hierarchy_name + '/rpn_to_LAN_switch',
+    #         'type': 'intf',
+    #         'port_name': 'S00_AXIS'
+    #     }
+    # )
+    # tcl_user_app.makeConnection(
+    #     'intf',
+    #     {
+    #         'name': hierarchy_name + '/rpn_LAN_TX',
+    #         'type': 'intf',
+    #         'port_name': 'to_nb_LAN'
+    #     },
+    #     {
+    #         'name': hierarchy_name + '/rpn_to_LAN_switch',
+    #         'type': 'intf',
+    #         'port_name': 'S01_AXIS'
+    #     }
+    # )
+    # tcl_user_app.makeConnection(
+    #     'net',
+    #     {
+    #         'name': hierarchy_name + '/rpn_LAN_seq_num_initializer',
+    #         'type':'pin',
+    #         'port_name':'o_sequence_numbers_initialized'
+    #     },
+    #     {
+    #         'name': hierarchy_name + '/rpn_LAN_TX',
+    #         'type':'pin',
+    #         'port_name':'i_sequence_numbers_initialized'
+    #     }
+    # )
     # Create RPN LAN RX Pathway
     tcl_user_app.instBlock(
         {
@@ -843,7 +1353,434 @@ def buildControlReliabilityInst(tcl_user_app, parent_hierarchy, LAN_timeout=500,
             'port_name': 'BRAM_PORTA'
         }
     )
+    # Create RPN WAN Infrastructure which is used by both WAN requests and responses
+    if build_WAN_response_path or build_WAN_request_path:
+        # Currently, WNN repos are set to be placed on Node 1 of every cluster
+        WNN_repo_id = tcl_user_app.fpga['ctrl_WNN_repo_id']
+        WNN_repo_ip = tcl_user_app.fpga['ctrl_WNN_repo_ip']
+        tcl_user_app.instBlock(
+            {
+                'name': 'xlconstant',
+                'inst':  hierarchy_name + '/rpn_WNN_repo_node_id',
+                'properties': [ 
+                                'CONFIG.CONST_WIDTH {8}',
+                                'CONFIG.CONST_VAL {' + str(WNN_repo_id) + '}'
+                            ]
+            }
+        )
+        tcl_user_app.instBlock(
+            {
+                'name': 'xlconstant',
+                'inst':  hierarchy_name + '/rpn_WNN_repo_ip_addr',
+                'properties': [ 
+                                'CONFIG.CONST_WIDTH {32}',
+                                'CONFIG.CONST_VAL {' + WNN_repo_ip + '}'
+                            ]
+            }
+        )
+        tcl_user_app.instBlock(
+            {
+                'name': 'rpn_WNN_node',
+                'inst':  hierarchy_name + '/rpn_WNN_node',
+                'clks': ['i_clk'],
+                'resetns': ['i_ap_rst_n'],
+                'resetns_port': 'rstn'
+            }
+        )
+        tcl_user_app.makeConnection(
+            'net',
+            {
+                'name': hierarchy_name + '/node_id',
+                'type':'pin',
+                'port_name':'dout'
+            },
+            {
+                'name': hierarchy_name + '/rpn_WNN_node',
+                'type':'pin',
+                'port_name':'i_node_id'
+            }
+        )
+        # WAN Number Node ID is the ID of the FPGA holding the WNN Repo (used to check that the incoming message came from the correct sender)
+        tcl_user_app.makeConnection(
+            'net',
+            {
+                'name': hierarchy_name + '/rpn_WNN_repo_node_id',
+                'type':'pin',
+                'port_name':'dout'
+            },
+            {
+                'name': hierarchy_name + '/rpn_WNN_node',
+                'type':'pin',
+                'port_name':'i_WAN_number_node_id'
+            }
+        )
+        tcl_user_app.makeConnection(
+            'net',
+            {
+                'name': hierarchy_name + '/rpn_WNN_repo_ip_addr',
+                'type':'pin',
+                'port_name':'dout'
+            },
+            {
+                'name': hierarchy_name + '/rpn_WNN_node',
+                'type':'pin',
+                'port_name':'i_WAN_number_node_ip_addr'
+            }
+        )
+        # Create and connect switches that will feed WNN Node
+        # Outbound Switch
+        #TODO: See if fixed priority works even if signals are tied off
+        # buildControlFixedPrioritySwitch(tcl_user_app, hierarchy_name + "/rpn_to_WNN_switch", 3)
+        buildControlOutboundSwitch(tcl_user_app, hierarchy_name + "/rpn_to_WNN_switch", 4)
+        # Edge case: WNN Signals do not use TLAST, so get rid of them
+        properties = [
+            'CONFIG.HAS_TLAST.VALUE_SRC PROPAGATED'
+        ]
+        tcl_user_app.setProperties(hierarchy_name + '/rpn_to_WNN_switch', properties)
+        tcl_user_app.makeConnection(
+            'intf',
+            {
+                'name': hierarchy_name + '/rpn_to_WNN_switch',
+                'type': 'intf',
+                'port_name': 'M00_AXIS'
+            },
+            {
+                'name': hierarchy_name + "/rpn_WNN_node",
+                'type': 'intf',
+                'port_name': 'from_rpn'
+            }
+        )
+        # Inbound Switch
+        # TDESTS for this switch are 1, 2, 3, for WAN TX, KIP TX, and KIP RX, respectively
+        buildControlInboundSwitch(tcl_user_app, hierarchy_name + '/rpn_from_WNN_switch', 3, [1, 2, 3])
+        tcl_user_app.makeConnection(
+            'intf',
+            {
+                'name': hierarchy_name + '/rpn_WNN_node',
+                'type': 'intf',
+                'port_name': 'to_rpn'
+            },
+            {
+                'name': hierarchy_name + "/rpn_from_WNN_switch",
+                'type': 'intf',
+                'port_name': 'S00_AXIS'
+            }
+        )
+    # Create RPN WAN Request Path
+    # This means all the infrastructure required for a kernel to transmit a WAN request and receive a response, including WAN TX and KIP RX
+    if build_WAN_request_path:
+        tcl_user_app.instBlock(
+            {
+                'name': 'rpn_WAN_TX',
+                'inst':  hierarchy_name + '/rpn_WAN_TX',
+                'clks': ['i_clk'],
+                'resetns': ['i_ap_rst_n'],
+                'resetns_port': 'rstn',
+                'properties': [ 
+                    'CONFIG.ACK_TIMEOUT {' + str(WAN_timeout) + '}'
+                ]
+            }
+        )
+        tcl_user_app.instBlock(
+            {
+                'name': 'rpn_KIP_RX',
+                'inst':  hierarchy_name + '/rpn_KIP_RX',
+                'clks': ['i_clk'],
+                'resetns': ['i_ap_rst_n'],
+                'resetns_port': 'rstn',
+            }
+        )
+        # KIP Port Number and cluster ID will be assigned in the main function
+    # Create RPN WAN Response Path
+    # This is the infrastructure used to receive WAN requests and transmit responses, including RPN KIP TX
+    if build_WAN_response_path:
+        tcl_user_app.instBlock(
+            {
+                'name': 'rpn_KIP_TX',
+                'inst':  hierarchy_name + '/rpn_KIP_TX',
+                'clks': ['i_clk'],
+                'resetns': ['i_ap_rst_n'],
+                'resetns_port': 'rstn',
+                'properties': [ 
+                    'CONFIG.ACK_TIMEOUT {' + str(WAN_timeout) + '}'
+                ]
+            }
+        )
+        
+    # Connect RPN WAN input pathway
+    # Connect from-WNN switch to modules
+    if build_WAN_request_path:
+        tcl_user_app.makeConnection(
+            'intf',
+            {
+                'name': hierarchy_name + '/rpn_from_WNN_switch',
+                'type': 'intf',
+                'port_name': 'M00_AXIS'
+            },
+            {
+                'name': hierarchy_name + "/rpn_WAN_TX",
+                'type': 'intf',
+                'port_name': 'from_WNN'
+            }
+        )
+        tcl_user_app.makeConnection(
+            'intf',
+            {
+                'name': hierarchy_name + '/rpn_from_WNN_switch',
+                'type': 'intf',
+                'port_name': 'M02_AXIS'
+            },
+            {
+                'name': hierarchy_name + "/rpn_KIP_RX",
+                'type': 'intf',
+                'port_name': 'from_WNN'
+            }
+        )    
+    if build_WAN_response_path:
+        tcl_user_app.makeConnection(
+            'intf',
+            {
+                'name': hierarchy_name + '/rpn_from_WNN_switch',
+                'type': 'intf',
+                'port_name': 'M01_AXIS'
+            },
+            {
+                'name': hierarchy_name + "/rpn_KIP_TX",
+                'type': 'intf',
+                'port_name': 'from_WNN'
+            }
+        )
+    # Edge case: If only WAN request or response path is used, tie off the unused interfaces
+    if build_WAN_request_path != build_WAN_response_path:
+        # tcl_user_app.instBlock(
+        #     {
+        #         'name': 'xlconstant',
+        #         'inst':  hierarchy_name + '/const_1',
+        #         'properties': [ 
+        #                         'CONFIG.CONST_WIDTH {1}',
+        #                         'CONFIG.CONST_VAL {1}'
+        #                     ]
+        #     }
+        # )
+        if not build_WAN_request_path:
+            for i in [0, 2]:
+                tcl_user_app.instBlock(
+                    {
+                        'name': 'axis_register_slice',
+                        'inst':  hierarchy_name + '/rpn_from_WNN_switch_tieoff_' + str(i),
+                        'clks': ['aclk'],
+                        'resetns': ['aresetn'],
+                        'resetns_port': 'rstn'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                        'name': hierarchy_name + '/rpn_from_WNN_switch',
+                        'type':'intf',
+                        'port_name': 'M0' + str(i) + '_AXIS'
+                    },
+                    {
+                        'name': hierarchy_name + '/rpn_from_WNN_switch_tieoff_' + str(i),
+                        'type':'intf',
+                        'port_name':'S_AXIS'
+                    }
+                ) 
+                tcl_user_app.makeConnection(
+                    'net', 
+                    {
+                        'type': 'pin',
+                        'name': hierarchy_name + '/const_1',
+                        'port_name': 'dout'
+                    },
+                    {
+                        'type': 'pin',
+                        'name': hierarchy_name + '/rpn_from_WNN_switch_tieoff_' + str(i),
+                        'port_name': 'M_AXIS_tready'
+                    }
+                )
+        else:
+            tcl_user_app.instBlock(
+                {
+                    'name': 'axis_register_slice',
+                    'inst':  hierarchy_name + '/rpn_from_WNN_switch_tieoff_1',
+                    'clks': ['aclk'],
+                    'resetns': ['aresetn'],
+                    'resetns_port': 'rstn'
+                }
+            )
+            tcl_user_app.makeConnection(
+                'intf',
+                {
+                    'name': hierarchy_name + '/rpn_from_WNN_switch',
+                    'type':'intf',
+                    'port_name': 'M01_AXIS'
+                },
+                {
+                    'name': hierarchy_name + '/rpn_from_WNN_switch_tieoff_1',
+                    'type':'intf',
+                    'port_name':'S_AXIS'
+                }
+            ) 
+            tcl_user_app.makeConnection(
+                'net', 
+                {
+                    'type': 'pin',
+                    'name': hierarchy_name + '/const_1',
+                    'port_name': 'dout'
+                },
+                {
+                    'type': 'pin',
+                    'name': hierarchy_name + '/rpn_from_WNN_switch_tieoff_1',
+                    'port_name': 'M_AXIS_tready'
+                }
+            )
+    # Connect RPN WAN Output pathway
+    # Connect modules to to-WNN switch
+    # Connect modules in descending order of priority: [RPN KIP RX, RPN KIP TX, RPN WAN TX]
+    if build_WAN_request_path:
+        tcl_user_app.makeConnection(
+            'intf',
+            {
+                'name': hierarchy_name + '/rpn_WAN_TX',
+                'type': 'intf',
+                'port_name': 'to_WNN'
+            },
+            {
+                'name': hierarchy_name + "/rpn_to_WNN_switch",
+                'type': 'intf',
+                'port_name': 'S02_AXIS'
+            }
+        )
+        tcl_user_app.makeConnection(
+            'intf',
+            {
+                'name': hierarchy_name + '/rpn_KIP_RX',
+                'type': 'intf',
+                'port_name': 'to_WNN'
+            },
+            {
+                'name': hierarchy_name + "/rpn_to_WNN_switch",
+                'type': 'intf',
+                'port_name': 'S00_AXIS'
+            }
+        )
+    if build_WAN_response_path:
+        tcl_user_app.makeConnection(
+            'intf',
+            {
+                'name': hierarchy_name + '/rpn_KIP_TX',
+                'type': 'intf',
+                'port_name': 'to_WNN'
+            },
+            {
+                'name': hierarchy_name + "/rpn_to_WNN_switch",
+                'type': 'intf',
+                'port_name': 'S01_AXIS'
+            }
+        )
+        tcl_user_app.makeConnection(
+            'intf',
+            {
+                'name': hierarchy_name + '/rpn_LAN_RX',
+                'type': 'intf',
+                'port_name': 'to_WNN'
+            },
+            {
+                'name': hierarchy_name + "/rpn_to_WNN_switch",
+                'type': 'intf',
+                'port_name': 'S03_AXIS'
+            }
+        )
+    # Edge case: If only WAN request or response path is used, tie off the unused interfaces
+    if build_WAN_request_path != build_WAN_response_path:
+        tcl_user_app.instBlock(
+            {
+                'name': 'xlconstant',
+                'inst':  hierarchy_name + '/const_0',
+                'properties': [ 
+                                'CONFIG.CONST_WIDTH {1}',
+                                'CONFIG.CONST_VAL {0}'
+                            ]
+            }
+        )
+        if not build_WAN_request_path:
+            for i in [0, 2]:
+                tcl_user_app.instBlock(
+                    {
+                        'name': 'axis_register_slice',
+                        'inst':  hierarchy_name + '/rpn_to_WNN_switch_tieoff_' + str(i),
+                        'clks': ['aclk'],
+                        'resetns': ['aresetn'],
+                        'resetns_port': 'rstn'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                        'name': hierarchy_name + '/rpn_to_WNN_switch_tieoff_' + str(i),
+                        'type':'intf',
+                        'port_name': 'M_AXIS'
+                    },
+                    {
+                        'name': hierarchy_name + '/rpn_to_WNN_switch',
+                        'type':'intf',
+                        'port_name': 'S0' + str(i) + '_AXIS'
+                    }
+                ) 
+                tcl_user_app.makeConnection(
+                    'net', 
+                    {
+                        'type': 'pin',
+                        'name': hierarchy_name + '/const_0',
+                        'port_name': 'dout'
+                    },
+                    {
+                        'type': 'pin',
+                        'name': hierarchy_name + '/rpn_to_WNN_switch_tieoff_' + str(i),
+                        'port_name': 'S_AXIS_tvalid'
+                    }
+                )
+        else:
+            for i in [1, 3]:
+                tcl_user_app.instBlock(
+                    {
+                        'name': 'axis_register_slice',
+                        'inst':  hierarchy_name + '/rpn_to_WNN_switch_tieoff_' + str(i),
+                        'clks': ['aclk'],
+                        'resetns': ['aresetn'],
+                        'resetns_port': 'rstn'
+                    }
+                )
+                tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                        'name': hierarchy_name + '/rpn_to_WNN_switch_tieoff_' + str(i),
+                        'type':'intf',
+                        'port_name': 'M_AXIS'
+                    },
+                    {
+                        'name': hierarchy_name + '/rpn_to_WNN_switch',
+                        'type':'intf',
+                        'port_name': 'S0' + str(i) + '_AXIS'
+                    }
+                ) 
+                tcl_user_app.makeConnection(
+                    'net', 
+                    {
+                        'type': 'pin',
+                        'name': hierarchy_name + '/const_0',
+                        'port_name': 'dout'
+                    },
+                    {
+                        'type': 'pin',
+                        'name': hierarchy_name + '/rpn_to_WNN_switch_tieoff_' + str(i),
+                        'port_name': 'S_AXIS_tvalid'
+                    }
+                )
     # Create and connect inbound path from network bridge
+    # RPN LAN Inbound Path
+    # Replaced custom from_network_bridge_splitter
     tcl_user_app.instBlock(
         {
             'name': 'rpn_LAN_from_network_bridge_splitter',
@@ -854,7 +1791,8 @@ def buildControlReliabilityInst(tcl_user_app, parent_hierarchy, LAN_timeout=500,
         }
     )
     dest_port_name = "from_nb"
-    for module in ["rpn_LAN_seq_num_initializer", "rpn_LAN_TX", "rpn_LAN_RX"]:  
+    # LAN Sequence Number Initializer disabled right now
+    for module in ["rpn_LAN_TX", "rpn_LAN_RX"]:  
         tcl_user_app.makeConnection(
             'intf',
             {
@@ -868,21 +1806,407 @@ def buildControlReliabilityInst(tcl_user_app, parent_hierarchy, LAN_timeout=500,
                 'port_name': dest_port_name
             }
         )
-    # Connect all components to Node ID
-    for module in ['rpn_LAN_TX', 'rpn_LAN_RX', 'rpn_LAN_seq_num_initializer']:
-        tcl_user_app.makeConnection(
-        'net', 
+    tcl_user_app.makeConnection(
+        'net',
         {
-            'type': 'pin',
-            'name': hierarchy_name + '/node_id',
-            'port_name': 'dout'
+            'name': hierarchy_name + '/const_1',
+            'type':'pin',
+            'port_name':'dout'
         },
         {
-            'type': 'pin',
-            'name': hierarchy_name + '/' + module,
-            'port_name': 'i_node_id'
+            'name': hierarchy_name + '/rpn_LAN_from_nb_splitter',
+            'type':'pin',
+            'port_name':'to_rpn_LAN_seq_num_initializer_tready'
         }
     )
+    # Connect all components to Node ID
+    for module in ['rpn_LAN_TX', 
+                'rpn_LAN_RX']:
+        tcl_user_app.makeConnection(
+            'net', 
+            {
+                'type': 'pin',
+                'name': hierarchy_name + '/node_id',
+                'port_name': 'dout'
+            },
+            {
+                'type': 'pin',
+                'name': hierarchy_name + '/' + module,
+                'port_name': 'i_node_id'
+            }
+        )
+    # If WAN is used, put a switch at the start of the input path to separate between LAN, WAN, WNN and KIP packets
+    # According to the Reliability Message Types, LAN messages types are 0-3, WAN types are 4-5, WNN Node/Repo types are 6-19, KIP types are 20-21
+    if build_WAN_request_path or build_WAN_response_path:
+        tcl_user_app.instBlock(
+            {
+                'name': 'rpn_from_network_bridge_splitter',
+                'inst':  hierarchy_name + '/rpn_from_nb_splitter',
+                'clks': ['i_clk'],
+                'resetns': ['i_ap_rst_n'],
+                'resetns_port': 'rstn'
+            }
+        )
+        # LAN Connection
+        tcl_user_app.makeBufferedIntfConnection(
+            {
+                'name': hierarchy_name + '/rpn_from_nb_splitter',
+                'type': 'intf',
+                'port_name': 'to_rpn_LAN'
+            },
+            {
+                'name': hierarchy_name + '/rpn_LAN_from_nb_splitter',
+                'type': 'intf',
+                'port_name': 'from_network_bridge'
+            },
+            hierarchy_name + '/rpn_incoming_LAN_splitter_path',
+            1
+        )
+        # WAN Connection: Only used if WAN request path is used
+        if build_WAN_request_path:
+            tcl_user_app.makeBufferedIntfConnection(
+                {
+                    'name': hierarchy_name + '/rpn_from_nb_splitter',
+                    'type': 'intf',
+                    'port_name': 'to_rpn_WAN'
+                },
+                {
+                    'name': hierarchy_name + '/rpn_WAN_TX',
+                    'type': 'intf',
+                    'port_name': 'from_nb'
+                },
+                hierarchy_name + '/rpn_incoming_WAN_splitter_path',
+                1
+            )
+        else:
+            tcl_user_app.makeConnection(
+                'net', 
+                {
+                    'type': 'pin',
+                    'name': hierarchy_name + '/const_1',
+                    'port_name': 'dout'
+                },
+                {
+                    'type': 'pin',
+                    'name': hierarchy_name + '/rpn_from_nb_splitter',
+                    'port_name': 'to_rpn_WAN_tready'
+                }
+            )
+        # WNN Splitter is only needed for Node 1 of every cluster. Otherwise, directly connect to WNN Node
+        # TODO: Correct this if statement to be more accurate based on user input
+        if has_wan and node_id == 1:
+            tcl_user_app.instBlock(
+                {
+                    'name': 'rpn_WNN_from_network_bridge_splitter',
+                    'inst':  hierarchy_name + '/rpn_WNN_from_nb_splitter',
+                    'clks': ['i_clk'],
+                    'resetns': ['i_ap_rst_n'],
+                    'resetns_port': 'rstn'
+                }
+            )
+            tcl_user_app.makeBufferedIntfConnection(
+                {
+                    'name': hierarchy_name + '/rpn_from_nb_splitter',
+                    'type': 'intf',
+                    'port_name': 'to_rpn_WNN'
+                },
+                {
+                    'name': hierarchy_name + '/rpn_WNN_from_nb_splitter',
+                    'type': 'intf',
+                    'port_name': 'from_network_bridge'
+                },
+                hierarchy_name + '/rpn_WNN_splitter_path',
+                1
+            )
+            # Repo Connection
+            tcl_user_app.makeConnection(
+                'intf',
+                {
+                    'name': hierarchy_name + '/rpn_WNN_from_nb_splitter',
+                    'type':'intf',
+                    'port_name':'to_rpn_WNN_repo'
+                },
+                {
+                    'name': hierarchy_name + '/WNN_repo/rpn_repo_from_nb_splitter',
+                    'type':'intf',
+                    'port_name':'from_network_bridge'
+                }
+            )    
+            # Node Connection
+            tcl_user_app.makeConnection(
+                'intf',
+                {
+                    'name': hierarchy_name + '/rpn_WNN_from_nb_splitter',
+                    'type':'intf',
+                    'port_name':'to_rpn_WNN_node'
+                },
+                {
+                    'name': hierarchy_name + '/rpn_WNN_node',
+                    'type':'intf',
+                    'port_name':'from_nb'
+                }
+            )    
+        else:
+            tcl_user_app.makeConnection(
+                'intf',
+                {
+                    'name': hierarchy_name + '/rpn_from_nb_splitter',
+                    'type':'intf',
+                    'port_name':'to_rpn_WNN'
+                },
+                {
+                    'name': hierarchy_name + '/rpn_WNN_node',
+                    'type':'intf',
+                    'port_name':'from_nb'
+                }
+            )  
+        # KIP Case 1: Both WAN request and response paths have been constructed, we need a splitter
+        if build_WAN_request_path and build_WAN_response_path:  
+            tcl_user_app.instBlock(
+                {
+                    'name': 'rpn_KIP_from_network_bridge_splitter',
+                    'inst':  hierarchy_name + '/rpn_KIP_from_nb_splitter',
+                    'clks': ['i_clk'],
+                    'resetns': ['i_ap_rst_n'],
+                    'resetns_port': 'rstn'
+                }
+            )
+            tcl_user_app.makeBufferedIntfConnection(
+                {
+                    'name': hierarchy_name + '/rpn_from_nb_splitter',
+                    'type':'intf',
+                    'port_name':'to_rpn_KIP'
+                },
+                {
+                    'name': hierarchy_name + '/rpn_KIP_from_nb_splitter',
+                    'type':'intf',
+                    'port_name':'from_network_bridge'
+                },
+                hierarchy_name + '/rpn_incoming_KIP_splitter_path',
+                1
+            )
+            tcl_user_app.makeConnection(
+                'intf',
+                {
+                    'name': hierarchy_name + '/rpn_KIP_from_nb_splitter',
+                    'type':'intf',
+                    'port_name':'to_rpn_KIP_RX'
+                },
+                {
+                    'name': hierarchy_name + '/rpn_KIP_RX',
+                    'type':'intf',
+                    'port_name':'from_nb'
+                }
+            )
+            tcl_user_app.makeConnection(
+                'intf',
+                {
+                    'name': hierarchy_name + '/rpn_KIP_from_nb_splitter',
+                    'type':'intf',
+                    'port_name':'to_rpn_KIP_TX'
+                },
+                {
+                    'name': hierarchy_name + '/rpn_KIP_TX',
+                    'type':'intf',
+                    'port_name':'from_nb'
+                }
+            )
+        # KIP Case 2: Only WAN request path has been constructed, therefore only KIP PUBs will be received
+        elif build_WAN_request_path:
+            tcl_user_app.makeConnection(
+                'intf',
+                {
+                    'name': hierarchy_name + '/rpn_from_nb_splitter',
+                    'type':'intf',
+                    'port_name':'to_rpn_KIP'
+                },
+                {
+                    'name': hierarchy_name + '/rpn_KIP_RX',
+                    'type':'intf',
+                    'port_name':'from_nb'
+                }
+            )
+        # KIP Case 3: Only WAN response path has been constructed, therefore only KIP ACKs will be received
+        elif build_WAN_request_path:
+            tcl_user_app.makeConnection(
+                'intf',
+                {
+                    'name': hierarchy_name + '/rpn_from_nb_splitter',
+                    'type':'intf',
+                    'port_name':'to_rpn_KIP'
+                },
+                {
+                    'name': hierarchy_name + '/rpn_KIP_TX',
+                    'type':'intf',
+                    'port_name':'from_nb'
+                }
+            )
+    # Create and connect outbound paths
+    # KIP Outbound Path
+    # If WAN is used, connect all WAN-related KIP interfaces
+    if has_wan:
+        # figure out how many KIP interfaces there will be
+        num_KIP_transmitters = 1 # WNN node will always be there
+        # At least one of the following must also be there
+        if build_WAN_request_path:
+            num_KIP_transmitters += 1 # KIP RX
+        if build_WAN_response_path:
+            num_KIP_transmitters += 1 # KIP TX
+        buildControlOutboundSwitch(tcl_user_app, hierarchy_name + "/rpn_WAN_path_KIP_switch", num_KIP_transmitters)
+        tcl_user_app.makeConnection(
+            'intf',
+            {
+                'name': hierarchy_name + '/rpn_WNN_node',
+                'type':'intf',
+                'port_name':'to_nb_KIP'
+            },
+            {
+                'name': hierarchy_name + '/rpn_WAN_path_KIP_switch',
+                'type':'intf',
+                'port_name':'S00_AXIS'
+            }
+        )
+        # Case 1: Both KIP RX and TX are on the FPGA, connect both to the switch
+        if build_WAN_request_path and build_WAN_response_path:
+            tcl_user_app.makeConnection(
+                'intf',
+                {
+                    'name': hierarchy_name + '/rpn_KIP_TX',
+                    'type':'intf',
+                    'port_name':'to_nb_KIP'
+                },
+                {
+                    'name': hierarchy_name + '/rpn_WAN_path_KIP_switch',
+                    'type':'intf',
+                    'port_name':'S01_AXIS'
+                }
+            )
+            tcl_user_app.makeConnection(
+                'intf',
+                {
+                    'name': hierarchy_name + '/rpn_KIP_RX',
+                    'type':'intf',
+                    'port_name':'to_nb_KIP'
+                },
+                {
+                    'name': hierarchy_name + '/rpn_WAN_path_KIP_switch',
+                    'type':'intf',
+                    'port_name':'S02_AXIS'
+                }
+            )
+        # Case 2: Only KIP RX is on the FPGA
+        elif build_WAN_request_path:
+            tcl_user_app.makeConnection(
+                'intf',
+                {
+                    'name': hierarchy_name + '/rpn_KIP_RX',
+                    'type':'intf',
+                    'port_name':'to_nb_KIP'
+                },
+                {
+                    'name': hierarchy_name + '/rpn_WAN_path_KIP_switch',
+                    'type':'intf',
+                    'port_name':'S01_AXIS'
+                }
+            )
+        # Case 3: Only KIP TX is on the FPGA
+        elif build_WAN_request_path:
+            tcl_user_app.makeConnection(
+                'intf',
+                {
+                    'name': hierarchy_name + '/rpn_KIP_TX',
+                    'type':'intf',
+                    'port_name':'to_nb_KIP'
+                },
+                {
+                    'name': hierarchy_name + '/rpn_WAN_path_KIP_switch',
+                    'type':'intf',
+                    'port_name':'S01_AXIS'
+                }
+            )
+    # Figure out how many input ports the KIP switch will need
+    num_KIP_sources = 1 # LAN RX will always need it
+    # If WAN is enabled (request and/or response), KIP TX/RX/SW and WNN node will need 1 KIP connection
+    if build_WAN_request_path or build_WAN_response_path:
+        num_KIP_sources += 1
+    # If this is node 1, need an additional KIP port for WNN Repo
+    if has_wan and node_id == 1:
+        num_KIP_sources += 1
+    # If only LAN RX is on there, no switch is needed
+    if num_KIP_sources > 1:
+        buildControlOutboundSwitch(tcl_user_app, hierarchy_name + "/rpn_to_KIP_switch", num_KIP_sources)
+        # LAN RX will always be there, so connect it to slot 0
+        tcl_user_app.makeConnection(
+            'intf',
+            {
+                'name': hierarchy_name + '/rpn_LAN_RX',
+                'type':'intf',
+                'port_name':'to_nb_KIP'
+            },
+            {
+                'name': hierarchy_name + '/rpn_to_KIP_switch',
+                'type':'intf',
+                'port_name':'S00_AXIS'
+            }
+        )
+        # KIP Outbound Path Case 1: WAN is enabled (request and/or response), and this is node 1
+        if (build_WAN_request_path or build_WAN_response_path) and node_id == 1:
+            tcl_user_app.makeConnection(
+                'intf',
+                {
+                    'name': hierarchy_name + '/rpn_WAN_path_KIP_switch',
+                    'type':'intf',
+                    'port_name':'M00_AXIS'
+                },
+                {
+                    'name': hierarchy_name + '/rpn_to_KIP_switch',
+                    'type':'intf',
+                    'port_name':'S01_AXIS'
+                }
+            )
+            tcl_user_app.makeConnection(
+                'intf',
+                {
+                    'name': hierarchy_name + '/WNN_repo/rpn_WNN_to_KIP_switch',
+                    'type':'intf',
+                    'port_name':'M00_AXIS'
+                },
+                {
+                    'name': hierarchy_name + '/rpn_to_KIP_switch',
+                    'type':'intf',
+                    'port_name':'S02_AXIS'
+                }
+            )
+        # KIP Outbound Path Case 2: WAN is enabled (request and/or response), but not node 1
+        elif (build_WAN_request_path or build_WAN_response_path):
+            tcl_user_app.makeConnection(
+                'intf',
+                {
+                    'name': hierarchy_name + '/rpn_WAN_path_KIP_switch',
+                    'type':'intf',
+                    'port_name':'M00_AXIS'
+                },
+                {
+                    'name': hierarchy_name + '/rpn_to_KIP_switch',
+                    'type':'intf',
+                    'port_name':'S01_AXIS'
+                }
+            )
+        # KIP Outbound Path Case 3: WAN is enabled for the system, but not for this particular node
+        elif not (build_WAN_request_path or build_WAN_response_path) and node_id == 1:
+            tcl_user_app.makeConnection(
+                'intf',
+                {
+                    'name': hierarchy_name + '/WNN_repo/rpn_WNN_to_KIP_switch',
+                    'type':'intf',
+                    'port_name':'M00_AXIS'
+                },
+                {
+                    'name': hierarchy_name + '/rpn_to_KIP_switch',
+                    'type':'intf',
+                    'port_name':'S01_AXIS'
+                }
+            )
 
 def setControlAXILPortProperties(tcl_user_app, port_name, axil_addr_width):
     """
@@ -969,12 +2293,25 @@ def userApplicationRegionControlInst(tcl_user_app):
     has_reliability = True
     rel_timeout = 500
     axil_addr_width = 64
+    has_wan = tcl_user_app.fpga['has_ctrl_wan']
     # Get a list of all kernels which need control connections
-    # ctrl_kernel_dict = makeControlKernelDictionary(tcl_user_app, 'num')
     ctrl_kernel_dict = tcl_user_app.fpga['ctrl_kernel_dict']
     num_ctrl_instances = len(ctrl_kernel_dict)
     # In some cases, a list of keys sorted in ascending order will be useful
     kernel_ids_ascending_order = getSortedListofKeys(ctrl_kernel_dict)
+    # Figure out how many modules need WAN and KIP connections
+    instances_with_anc = []
+    instances_with_nac = []
+    for kernel_id in kernel_ids_ascending_order:
+        kernel_dict = ctrl_kernel_dict[kernel_id]
+        if kernel_dict['control_type'] != "s_axil":
+            instances_with_anc.append(kernel_id)
+        if kernel_dict['control_type'] != "m_axil":
+            instances_with_nac.append(kernel_id)
+    num_anc_instances = len(instances_with_anc)
+    num_nac_instances = len(instances_with_nac)
+    print("Control Instances with ANC:", instances_with_anc)
+    print("Control Instances with NAC:", instances_with_nac)
     # Create control modules
     hierarchy_name = "applicationRegion/control"
     tcl_user_app.createHierarchy(hierarchy_name)
@@ -984,7 +2321,7 @@ def userApplicationRegionControlInst(tcl_user_app):
     
     # 1. Build Control Instances
     for kernel_id in ctrl_kernel_dict:
-        buildControlAPIInst(tcl_user_app, hierarchy_name, kernel_id, ctrl_kernel_dict[kernel_id], axil_addr_width, has_wstrb)
+        buildControlAPIInst(tcl_user_app, hierarchy_name, kernel_id, ctrl_kernel_dict[kernel_id], has_wan, axil_addr_width, has_wstrb)
 
     # 2. Build control infrastructure in Application Region
     tcl_user_app.instBlock(
@@ -1010,8 +2347,8 @@ def userApplicationRegionControlInst(tcl_user_app):
 
     # 3. If there are multiple control instances, build and connect switches for outbound control packets
     # Everything is relative to user. Control Kernel's S_AXIL will connect to PR's S_AXIL port, which connects to M_AXIL port of network converter
+    # Outbound LAN Switch
     if num_ctrl_instances > 1:
-        # Outbound Switch
         buildControlOutboundSwitch(tcl_user_app, hierarchy_name + "/ctrl_to_LAN_switch", num_ctrl_instances)
         dest_port_id = 0
         for i in range(0, num_ctrl_instances):
@@ -1044,7 +2381,56 @@ def userApplicationRegionControlInst(tcl_user_app):
                     'type': 'intf',
                     'port_name': dest_port_name
                 }
+            ) 
+    # Outbound WAN Switch
+    if has_wan and num_anc_instances > 1:
+        buildControlOutboundSwitch(tcl_user_app, hierarchy_name + "/ctrl_to_WAN_switch", num_anc_instances)
+        for i in range(0, num_anc_instances):
+            # instances_with_anc was already built using kernel IDs in ascending order
+            src_kernel_id = instances_with_anc[i]
+            src_kernel_hierarchy = hierarchy_name + "/control_api_inst_%d" % (src_kernel_id)
+            if (i < 10):
+                dest_port_name = 'S0' + str(i) + '_AXIS'
+            else:
+                dest_port_name = 'S' + str(i) + '_AXIS'
+            tcl_user_app.makeConnection(
+                'intf',
+                {
+                    'name': src_kernel_hierarchy + '/anc',
+                    'type': 'intf',
+                    'port_name': 'to_WAN'
+                },
+                {
+                    'name': hierarchy_name + '/ctrl_to_WAN_switch',
+                    'type': 'intf',
+                    'port_name': dest_port_name
+                }
             )
+    # Outbound KIP Switch
+    if has_wan and num_nac_instances > 1:
+        buildControlOutboundSwitch(tcl_user_app, hierarchy_name + "/ctrl_to_KIP_switch", num_nac_instances)
+        for i in range(0, num_nac_instances):
+            # instances_with_nac was already built using kernel IDs in ascending order
+            src_kernel_id = instances_with_nac[i]
+            src_kernel_hierarchy = hierarchy_name + "/control_api_inst_%d" % (src_kernel_id)
+            if (i < 10):
+                dest_port_name = 'S0' + str(i) + '_AXIS'
+            else:
+                dest_port_name = 'S' + str(i) + '_AXIS'
+            tcl_user_app.makeConnection(
+                'intf',
+                {
+                    'name': src_kernel_hierarchy + '/nac',
+                    'type': 'intf',
+                    'port_name': 'to_KIP'
+                },
+                {
+                    'name': hierarchy_name + '/ctrl_to_KIP_switch',
+                    'type': 'intf',
+                    'port_name': dest_port_name
+                }
+            )
+
 
     # 4. Build remaining Control infrastructure
     # Build infrastructure for local LAN path
@@ -1168,14 +2554,23 @@ def userApplicationRegionControlInst(tcl_user_app):
 
     # 5. Build Reliability Instance
     if has_reliability:
-        buildControlReliabilityInst(tcl_user_app, hierarchy_name)
+        if has_wan and num_anc_instances > 0:
+            build_WAN_request_path = True
+        else:
+            build_WAN_request_path = False
+        if has_wan and num_nac_instances > 0:
+            build_WAN_response_path = True
+        else:
+            build_WAN_response_path = False
+        buildControlReliabilityInst(tcl_user_app, hierarchy_name, has_wan, build_WAN_request_path, build_WAN_response_path)
         # Connect Reliability Instance to control modules
-        # Case 1: More than 1 control instance, connect to their outbound switch
+        # LAN connection
+        # LAN Connection Case 1: More than 1 control instance, connect to their outbound switch
         if (num_ctrl_instances > 1):
             src_kernel_hierarchy = hierarchy_name
             src_kernel_name = "ctrl_to_LAN_switch"
             src_kernel_port_name = "M00_AXIS"
-        # Case 2: There is only 1 control instance
+        # LAN Connection Case 2: There is only 1 control instance
         else:
             src_kernel_id = list(ctrl_kernel_dict.keys())[0]
             src_kernel = list(ctrl_kernel_dict.values())[0]
@@ -1204,8 +2599,85 @@ def userApplicationRegionControlInst(tcl_user_app):
                 'port_name': 'from_ctrl_LAN'
             }
         )
+        # WAN and KIP connections
+        if has_wan:
+            # WAN Connection Case 1: More than 1 ANC instance, connect to their outbound switch
+            # Only ANC instances will be connected
+            if num_anc_instances > 1:
+                src_kernel_hierarchy = hierarchy_name
+                src_kernel_name = "ctrl_to_WAN_switch"
+                src_kernel_port_name = "M00_AXIS"
+                tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                        'name': src_kernel_hierarchy + '/' + src_kernel_name,
+                        'type': 'intf',
+                        'port_name': src_kernel_port_name
+                    },
+                    {
+                        'name': hierarchy_name + '/reliability_protocol_node/rpn_WAN_TX',
+                        'type': 'intf',
+                        'port_name': 'from_ctrl'
+                    }
+                )
+            # WAN Connection Case 2: There is only 1 ANC instance, connect directly to WAN TX
+            elif num_anc_instances == 1:
+                src_kernel_id = instances_with_anc[0]
+                src_kernel = ctrl_kernel_dict[src_kernel_id]
+                src_kernel_hierarchy = hierarchy_name + "/control_api_inst_%d" % (src_kernel_id)
+                tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                        'name': src_kernel_hierarchy + '/anc',
+                        'type': 'intf',
+                        'port_name': 'to_WAN'
+                    },
+                    {
+                        'name': hierarchy_name + '/reliability_protocol_node/rpn_WAN_TX',
+                        'type': 'intf',
+                        'port_name': 'from_ctrl'
+                    }
+                )
+            # KIP Connection
+            # KIP Connection Case 1: More than 1 NAC instance, connect to their outbound switch
+            if num_nac_instances > 1:
+                src_kernel_hierarchy = hierarchy_name
+                src_kernel_name = "ctrl_to_KIP_switch"
+                src_kernel_port_name = "M00_AXIS"
+                tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                        'name': src_kernel_hierarchy + '/' + src_kernel_name,
+                        'type': 'intf',
+                        'port_name': src_kernel_port_name
+                    },
+                    {
+                        'name': hierarchy_name + '/reliability_protocol_node/rpn_KIP_TX',
+                        'type': 'intf',
+                        'port_name': 'from_ctrl'
+                    }
+                )
+            # WAN Connection Case 2: There is only 1 ANC instance, connect directly to WAN TX
+            elif num_nac_instances == 1:
+                src_kernel_id = instances_with_nac[0]
+                src_kernel = ctrl_kernel_dict[src_kernel_id]
+                src_kernel_hierarchy = hierarchy_name + "/control_api_inst_%d" % (src_kernel_id)
+                tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                        'name': src_kernel_hierarchy + '/nac',
+                        'type': 'intf',
+                        'port_name': 'to_KIP'
+                    },
+                    {
+                        'name': hierarchy_name + '/reliability_protocol_node/rpn_KIP_TX',
+                        'type': 'intf',
+                        'port_name': 'from_ctrl'
+                    }
+                )
+            
 
-    # 6. Connect IP Addresses and port numbers to the Control and Reliability instances
+    # 6. Connect IP Addresses, port numbers and cluster ID to the Control and Reliability instances
     # IP Addresses
     # Only AXI-Lite to Network converter needs this node's IP Address
     for kernel_id in ctrl_kernel_dict.keys():
@@ -1259,25 +2731,110 @@ def userApplicationRegionControlInst(tcl_user_app):
                 }
             )
     if has_reliability:
-        tcl_user_app.makeConnection(
-            'net', 
-            {
-                'type': 'pin',
-                'name': hierarchy_name + '/KIP_port_number',
-                'port_name': 'dout'
-            },
-            {
-                'type': 'pin',
-                'name': hierarchy_name + '/reliability_protocol_node/rpn_LAN_RX',
-                'port_name': 'i_KIP_port_number'
-            }
-        )
-    
+        # Will always be present
+        modules_to_connect = ['rpn_LAN_RX']
+        if has_wan:
+            # WNN Node will be present either way
+            modules_to_connect.append('rpn_WNN_node')
+            # WAN Request Path
+            if num_anc_instances > 0:
+                modules_to_connect.append('rpn_KIP_RX')
+            # WAN Response Path
+            if num_nac_instances > 0:
+                modules_to_connect.append('rpn_KIP_TX')
+            # WNN Path for node 1 only
+            node_id = tcl_user_app.fpga['num']
+            if node_id == 1:
+                # Incoming repo has already been wired into outgoing_WNN_repo
+                modules_to_connect.append('WNN_repo/outgoing_WNN_repo')
+        for module in modules_to_connect:
+            tcl_user_app.makeConnection(
+                'net', 
+                {
+                    'type': 'pin',
+                    'name': hierarchy_name + '/KIP_port_number',
+                    'port_name': 'dout'
+                },
+                {
+                    'type': 'pin',
+                    'name': hierarchy_name + '/reliability_protocol_node/' + module,
+                    'port_name': 'i_KIP_port_number'
+                }
+            )
+    # Cluster ID
+    cluster_id = tcl_user_app.fpga['cluster_id']
+    tcl_user_app.instBlock(
+        {
+            'name': 'xlconstant',
+            'inst':  hierarchy_name + '/cluster_id',
+            'properties': [ 
+                            'CONFIG.CONST_WIDTH {32}',
+                            'CONFIG.CONST_VAL {' + str(cluster_id) + '}'
+                        ]
+        }
+    )
+    for kernel_id in ctrl_kernel_dict.keys():
+        dest_kernel = ctrl_kernel_dict[kernel_id]
+        dest_kernel_name = hierarchy_name + '/control_api_inst_%d/anc' % (kernel_id)
+        if dest_kernel['control_type'] == 'm_axil' or dest_kernel['control_type'] == 'both':
+            tcl_user_app.makeConnection(
+                'net', 
+                {
+                    'type': 'pin',
+                    'name': hierarchy_name + '/cluster_id',
+                    'port_name': 'dout'
+                },
+                {
+                    'type': 'pin',
+                    'name': dest_kernel_name,
+                    'port_name': 'i_cluster_id'
+                }
+            )
+    if has_reliability and has_wan:
+        # WAN Request Path
+        if num_anc_instances > 0:
+            for module in ['rpn_WAN_TX', 'rpn_KIP_RX']:
+                tcl_user_app.makeConnection(
+                    'net',
+                    {
+                        'name': hierarchy_name + '/cluster_id',
+                        'type':'pin',
+                        'port_name':'dout'
+                    },
+                    {
+                        'name': hierarchy_name + '/reliability_protocol_node/' + module,
+                        'type':'pin',
+                        'port_name':'i_cluster_id'
+                    }
+                )
+        # WAN Response Path
+        if num_nac_instances > 0:
+            tcl_user_app.makeConnection(
+                'net',
+                {
+                    'name': hierarchy_name + '/cluster_id',
+                    'type':'pin',
+                    'port_name':'dout'
+                },
+                {
+                    'name': hierarchy_name + '/reliability_protocol_node/rpn_KIP_TX',
+                    'type':'pin',
+                    'port_name':'i_cluster_id'
+                }
+            )
+
     # 7. Build Inbound Control Path
     # Inbound packets come from LAN local and remote
     # If reliability is used, this switch sits between these packets and RPN
     if has_reliability:
         buildControlFixedPrioritySwitch(tcl_user_app, hierarchy_name + '/rpn_from_nb_switch', 3)
+        # If WAN is used, connect to the splitter. If WAN is not used, connect to the LAN splitter.
+        if has_wan:
+            dest_module = hierarchy_name + '/reliability_protocol_node/rpn_from_nb_splitter'
+            dest_port = 'from_network_bridge'
+        else:
+            dest_module = hierarchy_name + '/reliability_protocol_node/rpn_LAN_from_nb_splitter'
+            dest_port = 'from_network_bridge'
         # Buffer connection to prevent combinational loop
         tcl_user_app.makeBufferedIntfConnection(
             {
@@ -1286,9 +2843,9 @@ def userApplicationRegionControlInst(tcl_user_app):
                 'port_name': 'M00_AXIS'
             },
             {
-                'name': hierarchy_name + '/reliability_protocol_node/rpn_LAN_from_nb_splitter',
+                'name': dest_module,
                 'type': 'intf',
-                'port_name': 'from_network_bridge'
+                'port_name': dest_port
             },
             hierarchy_name + '/reliability_protocol_node/rpn_splitter_path',
             1
@@ -1306,7 +2863,12 @@ def userApplicationRegionControlInst(tcl_user_app):
         )
         # If reliability is used, the following switch will connect to RPN output. Otherwise, it will connect directly to packet inputs
         if has_reliability:
-            num_sub_interfaces = 1
+            # Case 1: If there's WAN TX enabled, then LAN RX and KIP RX will both connect to this switch
+            if has_wan and num_anc_instances > 0:
+                num_sub_interfaces = 2
+            # Case 2: No WAN TX, only LAN RX sends messages to kernels
+            else:
+                num_sub_interfaces = 1
         else:
             num_sub_interfaces = 3
         # Configure the switch to have 1 Manager per kernel and arbitrate on TLAST only.
@@ -1376,6 +2938,21 @@ def userApplicationRegionControlInst(tcl_user_app):
                     'port_name': 'S00_AXIS'
                 }
             )
+            # If WAN is present, connect KIP RX to this switch
+            if has_wan and num_anc_instances > 0:
+                tcl_user_app.makeConnection(
+                    'intf',
+                    {
+                        'name': hierarchy_name + '/reliability_protocol_node/rpn_KIP_RX',
+                        'type': 'intf',
+                        'port_name': 'to_ctrl'
+                    },
+                    {
+                        'name': hierarchy_name + '/ctrl_from_nb_switch',
+                        'type': 'intf',
+                        'port_name': 'S01_AXIS'
+                    }
+                )
     # Inbound Case 2: Only 1 control instance on this board 
     else:
         # Case 2A: reliability isn't used
@@ -1418,8 +2995,11 @@ def userApplicationRegionControlInst(tcl_user_app):
     # Outbound LAN Path
     # If reliability is used, connect RPN to LAN output
     if has_reliability:
-        src_kernel_name = hierarchy_name + '/reliability_protocol_node/rpn_to_LAN_switch'
-        src_port_name = 'M00_AXIS'
+        # LAN Sequence Number Initialization has been disabled
+        # src_kernel_name = hierarchy_name + '/reliability_protocol_node/rpn_to_LAN_switch'
+        # src_port_name = 'M00_AXIS'
+        src_kernel_name = hierarchy_name + '/reliability_protocol_node/rpn_LAN_TX'
+        src_port_name = 'to_nb_LAN'
     else:
         # Reliability is not used, and there are multiple control kernels on the FPGA
         if num_ctrl_instances > 1:
@@ -1454,15 +3034,136 @@ def userApplicationRegionControlInst(tcl_user_app):
             'port_name': 'S00_AXIS'
         }
     )
+    # Outbound WAN Path
+    num_WAN_data_kernels = getNumWANDataKernels(tcl_user_app)
+    print("Has WAN:", has_wan)
+    print("Has Reliability", has_reliability)
+    print("Num ANC Instances:", num_anc_instances)
+    print("Num WAN Data Kernels:", num_WAN_data_kernels)
+    if has_wan:
+        # Edge case: If this is node 1, and RPN WNN repo is the only WAN component on the node, skip making the connection
+        if has_reliability and node_id == 1 and num_WAN_data_kernels == 0:
+            # Check to see if we actually have ANC instances with WAN connections
+            print("Checking Node 1 for ANC Instances that need WAN")
+            anc_instances_need_WAN = False
+            for kernel_id in ctrl_kernel_dict:
+                kernel = ctrl_kernel_dict[kernel_id]
+                # ignore NAC modules
+                if kernel['control_type'] == 's_axil':
+                    continue
+                elif kernel['has_wan'] == True:
+                    anc_instances_need_WAN = True
+            print("ANC Instances Need WAN: ", anc_instances_need_WAN)
+            skip_making_connection = not anc_instances_need_WAN
+        else:
+            skip_making_connection = False
+        print("Skip making WAN connection: ", skip_making_connection)
+        if not skip_making_connection:
+            # WAN Path Case 1: Reliability is enabled
+            if has_reliability:
+                # Case 1A: There is at least 1 ANC instance on this board, meaning that rpn WAN TX will be built
+                if num_anc_instances > 0:
+                    src_kernel_name = hierarchy_name + '/reliability_protocol_node/rpn_WAN_TX'
+                    src_kernel_port_name = 'to_nb_WAN'
+                # Case 1B: No ANC instances, so even with reliability there's no WAN. Tie off the WAN switch to 0
+                else:
+                    tcl_user_app.instBlock(
+                        {
+                            'name': 'xlconstant',
+                            'inst':  hierarchy_name + '/reliability_protocol_node/rpn_WAN_TX_const_0',
+                            'properties': [ 
+                                            'CONFIG.CONST_WIDTH {1}',
+                                            'CONFIG.CONST_VAL {0}'
+                                        ]
+                        }
+                    )
+                    tcl_user_app.instBlock(
+                        {
+                            'name': 'axis_register_slice',
+                            'inst':  hierarchy_name + '/reliability_protocol_node/rpn_WAN_TX_tieoff',
+                            'clks': ['aclk'],
+                            'resetns': ['aresetn'],
+                            'resetns_port': 'rstn'
+                        }
+                    )
+                    tcl_user_app.makeConnection(
+                        'net', 
+                        {
+                            'type': 'pin',
+                            'name': hierarchy_name + '/reliability_protocol_node/rpn_WAN_TX_const_0',
+                            'port_name': 'dout'
+                        },
+                        {
+                            'type': 'pin',
+                            'name': hierarchy_name + '/reliability_protocol_node/rpn_WAN_TX_tieoff',
+                            'port_name': 'S_AXIS_tvalid'
+                        }
+                    )
+                    src_kernel_name = hierarchy_name + '/reliability_protocol_node/rpn_WAN_TX_tieoff'
+                    src_kernel_port_name = 'M_AXIS'
+            # WAN Path Case 2: No reliability, but there's more than 1 ANC instance on this FPGA
+            elif num_anc_instances > 1:
+                src_kernel_name = hierarchy_name + '/ctrl_to_WAN_switch'
+                src_kernel_port_name = 'M00_AXIS'
+            # WAN Path Case 3: No reliability, only 1 ANC instance. Connect directly
+            else: 
+                src_kernel_id = instances_with_anc[0]
+                src_kernel_hierarchy = hierarchy_name + "/control_api_inst_%d" % (src_kernel_id)
+                src_kernel_name = src_kernel_hierarchy + "/anc"
+                src_kernel_port_name = 'to_WAN'
+            # WAN Path Case A: At least 1 data kernel on the FPGA uses a WAN connection, connect output to WAN Switch 
+            if num_WAN_data_kernels > 0: 
+                dest_kernel_name = 'applicationRegion/WAN_switch'
+                dest_kernel_port_name = 'S00_AXIS'
+            # WAN Path Case B: Only control is using WAN connection (eg. Node 1), connect control output directly to WAN Bridge
+            else:
+                dest_kernel_name = 'applicationRegion/WAN_bridge'
+                dest_kernel_port_name = 'g2N_input'
+            tcl_user_app.makeBufferedIntfConnection(
+                {
+                    'name': src_kernel_name,
+                    'type': 'intf',
+                    'port_name': src_kernel_port_name
+                },
+                {
+                    'name': dest_kernel_name,
+                    'type': 'intf',
+                    'port_name': dest_kernel_port_name
+                },
+                hierarchy_name + '/output_WAN_path',
+                1
+            )
+        # If we're skipping making the WAN connection, tie off WAN TX
+        elif has_reliability:
+            tcl_user_app.makeConnection(
+                'net', 
+                {
+                    'type': 'pin',
+                    'name': hierarchy_name + '/reliability_protocol_node/const_1',
+                    'port_name': 'dout'
+                },
+                {
+                    'type': 'pin',
+                    'name': hierarchy_name + '/reliability_protocol_node/rpn_WAN_TX',
+                    'port_name': 'to_nb_WAN_tready'
+                }
+            )
     # Outbound KIP Path
-    #TODO: Expand outbound KIP connection for non-control use, but for now tie to 0
     if has_reliability:
+        # Reliability Case 1: WAN is enabled, there will be a KIP switch connecting all KIP components
+        if has_wan:
+            src_kernel_name = 'rpn_to_KIP_switch'
+            src_kernel_port_name = 'M00_AXIS' 
+        # Reliability Case 2: No WAN, only RPN LAN RX uses KIP
+        else:
+            src_kernel_name = 'rpn_LAN_RX'
+            src_kernel_port_name = 'to_nb_KIP' 
         tcl_user_app.makeConnection(
             'intf',
             {
-                'name': hierarchy_name + '/reliability_protocol_node/rpn_LAN_RX',
+                'name': hierarchy_name + '/reliability_protocol_node/' + src_kernel_name,
                 'type': 'intf',
-                'port_name': 'to_nb_KIP'
+                'port_name': src_kernel_port_name
             },
             {
                 'name': hierarchy_name + '/KIP_router_0',
@@ -2552,7 +4253,10 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim,is_gw):
             'CONFIG.ARB_ON_TLAST {1}'
         ]
         tcl_user_app.setProperties('applicationRegion/output_switch', properties)
-        if tcl_user_app.fpga['has_wan']:
+        # Figure out how many user kernels need WAN connections
+        # Edge Case: WAN Switch only needed if Control and at least 1 data kernel need a WAN connection
+        num_WAN_data_kernels = getNumWANDataKernels(tcl_user_app)
+        if tcl_user_app.fpga['has_wan'] and num_WAN_data_kernels > 0:
             tcl_user_app.instBlock(
                 {
                     'name': 'axis_switch',
@@ -2563,7 +4267,7 @@ def userApplicationRegionSwitchesInst(tcl_user_app, sim,is_gw):
                 }
             )
             properties = [
-                'CONFIG.NUM_SI {' + str(num_slave_m_axis_global) + '}',
+                'CONFIG.NUM_SI {' + str(num_WAN_data_kernels + 1) + '}',
                 'CONFIG.NUM_MI {1}',
                 'CONFIG.HAS_TLAST.VALUE_SRC USER',
                 'CONFIG.M00_AXIS_HIGHTDEST {0xffffffff}'
@@ -3906,14 +5610,14 @@ def userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, 
                 WANportName,
                 int(m_axis['kernel_inst']['distance'])
             )
-    if tcl_user_app.fpga['has_wan']:
-        properties = [
-            'CONFIG.NUM_SI {' + str(wan_idx+1) + '}',
-            'CONFIG.NUM_MI {1}',
-            'CONFIG.HAS_TLAST.VALUE_SRC USER',
-            'CONFIG.M00_AXIS_HIGHTDEST {0xffffffff}'
-        ]
-        tcl_user_app.setProperties('applicationRegion/WAN_switch', properties)
+    # if tcl_user_app.fpga['has_wan']:
+    #     properties = [
+    #         'CONFIG.NUM_SI {' + str(wan_idx+1) + '}',
+    #         'CONFIG.NUM_MI {1}',
+    #         'CONFIG.HAS_TLAST.VALUE_SRC USER',
+    #         'CONFIG.M00_AXIS_HIGHTDEST {0xffffffff}'
+    #     ]
+    #     tcl_user_app.setProperties('applicationRegion/WAN_switch', properties)
     if tcl_user_app.fpga['comm'] not in ['raw', 'none']:
         # if 'custom' not in tcl_user_app.fpga or tcl_user_app.fpga['custom'] != 'GAScore':
         if not is_gw:
@@ -3942,20 +5646,23 @@ def userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, 
                 'resetns_port': 'rstn',
             }
         )
-        tcl_user_app.makeBufferedIntfConnection(
-            {
-                'name': 'applicationRegion/WAN_switch',
-                'type': 'intf',
-                'port_name': 'M00_AXIS'
-            },
-            {
-                'name': 'applicationRegion/WAN_bridge',
-                'type': 'intf',
-                'port_name': 'g2N_input'
-            },
-            'applicationRegion/WAN_switch',
-            1
-        )
+        # Edge Case: WAN Switch only needed if Control and at least 1 data kernel need a WAN connection
+        num_WAN_data_kernels = getNumWANDataKernels(tcl_user_app)
+        if num_WAN_data_kernels > 0:
+            tcl_user_app.makeBufferedIntfConnection(
+                {
+                    'name': 'applicationRegion/WAN_switch',
+                    'type': 'intf',
+                    'port_name': 'M00_AXIS'
+                },
+                {
+                    'name': 'applicationRegion/WAN_bridge',
+                    'type': 'intf',
+                    'port_name': 'g2N_input'
+                },
+                'applicationRegion/WAN_switch',
+                1
+            )
         tcl_user_app.makeBufferedIntfConnection(
             {
                 'name': 'applicationRegion/WAN_bridge',
@@ -4396,21 +6103,19 @@ def userApplicationRegion(project_name,outDir,output_path, fpga, sim,is_gw,api_i
     userApplicationRegionMemInstGlobal(tcl_user_app, tcl_user_app.fpga['comm'] != 'tcp')
     userApplicationRegionMemInstLocal(tcl_user_app)
     userApplicationRegionSwitchesInst(tcl_user_app, sim,is_gw)
-    # (kernel_properies,control_name_list,control_prop_list,clk_200_int,clk_300_int)=userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, tcl_user_app, sim,is_gw,api_info,CAMILO_TEMP_DEBUG)
     (kernel_properies,clk_200_int,clk_300_int)=userApplicationRegionKernelConnectSwitches(project_name,outDir,output_path, tcl_user_app, sim,is_gw,api_info,CAMILO_TEMP_DEBUG)
-    # if tcl_user_app.fpga.has_control:
-    #     userApplicationRegionAssignAddresses(tcl_user_app, tcl_user_app.fpga['comm'] !='tcp' and tcl_user_app.fpga.address_space == 64)
     userApplicationLocalConnections(tcl_user_app)
     if tcl_user_app.fpga.has_control:
         # Currently Control is only tested on Sidewinder with no WAN
         if tcl_user_app.fpga['board'] != 'sidewinder':
             raise ValueError("Control currently only supported for sidewinder")
-        elif tcl_user_app.fpga['has_wan']:
-            raise ValueError("Control currently only supported for LAN-only FPGAs")
+        # elif tcl_user_app.fpga['has_wan']:
+        #     raise ValueError("Control currently only supported for LAN-only FPGAs")
         userApplicationRegionControlInst(tcl_user_app)
     else:
-        tieOffControlInfrastructure(tcl_user_app)
-    if tcl_user_app.fpga.has_ddr and not fpga['multi_slr']:
+        if not is_gw:
+            tieOffControlInfrastructure(tcl_user_app)
+    if tcl_user_app.fpga.has_ddr:
         userApplicationRegionDDR(tcl_user_app, outDir, output_path)
         print("DDR written!!!")
     tcl_user_app.setInterfacesCLK("CLK",clk_200_int)
@@ -4803,35 +6508,6 @@ def bridgeConnections(outDir, fpga, sim,is_gw):
                         'network/galapagos_bridge_inst',
                         1
                             )
-                    # Control inbound path would go here
-                    # TODO: See if this is used in the gateway too
-                    # tcl_bridge_connections.makeConnection(
-                    #     'net', 
-                    #     {
-                    #         'type': 'pin',
-                    #         'name': 'applicationRegion/control/KIP_port_number',
-                    #         'port_name': 'dout'
-                    #     },
-                    #     {
-                    #         'type': 'pin',
-                    #         'name': 'network/ctrl_rx_nb',
-                    #         'port_name': 'i_CTRL_KIP_port_number'
-                    #     }
-                    # )
-                    # # Connection to the applicationRegion depends on whether reliability has been used
-                    # tcl_bridge_connections.makeConnection(
-                    #     'intf',
-                    #     {
-                    #         'name': 'network/ctrl_rx_nb_CDC',
-                    #         'type': 'intf',
-                    #         'port_name': 'M_AXIS'
-                    #     },
-                    #     {
-                    #         'name': 'applicationRegion/control/' + dest_kernel_name,
-                    #         'type': 'intf',
-                    #         'port_name': 'S01_AXIS'
-                    #     }
-                    # )
                 if "custom" in tcl_bridge_connections.fpga:
                     tcl_custom.tprint('set CUSTOM_net_in network/galapagos_bridge_inst/n2G_output')
             else: #sim == 1

@@ -40,6 +40,7 @@ ipx::associate_bus_interfaces -busif to_sequence_number_BRAM -clock to_sequence_
 ipx::associate_bus_interfaces -busif from_nb -clock i_clk [ipx::current_core]
 ipx::associate_bus_interfaces -busif to_ctrl -clock i_clk [ipx::current_core]
 ipx::associate_bus_interfaces -busif to_nb_KIP -clock i_clk [ipx::current_core]
+ipx::associate_bus_interfaces -busif to_WNN -clock i_clk [ipx::current_core]
 ipgui::remove_param -component [ipx::current_core] [ipgui::get_guiparamspec -name "AXIS_FROM_NB_TDEST_WIDTH" -component [ipx::current_core]]
 ipgui::remove_param -component [ipx::current_core] [ipgui::get_guiparamspec -name "AXIS_FROM_NB_TUSER_WIDTH" -component [ipx::current_core]]
 ipgui::remove_param -component [ipx::current_core] [ipgui::get_guiparamspec -name "AXI_LITE_ADDR_WIDTH" -component [ipx::current_core]]

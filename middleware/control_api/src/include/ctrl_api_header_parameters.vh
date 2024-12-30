@@ -23,4 +23,5 @@ localparam AXIS_RECEP_TUSER_WIDTH = 48,
 parameter AXIS_FROM_NB_TDEST_WIDTH = AXIS_LAN_TDEST_WIDTH,
 parameter AXIS_FROM_NB_TUSER_WIDTH = AXIS_KIP_TUSER_WIDTH,
 // Other
-localparam CLUSTER_ID_WIDTH = 32
+localparam CLUSTER_ID_WIDTH = 32,
+localparam BRAM_ADDR_WIDTH = 32 // All BRAMs have 32-bit wide addresses regardless of actual address length

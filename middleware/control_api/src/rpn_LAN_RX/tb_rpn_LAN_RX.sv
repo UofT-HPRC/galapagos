@@ -52,6 +52,11 @@ logic [AXIS_DATA_WIDTH-1:0] w_to_nb_KIP_tdata;
 logic [AXIS_KEEP_WIDTH-1:0] w_to_nb_KIP_tkeep;
 logic [AXIS_KIP_TUSER_WIDTH-1:0] w_to_nb_KIP_tuser;
 logic w_to_nb_KIP_tlast;
+// AXI-Stream to WNN Interface
+logic w_to_WNN_tvalid;
+logic r_to_WNN_tready;
+logic [RPN_MSG_TYPE_WIDTH-1:0] w_to_WNN_tdata;
+logic [AXIS_WAN_TDEST_WIDTH-1:0] w_to_WNN_tdest;
 // BRAM connection to Sequence Number BRAM
 logic w_to_sequence_number_BRAM_CLK;
 logic w_to_sequence_number_BRAM_RST;
@@ -94,6 +99,11 @@ rpn_LAN_RX #(
     .to_nb_KIP_tkeep(w_to_nb_KIP_tkeep),
     .to_nb_KIP_tuser(w_to_nb_KIP_tuser),
     .to_nb_KIP_tlast(w_to_nb_KIP_tlast),
+    // AXI-Stream to WNN Interface
+    .to_WNN_tvalid(w_to_WNN_tvalid),
+    .to_WNN_tready(r_to_WNN_tready),
+    .to_WNN_tdata(w_to_WNN_tdata),
+    .to_WNN_tdest(w_to_WNN_tdest),
     // BRAM connection to Sequence Number BRAM
     .to_sequence_number_BRAM_CLK(w_to_sequence_number_BRAM_CLK),
     .to_sequence_number_BRAM_RST(w_to_sequence_number_BRAM_RST),
@@ -126,6 +136,8 @@ initial begin
     r_to_ctrl_tready = 1;
     // to-nb-KIP Interface
     r_to_nb_KIP_tready = 1;
+    // to-WNN Interface
+    r_to_WNN_tready = 1;
     // Sequence Number BRAM
     r_to_sequence_number_BRAM_DOUT = CURRENT_SEQUENCE_NUMBER;
 end
@@ -135,35 +147,35 @@ initial begin
     r_from_nb_tdata <= 0;
     r_from_nb_tuser <= 0;
     #100
-    // Test sending PUB LAN packets
-    // Received a LAN PUB packet: Write CDCDCDCD to address ABCDABCDABCDABCD 
-    r_from_nb_tvalid <= 1;
-    // TDATA
-    r_from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0] <= RPN_MSG_TYPE_LAN_PUB;
-    r_from_nb_tdata[PUB_LAN_SENDER_NODE_ID_OFFSET+:PUB_LAN_SENDER_NODE_ID_WIDTH] <= REMOTE_NODE_ID;
-    r_from_nb_tdata[PUB_LAN_SEQUENCE_NUMBER_OFFSET+:PUB_LAN_SEQUENCE_NUMBER_WIDTH] <= CURRENT_SEQUENCE_NUMBER + 1; // Set a different packet ID to test forwarded LAN packets
-    r_from_nb_tdata[(PUB_LAN_DATA_OFFSET)+:AXIS_LAN_MSG_TYPE_WIDTH] <= MSG_WRITE; // LAN Data begins here
-    r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_DATA_OFFSET)+:AXIS_LAN_DATA_WIDTH] <= 'hCDCDCDCD;
-    r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_ADDR_OFFSET)+:AXIS_LAN_ADDR_WIDTH] <= 'hABCDABCDABCDABCD;
-    r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_WSTRB_OFFSET)+:AXIS_LAN_WSTRB_WIDTH] <= 'hE;
-    r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_TID_OFFSET)+:AXIS_LAN_TID_WIDTH] <= 0;
-    r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_IP_OFFSET)+:AXIS_LAN_IP_WIDTH] <= 0;
-    r_from_nb_tid <= REMOTE_KERNEL_ID;
-    r_from_nb_tdest <= DUT_KERNEL_ID;
-    // TUSER
-    r_from_nb_tuser[IP_ADDRESS_WIDTH-1:0] <= REMOTE_IP_ADDRESS;
-    r_from_nb_tuser[AXIS_KIP_TUSER_DEST_PORT_OFFSET+:AXIS_KIP_TUSER_DEST_PORT_WIDTH] <= CTRL_PORT;
-    r_from_nb_tuser[AXIS_KIP_TUSER_SRC_PORT_OFFSET+:AXIS_KIP_TUSER_SRC_PORT_WIDTH] <= CTRL_PORT;
-    #100
-    // Received LAN packets from a previous transaction
-    r_from_nb_tdata[PUB_LAN_SEQUENCE_NUMBER_OFFSET+:PUB_LAN_SEQUENCE_NUMBER_WIDTH] <= CURRENT_SEQUENCE_NUMBER;
-    #100
-    r_from_nb_tdata[PUB_LAN_SEQUENCE_NUMBER_OFFSET+:PUB_LAN_SEQUENCE_NUMBER_WIDTH] <= CURRENT_SEQUENCE_NUMBER - 2;
-    #100
-    // Received invalid LAN packet
-    r_from_nb_tdata[PUB_LAN_SEQUENCE_NUMBER_OFFSET+:PUB_LAN_SEQUENCE_NUMBER_WIDTH] <= CURRENT_SEQUENCE_NUMBER + 2;
-    #1000
-    $finish;
+    // // Test sending PUB LAN packets
+    // // Received a LAN PUB packet: Write CDCDCDCD to address ABCDABCDABCDABCD 
+    // r_from_nb_tvalid <= 1;
+    // // TDATA
+    // r_from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0] <= RPN_MSG_TYPE_LAN_PUB;
+    // r_from_nb_tdata[PUB_LAN_SENDER_NODE_ID_OFFSET+:PUB_LAN_SENDER_NODE_ID_WIDTH] <= REMOTE_NODE_ID;
+    // r_from_nb_tdata[PUB_LAN_SEQUENCE_NUMBER_OFFSET+:PUB_LAN_SEQUENCE_NUMBER_WIDTH] <= CURRENT_SEQUENCE_NUMBER + 1; // Set a different packet ID to test forwarded LAN packets
+    // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET)+:AXIS_LAN_MSG_TYPE_WIDTH] <= MSG_WRITE; // LAN Data begins here
+    // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_DATA_OFFSET)+:AXIS_LAN_DATA_WIDTH] <= 'hCDCDCDCD;
+    // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_ADDR_OFFSET)+:AXIS_LAN_ADDR_WIDTH] <= 'hABCDABCDABCDABCD;
+    // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_WSTRB_OFFSET)+:AXIS_LAN_WSTRB_WIDTH] <= 'hE;
+    // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_TID_OFFSET)+:AXIS_LAN_TID_WIDTH] <= 0;
+    // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_IP_OFFSET)+:AXIS_LAN_IP_WIDTH] <= 0;
+    // r_from_nb_tid <= REMOTE_KERNEL_ID;
+    // r_from_nb_tdest <= DUT_KERNEL_ID;
+    // // TUSER
+    // r_from_nb_tuser[IP_ADDRESS_WIDTH-1:0] <= REMOTE_IP_ADDRESS;
+    // r_from_nb_tuser[AXIS_KIP_TUSER_DEST_PORT_OFFSET+:AXIS_KIP_TUSER_DEST_PORT_WIDTH] <= CTRL_PORT;
+    // r_from_nb_tuser[AXIS_KIP_TUSER_SRC_PORT_OFFSET+:AXIS_KIP_TUSER_SRC_PORT_WIDTH] <= CTRL_PORT;
+    // #100
+    // // Received LAN packets from a previous transaction
+    // r_from_nb_tdata[PUB_LAN_SEQUENCE_NUMBER_OFFSET+:PUB_LAN_SEQUENCE_NUMBER_WIDTH] <= CURRENT_SEQUENCE_NUMBER;
+    // #100
+    // r_from_nb_tdata[PUB_LAN_SEQUENCE_NUMBER_OFFSET+:PUB_LAN_SEQUENCE_NUMBER_WIDTH] <= CURRENT_SEQUENCE_NUMBER - 2;
+    // #100
+    // // Received invalid LAN packet
+    // r_from_nb_tdata[PUB_LAN_SEQUENCE_NUMBER_OFFSET+:PUB_LAN_SEQUENCE_NUMBER_WIDTH] <= CURRENT_SEQUENCE_NUMBER + 2;
+    // #1000
+    // $finish;
 
     // // Test a variety of packets arriving in different configurations (PART 1)
     // // Current forwarded LAN PUB
@@ -181,6 +193,7 @@ initial begin
     // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_WSTRB_OFFSET)+:AXIS_LAN_WSTRB_WIDTH] <= 'hE;
     // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_TID_OFFSET)+:AXIS_LAN_TID_WIDTH] <= REMOTE_KERNEL_ID;
     // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_IP_OFFSET)+:AXIS_LAN_IP_WIDTH] <= REMOTE_IP_ADDRESS;
+    // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_CTID_OFFSET)+:AXIS_LAN_CTID_WIDTH] <= REMOTE_CTID;
     // r_from_nb_tid <= 0;
     // r_from_nb_tdest <= DUT_KERNEL_ID;
     // // TUSER
@@ -202,6 +215,7 @@ initial begin
     // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_WSTRB_OFFSET)+:AXIS_LAN_WSTRB_WIDTH] <= 'hE;
     // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_TID_OFFSET)+:AXIS_LAN_TID_WIDTH] <= 0;
     // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_IP_OFFSET)+:AXIS_LAN_IP_WIDTH] <= 0;
+    // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_CTID_OFFSET)+:AXIS_LAN_CTID_WIDTH] <= 0;
     // r_from_nb_tid <= REMOTE_KERNEL_ID;
     // r_from_nb_tdest <= DUT_KERNEL_ID;
     // // TUSER
@@ -223,6 +237,7 @@ initial begin
     // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_WSTRB_OFFSET)+:AXIS_LAN_WSTRB_WIDTH] <= 'hE;
     // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_TID_OFFSET)+:AXIS_LAN_TID_WIDTH] <= REMOTE_KERNEL_ID;
     // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_IP_OFFSET)+:AXIS_LAN_IP_WIDTH] <= REMOTE_IP_ADDRESS;
+    // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_CTID_OFFSET)+:AXIS_LAN_CTID_WIDTH] <= REMOTE_CTID;
     // r_from_nb_tid <= 0;
     // r_from_nb_tdest <= DUT_KERNEL_ID;
     // // TUSER
@@ -244,6 +259,7 @@ initial begin
     // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_WSTRB_OFFSET)+:AXIS_LAN_WSTRB_WIDTH] <= 'hE;
     // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_TID_OFFSET)+:AXIS_LAN_TID_WIDTH] <= 0;
     // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_IP_OFFSET)+:AXIS_LAN_IP_WIDTH] <= 0;
+    // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_CTID_OFFSET)+:AXIS_LAN_CTID_WIDTH] <= 0;
     // r_from_nb_tid <= REMOTE_KERNEL_ID;
     // r_from_nb_tdest <= DUT_KERNEL_ID;
     // // TUSER
@@ -253,45 +269,45 @@ initial begin
     // #1000
     // $finish;
 
-    // // Test a SEQ NUM Request
-    // r_from_nb_tvalid <= 1;
-    // // Current forwarded LAN PUB
-    // // Received a forwarded LAN PUB packet: Write CDCDCDCD to address ABCDABCDABCDABCD 
-    // // TDATA
-    // r_from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0] <= RPN_MSG_TYPE_LAN_PUB;
-    // r_from_nb_tdata[PUB_LAN_SENDER_NODE_ID_OFFSET+:PUB_LAN_SENDER_NODE_ID_WIDTH] <= 0;
-    // r_from_nb_tdata[PUB_LAN_SEQUENCE_NUMBER_OFFSET+:PUB_LAN_SEQUENCE_NUMBER_WIDTH] <= CURRENT_SEQUENCE_NUMBER + 1; // Set a different packet ID to test forwarded LAN packets
-    // r_from_nb_tdata[PUB_LAN_FWD_CTID_OFFSET+:PUB_LAN_FWD_CTID_WIDTH] <= REMOTE_CTID;
-    // r_from_nb_tdata[PUB_LAN_FWD_WAN_SEQ_NUM_OFFSET+:PUB_LAN_FWD_WAN_SEQ_NUM_WIDTH] <= REMOTE_WAN_SEQUENCE_NUMBER;
-    // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET)+:AXIS_LAN_MSG_TYPE_WIDTH] <= MSG_WRITE; // LAN Data begins here
-    // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_DATA_OFFSET)+:AXIS_LAN_DATA_WIDTH] <= 'hCDCDCDCD;
-    // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_ADDR_OFFSET)+:AXIS_LAN_ADDR_WIDTH] <= 'hABCDABCDABCDABCD;
-    // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_WSTRB_OFFSET)+:AXIS_LAN_WSTRB_WIDTH] <= 'hE;
-    // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_TID_OFFSET)+:AXIS_LAN_TID_WIDTH] <= REMOTE_KERNEL_ID;
-    // r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_IP_OFFSET)+:AXIS_LAN_IP_WIDTH] <= REMOTE_IP_ADDRESS;
-    // r_from_nb_tid <= 0;
-    // r_from_nb_tdest <= DUT_KERNEL_ID;
-    // // TUSER
-    // r_from_nb_tuser[IP_ADDRESS_WIDTH-1:0] <= 0;
-    // r_from_nb_tuser[AXIS_KIP_TUSER_DEST_PORT_OFFSET+:AXIS_KIP_TUSER_DEST_PORT_WIDTH] <= CTRL_PORT;
-    // r_from_nb_tuser[AXIS_KIP_TUSER_SRC_PORT_OFFSET+:AXIS_KIP_TUSER_SRC_PORT_WIDTH] <= CTRL_PORT;
-    // #100
-    // // Received a LAN SEQ NUM request packet 
-    // // TDATA
-    // r_from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0] <= RPN_MSG_TYPE_LAN_SEQ_NUM_CHECK;
-    // r_from_nb_tdata[PUB_LAN_SENDER_NODE_ID_OFFSET+:PUB_LAN_SENDER_NODE_ID_WIDTH] <= REMOTE_NODE_ID;
-    // r_from_nb_tdata[PUB_LAN_SEQUENCE_NUMBER_OFFSET+:PUB_LAN_SEQUENCE_NUMBER_WIDTH] <= 0;
-    // r_from_nb_tdata[PUB_LAN_FWD_CTID_OFFSET+:PUB_LAN_FWD_CTID_WIDTH] <= 0;
-    // r_from_nb_tdata[PUB_LAN_FWD_WAN_SEQ_NUM_OFFSET+:PUB_LAN_FWD_WAN_SEQ_NUM_WIDTH] <= 0;
-    // r_from_nb_tdata[AXIS_DATA_WIDTH-1:PUB_LAN_DATA_OFFSET] <= 0;
-    // r_from_nb_tid <= REMOTE_KERNEL_ID;
-    // r_from_nb_tdest <= DUT_KERNEL_ID;
-    // // TUSER
-    // r_from_nb_tuser[IP_ADDRESS_WIDTH-1:0] <= REMOTE_IP_ADDRESS;
-    // r_from_nb_tuser[AXIS_KIP_TUSER_DEST_PORT_OFFSET+:AXIS_KIP_TUSER_DEST_PORT_WIDTH] <= CTRL_PORT;
-    // r_from_nb_tuser[AXIS_KIP_TUSER_SRC_PORT_OFFSET+:AXIS_KIP_TUSER_SRC_PORT_WIDTH] <= CTRL_PORT;
-    // #100
-    // $finish;
+    // Test a SEQ NUM Request
+    r_from_nb_tvalid <= 1;
+    // Current forwarded LAN PUB
+    // Received a forwarded LAN PUB packet: Write CDCDCDCD to address ABCDABCDABCDABCD 
+    // TDATA
+    r_from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0] <= RPN_MSG_TYPE_LAN_PUB;
+    r_from_nb_tdata[PUB_LAN_SENDER_NODE_ID_OFFSET+:PUB_LAN_SENDER_NODE_ID_WIDTH] <= 0;
+    r_from_nb_tdata[PUB_LAN_SEQUENCE_NUMBER_OFFSET+:PUB_LAN_SEQUENCE_NUMBER_WIDTH] <= CURRENT_SEQUENCE_NUMBER + 1; // Set a different packet ID to test forwarded LAN packets
+    r_from_nb_tdata[PUB_LAN_FWD_CTID_OFFSET+:PUB_LAN_FWD_CTID_WIDTH] <= REMOTE_CTID;
+    r_from_nb_tdata[PUB_LAN_FWD_WAN_SEQ_NUM_OFFSET+:PUB_LAN_FWD_WAN_SEQ_NUM_WIDTH] <= REMOTE_WAN_SEQUENCE_NUMBER;
+    r_from_nb_tdata[(PUB_LAN_DATA_OFFSET)+:AXIS_LAN_MSG_TYPE_WIDTH] <= MSG_WRITE; // LAN Data begins here
+    r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_DATA_OFFSET)+:AXIS_LAN_DATA_WIDTH] <= 'hCDCDCDCD;
+    r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_ADDR_OFFSET)+:AXIS_LAN_ADDR_WIDTH] <= 'hABCDABCDABCDABCD;
+    r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_WSTRB_OFFSET)+:AXIS_LAN_WSTRB_WIDTH] <= 'hE;
+    r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_TID_OFFSET)+:AXIS_LAN_TID_WIDTH] <= REMOTE_KERNEL_ID;
+    r_from_nb_tdata[(PUB_LAN_DATA_OFFSET+AXIS_LAN_IP_OFFSET)+:AXIS_LAN_IP_WIDTH] <= REMOTE_IP_ADDRESS;
+    r_from_nb_tid <= 0;
+    r_from_nb_tdest <= DUT_KERNEL_ID;
+    // TUSER
+    r_from_nb_tuser[IP_ADDRESS_WIDTH-1:0] <= 0;
+    r_from_nb_tuser[AXIS_KIP_TUSER_DEST_PORT_OFFSET+:AXIS_KIP_TUSER_DEST_PORT_WIDTH] <= CTRL_PORT;
+    r_from_nb_tuser[AXIS_KIP_TUSER_SRC_PORT_OFFSET+:AXIS_KIP_TUSER_SRC_PORT_WIDTH] <= CTRL_PORT;
+    #100
+    // Received a LAN SEQ NUM request packet 
+    // TDATA
+    r_from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0] <= RPN_MSG_TYPE_LAN_SEQ_NUM_CHECK;
+    r_from_nb_tdata[PUB_LAN_SENDER_NODE_ID_OFFSET+:PUB_LAN_SENDER_NODE_ID_WIDTH] <= REMOTE_NODE_ID;
+    r_from_nb_tdata[PUB_LAN_SEQUENCE_NUMBER_OFFSET+:PUB_LAN_SEQUENCE_NUMBER_WIDTH] <= 0;
+    r_from_nb_tdata[PUB_LAN_FWD_CTID_OFFSET+:PUB_LAN_FWD_CTID_WIDTH] <= 0;
+    r_from_nb_tdata[PUB_LAN_FWD_WAN_SEQ_NUM_OFFSET+:PUB_LAN_FWD_WAN_SEQ_NUM_WIDTH] <= 0;
+    r_from_nb_tdata[AXIS_DATA_WIDTH-1:PUB_LAN_DATA_OFFSET] <= 0;
+    r_from_nb_tid <= REMOTE_KERNEL_ID;
+    r_from_nb_tdest <= DUT_KERNEL_ID;
+    // TUSER
+    r_from_nb_tuser[IP_ADDRESS_WIDTH-1:0] <= REMOTE_IP_ADDRESS;
+    r_from_nb_tuser[AXIS_KIP_TUSER_DEST_PORT_OFFSET+:AXIS_KIP_TUSER_DEST_PORT_WIDTH] <= CTRL_PORT;
+    r_from_nb_tuser[AXIS_KIP_TUSER_SRC_PORT_OFFSET+:AXIS_KIP_TUSER_SRC_PORT_WIDTH] <= CTRL_PORT;
+    #100
+    $finish;
 end
 
 endmodule

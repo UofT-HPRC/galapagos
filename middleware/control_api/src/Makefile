@@ -4,10 +4,6 @@ IGNORE_SUBDIRS := include/ \
 				  __pycache__/ \
 				  reliability_protocol_module_inbound/ \
 				  reliability_protocol_node_inbound/ \
-				  rpn_WAN_sequence_number_initializer/ \
-				  rpn_WNN_node/ \
-				  rpn_WNN_repo/ \
-				  rpn_KIP_TX/ \
 				  test_decoder/
 IP_SUBDIRS := $(filter-out $(IGNORE_SUBDIRS), $(SUBDIRS))
 

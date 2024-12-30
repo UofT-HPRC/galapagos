@@ -11,7 +11,7 @@ ar_sizes = [16,40,8,3,2,1,4,3,16,4,4,1,1]
 r_fields = ["id","data","resp","last","valid","ready"]
 r_sizes = [16,128,2,1,1,1]
 axis_fields = ["data","keep","dest","id","user","last","valid","ready"]
-axis_sizes = [512,64,24,24,16,1,1,1]
+axis_sizes = [512,64,24,24,48,1,1,1]
 wan_axis_fields = ["data","keep","dest","user","last","valid","ready"]
 wan_axis_sizes = [512,64,32,16,1,1,1]
 axis_base_fields = ["data","keep","last","valid","ready"]
@@ -40,6 +40,14 @@ def add_axi_defn_field(preamble,name,portname,cat,field,has_id,has_user):
     result_str = ""
     for i in range (len(field)):
         if ((field[i] != "id") or has_id) and ((field[i] != "user") or has_user):
+            result_str = result_str + preamble+",."+portname+"_"+cat+field[i]+"("+name+"_"+cat+field[i]+")\n"
+    return result_str + "\n";
+def add_axi_defn_field_set_id(preamble,name,portname,cat,field,id):
+    result_str = ""
+    for i in range (len(field)):
+        if (field[i] == 'id'):
+            result_str = result_str + preamble + ",." + portname + "_" + cat + "id(" + str(id)+ ")\n"
+        else:
             result_str = result_str + preamble+",."+portname+"_"+cat+field[i]+"("+name+"_"+cat+field[i]+")\n"
     return result_str + "\n";
 def add_axi_defn_field_set_id_user(preamble,name,portname,cat,field,id,user):
@@ -292,7 +300,11 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,ctrl_kerne
             dst_file.write(construct_axis_defn("      ",str(name)+"_MAXIS",str(name)+"_MAXIS",True,True,False))
         else:
             dst_file.write(construct_axis_defn("      ",str(name)+"_MAXIS",str(name)+"_MAXIS",True,True,True))
-        dst_file.write(add_axi_defn_field_set_id_user("      ",str(name)+"_SAXIS",str(name)+"_SAXIS","t",axis_fields,props['id'],0))
+        # In the gateway control and data share the same interface to the PR region, so TUSER must be allowed through
+        if is_gw:
+            dst_file.write(add_axi_defn_field_set_id("      ",str(name)+"_SAXIS",str(name)+"_SAXIS","t",axis_fields,props['id']))
+        else:
+            dst_file.write(add_axi_defn_field_set_id_user("      ",str(name)+"_SAXIS",str(name)+"_SAXIS","t",axis_fields,props['id'],0))
         if fpga.has_ddr:
             for i in fpga['kernel']:
                 if str(i['num']) == name[-1] and i['ddr']:
@@ -322,7 +334,11 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,ctrl_kerne
         if props['has_id']:
             dst_file.write("    ,."+props['id_port']+"("+str(props['id'])+")\n")
         dst_file.write(construct_axis_defn("    ",str(name)+"_MAXIS",Sname,True,True, (not is_gw)))
-        dst_file.write(construct_axis_defn("    ",str(name)+"_SAXIS",Mname,True,False,False))
+        # In the gateway control and data share the same interface to the PR region, so TUSER must be allowed through
+        if is_gw:
+            dst_file.write(construct_axis_defn("    ",str(name)+"_SAXIS",Mname,True,True,False))
+        else:
+            dst_file.write(construct_axis_defn("    ",str(name)+"_SAXIS",Mname,True,False,False))
         if fpga.has_ddr:
             for i in fpga['kernel']:
                 if str(i['num']) == name[-1] and i['ddr']:

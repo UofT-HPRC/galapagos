@@ -32,6 +32,11 @@ module rpn_LAN_RX #(
     output wire [AXIS_KEEP_WIDTH-1:0] to_nb_KIP_tkeep,
     output wire [AXIS_KIP_TUSER_WIDTH-1:0] to_nb_KIP_tuser,
     output wire to_nb_KIP_tlast,
+    // AXI-Stream interface to WAN Number Node transmitter
+    output to_WNN_tvalid,
+    input to_WNN_tready,
+    output [RPN_MSG_TYPE_WIDTH-1:0] to_WNN_tdata,
+    output [AXIS_WAN_TDEST_WIDTH-1:0] to_WNN_tdest,
     // BRAM connection to Sequence Number BRAM. This stores the sequence number of the MOST RECENT transaction
     output wire to_sequence_number_BRAM_CLK, 
     output wire to_sequence_number_BRAM_RST,
@@ -49,7 +54,8 @@ module rpn_LAN_RX #(
     localparam STATE_SEND_TO_CTRL = 2;
     localparam STATE_WRITE_NEW_SEQ_NUM = 3;
     localparam STATE_TRANSMIT_ACK = 4;
-    localparam STATE_TRANSMIT_SEQ_NUM_REPLY = 5;
+    localparam STATE_SEND_WNN_WRITE = 5;
+    localparam STATE_TRANSMIT_SEQ_NUM_REPLY = 6;
 
     // Definitions
     // Core State FSM
@@ -59,9 +65,11 @@ module rpn_LAN_RX #(
     logic [LAN_SEQUENCE_NUMBER_WIDTH-1:0] r_sender_sequence_number;
     logic [NODE_ID_WIDTH-1:0] r_sender_node_id;
     logic [RPN_MSG_TYPE_WIDTH-1:0] r_rpn_msg_type;
+    logic [CLUSTER_ID_WIDTH-1:0] r_ctid;
     logic [LAN_SEQUENCE_NUMBER_WIDTH-1:0] w_sender_sequence_number;
     logic [NODE_ID_WIDTH-1:0] w_sender_node_id;
     logic [RPN_MSG_TYPE_WIDTH-1:0] w_rpn_msg_type;
+    logic [CLUSTER_ID_WIDTH-1:0] w_ctid;
     // AXI-Stream interface to Control
     logic [PUB_LAN_DATA_WIDTH-1:0] r_to_ctrl_tdata;
     logic [AXIS_KEEP_WIDTH-1:0] r_to_ctrl_tkeep;
@@ -82,6 +90,7 @@ module rpn_LAN_RX #(
     logic [IP_ADDRESS_WIDTH-1:0] w_to_nb_KIP_ip_addr;
     // Other
     logic [LAN_SEQUENCE_NUMBER_WIDTH-1:0] w_max_sequence_number;
+    logic w_current_message_is_forwarded;
 
     // Assignments
     // AXI-Stream interface from Network Bridge
@@ -108,6 +117,10 @@ module rpn_LAN_RX #(
     assign to_nb_KIP_tuser[KIP_TUSER_SRC_PORT_OFFSET+:KIP_TUSER_SRC_PORT_WIDTH] = i_KIP_port_number;
     assign to_nb_KIP_tuser[KIP_TUSER_DEST_PORT_OFFSET+:KIP_TUSER_DEST_PORT_WIDTH] = i_KIP_port_number;
     assign to_nb_KIP_tlast = 1;
+    // AXI-Stream interface to WAN Number Node transmitter
+    assign to_WNN_tvalid = (r_core_state == STATE_SEND_WNN_WRITE) ? 1 : 0;
+    assign to_WNN_tdata = RPN_MSG_TYPE_WAN_INCOMING_SEQ_NUM_WRITE;
+    assign to_WNN_tdest = r_ctid;
     // BRAM connection to Sequence Number BRAM
     assign to_sequence_number_BRAM_CLK = i_clk;
     assign to_sequence_number_BRAM_RST = ~i_ap_rst_n;
@@ -132,6 +145,7 @@ module rpn_LAN_RX #(
     end
     // Other
     assign w_max_sequence_number[LAN_SEQUENCE_NUMBER_WIDTH-1:0] = -1;
+    assign w_current_message_is_forwarded = (r_ctid == 0) ? 0 : 1;
 
     // Core State FSM
     always_comb begin
@@ -159,7 +173,10 @@ module rpn_LAN_RX #(
                     w_next_core_state = STATE_IDLE;
             end
             STATE_WRITE_NEW_SEQ_NUM: begin
-                w_next_core_state = STATE_SEND_TO_CTRL;
+                w_next_core_state = (w_current_message_is_forwarded == 1) ? STATE_SEND_WNN_WRITE : STATE_SEND_TO_CTRL;
+            end
+            STATE_SEND_WNN_WRITE: begin
+                w_next_core_state = (to_WNN_tready == 1) ? STATE_SEND_TO_CTRL : STATE_SEND_WNN_WRITE;
             end
             STATE_SEND_TO_CTRL: begin
                 w_next_core_state = (to_ctrl_tready == 1) ? STATE_TRANSMIT_ACK : STATE_SEND_TO_CTRL;
@@ -191,6 +208,7 @@ module rpn_LAN_RX #(
         w_to_ctrl_tid = 0;
         w_to_ctrl_tdest = 0;
         w_to_ctrl_tuser = 0;
+        w_ctid = 0;
         if (r_core_state == STATE_IDLE) begin
             if (from_nb_tvalid == 1) begin
                 w_rpn_msg_type = from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0];
@@ -201,6 +219,8 @@ module rpn_LAN_RX #(
                 w_sender_sequence_number = from_nb_tdata[PUB_LAN_SEQUENCE_NUMBER_OFFSET+:LAN_SEQUENCE_NUMBER_WIDTH]; 
                 w_sender_node_id = from_nb_tdata[PUB_LAN_SENDER_NODE_ID_OFFSET+:PUB_LAN_SENDER_NODE_ID_WIDTH]; 
                 w_to_ctrl_tdata[PUB_LAN_DATA_WIDTH-1:0] = from_nb_tdata[PUB_LAN_DATA_OFFSET+:PUB_LAN_DATA_WIDTH]; 
+                // Record original cluster ID for forwarded LAN messages
+                w_ctid = from_nb_tdata[PUB_LAN_FWD_CTID_OFFSET+:PUB_LAN_FWD_CTID_WIDTH];
             end
             else begin
                 w_rpn_msg_type = 0;
@@ -211,6 +231,7 @@ module rpn_LAN_RX #(
                 w_to_ctrl_tid = 0;
                 w_to_ctrl_tdest = 0;
                 w_to_ctrl_tuser = 0;
+                w_ctid = 0;
             end
         end
         else begin
@@ -222,6 +243,7 @@ module rpn_LAN_RX #(
             w_to_ctrl_tid = r_to_ctrl_tid;
             w_to_ctrl_tdest = r_to_ctrl_tdest;
             w_to_ctrl_tuser = r_to_ctrl_tuser;
+            w_ctid = r_ctid;
         end
     end
     always_ff @(posedge i_clk, negedge i_ap_rst_n) begin
@@ -230,20 +252,22 @@ module rpn_LAN_RX #(
             r_sender_sequence_number <= 0;
             r_sender_node_id <= 0;
             r_to_ctrl_tdata <= 0;
-            r_to_ctrl_tkeep = 0;
-            r_to_ctrl_tid = 0;
-            r_to_ctrl_tdest = 0;
-            r_to_ctrl_tuser = 0;
+            r_to_ctrl_tkeep <= 0;
+            r_to_ctrl_tid <= 0;
+            r_to_ctrl_tdest <= 0;
+            r_to_ctrl_tuser <= 0;
+            r_ctid <= 0;
         end
         else begin
             r_sender_sequence_number <= w_sender_sequence_number;
             r_sender_node_id <= w_sender_node_id;
             r_rpn_msg_type <= w_rpn_msg_type;
             r_to_ctrl_tdata <= w_to_ctrl_tdata;
-            r_to_ctrl_tkeep = w_to_ctrl_tkeep;
-            r_to_ctrl_tid = w_to_ctrl_tid;
-            r_to_ctrl_tdest = w_to_ctrl_tdest;
-            r_to_ctrl_tuser = w_to_ctrl_tuser;
+            r_to_ctrl_tkeep <= w_to_ctrl_tkeep;
+            r_to_ctrl_tid <= w_to_ctrl_tid;
+            r_to_ctrl_tdest <= w_to_ctrl_tdest;
+            r_to_ctrl_tuser <= w_to_ctrl_tuser;
+            r_ctid <= w_ctid;
         end
     end
 

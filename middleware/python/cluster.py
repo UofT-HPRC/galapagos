@@ -68,9 +68,6 @@ def stripWhiteSpace(entry):
             new_dict[entry_key] = stripWhiteSpace(entry[entry_key])
         return new_dict
 
-    
-
-
 class cluster(abstractDict):
     """ This class is the top-level interface to the myriad other objects used
     by Galapagos. Note that the globalFPGAParser provides a rudimentary command
@@ -105,7 +102,7 @@ class cluster(abstractDict):
             print("Unhandled exetension for " + file_name)
             return None
 
-    def __init__(self, cluster_desc, lan_flow, mode='file'):
+    def __init__(self, cluster_id, cluster_desc, lan_flow, mode='file'):
         """
         Initializes the cluster object using logical file and mapping file
 
@@ -143,7 +140,7 @@ class cluster(abstractDict):
         s_axis_array = OrderedDict([('scope','global'),('name','direct_rx')])
         m_axis_array = OrderedDict([('scope', 'global'), ('name', 'lan_tx')])
         wan_array = OrderedDict([('enabled', 'False'), ('name', 'wan_prt')])
-        kern0=OrderedDict([('#text','gateway'),('type','open'),('num','0'),('control','false'),('clk','CLK'),('aresetn','rstn'),('s_axis',s_axis_array),('m_axis',m_axis_array),('wan',wan_array)])
+        kern0=OrderedDict([('#text','gateway'),('type','open'),('num','0'),('control',{'enabled':'false'}),('clk','CLK'),('aresetn','rstn'),('s_axis',s_axis_array),('m_axis',m_axis_array),('wan',wan_array)])
         logical_dict.insert(0, kern0)
         for kern_dict in logical_dict:
             if (('wan' in kern_dict) and (kern_dict['wan']['enabled'].lower()== 'true')):
@@ -151,6 +148,7 @@ class cluster(abstractDict):
                 kern_dict['wan_name'] = kern_dict['wan']['name']
                 if not lan_flow:
                     raise ValueError("WAN features require laniakea flow, not galapagos flow")
+                    # pass
             else:
                 kern_dict['wan_enabled'] = False
                 kern_dict['wan_name'] = ""
@@ -373,20 +371,52 @@ class cluster(abstractDict):
             self.nodes.append(node_inst)
 
 
-    def processControlProtocol(self):
+    def processControlProtocol(self, cluster_id, num_clusters, lan_flow):
+        control_needs_WNN_repo = False # Indicates if at least 1 kernel in the cluster needs control WAN
         for i in range(len(self.nodes)):
-            memories = []
+            self.nodes[i]['cluster_id'] = cluster_id
+            self.nodes[i]['num_clusters'] = num_clusters
             has_control = False
+            has_control_WAN = False
             ctrl_kernel_dict = {}
+            ctrl_dict_kernel_id = {}
             for kernel in self.nodes[i]['kernel']:
-                if kernel['control'] is True:
+                if (('control' in kernel) and (kernel['control']['enabled'].lower() == 'true')):
                     has_control = True
                     ctrl_kernel_dict[int(kernel['num'])] = {
                                                             'num': int(kernel['num']),
-                                                            'control_type': kernel['control_type']
+                                                            'control_type': kernel['control']['control_type']
                                                         }
+                    if 'has_wan' in kernel['control']:
+                        if kernel['control']['has_wan'].lower()== 'true':
+                            control_needs_WNN_repo = True
+                            has_control_WAN = True
+                            if not lan_flow:
+                                raise ValueError("Control WAN can only be used for Laniakea, not Galapagos")
+                                pass
+                            else:
+                                ctrl_kernel_dict[int(kernel['num'])]['has_wan'] = True
+                                # Edge Case: If control WAN is supported but not Data WAN, set has_wan of node to True, so that the WAN infrastructure will be built
+                                self.nodes[i]['has_wan'] = True
+                        else:
+                            ctrl_kernel_dict[int(kernel['num'])]['has_wan'] = False
+                    else:
+                        ctrl_kernel_dict[int(kernel['num'])]['has_wan'] = False
             self.nodes[i]['ctrl_kernel_dict'] = ctrl_kernel_dict
             self.nodes[i].has_control = has_control
+            self.nodes[i]['has_ctrl_wan'] = has_control_WAN
+        # If WAN is present, each node needs to know the ID and IP address of the node holding the WNN repo
+        if control_needs_WNN_repo:
+            # WNN repo does not require WAN infrastructure, just KIP, so no need to set 'has_wan' to 1
+            self.nodes[1]['has_ctrl_wan'] = True
+            # IP Address is in X.X.X.XXX Mode, must be converted to a decimal mode
+            WNN_repo_ip_decimal = struct.unpack("!L", socket.inet_aton(self.nodes[1]['ip']))[0]
+            WNN_repo_ip_hex = str(hex(WNN_repo_ip_decimal))
+            for i in range(len(self.nodes)):
+                # Node 1 is the host of the WNN Repo
+                self.nodes[i]['ctrl_WNN_repo_id'] = 1 
+                # self.nodes[i]['ctrl_WNN_repo_ip'] = self.nodes[i]['ip']
+                self.nodes[i]['ctrl_WNN_repo_ip'] = WNN_repo_ip_hex
         return
 
     def writeClusterTCL(self, output_path, sim, has_GW,api_info,CAMILO_TEMP_DEBUG):

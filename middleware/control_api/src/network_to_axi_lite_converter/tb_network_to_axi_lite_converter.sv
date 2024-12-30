@@ -1,27 +1,14 @@
 `timescale 1ns / 1ps
 
-module tb();
+module tb #(
+    `include "ctrl_api_header_parameters.vh"
+)
+    ();
     // Parameters
-    parameter REQUEST_BUFFER_CAPACITY = 6;
-    parameter AXI_LITE_BRESP_WIDTH = 2;
-    parameter AXI_LITE_RRESP_WIDTH = 2;
-    parameter AXI_LITE_WSTRB_ENABLED = 1;
-    parameter AXI_LITE_ADDR_WIDTH = 64;
-    parameter AXI_LITE_DATA_WIDTH = 32;
-    parameter AXI_LITE_WSTRB_WIDTH = 4;
-    parameter AXIS_DATA_WIDTH = 512;
-    parameter AXIS_KEEP_WIDTH = 64;
-    parameter AXIS_LAN_TDEST_WIDTH = 8;
-    parameter AXIS_LAN_TUSER_WIDTH = 8;
-    parameter AXIS_WAN_TDEST_WIDTH = 32;
-    parameter AXIS_WAN_TUSER_WIDTH = 16;
-    parameter AXIS_KIP_TUSER_WIDTH = 64;
-    parameter AXIS_FROM_NB_TDEST_WIDTH = 8;
-    parameter AXIS_FROM_NB_TUSER_WIDTH = 64;
-    parameter IP_ADDRESS_WIDTH = 32;
-    parameter IP_PORT_WIDTH = 16;
-    parameter DUT_ID = 'hF0;
-    parameter DUT_CONTROL_PORT_NUMBER = 32769;
+    localparam REQUEST_BUFFER_CAPACITY = 6;
+    localparam AXI_LITE_WSTRB_ENABLED = 1;
+    localparam DUT_ID = 'hF0;
+    localparam DUT_CONTROL_PORT_NUMBER = 32769;
 
     `include "ctrl_api_message_parameters.vh"
 
@@ -224,11 +211,15 @@ module tb();
 
     // Test logic: Initial signals
     initial begin
-        // // Test Requests received from the network, buffer not full
-        // r_remote_enable <= 0;
-        // r_to_request_buffer_tready <= 1;
-        // r_from_request_buffer_tvalid <= 0;
-        // #100
+        // Test Requests received from the network, buffer not full
+        r_m_bvalid <= 1;
+        r_m_bresp <= 3;
+        r_m_rvalid <= 1;
+        r_m_rdata <= 'hAABBCCDD;
+        r_remote_enable <= 0;
+        r_to_request_buffer_tready <= 1;
+        r_from_request_buffer_tvalid <= 0;
+        #100
         // // Test LAN read request from kernel EF for address 2BABABABABABAB
         // r_remote_data[AXIS_LAN_MSG_TYPE_WIDTH-1:0] <= MSG_READ;
         // r_remote_data[AXIS_LAN_DATA_OFFSET+:AXIS_LAN_DATA_WIDTH] <= 0;
@@ -298,20 +289,21 @@ module tb();
         // #10
         // r_remote_enable <= 0;
         // #40
-        // // Test GW-forwarded LAN write request from kernel FE (IP 10.3.7.5) for address CDCDCDCDCDCDCDCD, data BEBEBEBE
-        // r_remote_data[AXIS_LAN_MSG_TYPE_WIDTH-1:0] <= MSG_WRITE;
-        // r_remote_data[AXIS_LAN_DATA_OFFSET+:AXIS_LAN_DATA_WIDTH] <= 'hBEBEBEBE;
-        // r_remote_data[AXIS_LAN_ADDR_OFFSET+:AXIS_LAN_ADDR_WIDTH] <= 'hCDCDCDCDCDCDCDCD;
-        // r_remote_data[AXIS_LAN_WSTRB_OFFSET+:AXIS_LAN_WSTRB_WIDTH] <= 'hC;
-        // r_remote_data[AXIS_LAN_TID_OFFSET+:AXIS_LAN_TID_WIDTH] <= 'hFE;
-        // r_remote_data[AXIS_LAN_IP_OFFSET+:AXIS_LAN_IP_WIDTH] <= 'h0A030705;
-        // r_remote_data[AXIS_DATA_WIDTH-1:(AXIS_LAN_IP_OFFSET+AXIS_LAN_IP_WIDTH)] <= 0;
-        // r_remote_tid <= 0;
-        // r_remote_tuser <= 0;
-        // r_remote_enable <= 1;
-        // #10
-        // r_remote_enable <= 0;
-        // #40
+        // Test GW-forwarded LAN write request from kernel FE (IP 10.3.7.5) for address CDCDCDCDCDCDCDCD, data BEBEBEBE
+        r_remote_data[AXIS_LAN_MSG_TYPE_WIDTH-1:0] <= MSG_WRITE;
+        r_remote_data[AXIS_LAN_DATA_OFFSET+:AXIS_LAN_DATA_WIDTH] <= 'hBEBEBEBE;
+        r_remote_data[AXIS_LAN_ADDR_OFFSET+:AXIS_LAN_ADDR_WIDTH] <= 'hCDCDCDCDCDCDCDCD;
+        r_remote_data[AXIS_LAN_WSTRB_OFFSET+:AXIS_LAN_WSTRB_WIDTH] <= 'hC;
+        r_remote_data[AXIS_LAN_TID_OFFSET+:AXIS_LAN_TID_WIDTH] <= 'hFE;
+        r_remote_data[AXIS_LAN_IP_OFFSET+:AXIS_LAN_IP_WIDTH] <= 'h0A030705;
+        r_remote_data[AXIS_LAN_CTID_OFFSET+:AXIS_LAN_CTID_WIDTH] <= 'hABCEABCE;
+        r_remote_data[AXIS_DATA_WIDTH-1:(AXIS_LAN_CTID_OFFSET+AXIS_LAN_CTID_WIDTH)] <= 0;
+        r_remote_tid <= 0;
+        r_remote_tuser <= 0;
+        r_remote_enable <= 1;
+        #10
+        r_remote_enable <= 0;
+        #40
         // // Test GW-forwarded LAN write request from kernel FE (IP 10.3.7.5) for address CDCDCDCDCDCDCDCD, data BEBEBEBE
         // r_remote_data[AXIS_LAN_MSG_TYPE_WIDTH-1:0] <= MSG_WRITE;
         // r_remote_data[AXIS_LAN_DATA_OFFSET+:AXIS_LAN_DATA_WIDTH] <= 'hBEBEBEBE;
@@ -341,20 +333,22 @@ module tb();
         // #10
         // r_remote_enable <= 0;
         // #40
-        // // Test GW-forwarded LAN Read request from kernel EE (IP 10.10.12.8) for address DFDFDFDFDFDFDFDF
-        // r_remote_data[AXIS_LAN_MSG_TYPE_WIDTH-1:0] <= MSG_READ;
-        // r_remote_data[AXIS_LAN_DATA_OFFSET+:AXIS_LAN_DATA_WIDTH] <= 0;
-        // r_remote_data[AXIS_LAN_ADDR_OFFSET+:AXIS_LAN_ADDR_WIDTH] <= 'hDFDFDFDFDFDFDFDF;
-        // r_remote_data[AXIS_LAN_WSTRB_OFFSET+:AXIS_LAN_WSTRB_WIDTH] <= 'hD; // should be ignored
-        // r_remote_data[AXIS_LAN_TID_OFFSET+:AXIS_LAN_TID_WIDTH] <= 'hEE;
-        // r_remote_data[AXIS_LAN_IP_OFFSET+:AXIS_LAN_IP_WIDTH] <= 'h0A0A0C08;
-        // r_remote_data[AXIS_DATA_WIDTH-1:(AXIS_LAN_IP_OFFSET+AXIS_LAN_IP_WIDTH)] <= 0;
-        // r_remote_tid <= 0;
-        // r_remote_tuser <= 0;
-        // r_remote_enable <= 1;
-        // #10
-        // r_remote_enable <= 0;
-        // #40
+        // Test GW-forwarded LAN Read request from kernel EE (IP 10.10.12.8) for address DFDFDFDFDFDFDFDF
+        r_remote_data[AXIS_LAN_MSG_TYPE_WIDTH-1:0] <= MSG_READ;
+        r_remote_data[AXIS_LAN_DATA_OFFSET+:AXIS_LAN_DATA_WIDTH] <= 0;
+        r_remote_data[AXIS_LAN_ADDR_OFFSET+:AXIS_LAN_ADDR_WIDTH] <= 'hDFDFDFDFDFDFDFDF;
+        r_remote_data[AXIS_LAN_WSTRB_OFFSET+:AXIS_LAN_WSTRB_WIDTH] <= 'hD; // should be ignored
+        r_remote_data[AXIS_LAN_TID_OFFSET+:AXIS_LAN_TID_WIDTH] <= 'hEE;
+        r_remote_data[AXIS_LAN_IP_OFFSET+:AXIS_LAN_IP_WIDTH] <= 'h0A0A0C08;
+        r_remote_data[AXIS_LAN_CTID_OFFSET+:AXIS_LAN_CTID_WIDTH] <= 'hBACEBACE;
+        r_remote_data[AXIS_DATA_WIDTH-1:(AXIS_LAN_CTID_OFFSET+AXIS_LAN_CTID_WIDTH)] <= 0;
+        r_remote_tid <= 0;
+        r_remote_tuser <= 0;
+        r_remote_enable <= 1;
+        #10
+        r_remote_enable <= 0;
+        #200
+        $finish;
         // // Test GW-forwarded LAN Read request from kernel EE (IP 10.10.12.8) for address DFDFDFDFDFDFDFDF
         // r_remote_data[AXIS_LAN_MSG_TYPE_WIDTH-1:0] <= MSG_READ;
         // r_remote_data[AXIS_LAN_DATA_OFFSET+:AXIS_LAN_DATA_WIDTH] <= 0;
@@ -553,94 +547,94 @@ module tb();
         // #1000
         // $finish;
 
-        // Test AWADDR/ARADDR or WDATA being delayed
-        r_m_arready <= 0;
-        r_m_awready <= 0;
-        r_m_wready <= 0;
-        r_m_bvalid <= 0;
-        r_m_bresp <= 3;
-        r_m_rvalid <= 0;
-        r_m_rdata <= 'hAABBCCDD;
-        r_remote_enable <= 0;
-        r_to_request_buffer_tready <= 1;
-        r_from_request_buffer_tvalid <= 1;
-        #100
-        // Test LAN write request from kernel FE for address 3ABABABABABABA, data CECECECE
-        r_remote_data[AXIS_LAN_MSG_TYPE_WIDTH-1:0] <= MSG_WRITE;
-        r_remote_data[AXIS_LAN_DATA_OFFSET+:AXIS_LAN_DATA_WIDTH] <= 'hCECECECE;
-        r_remote_data[AXIS_LAN_ADDR_OFFSET+:AXIS_LAN_ADDR_WIDTH] <= 'h3ABABABABABABA;
-        r_remote_data[AXIS_LAN_WSTRB_OFFSET+:AXIS_LAN_WSTRB_WIDTH] <= 'hB;
-        r_remote_data[AXIS_DATA_WIDTH-1:(AXIS_LAN_WSTRB_OFFSET+AXIS_LAN_WSTRB_WIDTH)] <= 0;
-        r_remote_tid <= 'hFE;
-        r_remote_tuser <= 0;
-        r_remote_enable <= 1;
-        #50
-        r_m_awready <= 1;
-        // Queue up a bunch of other messages under it
-        // Test LAN read request from kernel EF for address 2BABABABABABAB
-        r_remote_data[AXIS_LAN_MSG_TYPE_WIDTH-1:0] <= MSG_READ;
-        r_remote_data[AXIS_LAN_DATA_OFFSET+:AXIS_LAN_DATA_WIDTH] <= 0;
-        r_remote_data[AXIS_LAN_ADDR_OFFSET+:AXIS_LAN_ADDR_WIDTH] <= 'h2BABABABABABAB;
-        r_remote_data[AXIS_LAN_WSTRB_OFFSET+:AXIS_LAN_WSTRB_WIDTH] <= 'h0;
-        r_remote_data[AXIS_DATA_WIDTH-1:(AXIS_LAN_WSTRB_OFFSET+AXIS_LAN_WSTRB_WIDTH)] <= 0;
-        r_remote_tid <= 'hEF;
-        r_remote_tuser <= 0;
-        r_remote_enable <= 1;
-        #10
-        // Test LAN write request from kernel FE for address 3ABABABABABABA, data CECECECE
-        r_remote_data[AXIS_LAN_MSG_TYPE_WIDTH-1:0] <= MSG_WRITE;
-        r_remote_data[AXIS_LAN_DATA_OFFSET+:AXIS_LAN_DATA_WIDTH] <= 'hCECECECE;
-        r_remote_data[AXIS_LAN_ADDR_OFFSET+:AXIS_LAN_ADDR_WIDTH] <= 'h3ABABABABABABA;
-        r_remote_data[AXIS_LAN_WSTRB_OFFSET+:AXIS_LAN_WSTRB_WIDTH] <= 'hB;
-        r_remote_data[AXIS_DATA_WIDTH-1:(AXIS_LAN_WSTRB_OFFSET+AXIS_LAN_WSTRB_WIDTH)] <= 0;
-        r_remote_tid <= 'hFE;
-        r_remote_tuser <= 0;
-        r_remote_enable <= 1;
-        #10
-        r_m_wready <= 1;
-        // Test GW-forwarded LAN write request from kernel FE (IP 10.3.7.5) for address CDCDCDCDCDCDCDCD, data BEBEBEBE
-        r_remote_data[AXIS_LAN_MSG_TYPE_WIDTH-1:0] <= MSG_WRITE;
-        r_remote_data[AXIS_LAN_DATA_OFFSET+:AXIS_LAN_DATA_WIDTH] <= 'hBEBEBEBE;
-        r_remote_data[AXIS_LAN_ADDR_OFFSET+:AXIS_LAN_ADDR_WIDTH] <= 'hCDCDCDCDCDCDCDCD;
-        r_remote_data[AXIS_LAN_WSTRB_OFFSET+:AXIS_LAN_WSTRB_WIDTH] <= 'hC;
-        r_remote_data[AXIS_LAN_TID_OFFSET+:AXIS_LAN_TID_WIDTH] <= 'hFE;
-        r_remote_data[AXIS_LAN_IP_OFFSET+:AXIS_LAN_IP_WIDTH] <= 'h0A030705;
-        r_remote_data[AXIS_DATA_WIDTH-1:(AXIS_LAN_IP_OFFSET+AXIS_LAN_IP_WIDTH)] <= 0;
-        r_remote_tid <= 0;
-        r_remote_tuser <= 0;
-        r_remote_enable <= 1;
-        #10
-        // Test GW-forwarded LAN Read request from kernel EE (IP 10.10.12.8) for address DFDFDFDFDFDFDFDF
-        r_remote_data[AXIS_LAN_MSG_TYPE_WIDTH-1:0] <= MSG_READ;
-        r_remote_data[AXIS_LAN_DATA_OFFSET+:AXIS_LAN_DATA_WIDTH] <= 0;
-        r_remote_data[AXIS_LAN_ADDR_OFFSET+:AXIS_LAN_ADDR_WIDTH] <= 'hDFDFDFDFDFDFDFDF;
-        r_remote_data[AXIS_LAN_WSTRB_OFFSET+:AXIS_LAN_WSTRB_WIDTH] <= 'hD; // should be ignored
-        r_remote_data[AXIS_LAN_TID_OFFSET+:AXIS_LAN_TID_WIDTH] <= 'hEE;
-        r_remote_data[AXIS_LAN_IP_OFFSET+:AXIS_LAN_IP_WIDTH] <= 'h0A0A0C08;
-        r_remote_data[AXIS_DATA_WIDTH-1:(AXIS_LAN_IP_OFFSET+AXIS_LAN_IP_WIDTH)] <= 0;
-        r_remote_tid <= 0;
-        r_remote_tuser <= 0;
-        r_remote_enable <= 1;
-        #10
-        // Test GW-forwarded LAN Read request from kernel EE (IP 10.10.12.8) for address DFDFDFDFDFDFDFDF
-        r_remote_data[AXIS_LAN_MSG_TYPE_WIDTH-1:0] <= MSG_READ;
-        r_remote_data[AXIS_LAN_DATA_OFFSET+:AXIS_LAN_DATA_WIDTH] <= 0;
-        r_remote_data[AXIS_LAN_ADDR_OFFSET+:AXIS_LAN_ADDR_WIDTH] <= 'hDFDFDFDFDFDFDFDF;
-        r_remote_data[AXIS_LAN_WSTRB_OFFSET+:AXIS_LAN_WSTRB_WIDTH] <= 'hD; // should be ignored
-        r_remote_data[AXIS_LAN_TID_OFFSET+:AXIS_LAN_TID_WIDTH] <= 'hEE;
-        r_remote_data[AXIS_LAN_IP_OFFSET+:AXIS_LAN_IP_WIDTH] <= 'h0A0A0C08;
-        r_remote_data[AXIS_DATA_WIDTH-1:(AXIS_LAN_IP_OFFSET+AXIS_LAN_IP_WIDTH)] <= 0;
-        r_remote_tid <= 0;
-        r_remote_tuser <= 0;
-        r_remote_enable <= 1;
-        #20
-        r_m_bvalid <= 1;
-        #150
-        r_m_arready <= 1;
-        #50
-        r_m_rvalid <= 1;
-        #1000
-        $finish;
+        // // Test AWADDR/ARADDR or WDATA being delayed
+        // r_m_arready <= 0;
+        // r_m_awready <= 0;
+        // r_m_wready <= 0;
+        // r_m_bvalid <= 0;
+        // r_m_bresp <= 3;
+        // r_m_rvalid <= 0;
+        // r_m_rdata <= 'hAABBCCDD;
+        // r_remote_enable <= 0;
+        // r_to_request_buffer_tready <= 1;
+        // r_from_request_buffer_tvalid <= 1;
+        // #100
+        // // Test LAN write request from kernel FE for address 3ABABABABABABA, data CECECECE
+        // r_remote_data[AXIS_LAN_MSG_TYPE_WIDTH-1:0] <= MSG_WRITE;
+        // r_remote_data[AXIS_LAN_DATA_OFFSET+:AXIS_LAN_DATA_WIDTH] <= 'hCECECECE;
+        // r_remote_data[AXIS_LAN_ADDR_OFFSET+:AXIS_LAN_ADDR_WIDTH] <= 'h3ABABABABABABA;
+        // r_remote_data[AXIS_LAN_WSTRB_OFFSET+:AXIS_LAN_WSTRB_WIDTH] <= 'hB;
+        // r_remote_data[AXIS_DATA_WIDTH-1:(AXIS_LAN_WSTRB_OFFSET+AXIS_LAN_WSTRB_WIDTH)] <= 0;
+        // r_remote_tid <= 'hFE;
+        // r_remote_tuser <= 0;
+        // r_remote_enable <= 1;
+        // #50
+        // r_m_awready <= 1;
+        // // Queue up a bunch of other messages under it
+        // // Test LAN read request from kernel EF for address 2BABABABABABAB
+        // r_remote_data[AXIS_LAN_MSG_TYPE_WIDTH-1:0] <= MSG_READ;
+        // r_remote_data[AXIS_LAN_DATA_OFFSET+:AXIS_LAN_DATA_WIDTH] <= 0;
+        // r_remote_data[AXIS_LAN_ADDR_OFFSET+:AXIS_LAN_ADDR_WIDTH] <= 'h2BABABABABABAB;
+        // r_remote_data[AXIS_LAN_WSTRB_OFFSET+:AXIS_LAN_WSTRB_WIDTH] <= 'h0;
+        // r_remote_data[AXIS_DATA_WIDTH-1:(AXIS_LAN_WSTRB_OFFSET+AXIS_LAN_WSTRB_WIDTH)] <= 0;
+        // r_remote_tid <= 'hEF;
+        // r_remote_tuser <= 0;
+        // r_remote_enable <= 1;
+        // #10
+        // // Test LAN write request from kernel FE for address 3ABABABABABABA, data CECECECE
+        // r_remote_data[AXIS_LAN_MSG_TYPE_WIDTH-1:0] <= MSG_WRITE;
+        // r_remote_data[AXIS_LAN_DATA_OFFSET+:AXIS_LAN_DATA_WIDTH] <= 'hCECECECE;
+        // r_remote_data[AXIS_LAN_ADDR_OFFSET+:AXIS_LAN_ADDR_WIDTH] <= 'h3ABABABABABABA;
+        // r_remote_data[AXIS_LAN_WSTRB_OFFSET+:AXIS_LAN_WSTRB_WIDTH] <= 'hB;
+        // r_remote_data[AXIS_DATA_WIDTH-1:(AXIS_LAN_WSTRB_OFFSET+AXIS_LAN_WSTRB_WIDTH)] <= 0;
+        // r_remote_tid <= 'hFE;
+        // r_remote_tuser <= 0;
+        // r_remote_enable <= 1;
+        // #10
+        // r_m_wready <= 1;
+        // // Test GW-forwarded LAN write request from kernel FE (IP 10.3.7.5) for address CDCDCDCDCDCDCDCD, data BEBEBEBE
+        // r_remote_data[AXIS_LAN_MSG_TYPE_WIDTH-1:0] <= MSG_WRITE;
+        // r_remote_data[AXIS_LAN_DATA_OFFSET+:AXIS_LAN_DATA_WIDTH] <= 'hBEBEBEBE;
+        // r_remote_data[AXIS_LAN_ADDR_OFFSET+:AXIS_LAN_ADDR_WIDTH] <= 'hCDCDCDCDCDCDCDCD;
+        // r_remote_data[AXIS_LAN_WSTRB_OFFSET+:AXIS_LAN_WSTRB_WIDTH] <= 'hC;
+        // r_remote_data[AXIS_LAN_TID_OFFSET+:AXIS_LAN_TID_WIDTH] <= 'hFE;
+        // r_remote_data[AXIS_LAN_IP_OFFSET+:AXIS_LAN_IP_WIDTH] <= 'h0A030705;
+        // r_remote_data[AXIS_DATA_WIDTH-1:(AXIS_LAN_IP_OFFSET+AXIS_LAN_IP_WIDTH)] <= 0;
+        // r_remote_tid <= 0;
+        // r_remote_tuser <= 0;
+        // r_remote_enable <= 1;
+        // #10
+        // // Test GW-forwarded LAN Read request from kernel EE (IP 10.10.12.8) for address DFDFDFDFDFDFDFDF
+        // r_remote_data[AXIS_LAN_MSG_TYPE_WIDTH-1:0] <= MSG_READ;
+        // r_remote_data[AXIS_LAN_DATA_OFFSET+:AXIS_LAN_DATA_WIDTH] <= 0;
+        // r_remote_data[AXIS_LAN_ADDR_OFFSET+:AXIS_LAN_ADDR_WIDTH] <= 'hDFDFDFDFDFDFDFDF;
+        // r_remote_data[AXIS_LAN_WSTRB_OFFSET+:AXIS_LAN_WSTRB_WIDTH] <= 'hD; // should be ignored
+        // r_remote_data[AXIS_LAN_TID_OFFSET+:AXIS_LAN_TID_WIDTH] <= 'hEE;
+        // r_remote_data[AXIS_LAN_IP_OFFSET+:AXIS_LAN_IP_WIDTH] <= 'h0A0A0C08;
+        // r_remote_data[AXIS_DATA_WIDTH-1:(AXIS_LAN_IP_OFFSET+AXIS_LAN_IP_WIDTH)] <= 0;
+        // r_remote_tid <= 0;
+        // r_remote_tuser <= 0;
+        // r_remote_enable <= 1;
+        // #10
+        // // Test GW-forwarded LAN Read request from kernel EE (IP 10.10.12.8) for address DFDFDFDFDFDFDFDF
+        // r_remote_data[AXIS_LAN_MSG_TYPE_WIDTH-1:0] <= MSG_READ;
+        // r_remote_data[AXIS_LAN_DATA_OFFSET+:AXIS_LAN_DATA_WIDTH] <= 0;
+        // r_remote_data[AXIS_LAN_ADDR_OFFSET+:AXIS_LAN_ADDR_WIDTH] <= 'hDFDFDFDFDFDFDFDF;
+        // r_remote_data[AXIS_LAN_WSTRB_OFFSET+:AXIS_LAN_WSTRB_WIDTH] <= 'hD; // should be ignored
+        // r_remote_data[AXIS_LAN_TID_OFFSET+:AXIS_LAN_TID_WIDTH] <= 'hEE;
+        // r_remote_data[AXIS_LAN_IP_OFFSET+:AXIS_LAN_IP_WIDTH] <= 'h0A0A0C08;
+        // r_remote_data[AXIS_DATA_WIDTH-1:(AXIS_LAN_IP_OFFSET+AXIS_LAN_IP_WIDTH)] <= 0;
+        // r_remote_tid <= 0;
+        // r_remote_tuser <= 0;
+        // r_remote_enable <= 1;
+        // #20
+        // r_m_bvalid <= 1;
+        // #150
+        // r_m_arready <= 1;
+        // #50
+        // r_m_rvalid <= 1;
+        // #1000
+        // $finish;
     end
 
     // Test Logic: Simulate being Network Bridge

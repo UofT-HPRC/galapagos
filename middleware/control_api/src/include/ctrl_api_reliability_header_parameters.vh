@@ -1,4 +1,3 @@
-localparam BRAM_ADDR_WIDTH = 32, // All BRAMs have 32-bit wide addresses regardless of actual address length
 localparam BRAM_WEN_WIDTH = 4, // WEN also functions as WSTRB
 localparam RPN_MSG_TYPE_WIDTH = 8, // Extra bits added for future proofing
 // LAN Sequence Number:
