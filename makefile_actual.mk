@@ -58,6 +58,5 @@ clean:
 	$(MAKE) -C $(SHELLS_DIR) clean
 	rm -rf $(GALAPAGOS_PATH)/projects
 
-
 %::
 	@true

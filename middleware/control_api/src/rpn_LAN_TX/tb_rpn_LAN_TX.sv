@@ -177,7 +177,10 @@ module tb #(
         r_from_LAN_node_finder_tdata[AXIS_LAN_DATA_OFFSET+:AXIS_LAN_DATA_WIDTH] <= 'hABABABAB;
         r_from_LAN_node_finder_tdata[AXIS_LAN_ADDR_OFFSET+:AXIS_LAN_ADDR_WIDTH] <= 'hEFEFEFEFEFEFEFEF;
         r_from_LAN_node_finder_tdata[AXIS_LAN_WSTRB_OFFSET+:AXIS_LAN_WSTRB_WIDTH] <= 'hF;
-        r_from_LAN_node_finder_tdata[AXIS_DATA_WIDTH-1:(AXIS_LAN_WSTRB_OFFSET+AXIS_LAN_WSTRB_WIDTH)] <= 0;
+        r_from_LAN_node_finder_tdata[AXIS_LAN_TID_OFFSET+:AXIS_LAN_TID_WIDTH] <= 'hBC;
+        r_from_LAN_node_finder_tdata[AXIS_LAN_IP_OFFSET+:AXIS_LAN_IP_WIDTH] <= 'h0A010868;
+        r_from_LAN_node_finder_tdata[AXIS_LAN_CTID_OFFSET+:AXIS_LAN_CTID_WIDTH] <= 'hDEADBEEF;
+        r_from_LAN_node_finder_tdata[AXIS_DATA_WIDTH-1:(AXIS_LAN_CTID_OFFSET+AXIS_LAN_CTID_WIDTH)] <= 0;
         r_from_LAN_node_finder_tid <= 2;
         r_from_LAN_node_finder_tdest <= 3;
         r_destination_node_id <= 4;

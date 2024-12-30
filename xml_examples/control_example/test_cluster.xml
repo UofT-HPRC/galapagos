@@ -1,0 +1,24 @@
+<superCluster>
+    <dns> 10.1.8.104 </dns>
+    <cluster>
+        <name> cluster_A </name>
+        <logicalFile> /home/justin/controlapi/galapagos_network_bridge/galapagos/xml_examples/control_example/logical_test_1.xml </logicalFile>
+        <mapFile> /home/justin/controlapi/galapagos_network_bridge/galapagos/xml_examples/control_example/map_test_1.xml </mapFile>
+        <apiFile> /home/justin/controlapi/galapagos_network_bridge/galapagos/xml_examples/control_example/api_test_1.xml </apiFile>
+        <hasGateway> True </hasGateway>
+        <gatewayIP> 10.1.8.4 </gatewayIP>
+        <gatewayMac> 0c:c4:2b:2d:bd:83</gatewayMac>
+        <gatewayBoard> sidewinder </gatewayBoard>
+    </cluster>
+    <cluster>
+        <name> cluster_B </name>
+        <logicalFile> /home/justin/controlapi/galapagos_network_bridge/galapagos/xml_examples/control_example/logical_test_1.xml </logicalFile>
+        <mapFile> /home/justin/controlapi/galapagos_network_bridge/galapagos/xml_examples/control_example/map_test_2.xml </mapFile>
+        <apiFile> /home/justin/controlapi/galapagos_network_bridge/galapagos/xml_examples/control_example/api_test_1.xml </apiFile>
+        <hasGateway> True </hasGateway>
+        <gatewayIP> 10.1.8.7 </gatewayIP>
+        <gatewayMac> 0c:c4:2b:2d:bd:86</gatewayMac>
+        <gatewayBoard> sidewinder </gatewayBoard>
+    </cluster>
+
+</superCluster>
