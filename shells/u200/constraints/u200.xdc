@@ -166,8 +166,8 @@ set_property -dict {PACKAGE_PIN AY38 IOSTANDARD DIFF_POD12_DCI } [get_ports SYSC
 set_property -dict {PACKAGE_PIN AY37 IOSTANDARD DIFF_POD12_DCI } [get_ports SYSCLK0_300_clk_p    ]; # Bank 42 VCCO - VCC1V2 Net "SYSCLK0_300_P" - IO_L13P_T2L_N0_GC_QBC_42
 set_property -dict {PACKAGE_PIN AW19 IOSTANDARD LVDS           } [get_ports SYSCLK1_300_clk_n    ]; # Bank 64 VCCO - VCC1V2 Net "SYSCLK1_300_N" - IO_L11N_T1U_N9_GC_64
 set_property -dict {PACKAGE_PIN AW20 IOSTANDARD LVDS           } [get_ports SYSCLK1_300_clk_p    ]; # Bank 64 VCCO - VCC1V2 Net "SYSCLK1_300_P" - IO_L11P_T1U_N8_GC_64
-set_property -dict {PACKAGE_PIN E32  IOSTANDARD DIFF_POD12_DCI } [get_ports SYSCLK2_300_N    ]; # Bank 47 VCCO - VCC1V2 Net "SYSCLK2_300_N" - IO_L13N_T2L_N1_GC_QBC_47
-set_property -dict {PACKAGE_PIN F32  IOSTANDARD DIFF_POD12_DCI } [get_ports SYSCLK2_300_P    ]; # Bank 47 VCCO - VCC1V2 Net "SYSCLK2_300_P" - IO_L13P_T2L_N0_GC_QBC_47
+set_property -dict {PACKAGE_PIN E32  IOSTANDARD DIFF_POD12_DCI } [get_ports SYSCLK2_300_clk_n    ]; # Bank 47 VCCO - VCC1V2 Net "SYSCLK2_300_N" - IO_L13N_T2L_N1_GC_QBC_47
+set_property -dict {PACKAGE_PIN F32  IOSTANDARD DIFF_POD12_DCI } [get_ports SYSCLK2_300_clk_p    ]; # Bank 47 VCCO - VCC1V2 Net "SYSCLK2_300_P" - IO_L13P_T2L_N0_GC_QBC_47
 set_property -dict {PACKAGE_PIN H16  IOSTANDARD DIFF_POD12_DCI } [get_ports {init_clk_n[0]}    ]; # Bank 70 VCCO - VCC1V2 Net "SYSCLK3_300_N" - IO_L13N_T2L_N1_GC_QBC_70
 set_property -dict {PACKAGE_PIN J16  IOSTANDARD DIFF_POD12_DCI } [get_ports {init_clk_p[0]}    ]; # Bank 70 VCCO - VCC1V2 Net "SYSCLK3_300_P" - IO_L13P_T2L_N0_GC_QBC_70
 #

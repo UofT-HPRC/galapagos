@@ -29,3 +29,9 @@ class MemoryPartitioner:
 
     def get_partitions(self):
         return self.partitions
+
+    def memory_addition(self, size_mem1, size_mem2):
+        size_mem2_in_bytes = self.parse_size(size_mem2)
+        result_in_bytes = size_mem1 + size_mem2_in_bytes
+
+        return result_in_bytes

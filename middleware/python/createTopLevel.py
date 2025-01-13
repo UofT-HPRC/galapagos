@@ -209,6 +209,16 @@ def copy_file(dest_fp,src_filename):
 
 def createTopLevelVerilog(target_files, source_dir, kernel_properties,ctrl_kernel_dict,fpga,is_gw):
     dst_file = open(target_files,"w")
+    ddr_occupancy = [False, False, False]
+
+    for regions in fpga['slr_mappings']:
+        for i in range(len(fpga['slr_mappings'][regions]['kernel'])):
+            if fpga['slr_mappings'][regions]['kernel'][i]['ddr']:
+                ddr_occupancy[int(regions[-1])] = True
+    index = ddr_occupancy.index(False)
+    print("In TOPLEVEL")
+    print(ddr_occupancy)
+
     if fpga['board'] in ('u200','u250','u280'):
         if fpga.has_ddr:
             copy_file(dst_file, source_dir + "/../verilog/shellTop_u2xx_ddr/shellTop_u2xx_ddr_pt1.v")
@@ -217,16 +227,62 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,ctrl_kerne
                 dst_file.write(",\n    SYSCLK0_300_clk_n")
                 for i in range(len(ddr_fields)):
                     dst_file.write(",\n    c0_ddr4_" + ddr_fields[i])
+                for i in fpga['slr_mappings']['SLR0']['kernel']:
+                    if i['ddr'] and int(i['ddr_size'][:-1]) == 32:
+                        # index = ddr_occupancy.index(False)
+                        dst_file.write(",\n    SYSCLK" + str(index) + "_300_clk_p")
+                        dst_file.write(",\n    SYSCLK" + str(index) + "_300_clk_n")
+                        for i in range(len(ddr_fields)):
+                            dst_file.write(",\n    c" + str(index) + "_ddr4_" + ddr_fields[i])
+                        print("!!!" + str(index))
+                    elif i['ddr'] and int(i['ddr_size'][:-1]) == 48:
+                        dst_file.write(",\n    SYSCLK1_300_clk_p")
+                        dst_file.write(",\n    SYSCLK1_300_clk_n")
+                        for i in range(len(ddr_fields)):
+                            dst_file.write(",\n    c1_ddr4_" + ddr_fields[i])
+                        dst_file.write(",\n    SYSCLK2_300_clk_p")
+                        dst_file.write(",\n    SYSCLK2_300_clk_n")
+                        for i in range(len(ddr_fields)):
+                            dst_file.write(",\n    c2_ddr4_" + ddr_fields[i])
             if fpga['slr_mappings']['SLR1']['kernel']:
                 dst_file.write(",\n    SYSCLK1_300_clk_p")
                 dst_file.write(",\n    SYSCLK1_300_clk_n")
                 for i in range(len(ddr_fields)):
                     dst_file.write(",\n    c1_ddr4_" + ddr_fields[i])
+                for i in fpga['slr_mappings']['SLR1']['kernel']:
+                    if i['ddr'] and int(i['ddr_size'][:-1]) == 32:
+                        # index = ddr_occupancy.index(False)
+                        dst_file.write(",\n    SYSCLK" + str(index) + "_300_clk_p")
+                        dst_file.write(",\n    SYSCLK" + str(index) + "_300_clk_n")
+                        for i in range(len(ddr_fields)):
+                            dst_file.write(",\n    c" + str(index) + "_ddr4_" + ddr_fields[i])
+                        print("!!!" + str(index))
+                    elif i['ddr'] and int(i['ddr_size'][:-1]) == 48:
+                        dst_file.write(",\n    SYSCLK0_300_clk_p")
+                        dst_file.write(",\n    SYSCLK0_300_clk_n")
+                        for i in range(len(ddr_fields)):
+                            dst_file.write(",\n    c0_ddr4_" + ddr_fields[i])
+                        dst_file.write(",\n    SYSCLK2_300_clk_p")
+                        dst_file.write(",\n    SYSCLK2_300_clk_n")
+                        for i in range(len(ddr_fields)):
+                            dst_file.write(",\n    c2_ddr4_" + ddr_fields[i])
             copy_file(dst_file, source_dir + "/../verilog/shellTop_u2xx_ddr/shellTop_u2xx_ddr_pt2.v")
             if fpga['slr_mappings']['SLR0']['kernel']:
                 copy_file(dst_file, source_dir + "/../verilog/shellTop_u2xx_ddr/shellTop_u2xx_ddr_c0_inout.v")
+                for i in fpga['slr_mappings']['SLR0']['kernel']:
+                    if i['ddr'] and int(i['ddr_size'][:-1]) == 32:
+                        copy_file(dst_file, source_dir + "/../verilog/shellTop_u2xx_ddr/shellTop_u2xx_ddr_c" + str(index) + "_inout.v")
+                    elif i['ddr'] and int(i['ddr_size'][:-1]) == 48:
+                        copy_file(dst_file, source_dir + "/../verilog/shellTop_u2xx_ddr/shellTop_u2xx_ddr_c1_inout.v")
+                        copy_file(dst_file, source_dir + "/../verilog/shellTop_u2xx_ddr/shellTop_u2xx_ddr_c2_inout.v")
             if fpga['slr_mappings']['SLR1']['kernel']:
                 copy_file(dst_file, source_dir + "/../verilog/shellTop_u2xx_ddr/shellTop_u2xx_ddr_c1_inout.v")
+                for i in fpga['slr_mappings']['SLR1']['kernel']:
+                    if i['ddr'] and int(i['ddr_size'][:-1]) == 32:
+                        copy_file(dst_file, source_dir + "/../verilog/shellTop_u2xx_ddr/shellTop_u2xx_ddr_c" + str(index) + "_inout.v")
+                    elif i['ddr'] and int(i['ddr_size'][:-1]) == 48:
+                        copy_file(dst_file, source_dir + "/../verilog/shellTop_u2xx_ddr/shellTop_u2xx_ddr_c0_inout.v")
+                        copy_file(dst_file, source_dir + "/../verilog/shellTop_u2xx_ddr/shellTop_u2xx_ddr_c2_inout.v")
         else:
             copy_file(dst_file, source_dir + "/../verilog/shellTop_pt1_u2xx.v")
     elif fpga.has_ddr:
@@ -249,14 +305,38 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,ctrl_kerne
                 dst_file.write("  wire [0:0]SYSCLK0_300_clk_p;\n")
                 dst_file.write("  wire [0:0]SYSCLK0_300_clk_n;\n")
                 dst_file.write(construct_ddr_wire("  ", "c0_ddr4_"))
+                for i in fpga['slr_mappings']['SLR0']['kernel']:
+                    if i['ddr'] and int(i['ddr_size'][:-1]) == 32:
+                        dst_file.write("  wire [0:0]SYSCLK" + str(index) + "_300_clk_p;\n")
+                        dst_file.write("  wire [0:0]SYSCLK" + str(index) + "_300_clk_n;\n")
+                        dst_file.write(construct_ddr_wire("  ", "c" + str(index) + "_ddr4_"))
+                    elif i['ddr'] and int(i['ddr_size'][:-1]) == 48:
+                        dst_file.write("  wire [0:0]SYSCLK1_300_clk_p;\n")
+                        dst_file.write("  wire [0:0]SYSCLK1_300_clk_n;\n")
+                        dst_file.write(construct_ddr_wire("  ", "c1_ddr4_"))
+                        dst_file.write("  wire [0:0]SYSCLK2_300_clk_p;\n")
+                        dst_file.write("  wire [0:0]SYSCLK2_300_clk_n;\n")
+                        dst_file.write(construct_ddr_wire("  ", "c2_ddr4_"))
             if fpga['slr_mappings']['SLR1']['kernel']:
                 dst_file.write("  wire [0:0]SYSCLK1_300_clk_p;\n")
                 dst_file.write("  wire [0:0]SYSCLK1_300_clk_n;\n")
                 dst_file.write(construct_ddr_wire("  ", "c1_ddr4_"))
+                for i in fpga['slr_mappings']['SLR1']['kernel']:
+                    if i['ddr'] and int(i['ddr_size'][:-1]) == 32:
+                        dst_file.write("  wire [0:0]SYSCLK" + str(index) + "_300_clk_p;\n")
+                        dst_file.write("  wire [0:0]SYSCLK" + str(index) + "_300_clk_n;\n")
+                        dst_file.write(construct_ddr_wire("  ", "c" + str(index) + "_ddr4_"))
+                    elif i['ddr'] and int(i['ddr_size'][:-1]) == 48:
+                        dst_file.write("  wire [0:0]SYSCLK0_300_clk_p;\n")
+                        dst_file.write("  wire [0:0]SYSCLK0_300_clk_n;\n")
+                        dst_file.write(construct_ddr_wire("  ", "c0_ddr4_"))
+                        dst_file.write("  wire [0:0]SYSCLK2_300_clk_p;\n")
+                        dst_file.write("  wire [0:0]SYSCLK2_300_clk_n;\n")
+                        dst_file.write(construct_ddr_wire("  ", "c2_ddr4_"))
         else:
-            dst_file.write(construct_ddr_axi_wire("  ", "ddr4_AXI", fpga.max_ddr_id_width + math.ceil(math.log2(len(fpga['kernel']))),512, 34))
+            dst_file.write(construct_ddr_axi_wire("  ", "ddr4_AXI", fpga.max_ddr_id_width + math.ceil(math.log2(len(fpga['kernel']))),512, 36))
         for i in range(len(fpga['kernel'])):
-            dst_file.write(construct_ddr_axi_wire("  ", "kernel" + str(fpga['kernel'][i]['num']) + "_ddr4_AXI", 8, 512,34))
+            dst_file.write(construct_ddr_axi_wire("  ", "kernel" + str(fpga['kernel'][i]['num']) + "_ddr4_AXI", 8, 512,36))
     for props in kernel_properties:
         name=props['inst']
         dst_file.write(construct_axis_wire("  ", str(name) + "_MAXIS", 512, 24, True))
@@ -289,10 +369,34 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,ctrl_kerne
                 dst_file.write("    ,.SYSCLK0_300_clk_p(SYSCLK0_300_clk_p)\n")
                 dst_file.write("    ,.SYSCLK0_300_clk_n(SYSCLK0_300_clk_n)\n")
                 dst_file.write(construct_ddr_defn("    ", "c0_ddr4", "c0_ddr4"))
+                for i in fpga['slr_mappings']['SLR0']['kernel']:
+                    if i['ddr'] and int(i['ddr_size'][:-1]) == 32:
+                        dst_file.write("    ,.SYSCLK" + str(index) + "_300_clk_p(SYSCLK" + str(index) + "_300_clk_p)\n")
+                        dst_file.write("    ,.SYSCLK" + str(index) + "_300_clk_n(SYSCLK" + str(index) + "_300_clk_n)\n")
+                        dst_file.write(construct_ddr_defn("    ", "c" + str(index) + "_ddr4", "c" + str(index) + "_ddr4"))
+                    elif i['ddr'] and int(i['ddr_size'][:-1]) == 48:
+                        dst_file.write("    ,.SYSCLK1_300_clk_p(SYSCLK1_300_clk_p)\n")
+                        dst_file.write("    ,.SYSCLK1_300_clk_n(SYSCLK1_300_clk_n)\n")
+                        dst_file.write(construct_ddr_defn("    ", "c1_ddr4", "c1_ddr4"))
+                        dst_file.write("    ,.SYSCLK2_300_clk_p(SYSCLK2_300_clk_p)\n")
+                        dst_file.write("    ,.SYSCLK2_300_clk_n(SYSCLK2_300_clk_n)\n")
+                        dst_file.write(construct_ddr_defn("    ", "c2_ddr4", "c2_ddr4"))
             if fpga['slr_mappings']['SLR1']['kernel']:
                 dst_file.write("    ,.SYSCLK1_300_clk_p(SYSCLK1_300_clk_p)\n")
                 dst_file.write("    ,.SYSCLK1_300_clk_n(SYSCLK1_300_clk_n)\n")
                 dst_file.write(construct_ddr_defn("    ", "c1_ddr4", "c1_ddr4"))
+                for i in fpga['slr_mappings']['SLR1']['kernel']:
+                    if i['ddr'] and int(i['ddr_size'][:-1]) == 32:
+                        dst_file.write("    ,.SYSCLK" + str(index) + "_300_clk_p(SYSCLK" + str(index) + "_300_clk_p)\n")
+                        dst_file.write("    ,.SYSCLK" + str(index) + "_300_clk_p(SYSCLK" + str(index) + "_300_clk_n)\n")
+                        dst_file.write(construct_ddr_defn("    ", "c" + str(index) + "_ddr4", "c" + str(index) + "_ddr4"))
+                    elif i['ddr'] and int(i['ddr_size'][:-1]) == 48:
+                        dst_file.write("    ,.SYSCLK0_300_clk_p(SYSCLK0_300_clk_p)\n")
+                        dst_file.write("    ,.SYSCLK0_300_clk_n(SYSCLK0_300_clk_n)\n")
+                        dst_file.write(construct_ddr_defn("    ", "c0_ddr4", "c0_ddr4"))
+                        dst_file.write("    ,.SYSCLK2_300_clk_p(SYSCLK2_300_clk_p)\n")
+                        dst_file.write("    ,.SYSCLK2_300_clk_n(SYSCLK2_300_clk_n)\n")
+                        dst_file.write(construct_ddr_defn("    ", "c2_ddr4", "c2_ddr4"))
     for props in kernel_properties:
         name=props['inst']
         dst_file.write("\n\n    //User: "+str(name)+"\n")
@@ -416,18 +520,12 @@ def createMemoryPartitioner(target_files, source_dir, phy_addr_prefix, vir_addr_
             dst_file.write("    assign s0_axi_r" + r_fields[i] + " = " + "m0_axi_r" + r_fields[i] + ";\n")
         else:
             dst_file.write("    assign m0_axi_r" + r_fields[i] + " = " + "s0_axi_r" + r_fields[i] + ";\n")
-    # dst_file.write(construct_ddr_axi_wire("  ", "s_axi", 1, 512, 34))
-    # for idx, (start, end) in enumerate(partition):
-    #     dst_file.write("34'h" + str(hex(start)[2:]))
-    #     if idx != len(partition) - 1:
-    #         dst_file.write(", ")
-    # dst_file.write("};\n")
-    #
-    # dst_file.write("  always @(*) begin\n")
-    # dst_file.write("      s_axi_awaddr <= s_axi_awaddr + addr_map[kernel_id];\n")
-    # dst_file.write("      s_axi_araddr <= s_axi_araddr + addr_map[kernel_id];\n")
-    # copy_file(dst_file, source_dir + "/../verilog/memPartitioner_pt2.v")
 
     dst_file.write("  endmodule")
+    dst_file.close()
+
+def createAddrSplitter(target_files, source_dir):
+    dst_file = open(target_files, "w")
+    copy_file(dst_file, source_dir + "/../middleware/verilog/shellTop_u2xx_ddr/addr_splitter.v")
     dst_file.close()
 ###
