@@ -1,0 +1,135 @@
+<profile>
+
+<section name = "Vivado HLS Report for 'PSInterface'" level="0">
+<item name = "Date">Thu Jul 25 02:51:30 2024
+</item>
+<item name = "Version">2019.1 (Build 2552052 on Fri May 24 15:28:33 MDT 2019)</item>
+<item name = "Project">PSInterface</item>
+<item name = "Solution">solution1</item>
+<item name = "Product family">virtexuplus</item>
+<item name = "Target device">xcu250-figd2104-2L-e</item>
+</section>
+
+<section name = "Performance Estimates" level="0">
+<item name = "Timing (ns)">
+<section name = "" level="1">
+<item name = "Summary"><table name="" hasTotal="0">
+<keys size="4">Clock, Target, Estimated, Uncertainty</keys>
+<column name="ap_clk">3.10, 1.000, 0.39</column>
+</table>
+</item>
+</section>
+</item>
+<item name = "Latency (clock cycles)">
+<section name = "" level="1">
+<item name = "Summary"><table name="" hasTotal="0">
+<keys size="6">, min, max, min, max, Type</keys>
+<column name="">0, 0, 0, 0, none</column>
+</table>
+</item>
+<item name = "Detail">
+<section name = "" level="1">
+<item name = "Instance"><table name="" hasTotal="0">
+<keys size="7">Instance, Module, min, max, min, max, Type</keys>
+</table>
+</item>
+<item name = "Loop"><table name="" hasTotal="0">
+<keys size="8">Loop Name, min, max, Latency, achieved, target, Count, Pipelined</keys>
+</table>
+</item>
+</section>
+</item>
+</section>
+</item>
+</section>
+
+<section name = "Utilization Estimates" level="0">
+<item name = "Summary"><table name="" hasTotal="1">
+<keys size="6">Name, BRAM_18K, DSP48E, FF, LUT, URAM</keys>
+<column name="DSP">-, -, -, -, -</column>
+<column name="Expression">-, -, -, -, -</column>
+<column name="FIFO">-, -, -, -, -</column>
+<column name="Instance">0, -, 638, 1064, -</column>
+<column name="Memory">-, -, -, -, -</column>
+<column name="Multiplexer">-, -, -, -, -</column>
+<column name="Register">-, -, -, -, -</column>
+<specialColumn name="Available SLR">1344, 3072, 864000, 432000, 320</specialColumn>
+<specialColumn name="Utilization SLR (%)">0, 0, ~0, ~0, 0</specialColumn>
+<specialColumn name="Available">5376, 12288, 3456000, 1728000, 1280</specialColumn>
+<specialColumn name="Utilization (%)">0, 0, ~0, ~0, 0</specialColumn>
+</table>
+</item>
+<item name = "Detail">
+<section name = "" level="1">
+<item name = "Instance"><table name="" hasTotal="1">
+<keys size="7">Instance, Module, BRAM_18K, DSP48E, FF, LUT, URAM</keys>
+<column name="PSInterface_AXILiteS_s_axi_U">PSInterface_AXILiteS_s_axi, 0, 0, 638, 1064, 0</column>
+</table>
+</item>
+<item name = "DSP48E"><table name="" hasTotal="0">
+<keys size="3">Instance, Module, Expression</keys>
+</table>
+</item>
+<item name = "Memory"><table name="" hasTotal="1">
+<keys size="10">Memory, Module, BRAM_18K, FF, LUT, URAM, Words, Bits, Banks, W*Bits*Banks</keys>
+</table>
+</item>
+<item name = "FIFO"><table name="" hasTotal="1">
+<keys size="8">Name, BRAM_18K, FF, LUT, URAM, Depth, Bits, Size:D*B</keys>
+</table>
+</item>
+<item name = "Expression"><table name="" hasTotal="1">
+<keys size="7">Variable Name, Operation, DSP48E, FF, LUT, Bitwidth P0, Bitwidth P1</keys>
+</table>
+</item>
+<item name = "Multiplexer"><table name="" hasTotal="1">
+<keys size="5">Name, LUT, Input Size, Bits, Total Bits</keys>
+</table>
+</item>
+<item name = "Register"><table name="" hasTotal="1">
+<keys size="5">Name, FF, LUT, Bits, Const Bits</keys>
+</table>
+</item>
+</section>
+</item>
+</section>
+
+<section name = "Interface" level="0">
+<item name = "Summary"><table name="" hasTotal="0">
+<keys size="6">RTL Ports, Dir, Bits, Protocol, Source Object, C Type</keys>
+<column name="s_axi_AXILiteS_AWVALID">in, 1, s_axi, AXILiteS, pointer</column>
+<column name="s_axi_AXILiteS_AWREADY">out, 1, s_axi, AXILiteS, pointer</column>
+<column name="s_axi_AXILiteS_AWADDR">in, 8, s_axi, AXILiteS, pointer</column>
+<column name="s_axi_AXILiteS_WVALID">in, 1, s_axi, AXILiteS, pointer</column>
+<column name="s_axi_AXILiteS_WREADY">out, 1, s_axi, AXILiteS, pointer</column>
+<column name="s_axi_AXILiteS_WDATA">in, 32, s_axi, AXILiteS, pointer</column>
+<column name="s_axi_AXILiteS_WSTRB">in, 4, s_axi, AXILiteS, pointer</column>
+<column name="s_axi_AXILiteS_ARVALID">in, 1, s_axi, AXILiteS, pointer</column>
+<column name="s_axi_AXILiteS_ARREADY">out, 1, s_axi, AXILiteS, pointer</column>
+<column name="s_axi_AXILiteS_ARADDR">in, 8, s_axi, AXILiteS, pointer</column>
+<column name="s_axi_AXILiteS_RVALID">out, 1, s_axi, AXILiteS, pointer</column>
+<column name="s_axi_AXILiteS_RREADY">in, 1, s_axi, AXILiteS, pointer</column>
+<column name="s_axi_AXILiteS_RDATA">out, 32, s_axi, AXILiteS, pointer</column>
+<column name="s_axi_AXILiteS_RRESP">out, 2, s_axi, AXILiteS, pointer</column>
+<column name="s_axi_AXILiteS_BVALID">out, 1, s_axi, AXILiteS, pointer</column>
+<column name="s_axi_AXILiteS_BREADY">in, 1, s_axi, AXILiteS, pointer</column>
+<column name="s_axi_AXILiteS_BRESP">out, 2, s_axi, AXILiteS, pointer</column>
+<column name="start_V">out, 1, ap_none, start_V, pointer</column>
+<column name="pkt_num_V">out, 32, ap_none, pkt_num_V, pointer</column>
+<column name="pkt_len_V">out, 16, ap_none, pkt_len_V, pointer</column>
+<column name="remote_ip_V">out, 32, ap_none, remote_ip_V, pointer</column>
+<column name="remote_port_V">out, 16, ap_none, remote_port_V, pointer</column>
+<column name="local_port_V">out, 16, ap_none, local_port_V, pointer</column>
+<column name="tx_timeElapse_V">in, 64, ap_none, tx_timeElapse_V, scalar</column>
+<column name="tx_done_V">in, 1, ap_none, tx_done_V, scalar</column>
+<column name="latency_sum_V">in, 64, ap_none, latency_sum_V, scalar</column>
+<column name="rx_timeElapse_V">in, 64, ap_none, rx_timeElapse_V, scalar</column>
+<column name="rx_cnt_V">in, 32, ap_none, rx_cnt_V, scalar</column>
+<column name="rx_done_V">in, 1, ap_none, rx_done_V, scalar</column>
+<column name="rx_error_V">in, 1, ap_none, rx_error_V, scalar</column>
+<column name="ap_clk">in, 1, ap_ctrl_none, PSInterface, return value</column>
+<column name="ap_rst_n">in, 1, ap_ctrl_none, PSInterface, return value</column>
+</table>
+</item>
+</section>
+</profile>

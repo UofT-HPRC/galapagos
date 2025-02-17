@@ -19,7 +19,7 @@ style = style_from_dict({
         })
 
 
-
+'''
 class directoryValidator(Validator):
   def validate(self, document):
         if not document.text=='':
@@ -29,18 +29,14 @@ class directoryValidator(Validator):
                         cursor_position=len(document.text)
                         )
 
-
+'''
 
 f = Figlet(font='slant')
 print(f.renderText('Welcome to Galapagos Setup'))
 
 parser = argparse.ArgumentParser(description='Galapagos Menu')
 parser.add_argument("-d", "--dir", help="absolute path where galapagos directory is located", default='')
-parser.add_argument("-vd", "--viv_dir", help="absolute path of vivado", default='')
-parser.add_argument("-hd", "--hls_dir", help="absolute path of vivado_hls", default='')
-parser.add_argument("-vv", "--viv_ver", help="version of vivado", default='')
-parser.add_argument("-hv", "--hls_ver", help="version of vivado_hls", default='')
-
+parser.add_argument("-vd", "--vit_dir", help="absolute path of vitis", default='')
 
 args = parser.parse_args()
 
@@ -50,37 +46,12 @@ path_q = {
           'type': 'input',
           'name': 'galapagos_dir',
           'message': 'What is the absolute path where the galapagos directory is located? (default=$PWD)',
-          'validate': directoryValidator
           }
 
-viv_path_q = {
+vit_path_q = {
           'type': 'input',
-          'name': 'vivado_dir',
-          'message': 'What is the directory vivado is located? (default=/opt/Xilinx/Vivado)',
-          'validate': directoryValidator
-          }
-
-hls_path_q = {
-          'type': 'input',
-          'name': 'hls_dir',
-          'message': 'What is the directory vivado_hls is located? (default=/opt/Xilinx/Vivado)',
-          'validate': directoryValidator
-          }
-
-viv_ver_q = {
-          'type': 'list',
-          'name': 'vivado_ver',
-          'message': 'What is the vivado version you want to use?',
-          'choices': ['2018.1', '2018.2', '2018.3', '2019.1'],
-          'filter': lambda val: val.lower()
-          }
-
-hls_ver_q = {
-          'type': 'list',
-          'name': 'hls_ver',
-          'message': 'What is the vivado_hls version you want to use?',
-          'choices': ['2018.1', '2018.2', '2018.3', '2019.1'],
-          'filter': lambda val: val.lower()
+          'name': 'vitis_dir',
+          'message': 'What is the absolute path where vitis 2023.1 is installed? (default=/mnt/shares/tools/Xilinx/Vitis)',
           }
 
 
@@ -91,62 +62,95 @@ if(args.dir ==''):
 else:
     galapagos_dir = args.dir
 
-if(args.viv_dir == ''):
-    questions.append(viv_path_q)
-    vivado_dir = ''
+if(args.vit_dir == ''):
+    questions.append(vit_path_q)
+    vitis_dir = ''
 else:
-    vivado_dir = args.viv_dir
+    vitis_dir = args.vit_dir
 
-if(args.hls_dir == ''):
-    questions.append(hls_path_q)
-    hls_dir = ''
-else:
-    hls_dir = args.hls_dir
+vitis_ver = '2023.1'
 
-if(args.viv_ver == ''):
-    questions.append(viv_ver_q)
-    vivado_ver = ''
-else:
-    vivado_ver = args.viv_ver
+hls_ver = '2023.1'
 
-if(args.viv_ver == ''):
-    questions.append(hls_ver_q)
-    hls_ver = ''
-else:
-    hls_ver = args.hls_ver
+
 
 answers = prompt(questions, style=style)
 
 if answers['galapagos_dir'] == '':
     answers['galapagos_dir']=os.getcwd()
 
-if answers['vivado_dir'] == '':
-    answers['vivado_dir'] = '/opt/Xilinx/Vivado'
+if answers['vitis_dir'] == '':
+    answers['vitis_dir'] = '/mnt/shares/tools/Xilinx/Vitis'
 
-if answers['hls_dir'] == '':
-    answers['hls_dir'] = '/opt/Xilinx/Vivado'
-
-
-if answers['vivado_ver'] == '':
-    answers['vivado_ver'] = '2018.1'
-
-if answers['hls_ver'] == '':
-    answers['hls_ver'] = '2018.1'
 
 
 print('ENVIRONMENT VARIABLES SET:')
 env_var = {'GALAPAGOS_PATH': answers['galapagos_dir'],
-           'GALAPAGOS_VIVADO_PATH' : answers['vivado_dir'],
-           'GALAPAGOS_HLS_PATH' : answers['hls_dir'],
-           'GALAPAGOS_VIVADO_VERSION' : answers['vivado_ver'],
-           'GALAPAGOS_HLS_VERSION' : answers['hls_ver']
+           'GALAPAGOS_VITIS_PATH' : answers['vitis_dir'],
+           'GALAPAGOS_HLS_PATH' : answers['vitis_dir'],
+           'GALAPAGOS_VITIS_VERSION' : '2023.1',
+           'GALAPAGOS_HLS_VERSION' : '2023.1'
         }
 
 pprint(env_var)
 
 out_file = open("my_init.sh", "w") 
+env_reset_file = open("environmental_reset.sh","w")
+env_reset_file.write("source "+answers['galapagos_dir']+"/init_params.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['vitis_dir'] + ' 2023.1 2023.1 ' + '\n')
+print("Galapagos requires boards to be installed in order to be used.\nThis process takes 20 minutes but only needs do be done once per board per project.\n Do you wish to install a board at this time?(Y/N)\n")
+invalid = True
+answer = str(input()).strip().lower()
+while invalid:
+  invalid = False
+  if ((answer == "yes") or (answer == "y")):
+    while ((answer == "yes") or (answer == "y")):
+      print('What is the board name you want to install? or type CANCEL to cancel board instalation\n')
+      print('options: sidewinder, u200, u250, u280, vck5000')
+      board_name = str(input()).strip().lower()
+      running = True
+      if board_name == "cancel":
+        running = False
+        print("aborting board install, just installing parameters")
+        out_file.close()
+        out_file = open("my_init.sh","w")
+        out_file.write("source init_params.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['vitis_dir'] + ' 2023.1 2023.1 ' + '\n')
+        answer = "n"
+      elif board_name == "sidewinder":
+        answers['boa_name'] = 'sidewinder'
+        answers['par_name'] = 'xczu19eg-ffvc1760-2-i'
+      elif board_name == "u200":
+        answers['boa_name'] = 'u200'
+        answers['par_name'] = 'xcu200-fsgd2104-2-e'
+      elif board_name == "u250":
+        answers['boa_name'] = 'u250'
+        answers['par_name'] = 'xcu250-figd2104-2l-e'
+      elif board_name == "u280":
+        answers['boa_name'] = 'u280'
+        answers['par_name'] = 'xcu280-fsvh2892-2l-e'
+      elif board_name == "vck5000":
+        answers['boa_name'] = 'vck5000'
+        answers['par_name'] = 'xcvc1902-vsvd1760-2mp-e-s'
+      else:
+        print("Unrecongnized board name, try again\n")
+        running=False
+      if running:
+        print("Installing board "+answers['boa_name']+" which is part "+answers['par_name']+"\n Is this correct (Y/N)?")
+        confirmation = str(input()).strip().lower()
+        if ((confirmation == "no") or (confirmation == "n")):
+          running = False
+      if running:
+        out_file.write("source init.sh " + answers['galapagos_dir'] + ' ' + answers['vitis_dir'] + ' ' + answers['vitis_dir'] + ' 2023.1 2023.1 ' + answers['par_name'] + ' ' + answers['boa_name'] +'\n')
 
-out_file.write("source init.sh " + answers['galapagos_dir'] + ' ' + answers['vivado_dir'] + ' ' + answers['hls_dir'] + ' ' + answers['vivado_ver'] + ' ' + answers['hls_ver'])
-
-
-
+        out_file.write("make hlsmiddleware\n")
+        # Build Control Modules
+        out_file.write("make ctrlmiddleware\n")
+        print("Are there other boards you wish to install in this project? (Y/N)")
+        answer = str(input()).strip().lower()
+        while ((answer not in ['y','yes','n','no'])):
+          print("invalid answer, please enter y or n")
+          answer = str(input()).strip().lower()
+  elif ((answer == "no") or (answer == "n")):
+    out_file.write("")
+  else:
+    print("<"+answer + "> is invalid, please enter y or n")
+out_file.close()

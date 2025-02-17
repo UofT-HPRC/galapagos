@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cluster>
+    <node>
+        <board> u200 </board>
+        <comm> udp </comm>
+        <type> hw </type>
+        <kernel> 
+            <num> 1 </num>
+            <slr> SLR2 </slr>
+        </kernel>
+        <autorun> False </autorun>
+        <mac> 0c:c4:7a:88:bd:83  </mac>
+        <ip> 10.1.9.209 </ip>
+    </node>
+    <node>
+        <board> u200 </board>
+        <comm> udp </comm>
+        <type> hw </type>
+        <kernel> 
+            <num> 2 </num>
+            <slr> SLR1 </slr>
+        </kernel>
+        <autorun> False </autorun>
+        <mac>  fa:16:3e:55:ca:08 </mac>
+        <ip> 10.1.9.208 </ip>
+    </node>
+    <dns> 10.1.9.109 </dns>
+</cluster>

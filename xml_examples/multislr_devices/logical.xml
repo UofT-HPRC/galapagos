@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cluster>
+    <clusterNumber> 1 </clusterNumber>
+    <userIpPath>/home/savi/Desktop/imperial/imperial_ip_repo2</userIpPath>
+    <kernel> viv_test_core 
+        <type> open </type>
+        <num> 1 </num>
+        <control> False </control>
+        <clk> ap_clk </clk>
+        <s_axis>
+            <scope> global </scope>
+            <name> in_data </name>
+        </s_axis>
+        <m_axis>
+            <scope> global </scope>
+            <name> out_data </name>
+        </m_axis>
+        <wan>
+            <enabled> False </enabled>
+            <name> laniakea_wan </name>
+        </wan>
+        <aresetn> ap_rst_n </aresetn>
+    </kernel>
+        <kernel> test_core 
+        <num> 2 </num>
+        <type> open </type>
+        <control> False </control>
+        <control_type> both </control_type>
+        <clk> ap_clk </clk>
+        <s_axis>
+            <scope> global </scope>
+            <name> in_r </name>
+        </s_axis>
+        <m_axis>
+            <scope> global </scope>
+            <name> out_r </name>
+        </m_axis>
+        <wan>
+            <enabled> True </enabled>
+            <name> laniakea_wan </name>
+        </wan>
+ 
+        <aresetn> ap_rst_n </aresetn>
+    </kernel>
+</cluster>
+

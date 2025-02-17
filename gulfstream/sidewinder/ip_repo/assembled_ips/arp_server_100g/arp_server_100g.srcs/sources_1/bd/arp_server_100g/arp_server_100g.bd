@@ -1,0 +1,468 @@
+{
+  "design": {
+    "design_info": {
+      "boundary_crc": "0xC52878ED808AB95C",
+      "device": "xczu19eg-ffvc1760-2-i",
+      "name": "arp_server_100g",
+      "synth_flow_mode": "Hierarchical",
+      "tool_version": "2019.1",
+      "validated": "true"
+    },
+    "design_tree": {
+      "arp_receive_0": "",
+      "arp_send_0": "",
+      "blk_mem_gen_0": ""
+    },
+    "ports": {
+      "clk": {
+        "type": "clk",
+        "direction": "I",
+        "parameters": {
+          "ASSOCIATED_RESET": {
+            "value": "rst",
+            "value_src": "default"
+          },
+          "CLK_DOMAIN": {
+            "value": "arp_server_100g_ap_clk_0",
+            "value_src": "default"
+          },
+          "FREQ_HZ": {
+            "value": "100000000",
+            "value_src": "default"
+          },
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "PHASE": {
+            "value": "0.000",
+            "value_src": "default"
+          }
+        }
+      },
+      "rst": {
+        "type": "rst",
+        "direction": "I",
+        "parameters": {
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "POLARITY": {
+            "value": "ACTIVE_HIGH"
+          }
+        }
+      },
+      "myMac": {
+        "type": "data",
+        "direction": "I",
+        "left": "47",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "myIP": {
+        "type": "data",
+        "direction": "I",
+        "left": "31",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "gateway": {
+        "type": "data",
+        "direction": "I",
+        "left": "31",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "netmask": {
+        "type": "data",
+        "direction": "I",
+        "left": "31",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "arp_in_data": {
+        "type": "data",
+        "direction": "I",
+        "left": "335",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "arp_in_valid": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "arp_out_data": {
+        "type": "data",
+        "direction": "O",
+        "left": "511",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "arp_out_keep": {
+        "type": "data",
+        "direction": "O",
+        "left": "63",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "arp_out_last": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "arp_out_valid": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "arp_out_ready": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lookup_result": {
+        "type": "data",
+        "direction": "O",
+        "left": "47",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lookup_req": {
+        "type": "data",
+        "direction": "I",
+        "left": "31",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "arp_status": {
+        "type": "data",
+        "direction": "O",
+        "left": "1",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "arp_internal_resp_Mac_IP": {
+        "type": "data",
+        "direction": "I",
+        "left": "79",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "arp_internal_resp_valid": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      }
+    },
+    "components": {
+      "arp_receive_0": {
+        "vlnv": "xilinx.com:hls:arp_receive:1.0",
+        "xci_name": "arp_server_100g_arp_receive_0_0"
+      },
+      "arp_send_0": {
+        "vlnv": "xilinx.com:hls:arp_send:1.0",
+        "xci_name": "arp_server_100g_arp_send_0_0"
+      },
+      "blk_mem_gen_0": {
+        "vlnv": "xilinx.com:ip:blk_mem_gen:8.4",
+        "xci_name": "arp_server_100g_blk_mem_gen_0_0",
+        "parameters": {
+          "Assume_Synchronous_Clk": {
+            "value": "true"
+          },
+          "Enable_32bit_Address": {
+            "value": "false"
+          },
+          "Enable_A": {
+            "value": "Always_Enabled"
+          },
+          "Enable_B": {
+            "value": "Always_Enabled"
+          },
+          "Memory_Type": {
+            "value": "Simple_Dual_Port_RAM"
+          },
+          "Operating_Mode_A": {
+            "value": "NO_CHANGE"
+          },
+          "Port_B_Clock": {
+            "value": "100"
+          },
+          "Port_B_Enable_Rate": {
+            "value": "100"
+          },
+          "Read_Width_B": {
+            "value": "80"
+          },
+          "Register_PortB_Output_of_Memory_Primitives": {
+            "value": "true"
+          },
+          "Use_Byte_Write_Enable": {
+            "value": "false"
+          },
+          "Write_Depth_A": {
+            "value": "256"
+          },
+          "Write_Width_A": {
+            "value": "80"
+          },
+          "Write_Width_B": {
+            "value": "80"
+          },
+          "use_bram_block": {
+            "value": "Stand_Alone"
+          }
+        }
+      }
+    },
+    "nets": {
+      "ap_clk_0_1": {
+        "ports": [
+          "clk",
+          "arp_receive_0/ap_clk",
+          "blk_mem_gen_0/clkb",
+          "blk_mem_gen_0/clka",
+          "arp_send_0/ap_clk"
+        ]
+      },
+      "ap_rst_0_1": {
+        "ports": [
+          "rst",
+          "arp_receive_0/ap_rst",
+          "arp_send_0/ap_rst"
+        ]
+      },
+      "myMac_V_0_1": {
+        "ports": [
+          "myMac",
+          "arp_send_0/myMac_V"
+        ]
+      },
+      "myIP_V_0_1": {
+        "ports": [
+          "myIP",
+          "arp_send_0/myIP_V",
+          "arp_receive_0/myIP_V"
+        ]
+      },
+      "gateway_V_0_1": {
+        "ports": [
+          "gateway",
+          "arp_send_0/gateway_V"
+        ]
+      },
+      "netmask_V_0_1": {
+        "ports": [
+          "netmask",
+          "arp_send_0/netmask_V"
+        ]
+      },
+      "arp_in_data_V_0_1": {
+        "ports": [
+          "arp_in_data",
+          "arp_receive_0/arp_in_data_V"
+        ]
+      },
+      "arp_in_valid_V_0_1": {
+        "ports": [
+          "arp_in_valid",
+          "arp_receive_0/arp_in_valid_V"
+        ]
+      },
+      "arp_send_0_arp_out_data_V": {
+        "ports": [
+          "arp_send_0/arp_out_data_V",
+          "arp_out_data"
+        ]
+      },
+      "arp_send_0_arp_out_keep_V": {
+        "ports": [
+          "arp_send_0/arp_out_keep_V",
+          "arp_out_keep"
+        ]
+      },
+      "arp_send_0_arp_out_last_V": {
+        "ports": [
+          "arp_send_0/arp_out_last_V",
+          "arp_out_last"
+        ]
+      },
+      "arp_send_0_arp_out_valid_V": {
+        "ports": [
+          "arp_send_0/arp_out_valid_V",
+          "arp_out_valid"
+        ]
+      },
+      "arp_out_ready_V_0_1": {
+        "ports": [
+          "arp_out_ready",
+          "arp_send_0/arp_out_ready_V"
+        ]
+      },
+      "arp_send_0_lookup_result_V": {
+        "ports": [
+          "arp_send_0/lookup_result_V",
+          "lookup_result"
+        ]
+      },
+      "lookup_req_V_0_1": {
+        "ports": [
+          "lookup_req",
+          "arp_send_0/lookup_req_V"
+        ]
+      },
+      "arp_send_0_arp_status_V": {
+        "ports": [
+          "arp_send_0/arp_status_V",
+          "arp_status"
+        ]
+      },
+      "arp_internal_resp_Mac_IP_V_0_1": {
+        "ports": [
+          "arp_internal_resp_Mac_IP",
+          "arp_receive_0/arp_internal_resp_Mac_IP_V"
+        ]
+      },
+      "arp_internal_resp_valid_V_0_1": {
+        "ports": [
+          "arp_internal_resp_valid",
+          "arp_receive_0/arp_internal_resp_valid_V"
+        ]
+      },
+      "arp_send_0_arptable_addr_V": {
+        "ports": [
+          "arp_send_0/arptable_addr_V",
+          "blk_mem_gen_0/addrb"
+        ]
+      },
+      "blk_mem_gen_0_doutb": {
+        "ports": [
+          "blk_mem_gen_0/doutb",
+          "arp_send_0/arptable_data_V"
+        ]
+      },
+      "arp_receive_0_arptable_dataout_Mac_IP_V": {
+        "ports": [
+          "arp_receive_0/arptable_dataout_Mac_IP_V",
+          "blk_mem_gen_0/dina"
+        ]
+      },
+      "arp_receive_0_arptable_dataout_valid_V": {
+        "ports": [
+          "arp_receive_0/arptable_dataout_valid_V",
+          "blk_mem_gen_0/wea"
+        ]
+      },
+      "arp_receive_0_arptable_addrout_V": {
+        "ports": [
+          "arp_receive_0/arptable_addrout_V",
+          "blk_mem_gen_0/addra"
+        ]
+      },
+      "arp_receive_0_call_for_responce_Mac_IP_V": {
+        "ports": [
+          "arp_receive_0/call_for_responce_Mac_IP_V",
+          "arp_send_0/call_for_responce_Mac_IP_V"
+        ]
+      },
+      "arp_receive_0_call_for_responce_valid_V": {
+        "ports": [
+          "arp_receive_0/call_for_responce_valid_V",
+          "arp_send_0/call_for_responce_valid_V"
+        ]
+      }
+    }
+  }
+}

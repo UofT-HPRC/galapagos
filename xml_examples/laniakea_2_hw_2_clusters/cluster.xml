@@ -1,0 +1,20 @@
+<superCluster>
+    <dns> 10.1.9.109 </dns>
+    <cluster>
+        <name> first_cluster </name>
+        <logicalFile> /home/savi/Desktop/imperial/wan3/galapagos/xml_examples/laniakea_2_hw_2_clusters/logical.xml </logicalFile>
+        <mapFile> /home/savi/Desktop/imperial/wan3/galapagos/xml_examples/laniakea_2_hw_2_clusters/map.xml </mapFile>
+        <apiFile> /home/savi/Desktop/imperial/wan3/galapagos/xml_examples/laniakea_2_hw_2_clusters/api.xml </apiFile>
+        <gatewayIP> 10.1.9.200 </gatewayIP>
+        <gatewayMac> 0c:c4:2b:2d:bd:05</gatewayMac>
+        <hasGateway> True </hasGateway>
+	<gatewayBoard> sidewinder </gatewayBoard>
+    </cluster>
+
+    <cluster>
+        <name> second_cluster </name>
+        <logicalFile>/home/savi/Desktop/imperial/wan3/galapagos/xml_examples/laniakea_2_hw_2_clusters/logical2.xml </logicalFile>
+        <mapFile> /home/savi/Desktop/imperial/wan3/galapagos/xml_examples/laniakea_2_hw_2_clusters/map2.xml </mapFile>
+        <hasGateway> False </hasGateway>
+  </cluster>
+</superCluster>

@@ -17,7 +17,7 @@ SUBDIRS := $(wildcard */.)
 
 .PHONY: all clean
 
-all clean: guard-GALAPAGOS_PATH guard-GALAPAGOS_HLS_PATH guard-GALAPAGOS_BOARD_NAME
+all clean: guard-GALAPAGOS_PATH guard-GALAPAGOS_HLS_PATH guard-GALAPAGOS_BOARD_NAME 
 	for dir in $(SUBDIRS); do \
 		$(MAKE) -C $$dir -f Makefile $@; \
 	done

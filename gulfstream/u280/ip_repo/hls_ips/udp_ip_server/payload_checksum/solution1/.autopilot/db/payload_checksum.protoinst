@@ -1,0 +1,9 @@
+{
+	"version": "1.0",
+	"modules": {
+		"payload_checksum": {
+			"proto_instances": {
+			}
+		}
+	}
+}

@@ -1,0 +1,9 @@
+{
+	"version": "1.0",
+	"modules": {
+		"arp_send": {
+			"proto_instances": {
+			}
+		}
+	}
+}

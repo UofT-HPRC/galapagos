@@ -18,19 +18,21 @@ class abstractDict():
         Raises:
             ValueError: Raised if unknown key is specified
         '''
-
         self.data = {}
         for mandatory_elem in mandatory_array:
             self.data[mandatory_elem] = None
-
         for optional_elem in optional_array:
             self.data[optional_elem] = None
-
+        #special keys
+        self.data['control'] = False
         for key, value in kwargs.items():
             if key in self.data:
                 self.data[key] = value
             else:
                 raise ValueError('Init with ' + key + ' failed. Key does not exist')
+        if self.data['control']:
+            if self.data['control']['enabled'].strip().lower() == 'true' and 'control_type' not in self.data['control']:
+                raise ValueError('control_type missing when control is True')
         self.check_elements(mandatory_array, optional_array)
 
     def check_elements(self, mandatory_array, optional_array):

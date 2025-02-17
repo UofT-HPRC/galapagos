@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<cluster>
+    <port>
+        <form> direct </form>
+        <num> 1 </num>
+        <target> 2 </target>
+    </port>
+    <port>
+         <form> broadcast </form>
+         <num> 2 </num>
+         <target> 1 </target>
+         <target> 2 </target>
+    </port>
+</cluster>
+

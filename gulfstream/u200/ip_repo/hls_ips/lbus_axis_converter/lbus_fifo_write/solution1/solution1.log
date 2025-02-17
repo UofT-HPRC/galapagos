@@ -1,0 +1,77 @@
+==============================================================
+Vivado(TM) HLS - High-Level Synthesis from C, C++ and SystemC v2019.1 (64-bit)
+Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
+==============================================================
+INFO: [HLS 200-10] Setting target device to 'xcu200-fsgd2104-2-e'
+INFO: [SYN 201-201] Setting up clock 'default' with a period of 3.103ns.
+INFO: [SCHED 204-61] Option 'relax_ii_for_timing' is enabled, will increase II to preserve clock frequency constraints.
+INFO: [HLS 200-10] Analyzing design file '/home/kevinliu/Documents/GULF-Stream/src/lbus2axis/lbus_fifo_write.cpp' ... 
+INFO: [HLS 200-111] Finished Linking Time (s): cpu = 00:00:18 ; elapsed = 00:00:27 . Memory (MB): peak = 798.621 ; gain = 126.000 ; free physical = 29982 ; free virtual = 56950
+INFO: [HLS 200-111] Finished Checking Pragmas Time (s): cpu = 00:00:18 ; elapsed = 00:00:27 . Memory (MB): peak = 798.621 ; gain = 126.000 ; free physical = 29982 ; free virtual = 56950
+INFO: [HLS 200-10] Starting code transformations ...
+INFO: [HLS 200-111] Finished Standard Transforms Time (s): cpu = 00:00:19 ; elapsed = 00:00:29 . Memory (MB): peak = 798.621 ; gain = 126.000 ; free physical = 29979 ; free virtual = 56948
+INFO: [HLS 200-10] Checking synthesizability ...
+INFO: [HLS 200-111] Finished Checking Synthesizability Time (s): cpu = 00:00:19 ; elapsed = 00:00:29 . Memory (MB): peak = 798.621 ; gain = 126.000 ; free physical = 29977 ; free virtual = 56945
+INFO: [XFORM 203-1101] Packing variable 'lbus_fifo' (/home/kevinliu/Documents/GULF-Stream/src/lbus2axis/lbus_fifo_write.cpp:35) into a 544-bit variable.
+INFO: [XFORM 203-1101] Packing variable 'lbus_fifo_pkt_end' (/home/kevinliu/Documents/GULF-Stream/src/lbus2axis/lbus_fifo_write.cpp:37) into a 408-bit variable.
+INFO: [XFORM 203-101] Partitioning array 'lbus.data.V' (/home/kevinliu/Documents/GULF-Stream/src/lbus2axis/lbus_fifo_write.cpp:34) in dimension 1 completely.
+INFO: [XFORM 203-101] Partitioning array 'lbus.ena.V' (/home/kevinliu/Documents/GULF-Stream/src/lbus2axis/lbus_fifo_write.cpp:34) in dimension 1 completely.
+INFO: [XFORM 203-101] Partitioning array 'lbus.sop.V' (/home/kevinliu/Documents/GULF-Stream/src/lbus2axis/lbus_fifo_write.cpp:34) in dimension 1 completely.
+INFO: [XFORM 203-101] Partitioning array 'lbus.eop.V' (/home/kevinliu/Documents/GULF-Stream/src/lbus2axis/lbus_fifo_write.cpp:34) in dimension 1 completely.
+INFO: [XFORM 203-101] Partitioning array 'lbus.err.V' (/home/kevinliu/Documents/GULF-Stream/src/lbus2axis/lbus_fifo_write.cpp:34) in dimension 1 completely.
+INFO: [XFORM 203-101] Partitioning array 'lbus.mty.V' (/home/kevinliu/Documents/GULF-Stream/src/lbus2axis/lbus_fifo_write.cpp:34) in dimension 1 completely.
+INFO: [XFORM 203-11] Balancing expressions in function 'lbus_fifo_write' (/home/kevinliu/Documents/GULF-Stream/src/lbus2axis/lbus_fifo_write.cpp:34)...6 expression(s) balanced.
+INFO: [HLS 200-111] Finished Pre-synthesis Time (s): cpu = 00:00:20 ; elapsed = 00:00:29 . Memory (MB): peak = 798.621 ; gain = 126.000 ; free physical = 29953 ; free virtual = 56921
+INFO: [HLS 200-111] Finished Architecture Synthesis Time (s): cpu = 00:00:20 ; elapsed = 00:00:30 . Memory (MB): peak = 798.621 ; gain = 126.000 ; free physical = 29951 ; free virtual = 56920
+INFO: [HLS 200-10] Starting hardware synthesis ...
+INFO: [HLS 200-10] Synthesizing 'lbus_fifo_write' ...
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-42] -- Implementing module 'lbus_fifo_write' 
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [SCHED 204-11] Starting scheduling ...
+INFO: [SCHED 204-11] Finished scheduling.
+INFO: [HLS 200-111]  Elapsed time: 29.97 seconds; current allocated memory: 117.717 MB.
+INFO: [BIND 205-100] Starting micro-architecture generation ...
+INFO: [BIND 205-101] Performing variable lifetime analysis.
+INFO: [BIND 205-101] Exploring resource sharing.
+INFO: [BIND 205-101] Binding ...
+INFO: [BIND 205-100] Finished micro-architecture generation.
+INFO: [HLS 200-111]  Elapsed time: 0.23 seconds; current allocated memory: 119.477 MB.
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [HLS 200-10] -- Generating RTL for module 'lbus_fifo_write' 
+INFO: [HLS 200-10] ----------------------------------------------------------------
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_0_data_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_1_data_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_2_data_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_3_data_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_0_ena_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_1_ena_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_2_ena_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_3_ena_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_0_sop_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_1_sop_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_2_sop_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_3_sop_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_0_eop_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_1_eop_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_2_eop_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_3_eop_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_0_err_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_1_err_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_2_err_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_3_err_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_0_mty_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_1_mty_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_2_mty_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_3_mty_V' to 'ap_none'.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_fifo' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'lbus_fifo' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_fifo_we_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'lbus_fifo_we_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_fifo_pkt_end' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'lbus_fifo_pkt_end' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/lbus_fifo_pkt_end_we_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'lbus_fifo_pkt_end_we_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO: [RTGEN 206-500] Setting interface mode on port 'lbus_fifo_write/error_V' to 'ap_none'.
+WARNING: [RTGEN 206-101] Port 'error_V' with mode 'ap_none' may require an associated data valid signal to correctly communicate with other blocks or a test bench; automatic C/RTL co-simulation may not be able to verify such a port.
+INFO

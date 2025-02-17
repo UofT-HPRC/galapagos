@@ -8,35 +8,6 @@
 #	1.0 - Apr. 9 2019 - Created (VS)
 ################################################################################
 
-ifndef GALAPAGOS_PATH
-$(error GALAPAGOS_PATH is not set)
-endif
-
-ifndef GALAPAGOS_HLS_VERSION
-$(error GALAPAGOS_HLS_VERSION is not set)
-endif
-
-ifndef GALAPAGOS_PART
-$(error GALAPAGOS_PART is not set)
-endif
-
-ifndef GALAPAGOS_VIVADO_PATH
-$(error GALAPAGOS_VIVADO_PATH is not set)
-endif
-
-ifndef GALAPAGOS_BOARD_NAME
-$(error GALAPAGOS_BOARD_NAME is not set)
-endif
-
-ifndef GALAPAGOS_HLS_PATH
-$(error GALAPAGOS_HLS_PATH is not set)
-endif
-
-ifndef GALAPAGOS_PART_FAMILY
-$(error GALAPAGOS_PART_FAMILY is not set)
-endif
-
-
 INCLUDE_UTIL=-I $(GALAPAGOS_PATH)/util/Catch2/single_include/catch2 -I$(GALAPAGOS_PATH)/util/spdlog/include
 
 # GALAPAGOS_BOARD is not asserted because it's optional to have a board file

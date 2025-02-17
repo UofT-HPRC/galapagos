@@ -28,7 +28,7 @@ sim:
 
 hls:
 	mkdir -p $(BOARD_PATH)/ip/$(HLSMIDDLEWAREIP)
-	vivado_hls $(GALAPAGOS_PATH)/middleware/hls/$(HLSMIDDLEWAREIP)/generate_hls.tcl
+	vitis_hls $(GALAPAGOS_PATH)/middleware/hls/$(HLSMIDDLEWAREIP)/generate_hls.tcl
 
 clean:
 	rm -rf $(BOARD_PATH)/ip/$(HLSMIDDLEWAREIP)

@@ -1,0 +1,1110 @@
+{
+  "design": {
+    "design_info": {
+      "boundary_crc": "0xBAEB3A44EF12447C",
+      "device": "xczu19eg-ffvc1760-2-i",
+      "name": "udp_ip_server_100g",
+      "synth_flow_mode": "Hierarchical",
+      "tool_version": "2019.1",
+      "validated": "true"
+    },
+    "design_tree": {
+      "udp_ip_receive_0": "",
+      "action_generator_0": "",
+      "payload_checksum_0": "",
+      "action_excecutor_0": "",
+      "fifo_generator_0": "",
+      "fifo_generator_1": "",
+      "axis_data_fifo_0": "",
+      "axis_data_fifo_1": "",
+      "udp_eth_assemble_0": "",
+      "udp_ip_tx_0": "",
+      "util_vector_logic_0": ""
+    },
+    "ports": {
+      "clk": {
+        "type": "clk",
+        "direction": "I",
+        "parameters": {
+          "ASSOCIATED_RESET": {
+            "value": "rst",
+            "value_src": "default"
+          },
+          "CLK_DOMAIN": {
+            "value": "udp_ip_server_100g_ap_clk_0",
+            "value_src": "default"
+          },
+          "FREQ_HZ": {
+            "value": "100000000",
+            "value_src": "default"
+          },
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "PHASE": {
+            "value": "0.000",
+            "value_src": "default"
+          }
+        }
+      },
+      "rst": {
+        "type": "rst",
+        "direction": "I",
+        "parameters": {
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "POLARITY": {
+            "value": "ACTIVE_HIGH"
+          }
+        }
+      },
+      "myIP": {
+        "type": "data",
+        "direction": "I",
+        "left": "31",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "ip_in_data": {
+        "type": "data",
+        "direction": "I",
+        "left": "335",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "ip_in_valid": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "payload_in_data": {
+        "type": "data",
+        "direction": "I",
+        "left": "511",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "payload_in_valid": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "payload_in_last": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "payload_length_data": {
+        "type": "data",
+        "direction": "I",
+        "left": "15",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "payload_length_valid": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "payload_out_data": {
+        "type": "data",
+        "direction": "O",
+        "left": "511",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "payload_out_keep": {
+        "type": "data",
+        "direction": "O",
+        "left": "63",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "payload_out_valid": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "payload_out_last": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "remote_ip_rx": {
+        "type": "data",
+        "direction": "O",
+        "left": "31",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "remote_port_rx": {
+        "type": "data",
+        "direction": "O",
+        "left": "15",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "local_port_rx": {
+        "type": "data",
+        "direction": "O",
+        "left": "15",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "remote_ip_tx": {
+        "type": "data",
+        "direction": "I",
+        "left": "31",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "dst_mac": {
+        "type": "data",
+        "direction": "I",
+        "left": "47",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "local_port_tx": {
+        "type": "data",
+        "direction": "I",
+        "left": "15",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "remote_port_tx": {
+        "type": "data",
+        "direction": "I",
+        "left": "15",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "arp_status": {
+        "type": "data",
+        "direction": "I",
+        "left": "1",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "payload_in_data_V_1": {
+        "type": "data",
+        "direction": "I",
+        "left": "511",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "payload_in_keep": {
+        "type": "data",
+        "direction": "I",
+        "left": "63",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "payload_in_valid_V_1": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "payload_in_last_V_1": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "payload_in_ready": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "packet_out_ready": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "packet_out_data": {
+        "type": "data",
+        "direction": "O",
+        "left": "511",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "packet_out_keep": {
+        "type": "data",
+        "direction": "O",
+        "left": "63",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "packet_out_valid": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "packet_out_last": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "myMac": {
+        "type": "data",
+        "direction": "I",
+        "left": "47",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "arp_internal_resp_Mac_IP": {
+        "type": "data",
+        "direction": "O",
+        "left": "79",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "arp_internal_resp_valid": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      }
+    },
+    "components": {
+      "udp_ip_receive_0": {
+        "vlnv": "xilinx.com:hls:udp_ip_receive:1.0",
+        "xci_name": "udp_ip_server_100g_udp_ip_receive_0_0"
+      },
+      "action_generator_0": {
+        "vlnv": "xilinx.com:hls:action_generator:1.0",
+        "xci_name": "udp_ip_server_100g_action_generator_0_0"
+      },
+      "payload_checksum_0": {
+        "vlnv": "xilinx.com:hls:payload_checksum:1.0",
+        "xci_name": "udp_ip_server_100g_payload_checksum_0_0"
+      },
+      "action_excecutor_0": {
+        "vlnv": "xilinx.com:hls:action_excecutor:1.0",
+        "xci_name": "udp_ip_server_100g_action_excecutor_0_0"
+      },
+      "fifo_generator_0": {
+        "vlnv": "xilinx.com:ip:fifo_generator:13.2",
+        "xci_name": "udp_ip_server_100g_fifo_generator_0_0",
+        "parameters": {
+          "Enable_Safety_Circuit": {
+            "value": "false"
+          },
+          "Fifo_Implementation": {
+            "value": "Common_Clock_Block_RAM"
+          },
+          "Full_Flags_Reset_Value": {
+            "value": "1"
+          },
+          "Input_Data_Width": {
+            "value": "65"
+          },
+          "Input_Depth": {
+            "value": "256"
+          },
+          "Performance_Options": {
+            "value": "First_Word_Fall_Through"
+          },
+          "Reset_Type": {
+            "value": "Asynchronous_Reset"
+          },
+          "Use_Embedded_Registers": {
+            "value": "false"
+          },
+          "Valid_Flag": {
+            "value": "true"
+          }
+        }
+      },
+      "fifo_generator_1": {
+        "vlnv": "xilinx.com:ip:fifo_generator:13.2",
+        "xci_name": "udp_ip_server_100g_fifo_generator_1_0",
+        "parameters": {
+          "Enable_Safety_Circuit": {
+            "value": "false"
+          },
+          "Fifo_Implementation": {
+            "value": "Common_Clock_Block_RAM"
+          },
+          "Full_Flags_Reset_Value": {
+            "value": "1"
+          },
+          "Input_Data_Width": {
+            "value": "161"
+          },
+          "Input_Depth": {
+            "value": "256"
+          },
+          "Performance_Options": {
+            "value": "First_Word_Fall_Through"
+          },
+          "Reset_Type": {
+            "value": "Asynchronous_Reset"
+          },
+          "Use_Embedded_Registers": {
+            "value": "false"
+          },
+          "Valid_Flag": {
+            "value": "true"
+          }
+        }
+      },
+      "axis_data_fifo_0": {
+        "vlnv": "xilinx.com:ip:fifo_generator:13.2",
+        "xci_name": "udp_ip_server_100g_axis_data_fifo_0_0",
+        "parameters": {
+          "Enable_TLAST": {
+            "value": "true"
+          },
+          "FIFO_Implementation_axis": {
+            "value": "Common_Clock_Block_RAM"
+          },
+          "FIFO_Implementation_rach": {
+            "value": "Common_Clock_Distributed_RAM"
+          },
+          "FIFO_Implementation_rdch": {
+            "value": "Common_Clock_Builtin_FIFO"
+          },
+          "FIFO_Implementation_wach": {
+            "value": "Common_Clock_Distributed_RAM"
+          },
+          "FIFO_Implementation_wdch": {
+            "value": "Common_Clock_Builtin_FIFO"
+          },
+          "FIFO_Implementation_wrch": {
+            "value": "Common_Clock_Distributed_RAM"
+          },
+          "HAS_TKEEP": {
+            "value": "true"
+          },
+          "INTERFACE_TYPE": {
+            "value": "AXI_STREAM"
+          },
+          "Input_Depth_axis": {
+            "value": "256"
+          },
+          "TDATA_NUM_BYTES": {
+            "value": "64"
+          },
+          "TUSER_WIDTH": {
+            "value": "0"
+          }
+        }
+      },
+      "axis_data_fifo_1": {
+        "vlnv": "xilinx.com:ip:fifo_generator:13.2",
+        "xci_name": "udp_ip_server_100g_axis_data_fifo_1_0",
+        "parameters": {
+          "Enable_TLAST": {
+            "value": "true"
+          },
+          "FIFO_Implementation_axis": {
+            "value": "Common_Clock_Block_RAM"
+          },
+          "FIFO_Implementation_rach": {
+            "value": "Common_Clock_Distributed_RAM"
+          },
+          "FIFO_Implementation_rdch": {
+            "value": "Common_Clock_Builtin_FIFO"
+          },
+          "FIFO_Implementation_wach": {
+            "value": "Common_Clock_Distributed_RAM"
+          },
+          "FIFO_Implementation_wdch": {
+            "value": "Common_Clock_Builtin_FIFO"
+          },
+          "FIFO_Implementation_wrch": {
+            "value": "Common_Clock_Distributed_RAM"
+          },
+          "HAS_TKEEP": {
+            "value": "true"
+          },
+          "INTERFACE_TYPE": {
+            "value": "AXI_STREAM"
+          },
+          "Input_Depth_axis": {
+            "value": "256"
+          },
+          "TDATA_NUM_BYTES": {
+            "value": "64"
+          },
+          "TUSER_WIDTH": {
+            "value": "0"
+          }
+        }
+      },
+      "udp_eth_assemble_0": {
+        "vlnv": "xilinx.com:hls:udp_eth_assemble:1.0",
+        "xci_name": "udp_ip_server_100g_udp_eth_assemble_0_0"
+      },
+      "udp_ip_tx_0": {
+        "vlnv": "xilinx.com:hls:udp_ip_tx:1.0",
+        "xci_name": "udp_ip_server_100g_udp_ip_tx_0_0"
+      },
+      "util_vector_logic_0": {
+        "vlnv": "xilinx.com:ip:util_vector_logic:2.0",
+        "xci_name": "udp_ip_server_100g_util_vector_logic_0_0",
+        "parameters": {
+          "C_OPERATION": {
+            "value": "not"
+          },
+          "C_SIZE": {
+            "value": "1"
+          }
+        }
+      }
+    },
+    "nets": {
+      "ap_clk_0_1": {
+        "ports": [
+          "clk",
+          "udp_ip_receive_0/ap_clk",
+          "payload_checksum_0/ap_clk",
+          "udp_eth_assemble_0/ap_clk",
+          "action_excecutor_0/ap_clk",
+          "action_generator_0/ap_clk",
+          "axis_data_fifo_0/s_aclk",
+          "axis_data_fifo_1/s_aclk",
+          "fifo_generator_0/clk",
+          "fifo_generator_1/clk",
+          "udp_ip_tx_0/ap_clk"
+        ]
+      },
+      "ap_rst_0_1": {
+        "ports": [
+          "rst",
+          "udp_ip_receive_0/ap_rst",
+          "payload_checksum_0/ap_rst",
+          "udp_eth_assemble_0/ap_rst",
+          "udp_ip_tx_0/ap_rst",
+          "action_excecutor_0/ap_rst",
+          "action_generator_0/ap_rst",
+          "util_vector_logic_0/Op1",
+          "fifo_generator_0/rst",
+          "fifo_generator_1/rst"
+        ]
+      },
+      "myIP_V_0_1": {
+        "ports": [
+          "myIP",
+          "udp_ip_receive_0/myIP_V",
+          "udp_eth_assemble_0/myIP_V",
+          "udp_ip_tx_0/myIP_V"
+        ]
+      },
+      "ip_in_data_V_0_1": {
+        "ports": [
+          "ip_in_data",
+          "udp_ip_receive_0/ip_in_data_V"
+        ]
+      },
+      "ip_in_valid_V_0_1": {
+        "ports": [
+          "ip_in_valid",
+          "udp_ip_receive_0/ip_in_valid_V"
+        ]
+      },
+      "payload_in_data_V_0_1": {
+        "ports": [
+          "payload_in_data",
+          "payload_checksum_0/payload_in_data_V"
+        ]
+      },
+      "payload_in_valid_V_0_1": {
+        "ports": [
+          "payload_in_valid",
+          "payload_checksum_0/payload_in_valid_V"
+        ]
+      },
+      "payload_in_last_V_0_1": {
+        "ports": [
+          "payload_in_last",
+          "payload_checksum_0/payload_in_last_V"
+        ]
+      },
+      "payload_length_data_V_0_1": {
+        "ports": [
+          "payload_length_data",
+          "payload_checksum_0/payload_length_data_V"
+        ]
+      },
+      "payload_length_valid_V_0_1": {
+        "ports": [
+          "payload_length_valid",
+          "payload_checksum_0/payload_length_valid_V"
+        ]
+      },
+      "action_excecutor_0_payload_out_data_V": {
+        "ports": [
+          "action_excecutor_0/payload_out_data_V",
+          "payload_out_data"
+        ]
+      },
+      "action_excecutor_0_payload_out_keep_V": {
+        "ports": [
+          "action_excecutor_0/payload_out_keep_V",
+          "payload_out_keep"
+        ]
+      },
+      "action_excecutor_0_payload_out_valid_V": {
+        "ports": [
+          "action_excecutor_0/payload_out_valid_V",
+          "payload_out_valid"
+        ]
+      },
+      "action_excecutor_0_payload_out_last_V": {
+        "ports": [
+          "action_excecutor_0/payload_out_last_V",
+          "payload_out_last"
+        ]
+      },
+      "action_excecutor_0_src_ip_V": {
+        "ports": [
+          "action_excecutor_0/src_ip_V",
+          "remote_ip_rx"
+        ]
+      },
+      "action_excecutor_0_src_port_V": {
+        "ports": [
+          "action_excecutor_0/src_port_V",
+          "remote_port_rx"
+        ]
+      },
+      "action_excecutor_0_dst_port_V": {
+        "ports": [
+          "action_excecutor_0/dst_port_V",
+          "local_port_rx"
+        ]
+      },
+      "dst_ip_V_0_1": {
+        "ports": [
+          "remote_ip_tx",
+          "udp_ip_tx_0/dst_ip_V"
+        ]
+      },
+      "dst_mac_V_0_1": {
+        "ports": [
+          "dst_mac",
+          "udp_ip_tx_0/dst_mac_V"
+        ]
+      },
+      "src_port_V_1_1": {
+        "ports": [
+          "local_port_tx",
+          "udp_ip_tx_0/src_port_V"
+        ]
+      },
+      "dst_port_V_1_1": {
+        "ports": [
+          "remote_port_tx",
+          "udp_ip_tx_0/dst_port_V"
+        ]
+      },
+      "arp_status_V_0_1": {
+        "ports": [
+          "arp_status",
+          "udp_ip_tx_0/arp_status_V"
+        ]
+      },
+      "payload_in_data_V_1_1": {
+        "ports": [
+          "payload_in_data_V_1",
+          "udp_ip_tx_0/payload_in_data_V"
+        ]
+      },
+      "payload_in_keep_V_0_1": {
+        "ports": [
+          "payload_in_keep",
+          "udp_ip_tx_0/payload_in_keep_V"
+        ]
+      },
+      "payload_in_valid_V_1_1": {
+        "ports": [
+          "payload_in_valid_V_1",
+          "udp_ip_tx_0/payload_in_valid_V"
+        ]
+      },
+      "payload_in_last_V_1_1": {
+        "ports": [
+          "payload_in_last_V_1",
+          "udp_ip_tx_0/payload_in_last_V"
+        ]
+      },
+      "udp_ip_tx_0_payload_in_ready_V": {
+        "ports": [
+          "udp_ip_tx_0/payload_in_ready_V",
+          "payload_in_ready"
+        ]
+      },
+      "packet_out_ready_V_0_1": {
+        "ports": [
+          "packet_out_ready",
+          "udp_eth_assemble_0/packet_out_ready_V"
+        ]
+      },
+      "udp_eth_assemble_0_packet_out_data_V": {
+        "ports": [
+          "udp_eth_assemble_0/packet_out_data_V",
+          "packet_out_data"
+        ]
+      },
+      "udp_eth_assemble_0_packet_out_keep_V": {
+        "ports": [
+          "udp_eth_assemble_0/packet_out_keep_V",
+          "packet_out_keep"
+        ]
+      },
+      "udp_eth_assemble_0_packet_out_valid_V": {
+        "ports": [
+          "udp_eth_assemble_0/packet_out_valid_V",
+          "packet_out_valid"
+        ]
+      },
+      "udp_eth_assemble_0_packet_out_last_V": {
+        "ports": [
+          "udp_eth_assemble_0/packet_out_last_V",
+          "packet_out_last"
+        ]
+      },
+      "myMac_V_0_1": {
+        "ports": [
+          "myMac",
+          "udp_eth_assemble_0/myMac_V"
+        ]
+      },
+      "udp_ip_receive_0_arp_internal_resp_Mac_IP_V": {
+        "ports": [
+          "udp_ip_receive_0/arp_internal_resp_Mac_IP_V",
+          "arp_internal_resp_Mac_IP"
+        ]
+      },
+      "udp_ip_receive_0_arp_internal_resp_valid_V": {
+        "ports": [
+          "udp_ip_receive_0/arp_internal_resp_valid_V",
+          "arp_internal_resp_valid"
+        ]
+      },
+      "util_vector_logic_0_Res": {
+        "ports": [
+          "util_vector_logic_0/Res",
+          "axis_data_fifo_0/s_aresetn",
+          "axis_data_fifo_1/s_aresetn"
+        ]
+      },
+      "udp_ip_receive_0_meta_out_src_ip_V": {
+        "ports": [
+          "udp_ip_receive_0/meta_out_src_ip_V",
+          "action_generator_0/meta_in_src_ip_V"
+        ]
+      },
+      "udp_ip_receive_0_meta_out_protocol_header_V": {
+        "ports": [
+          "udp_ip_receive_0/meta_out_protocol_header_V",
+          "action_generator_0/meta_in_protocol_header_V"
+        ]
+      },
+      "udp_ip_receive_0_meta_out_checksum_V": {
+        "ports": [
+          "udp_ip_receive_0/meta_out_checksum_V",
+          "action_generator_0/meta_in_checksum_V"
+        ]
+      },
+      "udp_ip_receive_0_meta_out_action_V": {
+        "ports": [
+          "udp_ip_receive_0/meta_out_action_V",
+          "action_generator_0/meta_in_action_V"
+        ]
+      },
+      "action_generator_0_action_out": {
+        "ports": [
+          "action_generator_0/action_out",
+          "fifo_generator_0/din"
+        ]
+      },
+      "action_generator_0_action_out_valid_V": {
+        "ports": [
+          "action_generator_0/action_out_valid_V",
+          "fifo_generator_0/wr_en"
+        ]
+      },
+      "fifo_generator_0_dout": {
+        "ports": [
+          "fifo_generator_0/dout",
+          "action_excecutor_0/action"
+        ]
+      },
+      "action_excecutor_0_action_re_V": {
+        "ports": [
+          "action_excecutor_0/action_re_V",
+          "fifo_generator_0/rd_en"
+        ]
+      },
+      "fifo_generator_0_empty": {
+        "ports": [
+          "fifo_generator_0/empty",
+          "action_excecutor_0/action_empty_V"
+        ]
+      },
+      "fifo_generator_0_valid": {
+        "ports": [
+          "fifo_generator_0/valid",
+          "action_excecutor_0/action_valid_V"
+        ]
+      },
+      "payload_checksum_0_payload_out_data_V": {
+        "ports": [
+          "payload_checksum_0/payload_out_data_V",
+          "axis_data_fifo_0/s_axis_tdata"
+        ]
+      },
+      "payload_checksum_0_payload_out_keep_V": {
+        "ports": [
+          "payload_checksum_0/payload_out_keep_V",
+          "axis_data_fifo_0/s_axis_tkeep"
+        ]
+      },
+      "payload_checksum_0_payload_out_valid_V": {
+        "ports": [
+          "payload_checksum_0/payload_out_valid_V",
+          "axis_data_fifo_0/s_axis_tvalid"
+        ]
+      },
+      "payload_checksum_0_payload_out_last_V": {
+        "ports": [
+          "payload_checksum_0/payload_out_last_V",
+          "axis_data_fifo_0/s_axis_tlast"
+        ]
+      },
+      "axis_data_fifo_0_m_axis_tvalid": {
+        "ports": [
+          "axis_data_fifo_0/m_axis_tvalid",
+          "action_excecutor_0/payload_in_valid_V"
+        ]
+      },
+      "axis_data_fifo_0_m_axis_tkeep": {
+        "ports": [
+          "axis_data_fifo_0/m_axis_tkeep",
+          "action_excecutor_0/payload_in_keep_V"
+        ]
+      },
+      "axis_data_fifo_0_m_axis_tdata": {
+        "ports": [
+          "axis_data_fifo_0/m_axis_tdata",
+          "action_excecutor_0/payload_in_data_V"
+        ]
+      },
+      "axis_data_fifo_0_m_axis_tlast": {
+        "ports": [
+          "axis_data_fifo_0/m_axis_tlast",
+          "action_excecutor_0/payload_in_last_V"
+        ]
+      },
+      "action_excecutor_0_payload_ready_V": {
+        "ports": [
+          "action_excecutor_0/payload_ready_V",
+          "axis_data_fifo_0/m_axis_tready"
+        ]
+      },
+      "payload_checksum_0_checksum_data_V": {
+        "ports": [
+          "payload_checksum_0/checksum_data_V",
+          "action_generator_0/payload_cksum_data_V"
+        ]
+      },
+      "payload_checksum_0_checksum_valid_V": {
+        "ports": [
+          "payload_checksum_0/checksum_valid_V",
+          "action_generator_0/payload_cksum_valid_V"
+        ]
+      },
+      "axis_data_fifo_1_s_axis_tready": {
+        "ports": [
+          "axis_data_fifo_1/s_axis_tready",
+          "udp_ip_tx_0/payload_out_ready_V"
+        ]
+      },
+      "udp_ip_tx_0_payload_out_data_V": {
+        "ports": [
+          "udp_ip_tx_0/payload_out_data_V",
+          "axis_data_fifo_1/s_axis_tdata"
+        ]
+      },
+      "udp_ip_tx_0_payload_out_keep_V": {
+        "ports": [
+          "udp_ip_tx_0/payload_out_keep_V",
+          "axis_data_fifo_1/s_axis_tkeep"
+        ]
+      },
+      "udp_ip_tx_0_payload_out_valid_V": {
+        "ports": [
+          "udp_ip_tx_0/payload_out_valid_V",
+          "axis_data_fifo_1/s_axis_tvalid"
+        ]
+      },
+      "udp_ip_tx_0_payload_out_last_V": {
+        "ports": [
+          "udp_ip_tx_0/payload_out_last_V",
+          "axis_data_fifo_1/s_axis_tlast"
+        ]
+      },
+      "udp_ip_tx_0_action_out": {
+        "ports": [
+          "udp_ip_tx_0/action_out",
+          "fifo_generator_1/din"
+        ]
+      },
+      "udp_ip_tx_0_action_out_we_V": {
+        "ports": [
+          "udp_ip_tx_0/action_out_we_V",
+          "fifo_generator_1/wr_en"
+        ]
+      },
+      "fifo_generator_1_dout": {
+        "ports": [
+          "fifo_generator_1/dout",
+          "udp_eth_assemble_0/action"
+        ]
+      },
+      "udp_eth_assemble_0_action_re_V": {
+        "ports": [
+          "udp_eth_assemble_0/action_re_V",
+          "fifo_generator_1/rd_en"
+        ]
+      },
+      "fifo_generator_1_empty": {
+        "ports": [
+          "fifo_generator_1/empty",
+          "udp_eth_assemble_0/action_empty_V"
+        ]
+      },
+      "fifo_generator_1_valid": {
+        "ports": [
+          "fifo_generator_1/valid",
+          "udp_eth_assemble_0/action_valid_V"
+        ]
+      },
+      "axis_data_fifo_1_m_axis_tdata": {
+        "ports": [
+          "axis_data_fifo_1/m_axis_tdata",
+          "udp_eth_assemble_0/payload_in_data_V"
+        ]
+      },
+      "axis_data_fifo_1_m_axis_tkeep": {
+        "ports": [
+          "axis_data_fifo_1/m_axis_tkeep",
+          "udp_eth_assemble_0/payload_in_keep_V"
+        ]
+      },
+      "axis_data_fifo_1_m_axis_tvalid": {
+        "ports": [
+          "axis_data_fifo_1/m_axis_tvalid",
+          "udp_eth_assemble_0/payload_in_valid_V"
+        ]
+      },
+      "axis_data_fifo_1_m_axis_tlast": {
+        "ports": [
+          "axis_data_fifo_1/m_axis_tlast",
+          "udp_eth_assemble_0/payload_in_last_V"
+        ]
+      },
+      "udp_eth_assemble_0_payload_ready_V": {
+        "ports": [
+          "udp_eth_assemble_0/payload_ready_V",
+          "axis_data_fifo_1/m_axis_tready"
+        ]
+      }
+    }
+  }
+}

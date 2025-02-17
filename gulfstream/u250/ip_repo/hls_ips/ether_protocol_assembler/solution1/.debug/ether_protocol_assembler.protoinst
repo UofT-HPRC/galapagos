@@ -1,0 +1,9 @@
+{
+	"version": "1.0",
+	"modules": {
+		"ether_protocol_assembler": {
+			"proto_instances": {
+			}
+		}
+	}
+}

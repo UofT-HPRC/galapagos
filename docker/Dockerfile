@@ -21,10 +21,12 @@ RUN apt-get install -y \
     libfontconfig \
     vim \
     sudo \
+    net-tools \
+    iputils-ping \
     && \
     rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install jupyter pyfiglet pyinquirer prompt_toolkit==1.0.14 xmltodict
+RUN pip3 install jupyter pyfiglet pyinquirer prompt_toolkit==1.0.14 xmltodict numpy
 
 RUN pip3 uninstall -y ipython 
 
@@ -34,7 +36,7 @@ RUN cd /home && wget http://downloads.sourceforge.net/project/boost/boost/1.66.0
   && tar xfz boost_1_66_0.tar.gz \
   && rm boost_1_66_0.tar.gz \
   && cd boost_1_66_0 \
-  && ./bootstrap.sh --prefix=/usr/local  --with-libraries=system,thread,log,program_options  \
+  && ./bootstrap.sh --prefix=/usr/local  --with-libraries=system,thread,program_options  \
   && ./b2 install \
   && cd /home \
   && rm -rf boost_1_66_0

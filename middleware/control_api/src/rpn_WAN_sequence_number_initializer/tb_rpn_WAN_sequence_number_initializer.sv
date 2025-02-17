@@ -1,0 +1,376 @@
+module tb #(
+    `include "ctrl_api_reliability_header_parameters.vh"
+    `include "ctrl_api_header_parameters.vh"
+) ();
+
+    // Parameters
+    `include "ctrl_api_message_parameters.vh"
+    `include "ctrl_api_reliability_message_parameters.vh"
+    localparam NUM_CLUSTERS = 5; // 1 2 3 4 5  
+    localparam SEQUENCE_NUMBER_REPLY_TIMEOUT = 15;
+    localparam FPGA_NODE_ID_WIDTH = $clog2(NUM_CLUSTERS);
+
+    // IDs
+    localparam DUT_CTID = 3;
+    localparam REMOTE_CTRL_PORT = 'hDD;
+    localparam KIP_PORT = 'hAA;
+    integer i;
+
+    // Declarations
+    logic r_clk;
+    logic r_resetn;
+    logic w_sequence_numbers_initialized;
+    // AXI-Stream interface from Network Bridge
+    logic r_from_nb_tvalid;
+    logic w_from_nb_tready;
+    logic [AXIS_DATA_WIDTH-1:0] r_from_nb_tdata;
+    logic [AXIS_KEEP_WIDTH-1:0] r_from_nb_tkeep;
+    logic [AXIS_FROM_NB_TDEST_WIDTH-1:0] r_from_nb_tid;
+    logic [AXIS_FROM_NB_TDEST_WIDTH-1:0] r_from_nb_tdest;
+    logic [AXIS_FROM_NB_TUSER_WIDTH-1:0] r_from_nb_tuser;
+    logic r_from_nb_tlast;
+    // AXI-Stream to Network Bridge WAN Interface
+    logic w_to_nb_WAN_tvalid;
+    logic r_to_nb_WAN_tready;
+    logic [AXIS_DATA_WIDTH-1:0] w_to_nb_WAN_tdata;
+    logic [AXIS_KEEP_WIDTH-1:0] w_to_nb_WAN_tkeep;
+    logic [AXIS_WAN_TDEST_WIDTH-1:0] w_to_nb_WAN_tdest;
+    logic [AXIS_WAN_TUSER_WIDTH-1:0] w_to_nb_WAN_tuser;
+    logic w_to_nb_WAN_tlast;
+    // BRAM connection to Sequence Number BRAM
+    logic w_to_sequence_number_BRAM_CLK;
+    logic w_to_sequence_number_BRAM_RST;
+    logic w_to_sequence_number_BRAM_EN;
+    logic [BRAM_WEN_WIDTH-1:0] w_to_sequence_number_BRAM_WEN;
+    logic [WAN_SEQUENCE_NUMBER_WIDTH-1:0] w_to_sequence_number_BRAM_DIN;
+    logic [BRAM_ADDR_WIDTH-1:0] w_to_sequence_number_BRAM_ADDR;
+    logic [WAN_SEQUENCE_NUMBER_WIDTH-1:0] r_to_sequence_number_BRAM_DOUT;
+    // Fake BRAMs to simulate BRAM behaviour
+    logic [WAN_SEQUENCE_NUMBER_WIDTH-1:0] r_WAN_sequence_number_array [NUM_CLUSTERS-1:0];
+    
+    // DUT
+    rpn_WAN_sequence_number_initializer #(
+        .NUM_CLUSTERS(NUM_CLUSTERS),
+        .SEQUENCE_NUMBER_REPLY_TIMEOUT(SEQUENCE_NUMBER_REPLY_TIMEOUT)
+    ) DUT (
+        .i_clk(r_clk),
+        .i_ap_rst_n(r_resetn),
+        .o_sequence_numbers_initialized(w_sequence_numbers_initialized),
+        .i_cluster_id(DUT_CTID),
+        .i_gateway_control_port_number(REMOTE_CTRL_PORT),
+        // AXI-Stream interface from Network Bridge
+        .from_nb_tvalid(r_from_nb_tvalid),
+        .from_nb_tready(w_from_nb_tready),
+        .from_nb_tdata(r_from_nb_tdata),
+        .from_nb_tkeep(r_from_nb_tkeep),
+        .from_nb_tid(r_from_nb_tid),
+        .from_nb_tdest(r_from_nb_tdest),
+        .from_nb_tuser(r_from_nb_tuser),
+        .from_nb_tlast(r_from_nb_tlast),
+        // AXI-Stream to Network Bridge LAN Interface
+        .to_nb_WAN_tvalid(w_to_nb_WAN_tvalid),
+        .to_nb_WAN_tready(r_to_nb_WAN_tready),
+        .to_nb_WAN_tdata(w_to_nb_WAN_tdata),
+        .to_nb_WAN_tkeep(w_to_nb_WAN_tkeep),
+        .to_nb_WAN_tdest(w_to_nb_WAN_tdest),
+        .to_nb_WAN_tuser(w_to_nb_WAN_tuser),
+        .to_nb_WAN_tlast(w_to_nb_WAN_tlast),
+        // // BRAM connection for converting between node and sequence number
+        .node_to_WAN_seq_num_BRAM_CLK(w_to_sequence_number_BRAM_CLK),
+        .node_to_WAN_seq_num_BRAM_RST(w_to_sequence_number_BRAM_RST),
+        .node_to_WAN_seq_num_BRAM_EN(w_to_sequence_number_BRAM_EN),
+        .node_to_WAN_seq_num_BRAM_ADDR(w_to_sequence_number_BRAM_ADDR),
+        .node_to_WAN_seq_num_BRAM_DOUT(r_to_sequence_number_BRAM_DOUT),
+        .node_to_WAN_seq_num_BRAM_WEN(w_to_sequence_number_BRAM_WEN),
+        .node_to_WAN_seq_num_BRAM_DIN(w_to_sequence_number_BRAM_DIN)
+    );
+
+    // clock generator (100MHz, MUST BE BLOCKING)
+    initial begin
+        r_clk = 1;
+        forever
+            #5 r_clk = ~r_clk;
+    end 
+
+    // Reset Logic (for 10 cycles)
+    initial begin
+        r_resetn <= 0;
+        #100 r_resetn <= 1;
+    end
+
+    // Constants
+    initial begin
+        // From Network-Bridge Interface
+        r_from_nb_tkeep = 'hFFFFFFFFFFFFFFFF;
+        r_from_nb_tlast = 1;
+        // to-nb-LAN interface
+        r_to_nb_WAN_tready = 1;
+    end
+
+    // Test Logic
+    // initial begin
+    //     r_from_nb_tvalid <= 0;
+    //     r_from_nb_tdata <= 0;
+    //     r_from_nb_tid <= 0;
+    //     r_from_nb_tdest <= 0;
+    //     r_from_nb_tuser <= 0;
+    //     #200
+    //     // Test: Send WAN ACK replies using KIP back in order
+    //     // Node 1
+    //     r_from_nb_tvalid <= 1;
+    //     r_from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0] <= RPN_MSG_TYPE_WAN_SEQ_NUM_REPLY;
+    //     r_from_nb_tdata[WAN_ACK_SENDER_CTID_OFFSET+:WAN_ACK_SENDER_CTID_WIDTH] <= 1;
+    //     r_from_nb_tdata[WAN_ACK_SEQUENCE_NUMBER_OFFSET+:WAN_ACK_SEQUENCE_NUMBER_WIDTH] <= 'hAAAA;
+    //     r_from_nb_tid <= 0; // Doesn't matter, not used
+    //     r_from_nb_tdest <= 0; // Doesn't matter, not used
+    //     r_from_nb_tuser[IP_ADDRESS_WIDTH-1:0] <= 'hAABBCCDD;
+    //     r_from_nb_tuser[FROM_NB_TUSER_SRC_PORT_OFFSET+:FROM_NB_TUSER_SRC_PORT_WIDTH] <= KIP_PORT;
+    //     r_from_nb_tuser[FROM_NB_TUSER_DEST_PORT_OFFSET+:FROM_NB_TUSER_DEST_PORT_WIDTH] <= KIP_PORT;
+    //     #20
+    //     // Node 2
+    //     r_from_nb_tvalid <= 1;
+    //     r_from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0] <= RPN_MSG_TYPE_WAN_SEQ_NUM_REPLY;
+    //     r_from_nb_tdata[WAN_ACK_SENDER_CTID_OFFSET+:WAN_ACK_SENDER_CTID_WIDTH] <= 2;
+    //     r_from_nb_tdata[WAN_ACK_SEQUENCE_NUMBER_OFFSET+:WAN_ACK_SEQUENCE_NUMBER_WIDTH] <= 'hBBBB;
+    //     r_from_nb_tid <= 0; // Doesn't matter, not used
+    //     r_from_nb_tdest <= 0; // Doesn't matter, not used
+    //     r_from_nb_tuser[IP_ADDRESS_WIDTH-1:0] <= 'hBBCCDDEE;
+    //     r_from_nb_tuser[FROM_NB_TUSER_SRC_PORT_OFFSET+:FROM_NB_TUSER_SRC_PORT_WIDTH] <= KIP_PORT;
+    //     r_from_nb_tuser[FROM_NB_TUSER_DEST_PORT_OFFSET+:FROM_NB_TUSER_DEST_PORT_WIDTH] <= KIP_PORT;
+    //     #20
+    //     // Node 3
+    //     r_from_nb_tvalid <= 1;
+    //     r_from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0] <= RPN_MSG_TYPE_WAN_SEQ_NUM_REPLY;
+    //     r_from_nb_tdata[WAN_ACK_SENDER_CTID_OFFSET+:WAN_ACK_SENDER_CTID_WIDTH] <= 3;
+    //     r_from_nb_tdata[WAN_ACK_SEQUENCE_NUMBER_OFFSET+:WAN_ACK_SEQUENCE_NUMBER_WIDTH] <= 'hCCCC;
+    //     r_from_nb_tid <= 0; // Doesn't matter, not used
+    //     r_from_nb_tdest <= 0; // Doesn't matter, not used
+    //     r_from_nb_tuser[IP_ADDRESS_WIDTH-1:0] <= 'hCCDDEEFF;
+    //     r_from_nb_tuser[FROM_NB_TUSER_SRC_PORT_OFFSET+:FROM_NB_TUSER_SRC_PORT_WIDTH] <= KIP_PORT;
+    //     r_from_nb_tuser[FROM_NB_TUSER_DEST_PORT_OFFSET+:FROM_NB_TUSER_DEST_PORT_WIDTH] <= KIP_PORT;
+    //     #20
+    //     // Node 4
+    //     r_from_nb_tvalid <= 1;
+    //     r_from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0] <= RPN_MSG_TYPE_WAN_SEQ_NUM_REPLY;
+    //     r_from_nb_tdata[WAN_ACK_SENDER_CTID_OFFSET+:WAN_ACK_SENDER_CTID_WIDTH] <= 4;
+    //     r_from_nb_tdata[WAN_ACK_SEQUENCE_NUMBER_OFFSET+:WAN_ACK_SEQUENCE_NUMBER_WIDTH] <= 'hEEEE;
+    //     r_from_nb_tid <= 0; // Doesn't matter, not used
+    //     r_from_nb_tdest <= 0; // Doesn't matter, not used
+    //     r_from_nb_tuser[IP_ADDRESS_WIDTH-1:0] <= 'hDDEEFFAA;
+    //     r_from_nb_tuser[FROM_NB_TUSER_SRC_PORT_OFFSET+:FROM_NB_TUSER_SRC_PORT_WIDTH] <= KIP_PORT;
+    //     r_from_nb_tuser[FROM_NB_TUSER_DEST_PORT_OFFSET+:FROM_NB_TUSER_DEST_PORT_WIDTH] <= KIP_PORT;
+    //     #20
+    //     // Node 5
+    //     r_from_nb_tvalid <= 1;
+    //    r_from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0] <= RPN_MSG_TYPE_WAN_SEQ_NUM_REPLY;
+    //     r_from_nb_tdata[WAN_ACK_SENDER_CTID_OFFSET+:WAN_ACK_SENDER_CTID_WIDTH] <= 5;
+    //     r_from_nb_tdata[WAN_ACK_SEQUENCE_NUMBER_OFFSET+:WAN_ACK_SEQUENCE_NUMBER_WIDTH] <= 'hFFFF;
+    //     r_from_nb_tid <= 0; // Doesn't matter, not used
+    //     r_from_nb_tdest <= 0; // Doesn't matter, not used
+    //     r_from_nb_tuser[IP_ADDRESS_WIDTH-1:0] <= 'hEEFFAABB;
+    //     r_from_nb_tuser[FROM_NB_TUSER_SRC_PORT_OFFSET+:FROM_NB_TUSER_SRC_PORT_WIDTH] <= KIP_PORT;
+    //     r_from_nb_tuser[FROM_NB_TUSER_DEST_PORT_OFFSET+:FROM_NB_TUSER_DEST_PORT_WIDTH] <= KIP_PORT;
+    //     #1000
+    //     $finish;
+    // end
+    // // Test packets arriving in different order
+    // initial begin
+    //     r_from_nb_tvalid <= 0;
+    //     r_from_nb_tdata <= 0;
+    //     r_from_nb_tid <= 0;
+    //     r_from_nb_tdest <= 0;
+    //     r_from_nb_tuser <= 0;
+    //     #200
+    //     // Test: Send LAN ACK replies using KIP back in order
+    //     // Node 2
+    //     r_from_nb_tvalid <= 1;
+    //     r_from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0] <= RPN_MSG_TYPE_WAN_SEQ_NUM_REPLY;
+    //     r_from_nb_tdata[WAN_ACK_SENDER_CTID_OFFSET+:WAN_ACK_SENDER_CTID_WIDTH] <= 2;
+    //     r_from_nb_tdata[WAN_ACK_SEQUENCE_NUMBER_OFFSET+:WAN_ACK_SEQUENCE_NUMBER_WIDTH] <= 'hBBBB;
+    //     r_from_nb_tid <= 0; // Doesn't matter, not used
+    //     r_from_nb_tdest <= 0; // Doesn't matter, not used
+    //     r_from_nb_tuser[IP_ADDRESS_WIDTH-1:0] <= 'hBBCCDDEE;
+    //     r_from_nb_tuser[FROM_NB_TUSER_SRC_PORT_OFFSET+:FROM_NB_TUSER_SRC_PORT_WIDTH] <= KIP_PORT;
+    //     r_from_nb_tuser[FROM_NB_TUSER_DEST_PORT_OFFSET+:FROM_NB_TUSER_DEST_PORT_WIDTH] <= KIP_PORT;
+    //     #20
+    //     // Node 1
+    //     r_from_nb_tvalid <= 1;
+    //     r_from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0] <= RPN_MSG_TYPE_WAN_SEQ_NUM_REPLY;
+    //     r_from_nb_tdata[WAN_ACK_SENDER_CTID_OFFSET+:WAN_ACK_SENDER_CTID_WIDTH] <= 1;
+    //     r_from_nb_tdata[WAN_ACK_SEQUENCE_NUMBER_OFFSET+:WAN_ACK_SEQUENCE_NUMBER_WIDTH] <= 'hAAAA;
+    //     r_from_nb_tid <= 0; // Doesn't matter, not used
+    //     r_from_nb_tdest <= 0; // Doesn't matter, not used
+    //     r_from_nb_tuser[IP_ADDRESS_WIDTH-1:0] <= 'hAABBCCDD;
+    //     r_from_nb_tuser[FROM_NB_TUSER_SRC_PORT_OFFSET+:FROM_NB_TUSER_SRC_PORT_WIDTH] <= KIP_PORT;
+    //     r_from_nb_tuser[FROM_NB_TUSER_DEST_PORT_OFFSET+:FROM_NB_TUSER_DEST_PORT_WIDTH] <= KIP_PORT;
+    //     #20
+    //     // Node 3
+    //     r_from_nb_tvalid <= 1;
+    //     r_from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0] <= RPN_MSG_TYPE_WAN_SEQ_NUM_REPLY;
+    //     r_from_nb_tdata[WAN_ACK_SENDER_CTID_OFFSET+:WAN_ACK_SENDER_CTID_WIDTH] <= 3;
+    //     r_from_nb_tdata[WAN_ACK_SEQUENCE_NUMBER_OFFSET+:WAN_ACK_SEQUENCE_NUMBER_WIDTH] <= 'hCCCC;
+    //     r_from_nb_tid <= 0; // Doesn't matter, not used
+    //     r_from_nb_tdest <= 0; // Doesn't matter, not used
+    //     r_from_nb_tuser[IP_ADDRESS_WIDTH-1:0] <= 'hCCDDEEFF;
+    //     r_from_nb_tuser[FROM_NB_TUSER_SRC_PORT_OFFSET+:FROM_NB_TUSER_SRC_PORT_WIDTH] <= KIP_PORT;
+    //     r_from_nb_tuser[FROM_NB_TUSER_DEST_PORT_OFFSET+:FROM_NB_TUSER_DEST_PORT_WIDTH] <= KIP_PORT;
+    //     #20
+    //     // Node 2
+    //     r_from_nb_tvalid <= 1;
+    //     r_from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0] <= RPN_MSG_TYPE_WAN_SEQ_NUM_REPLY;
+    //     r_from_nb_tdata[WAN_ACK_SENDER_CTID_OFFSET+:WAN_ACK_SENDER_CTID_WIDTH] <= 2;
+    //     r_from_nb_tdata[WAN_ACK_SEQUENCE_NUMBER_OFFSET+:WAN_ACK_SEQUENCE_NUMBER_WIDTH] <= 'hBBBB;
+    //     r_from_nb_tid <= 0; // Doesn't matter, not used
+    //     r_from_nb_tdest <= 0; // Doesn't matter, not used
+    //     r_from_nb_tuser[IP_ADDRESS_WIDTH-1:0] <= 'hBBCCDDEE;
+    //     r_from_nb_tuser[FROM_NB_TUSER_SRC_PORT_OFFSET+:FROM_NB_TUSER_SRC_PORT_WIDTH] <= KIP_PORT;
+    //     r_from_nb_tuser[FROM_NB_TUSER_DEST_PORT_OFFSET+:FROM_NB_TUSER_DEST_PORT_WIDTH] <= KIP_PORT;
+    //     #20
+    //     // Node 5
+    //     r_from_nb_tvalid <= 1;
+    //     r_from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0] <= RPN_MSG_TYPE_WAN_SEQ_NUM_REPLY;
+    //     r_from_nb_tdata[WAN_ACK_SENDER_CTID_OFFSET+:WAN_ACK_SENDER_CTID_WIDTH] <= 5;
+    //     r_from_nb_tdata[WAN_ACK_SEQUENCE_NUMBER_OFFSET+:WAN_ACK_SEQUENCE_NUMBER_WIDTH] <= 'hFFFF;
+    //     r_from_nb_tid <= 0; // Doesn't matter, not used
+    //     r_from_nb_tdest <= 0; // Doesn't matter, not used
+    //     r_from_nb_tuser[IP_ADDRESS_WIDTH-1:0] <= 'hEEFFAABB;
+    //     r_from_nb_tuser[FROM_NB_TUSER_SRC_PORT_OFFSET+:FROM_NB_TUSER_SRC_PORT_WIDTH] <= KIP_PORT;
+    //     r_from_nb_tuser[FROM_NB_TUSER_DEST_PORT_OFFSET+:FROM_NB_TUSER_DEST_PORT_WIDTH] <= KIP_PORT;
+    //     #20
+    //     // Node 4
+    //     r_from_nb_tvalid <= 1;
+    //     r_from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0] <= RPN_MSG_TYPE_WAN_SEQ_NUM_REPLY;
+    //     r_from_nb_tdata[WAN_ACK_SENDER_CTID_OFFSET+:WAN_ACK_SENDER_CTID_WIDTH] <= 4;
+    //     r_from_nb_tdata[WAN_ACK_SEQUENCE_NUMBER_OFFSET+:WAN_ACK_SEQUENCE_NUMBER_WIDTH] <= 'hEEEE;
+    //     r_from_nb_tid <= 0; // Doesn't matter, not used
+    //     r_from_nb_tdest <= 0; // Doesn't matter, not used
+    //     r_from_nb_tuser[IP_ADDRESS_WIDTH-1:0] <= 'hDDEEFFAA;
+    //     r_from_nb_tuser[FROM_NB_TUSER_SRC_PORT_OFFSET+:FROM_NB_TUSER_SRC_PORT_WIDTH] <= KIP_PORT;
+    //     r_from_nb_tuser[FROM_NB_TUSER_DEST_PORT_OFFSET+:FROM_NB_TUSER_DEST_PORT_WIDTH] <= KIP_PORT;
+    //     #20
+    //     // Node 2
+    //     r_from_nb_tvalid <= 1;
+    //     r_from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0] <= RPN_MSG_TYPE_WAN_SEQ_NUM_REPLY;
+    //     r_from_nb_tdata[WAN_ACK_SENDER_CTID_OFFSET+:WAN_ACK_SENDER_CTID_WIDTH] <= 2;
+    //     r_from_nb_tdata[WAN_ACK_SEQUENCE_NUMBER_OFFSET+:WAN_ACK_SEQUENCE_NUMBER_WIDTH] <= 'hBBBB;
+    //     r_from_nb_tid <= 0; // Doesn't matter, not used
+    //     r_from_nb_tdest <= 0; // Doesn't matter, not used
+    //     r_from_nb_tuser[IP_ADDRESS_WIDTH-1:0] <= 'hBBCCDDEE;
+    //     r_from_nb_tuser[FROM_NB_TUSER_SRC_PORT_OFFSET+:FROM_NB_TUSER_SRC_PORT_WIDTH] <= KIP_PORT;
+    //     r_from_nb_tuser[FROM_NB_TUSER_DEST_PORT_OFFSET+:FROM_NB_TUSER_DEST_PORT_WIDTH] <= KIP_PORT;
+    //     #1000
+    //     $finish;
+    // end
+    // Test packets arriving in different order at different times
+    initial begin
+        r_from_nb_tvalid <= 0;
+        r_from_nb_tdata <= 0;
+        r_from_nb_tid <= 0;
+        r_from_nb_tdest <= 0;
+        r_from_nb_tuser <= 0;
+        #200
+        // Node 2
+        r_from_nb_tvalid <= 1;
+        r_from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0] <= RPN_MSG_TYPE_WAN_SEQ_NUM_REPLY;
+        r_from_nb_tdata[WAN_ACK_SENDER_CTID_OFFSET+:WAN_ACK_SENDER_CTID_WIDTH] <= 2;
+        r_from_nb_tdata[WAN_ACK_SEQUENCE_NUMBER_OFFSET+:WAN_ACK_SEQUENCE_NUMBER_WIDTH] <= 'hBBBB;
+        r_from_nb_tid <= 0; // Doesn't matter, not used
+        r_from_nb_tdest <= 0; // Doesn't matter, not used
+        r_from_nb_tuser[IP_ADDRESS_WIDTH-1:0] <= 'hBBCCDDEE;
+        r_from_nb_tuser[FROM_NB_TUSER_SRC_PORT_OFFSET+:FROM_NB_TUSER_SRC_PORT_WIDTH] <= KIP_PORT;
+        r_from_nb_tuser[FROM_NB_TUSER_DEST_PORT_OFFSET+:FROM_NB_TUSER_DEST_PORT_WIDTH] <= KIP_PORT;
+        #200
+        // Node 1
+        r_from_nb_tvalid <= 1;
+        r_from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0] <= RPN_MSG_TYPE_WAN_SEQ_NUM_REPLY;
+        r_from_nb_tdata[WAN_ACK_SENDER_CTID_OFFSET+:WAN_ACK_SENDER_CTID_WIDTH] <= 1;
+        r_from_nb_tdata[WAN_ACK_SEQUENCE_NUMBER_OFFSET+:WAN_ACK_SEQUENCE_NUMBER_WIDTH] <= 'hAAAA;
+        r_from_nb_tid <= 0; // Doesn't matter, not used
+        r_from_nb_tdest <= 0; // Doesn't matter, not used
+        r_from_nb_tuser[IP_ADDRESS_WIDTH-1:0] <= 'hAABBCCDD;
+        r_from_nb_tuser[FROM_NB_TUSER_SRC_PORT_OFFSET+:FROM_NB_TUSER_SRC_PORT_WIDTH] <= KIP_PORT;
+        r_from_nb_tuser[FROM_NB_TUSER_DEST_PORT_OFFSET+:FROM_NB_TUSER_DEST_PORT_WIDTH] <= KIP_PORT;
+        #200
+        // Node 3
+        r_from_nb_tvalid <= 1;
+        r_from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0] <= RPN_MSG_TYPE_WAN_SEQ_NUM_REPLY;
+        r_from_nb_tdata[WAN_ACK_SENDER_CTID_OFFSET+:WAN_ACK_SENDER_CTID_WIDTH] <= 3;
+        r_from_nb_tdata[WAN_ACK_SEQUENCE_NUMBER_OFFSET+:WAN_ACK_SEQUENCE_NUMBER_WIDTH] <= 'hCCCC;
+        r_from_nb_tid <= 0; // Doesn't matter, not used
+        r_from_nb_tdest <= 0; // Doesn't matter, not used
+        r_from_nb_tuser[IP_ADDRESS_WIDTH-1:0] <= 'hCCDDEEFF;
+        r_from_nb_tuser[FROM_NB_TUSER_SRC_PORT_OFFSET+:FROM_NB_TUSER_SRC_PORT_WIDTH] <= KIP_PORT;
+        r_from_nb_tuser[FROM_NB_TUSER_DEST_PORT_OFFSET+:FROM_NB_TUSER_DEST_PORT_WIDTH] <= KIP_PORT;
+        #200
+        // Node 2
+        r_from_nb_tvalid <= 1;
+        r_from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0] <= RPN_MSG_TYPE_WAN_SEQ_NUM_REPLY;
+        r_from_nb_tdata[WAN_ACK_SENDER_CTID_OFFSET+:WAN_ACK_SENDER_CTID_WIDTH] <= 2;
+        r_from_nb_tdata[WAN_ACK_SEQUENCE_NUMBER_OFFSET+:WAN_ACK_SEQUENCE_NUMBER_WIDTH] <= 'hBBBB;
+        r_from_nb_tid <= 0; // Doesn't matter, not used
+        r_from_nb_tdest <= 0; // Doesn't matter, not used
+        r_from_nb_tuser[IP_ADDRESS_WIDTH-1:0] <= 'hBBCCDDEE;
+        r_from_nb_tuser[FROM_NB_TUSER_SRC_PORT_OFFSET+:FROM_NB_TUSER_SRC_PORT_WIDTH] <= KIP_PORT;
+        r_from_nb_tuser[FROM_NB_TUSER_DEST_PORT_OFFSET+:FROM_NB_TUSER_DEST_PORT_WIDTH] <= KIP_PORT;
+        #200
+        // Node 5
+        r_from_nb_tvalid <= 1;
+        r_from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0] <= RPN_MSG_TYPE_WAN_SEQ_NUM_REPLY;
+        r_from_nb_tdata[WAN_ACK_SENDER_CTID_OFFSET+:WAN_ACK_SENDER_CTID_WIDTH] <= 5;
+        r_from_nb_tdata[WAN_ACK_SEQUENCE_NUMBER_OFFSET+:WAN_ACK_SEQUENCE_NUMBER_WIDTH] <= 'hFFFF;
+        r_from_nb_tid <= 0; // Doesn't matter, not used
+        r_from_nb_tdest <= 0; // Doesn't matter, not used
+        r_from_nb_tuser[IP_ADDRESS_WIDTH-1:0] <= 'hEEFFAABB;
+        r_from_nb_tuser[FROM_NB_TUSER_SRC_PORT_OFFSET+:FROM_NB_TUSER_SRC_PORT_WIDTH] <= KIP_PORT;
+        r_from_nb_tuser[FROM_NB_TUSER_DEST_PORT_OFFSET+:FROM_NB_TUSER_DEST_PORT_WIDTH] <= KIP_PORT;
+        #200
+        // Node 4
+        r_from_nb_tvalid <= 1;
+        r_from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0] <= RPN_MSG_TYPE_WAN_SEQ_NUM_REPLY;
+        r_from_nb_tdata[WAN_ACK_SENDER_CTID_OFFSET+:WAN_ACK_SENDER_CTID_WIDTH] <= 4;
+        r_from_nb_tdata[WAN_ACK_SEQUENCE_NUMBER_OFFSET+:WAN_ACK_SEQUENCE_NUMBER_WIDTH] <= 'hEEEE;
+        r_from_nb_tid <= 0; // Doesn't matter, not used
+        r_from_nb_tdest <= 0; // Doesn't matter, not used
+        r_from_nb_tuser[IP_ADDRESS_WIDTH-1:0] <= 'hDDEEFFAA;
+        r_from_nb_tuser[FROM_NB_TUSER_SRC_PORT_OFFSET+:FROM_NB_TUSER_SRC_PORT_WIDTH] <= KIP_PORT;
+        r_from_nb_tuser[FROM_NB_TUSER_DEST_PORT_OFFSET+:FROM_NB_TUSER_DEST_PORT_WIDTH] <= KIP_PORT;
+        #200
+        // Node 2
+        r_from_nb_tvalid <= 1;
+        r_from_nb_tdata[RPN_MSG_TYPE_WIDTH-1:0] <= RPN_MSG_TYPE_WAN_SEQ_NUM_REPLY;
+        r_from_nb_tdata[WAN_ACK_SENDER_CTID_OFFSET+:WAN_ACK_SENDER_CTID_WIDTH] <= 2;
+        r_from_nb_tdata[WAN_ACK_SEQUENCE_NUMBER_OFFSET+:WAN_ACK_SEQUENCE_NUMBER_WIDTH] <= 'hBBBB;
+        r_from_nb_tid <= 0; // Doesn't matter, not used
+        r_from_nb_tdest <= 0; // Doesn't matter, not used
+        r_from_nb_tuser[IP_ADDRESS_WIDTH-1:0] <= 'hBBCCDDEE;
+        r_from_nb_tuser[FROM_NB_TUSER_SRC_PORT_OFFSET+:FROM_NB_TUSER_SRC_PORT_WIDTH] <= KIP_PORT;
+        r_from_nb_tuser[FROM_NB_TUSER_DEST_PORT_OFFSET+:FROM_NB_TUSER_DEST_PORT_WIDTH] <= KIP_PORT;
+        #1000
+        $finish;
+    end
+
+    // Simulate Sequence Number block ram
+    initial begin
+        for (i = 0; i < NUM_CLUSTERS; i = i + 1)
+            r_WAN_sequence_number_array[i] = i*3;
+    end
+    // Case 1: Writing a sequence number
+    always_ff @(posedge r_clk, negedge r_resetn) begin
+        if (w_to_sequence_number_BRAM_EN == 1 
+         && w_to_sequence_number_BRAM_WEN == 1)
+            r_WAN_sequence_number_array[w_to_sequence_number_BRAM_ADDR>>2] <= w_to_sequence_number_BRAM_DIN;
+        else
+            r_WAN_sequence_number_array[w_to_sequence_number_BRAM_ADDR>>2] <= r_WAN_sequence_number_array[w_to_sequence_number_BRAM_ADDR>>2];
+    end
+    // Case 2: Reading a sequence number
+    always_ff @(posedge r_clk, negedge r_resetn) begin
+        if (r_resetn == 0) begin
+            r_to_sequence_number_BRAM_DOUT <= 0;
+        end
+        else if (w_to_sequence_number_BRAM_EN == 1 
+         && w_to_sequence_number_BRAM_WEN == 0)
+            r_to_sequence_number_BRAM_DOUT <= r_WAN_sequence_number_array[w_to_sequence_number_BRAM_ADDR>>2];
+        else
+            r_to_sequence_number_BRAM_DOUT <= 0;
+    end
+endmodule

@@ -1,0 +1,1293 @@
+{
+  "design": {
+    "design_info": {
+      "boundary_crc": "0xA4FDFB7F08993818",
+      "device": "xczu19eg-ffvc1760-2-i",
+      "name": "lbus_axis_converter",
+      "synth_flow_mode": "Hierarchical",
+      "tool_version": "2019.1",
+      "validated": "true"
+    },
+    "design_tree": {
+      "lbus_fifo_read_0": "",
+      "lbus_fifo_write_0": "",
+      "fifo_generator_0": "",
+      "fifo_generator_1": "",
+      "axis2lbus_0": "",
+      "util_vector_logic_0": ""
+    },
+    "ports": {
+      "error": {
+        "direction": "O",
+        "left": "0",
+        "right": "0"
+      },
+      "clk": {
+        "type": "clk",
+        "direction": "I",
+        "parameters": {
+          "ASSOCIATED_RESET": {
+            "value": "rst",
+            "value_src": "default"
+          },
+          "CLK_DOMAIN": {
+            "value": "lbus_axis_converter_ap_clk_0",
+            "value_src": "default"
+          },
+          "FREQ_HZ": {
+            "value": "100000000",
+            "value_src": "default"
+          },
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "PHASE": {
+            "value": "0.000",
+            "value_src": "default"
+          }
+        }
+      },
+      "rst": {
+        "type": "rst",
+        "direction": "I",
+        "parameters": {
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "POLARITY": {
+            "value": "ACTIVE_HIGH"
+          }
+        }
+      },
+      "m_axis_data": {
+        "type": "data",
+        "direction": "O",
+        "left": "511",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "m_axis_keep": {
+        "type": "data",
+        "direction": "O",
+        "left": "63",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "m_axis_last": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "m_axis_valid": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "s_axis_data": {
+        "type": "data",
+        "direction": "I",
+        "left": "511",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "s_axis_keep": {
+        "type": "data",
+        "direction": "I",
+        "left": "63",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "s_axis_last": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "s_axis_valid": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "axis_ready": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_0_data_V_0": {
+        "type": "data",
+        "direction": "I",
+        "left": "127",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_2_eop_V_0": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_0_sop_V_0": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_3_eop_V_0": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_1_sop_V_0": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_2_ena_V_0": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_3_ena_V_0": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_0_ena_V_0": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_2_mty_V_0": {
+        "type": "data",
+        "direction": "I",
+        "left": "3",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_1_ena_V_0": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_3_mty_V_0": {
+        "type": "data",
+        "direction": "I",
+        "left": "3",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_2_data_V_0": {
+        "type": "data",
+        "direction": "I",
+        "left": "127",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_0_mty_V_0": {
+        "type": "data",
+        "direction": "I",
+        "left": "3",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_3_data_V_0": {
+        "type": "data",
+        "direction": "I",
+        "left": "127",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_1_mty_V_0": {
+        "type": "data",
+        "direction": "I",
+        "left": "3",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_2_err_V_0": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_0_eop_V_0": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_1_data_V_0": {
+        "type": "data",
+        "direction": "I",
+        "left": "127",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_3_err_V_0": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_1_eop_V_0": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_0_err_V_0": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_2_sop_V_0": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_1_err_V_0": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_3_sop_V_0": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_3_sop_V_1": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_1_ena_V_1": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_ready_V_0": {
+        "type": "data",
+        "direction": "I",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_0_eop_V_1": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_2_ena_V_1": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_1_eop_V_1": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_3_ena_V_1": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_2_eop_V_1": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_0_sop_V_1": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_3_eop_V_1": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_1_sop_V_1": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_0_err_V_1": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_1_err_V_1": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_2_err_V_1": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_3_err_V_1": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_0_data_V_1": {
+        "type": "data",
+        "direction": "O",
+        "left": "127",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_0_mty_V_1": {
+        "type": "data",
+        "direction": "O",
+        "left": "3",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_1_data_V_1": {
+        "type": "data",
+        "direction": "O",
+        "left": "127",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_1_mty_V_1": {
+        "type": "data",
+        "direction": "O",
+        "left": "3",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_2_data_V_1": {
+        "type": "data",
+        "direction": "O",
+        "left": "127",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_2_mty_V_1": {
+        "type": "data",
+        "direction": "O",
+        "left": "3",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_3_data_V_1": {
+        "type": "data",
+        "direction": "O",
+        "left": "127",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_3_mty_V_1": {
+        "type": "data",
+        "direction": "O",
+        "left": "3",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_2_sop_V_1": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      },
+      "lbus_0_ena_V_1": {
+        "type": "data",
+        "direction": "O",
+        "left": "0",
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
+      }
+    },
+    "components": {
+      "lbus_fifo_read_0": {
+        "vlnv": "xilinx.com:hls:lbus_fifo_read:1.0",
+        "xci_name": "lbus_axis_converter_lbus_fifo_read_0_0"
+      },
+      "lbus_fifo_write_0": {
+        "vlnv": "xilinx.com:hls:lbus_fifo_write:1.0",
+        "xci_name": "lbus_axis_converter_lbus_fifo_write_0_0"
+      },
+      "fifo_generator_0": {
+        "vlnv": "xilinx.com:ip:fifo_generator:13.2",
+        "xci_name": "lbus_axis_converter_fifo_generator_0_0",
+        "parameters": {
+          "Fifo_Implementation": {
+            "value": "Common_Clock_Distributed_RAM"
+          },
+          "Full_Flags_Reset_Value": {
+            "value": "1"
+          },
+          "Input_Data_Width": {
+            "value": "544"
+          },
+          "Input_Depth": {
+            "value": "16"
+          },
+          "Reset_Type": {
+            "value": "Asynchronous_Reset"
+          },
+          "Valid_Flag": {
+            "value": "true"
+          }
+        }
+      },
+      "fifo_generator_1": {
+        "vlnv": "xilinx.com:ip:fifo_generator:13.2",
+        "xci_name": "lbus_axis_converter_fifo_generator_1_0",
+        "parameters": {
+          "Fifo_Implementation": {
+            "value": "Common_Clock_Distributed_RAM"
+          },
+          "Full_Flags_Reset_Value": {
+            "value": "1"
+          },
+          "Input_Data_Width": {
+            "value": "408"
+          },
+          "Input_Depth": {
+            "value": "16"
+          },
+          "Reset_Type": {
+            "value": "Asynchronous_Reset"
+          },
+          "Valid_Flag": {
+            "value": "true"
+          }
+        }
+      },
+      "axis2lbus_0": {
+        "vlnv": "xilinx.com:hls:axis2lbus:1.0",
+        "xci_name": "lbus_axis_converter_axis2lbus_0_0"
+      },
+      "util_vector_logic_0": {
+        "vlnv": "xilinx.com:ip:util_vector_logic:2.0",
+        "xci_name": "lbus_axis_converter_util_vector_logic_0_0",
+        "parameters": {
+          "C_SIZE": {
+            "value": "1"
+          }
+        }
+      }
+    },
+    "nets": {
+      "util_vector_logic_0_Res": {
+        "ports": [
+          "util_vector_logic_0/Res",
+          "error"
+        ]
+      },
+      "ap_clk_0_1": {
+        "ports": [
+          "clk",
+          "lbus_fifo_write_0/ap_clk",
+          "lbus_fifo_read_0/ap_clk",
+          "fifo_generator_0/clk",
+          "fifo_generator_1/clk",
+          "axis2lbus_0/ap_clk"
+        ]
+      },
+      "ap_rst_0_1": {
+        "ports": [
+          "rst",
+          "lbus_fifo_write_0/ap_rst",
+          "lbus_fifo_read_0/ap_rst",
+          "fifo_generator_0/rst",
+          "fifo_generator_1/rst",
+          "axis2lbus_0/ap_rst"
+        ]
+      },
+      "lbus_fifo_read_0_m_axis_data_V": {
+        "ports": [
+          "lbus_fifo_read_0/m_axis_data_V",
+          "m_axis_data"
+        ]
+      },
+      "lbus_fifo_read_0_m_axis_keep_V": {
+        "ports": [
+          "lbus_fifo_read_0/m_axis_keep_V",
+          "m_axis_keep"
+        ]
+      },
+      "lbus_fifo_read_0_m_axis_last_V": {
+        "ports": [
+          "lbus_fifo_read_0/m_axis_last_V",
+          "m_axis_last"
+        ]
+      },
+      "lbus_fifo_read_0_m_axis_valid_V": {
+        "ports": [
+          "lbus_fifo_read_0/m_axis_valid_V",
+          "m_axis_valid"
+        ]
+      },
+      "s_axis_data_V_0_1": {
+        "ports": [
+          "s_axis_data",
+          "axis2lbus_0/s_axis_data_V"
+        ]
+      },
+      "s_axis_keep_V_0_1": {
+        "ports": [
+          "s_axis_keep",
+          "axis2lbus_0/s_axis_keep_V"
+        ]
+      },
+      "s_axis_last_V_0_1": {
+        "ports": [
+          "s_axis_last",
+          "axis2lbus_0/s_axis_last_V"
+        ]
+      },
+      "s_axis_valid_V_0_1": {
+        "ports": [
+          "s_axis_valid",
+          "axis2lbus_0/s_axis_valid_V"
+        ]
+      },
+      "axis2lbus_0_axis_ready_V": {
+        "ports": [
+          "axis2lbus_0/axis_ready_V",
+          "axis_ready"
+        ]
+      },
+      "lbus_0_data_V_0_1": {
+        "ports": [
+          "lbus_0_data_V_0",
+          "lbus_fifo_write_0/lbus_0_data_V"
+        ]
+      },
+      "lbus_2_eop_V_0_1": {
+        "ports": [
+          "lbus_2_eop_V_0",
+          "lbus_fifo_write_0/lbus_2_eop_V"
+        ]
+      },
+      "lbus_0_sop_V_0_1": {
+        "ports": [
+          "lbus_0_sop_V_0",
+          "lbus_fifo_write_0/lbus_0_sop_V"
+        ]
+      },
+      "lbus_3_eop_V_0_1": {
+        "ports": [
+          "lbus_3_eop_V_0",
+          "lbus_fifo_write_0/lbus_3_eop_V"
+        ]
+      },
+      "lbus_1_sop_V_0_1": {
+        "ports": [
+          "lbus_1_sop_V_0",
+          "lbus_fifo_write_0/lbus_1_sop_V"
+        ]
+      },
+      "lbus_2_ena_V_0_1": {
+        "ports": [
+          "lbus_2_ena_V_0",
+          "lbus_fifo_write_0/lbus_2_ena_V"
+        ]
+      },
+      "lbus_3_ena_V_0_1": {
+        "ports": [
+          "lbus_3_ena_V_0",
+          "lbus_fifo_write_0/lbus_3_ena_V"
+        ]
+      },
+      "lbus_0_ena_V_0_1": {
+        "ports": [
+          "lbus_0_ena_V_0",
+          "lbus_fifo_write_0/lbus_0_ena_V"
+        ]
+      },
+      "lbus_2_mty_V_0_1": {
+        "ports": [
+          "lbus_2_mty_V_0",
+          "lbus_fifo_write_0/lbus_2_mty_V"
+        ]
+      },
+      "lbus_1_ena_V_0_1": {
+        "ports": [
+          "lbus_1_ena_V_0",
+          "lbus_fifo_write_0/lbus_1_ena_V"
+        ]
+      },
+      "lbus_3_mty_V_0_1": {
+        "ports": [
+          "lbus_3_mty_V_0",
+          "lbus_fifo_write_0/lbus_3_mty_V"
+        ]
+      },
+      "lbus_2_data_V_0_1": {
+        "ports": [
+          "lbus_2_data_V_0",
+          "lbus_fifo_write_0/lbus_2_data_V"
+        ]
+      },
+      "lbus_0_mty_V_0_1": {
+        "ports": [
+          "lbus_0_mty_V_0",
+          "lbus_fifo_write_0/lbus_0_mty_V"
+        ]
+      },
+      "lbus_3_data_V_0_1": {
+        "ports": [
+          "lbus_3_data_V_0",
+          "lbus_fifo_write_0/lbus_3_data_V"
+        ]
+      },
+      "lbus_1_mty_V_0_1": {
+        "ports": [
+          "lbus_1_mty_V_0",
+          "lbus_fifo_write_0/lbus_1_mty_V"
+        ]
+      },
+      "lbus_2_err_V_0_1": {
+        "ports": [
+          "lbus_2_err_V_0",
+          "lbus_fifo_write_0/lbus_2_err_V"
+        ]
+      },
+      "lbus_0_eop_V_0_1": {
+        "ports": [
+          "lbus_0_eop_V_0",
+          "lbus_fifo_write_0/lbus_0_eop_V"
+        ]
+      },
+      "lbus_1_data_V_0_1": {
+        "ports": [
+          "lbus_1_data_V_0",
+          "lbus_fifo_write_0/lbus_1_data_V"
+        ]
+      },
+      "lbus_3_err_V_0_1": {
+        "ports": [
+          "lbus_3_err_V_0",
+          "lbus_fifo_write_0/lbus_3_err_V"
+        ]
+      },
+      "lbus_1_eop_V_0_1": {
+        "ports": [
+          "lbus_1_eop_V_0",
+          "lbus_fifo_write_0/lbus_1_eop_V"
+        ]
+      },
+      "lbus_0_err_V_0_1": {
+        "ports": [
+          "lbus_0_err_V_0",
+          "lbus_fifo_write_0/lbus_0_err_V"
+        ]
+      },
+      "lbus_2_sop_V_0_1": {
+        "ports": [
+          "lbus_2_sop_V_0",
+          "lbus_fifo_write_0/lbus_2_sop_V"
+        ]
+      },
+      "lbus_1_err_V_0_1": {
+        "ports": [
+          "lbus_1_err_V_0",
+          "lbus_fifo_write_0/lbus_1_err_V"
+        ]
+      },
+      "lbus_3_sop_V_0_1": {
+        "ports": [
+          "lbus_3_sop_V_0",
+          "lbus_fifo_write_0/lbus_3_sop_V"
+        ]
+      },
+      "axis2lbus_0_lbus_3_sop_V": {
+        "ports": [
+          "axis2lbus_0/lbus_3_sop_V",
+          "lbus_3_sop_V_1"
+        ]
+      },
+      "axis2lbus_0_lbus_1_ena_V": {
+        "ports": [
+          "axis2lbus_0/lbus_1_ena_V",
+          "lbus_1_ena_V_1"
+        ]
+      },
+      "lbus_ready_V_0_1": {
+        "ports": [
+          "lbus_ready_V_0",
+          "axis2lbus_0/lbus_ready_V"
+        ]
+      },
+      "axis2lbus_0_lbus_0_eop_V": {
+        "ports": [
+          "axis2lbus_0/lbus_0_eop_V",
+          "lbus_0_eop_V_1"
+        ]
+      },
+      "axis2lbus_0_lbus_2_ena_V": {
+        "ports": [
+          "axis2lbus_0/lbus_2_ena_V",
+          "lbus_2_ena_V_1"
+        ]
+      },
+      "axis2lbus_0_lbus_1_eop_V": {
+        "ports": [
+          "axis2lbus_0/lbus_1_eop_V",
+          "lbus_1_eop_V_1"
+        ]
+      },
+      "axis2lbus_0_lbus_3_ena_V": {
+        "ports": [
+          "axis2lbus_0/lbus_3_ena_V",
+          "lbus_3_ena_V_1"
+        ]
+      },
+      "axis2lbus_0_lbus_2_eop_V": {
+        "ports": [
+          "axis2lbus_0/lbus_2_eop_V",
+          "lbus_2_eop_V_1"
+        ]
+      },
+      "axis2lbus_0_lbus_0_sop_V": {
+        "ports": [
+          "axis2lbus_0/lbus_0_sop_V",
+          "lbus_0_sop_V_1"
+        ]
+      },
+      "axis2lbus_0_lbus_3_eop_V": {
+        "ports": [
+          "axis2lbus_0/lbus_3_eop_V",
+          "lbus_3_eop_V_1"
+        ]
+      },
+      "axis2lbus_0_lbus_1_sop_V": {
+        "ports": [
+          "axis2lbus_0/lbus_1_sop_V",
+          "lbus_1_sop_V_1"
+        ]
+      },
+      "axis2lbus_0_lbus_0_err_V": {
+        "ports": [
+          "axis2lbus_0/lbus_0_err_V",
+          "lbus_0_err_V_1"
+        ]
+      },
+      "axis2lbus_0_lbus_1_err_V": {
+        "ports": [
+          "axis2lbus_0/lbus_1_err_V",
+          "lbus_1_err_V_1"
+        ]
+      },
+      "axis2lbus_0_lbus_2_err_V": {
+        "ports": [
+          "axis2lbus_0/lbus_2_err_V",
+          "lbus_2_err_V_1"
+        ]
+      },
+      "axis2lbus_0_lbus_3_err_V": {
+        "ports": [
+          "axis2lbus_0/lbus_3_err_V",
+          "lbus_3_err_V_1"
+        ]
+      },
+      "axis2lbus_0_lbus_0_data_V": {
+        "ports": [
+          "axis2lbus_0/lbus_0_data_V",
+          "lbus_0_data_V_1"
+        ]
+      },
+      "axis2lbus_0_lbus_0_mty_V": {
+        "ports": [
+          "axis2lbus_0/lbus_0_mty_V",
+          "lbus_0_mty_V_1"
+        ]
+      },
+      "axis2lbus_0_lbus_1_data_V": {
+        "ports": [
+          "axis2lbus_0/lbus_1_data_V",
+          "lbus_1_data_V_1"
+        ]
+      },
+      "axis2lbus_0_lbus_1_mty_V": {
+        "ports": [
+          "axis2lbus_0/lbus_1_mty_V",
+          "lbus_1_mty_V_1"
+        ]
+      },
+      "axis2lbus_0_lbus_2_data_V": {
+        "ports": [
+          "axis2lbus_0/lbus_2_data_V",
+          "lbus_2_data_V_1"
+        ]
+      },
+      "axis2lbus_0_lbus_2_mty_V": {
+        "ports": [
+          "axis2lbus_0/lbus_2_mty_V",
+          "lbus_2_mty_V_1"
+        ]
+      },
+      "axis2lbus_0_lbus_3_data_V": {
+        "ports": [
+          "axis2lbus_0/lbus_3_data_V",
+          "lbus_3_data_V_1"
+        ]
+      },
+      "axis2lbus_0_lbus_3_mty_V": {
+        "ports": [
+          "axis2lbus_0/lbus_3_mty_V",
+          "lbus_3_mty_V_1"
+        ]
+      },
+      "axis2lbus_0_lbus_2_sop_V": {
+        "ports": [
+          "axis2lbus_0/lbus_2_sop_V",
+          "lbus_2_sop_V_1"
+        ]
+      },
+      "axis2lbus_0_lbus_0_ena_V": {
+        "ports": [
+          "axis2lbus_0/lbus_0_ena_V",
+          "lbus_0_ena_V_1"
+        ]
+      },
+      "lbus_fifo_write_0_lbus_fifo": {
+        "ports": [
+          "lbus_fifo_write_0/lbus_fifo",
+          "fifo_generator_0/din"
+        ]
+      },
+      "lbus_fifo_write_0_lbus_fifo_we_V": {
+        "ports": [
+          "lbus_fifo_write_0/lbus_fifo_we_V",
+          "fifo_generator_0/wr_en"
+        ]
+      },
+      "lbus_fifo_write_0_lbus_fifo_pkt_end": {
+        "ports": [
+          "lbus_fifo_write_0/lbus_fifo_pkt_end",
+          "fifo_generator_1/din"
+        ]
+      },
+      "lbus_fifo_write_0_lbus_fifo_pkt_end_we_V": {
+        "ports": [
+          "lbus_fifo_write_0/lbus_fifo_pkt_end_we_V",
+          "fifo_generator_1/wr_en"
+        ]
+      },
+      "fifo_generator_0_dout": {
+        "ports": [
+          "fifo_generator_0/dout",
+          "lbus_fifo_read_0/lbus_fifo"
+        ]
+      },
+      "fifo_generator_0_empty": {
+        "ports": [
+          "fifo_generator_0/empty",
+          "lbus_fifo_read_0/lbus_fifo_empty_V"
+        ]
+      },
+      "lbus_fifo_read_0_lbus_fifo_re_V": {
+        "ports": [
+          "lbus_fifo_read_0/lbus_fifo_re_V",
+          "fifo_generator_0/rd_en"
+        ]
+      },
+      "fifo_generator_1_dout": {
+        "ports": [
+          "fifo_generator_1/dout",
+          "lbus_fifo_read_0/lbus_fifo_pkt_end"
+        ]
+      },
+      "fifo_generator_1_empty": {
+        "ports": [
+          "fifo_generator_1/empty",
+          "lbus_fifo_read_0/lbus_fifo_pkt_end_empty_V"
+        ]
+      },
+      "lbus_fifo_read_0_lbus_fifo_pkt_end_re_V": {
+        "ports": [
+          "lbus_fifo_read_0/lbus_fifo_pkt_end_re_V",
+          "fifo_generator_1/rd_en"
+        ]
+      },
+      "fifo_generator_0_valid": {
+        "ports": [
+          "fifo_generator_0/valid",
+          "lbus_fifo_read_0/lbus_fifo_valid_V"
+        ]
+      },
+      "fifo_generator_1_valid": {
+        "ports": [
+          "fifo_generator_1/valid",
+          "lbus_fifo_read_0/lbus_fifo_pkt_end_valid_V"
+        ]
+      },
+      "lbus_fifo_write_0_error_V": {
+        "ports": [
+          "lbus_fifo_write_0/error_V",
+          "util_vector_logic_0/Op1"
+        ]
+      },
+      "lbus_fifo_read_0_error_V": {
+        "ports": [
+          "lbus_fifo_read_0/error_V",
+          "util_vector_logic_0/Op2"
+        ]
+      }
+    }
+  }
+}

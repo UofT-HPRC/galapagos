@@ -1,0 +1,140 @@
+
+
+================================================================
+== Vivado HLS Report for 'PSInterface'
+================================================================
+* Date:           Thu Jul 25 00:35:48 2024
+
+* Version:        2019.1 (Build 2552052 on Fri May 24 15:28:33 MDT 2019)
+* Project:        PSInterface
+* Solution:       solution1
+* Product family: virtexuplus
+* Target device:  xcu200-fsgd2104-2-e
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |   3.10|     1.000|        0.39|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+-----+-----+-----+---------+
+    |  Latency  |  Interval | Pipeline|
+    | min | max | min | max |   Type  |
+    +-----+-----+-----+-----+---------+
+    |    0|    0|    0|    0|   none  |
+    +-----+-----+-----+-----+---------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        N/A
+
+
+
+================================================================
+== Utilization Estimates
+================================================================
+* Summary: 
++---------------------+---------+-------+---------+---------+-----+
+|         Name        | BRAM_18K| DSP48E|    FF   |   LUT   | URAM|
++---------------------+---------+-------+---------+---------+-----+
+|DSP                  |        -|      -|        -|        -|    -|
+|Expression           |        -|      -|        -|        -|    -|
+|FIFO                 |        -|      -|        -|        -|    -|
+|Instance             |        0|      -|      638|     1064|    -|
+|Memory               |        -|      -|        -|        -|    -|
+|Multiplexer          |        -|      -|        -|        -|    -|
+|Register             |        -|      -|        -|        -|    -|
++---------------------+---------+-------+---------+---------+-----+
+|Total                |        0|      0|      638|     1064|    0|
++---------------------+---------+-------+---------+---------+-----+
+|Available SLR        |     1440|   2280|   788160|   394080|  320|
++---------------------+---------+-------+---------+---------+-----+
+|Utilization SLR (%)  |        0|      0|    ~0   |    ~0   |    0|
++---------------------+---------+-------+---------+---------+-----+
+|Available            |     4320|   6840|  2364480|  1182240|  960|
++---------------------+---------+-------+---------+---------+-----+
+|Utilization (%)      |        0|      0|    ~0   |    ~0   |    0|
++---------------------+---------+-------+---------+---------+-----+
+
++ Detail: 
+    * Instance: 
+    +------------------------------+----------------------------+---------+-------+-----+------+-----+
+    |           Instance           |           Module           | BRAM_18K| DSP48E|  FF |  LUT | URAM|
+    +------------------------------+----------------------------+---------+-------+-----+------+-----+
+    |PSInterface_AXILiteS_s_axi_U  |PSInterface_AXILiteS_s_axi  |        0|      0|  638|  1064|    0|
+    +------------------------------+----------------------------+---------+-------+-----+------+-----+
+    |Total                         |                            |        0|      0|  638|  1064|    0|
+    +------------------------------+----------------------------+---------+-------+-----+------+-----+
+
+    * DSP48E: 
+    N/A
+
+    * Memory: 
+    N/A
+
+    * FIFO: 
+    N/A
+
+    * Expression: 
+    N/A
+
+    * Multiplexer: 
+    N/A
+
+    * Register: 
+    N/A
+
+
+
+================================================================
+== Interface
+================================================================
+* Summary: 
++------------------------+-----+-----+--------------+-----------------+--------------+
+|        RTL Ports       | Dir | Bits|   Protocol   |  Source Object  |    C Type    |
++------------------------+-----+-----+--------------+-----------------+--------------+
+|s_axi_AXILiteS_AWVALID  |  in |    1|     s_axi    |     AXILiteS    |    pointer   |
+|s_axi_AXILiteS_AWREADY  | out |    1|     s_axi    |     AXILiteS    |    pointer   |
+|s_axi_AXILiteS_AWADDR   |  in |    8|     s_axi    |     AXILiteS    |    pointer   |
+|s_axi_AXILiteS_WVALID   |  in |    1|     s_axi    |     AXILiteS    |    pointer   |
+|s_axi_AXILiteS_WREADY   | out |    1|     s_axi    |     AXILiteS    |    pointer   |
+|s_axi_AXILiteS_WDATA    |  in |   32|     s_axi    |     AXILiteS    |    pointer   |
+|s_axi_AXILiteS_WSTRB    |  in |    4|     s_axi    |     AXILiteS    |    pointer   |
+|s_axi_AXILiteS_ARVALID  |  in |    1|     s_axi    |     AXILiteS    |    pointer   |
+|s_axi_AXILiteS_ARREADY  | out |    1|     s_axi    |     AXILiteS    |    pointer   |
+|s_axi_AXILiteS_ARADDR   |  in |    8|     s_axi    |     AXILiteS    |    pointer   |
+|s_axi_AXILiteS_RVALID   | out |    1|     s_axi    |     AXILiteS    |    pointer   |
+|s_axi_AXILiteS_RREADY   |  in |    1|     s_axi    |     AXILiteS    |    pointer   |
+|s_axi_AXILiteS_RDATA    | out |   32|     s_axi    |     AXILiteS    |    pointer   |
+|s_axi_AXILiteS_RRESP    | out |    2|     s_axi    |     AXILiteS    |    pointer   |
+|s_axi_AXILiteS_BVALID   | out |    1|     s_axi    |     AXILiteS    |    pointer   |
+|s_axi_AXILiteS_BREADY   |  in |    1|     s_axi    |     AXILiteS    |    pointer   |
+|s_axi_AXILiteS_BRESP    | out |    2|     s_axi    |     AXILiteS    |    pointer   |
+|start_V                 | out |    1|    ap_none   |     start_V     |    pointer   |
+|pkt_num_V               | out |   32|    ap_none   |    pkt_num_V    |    pointer   |
+|pkt_len_V               | out |   16|    ap_none   |    pkt_len_V    |    pointer   |
+|remote_ip_V             | out |   32|    ap_none   |   remote_ip_V   |    pointer   |
+|remote_port_V           | out |   16|    ap_none   |  remote_port_V  |    pointer   |
+|local_port_V            | out |   16|    ap_none   |   local_port_V  |    pointer   |
+|tx_timeElapse_V         |  in |   64|    ap_none   | tx_timeElapse_V |    scalar    |
+|tx_done_V               |  in |    1|    ap_none   |    tx_done_V    |    scalar    |
+|latency_sum_V           |  in |   64|    ap_none   |  latency_sum_V  |    scalar    |
+|rx_timeElapse_V         |  in |   64|    ap_none   | rx_timeElapse_V |    scalar    |
+|rx_cnt_V                |  in |   32|    ap_none   |     rx_cnt_V    |    scalar    |
+|rx_done_V               |  in |    1|    ap_none   |    rx_done_V    |    scalar    |
+|rx_error_V              |  in |    1|    ap_none   |    rx_error_V   |    scalar    |
+|ap_clk                  |  in |    1| ap_ctrl_none |   PSInterface   | return value |
+|ap_rst_n                |  in |    1| ap_ctrl_none |   PSInterface   | return value |
++------------------------+-----+-----+--------------+-----------------+--------------+
+
