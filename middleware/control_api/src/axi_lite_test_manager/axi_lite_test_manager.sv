@@ -3,8 +3,8 @@ module axi_lite_test_manager #(
     parameter AXI_LITE_DATA_WIDTH = 32,
     parameter AXI_LITE_WSTRB_WIDTH = 4,
     parameter AXI_LITE_BRESP_WIDTH = 2,
-    parameter AXI_LITE_RRESP_WIDTH = 2,
-    parameter TIMEOUT_DELAY = 1000 // cycles
+    parameter AXI_LITE_RRESP_WIDTH = 2
+    //parameter TIMEOUT_DELAY = 1000 // cycles
 ) (
     input logic clk,
     input logic ap_rst_n,
@@ -67,6 +67,7 @@ module axi_lite_test_manager #(
     logic [63:0] r_bresp_waiting_time;
     logic [63:0] r_rdata_waiting_time;
     logic [63:0] r_num_transactions_completed;
+    logic [63:0] TIMEOUT_DELAY;
 
     // Assignments
     assign o_core_state = r_core_state;
@@ -83,6 +84,7 @@ module axi_lite_test_manager #(
     assign M_AXIL_arvalid = (r_core_state == STATE_READ ? 1 : 0);
     assign M_AXIL_araddr = r_araddr;
     assign M_AXIL_rready = (r_core_state == STATE_WAIT_RDATA ? 1 : 0);
+    assign TIMEOUT_DELAY = 'hFFFFFFFFFFFFFFFF;
 
     // Core State FSM
     always_ff @(posedge clk, negedge ap_rst_n) begin
