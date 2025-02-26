@@ -4641,8 +4641,6 @@ def userApplicationRegionDDRMultiSLR(tcl_user_app, mappings, outDir, output_path
                         hier_name = "ddrRegion_kern_" + ht_name[-1]
                         clk_name = "SYSCLK" + regions[-1] + "_300"
                         ddr4_portname = "c" + regions[-1] + "_ddr4"
-                        print(clk_name)
-                        print(ddr4_portname)
                         ddr_occupancy[int(regions[-1])] = True
                         print(ddr_occupancy)
                     elif i == 1:
@@ -6175,7 +6173,6 @@ def userApplicationRegionMultiSLR(tcl_user_app, mappings,outDir,main_slr,reset_s
     for region in mappings:
         active = False
         num_kern_with_ddr = 0
-        print(region)
         if mappings[region]['name'] == main_slr:
             active = True
             ec_file.write('create_pblock ' + mappings[region]['name']+'\n')
@@ -6200,7 +6197,6 @@ def userApplicationRegionMultiSLR(tcl_user_app, mappings,outDir,main_slr,reset_s
             if kernel_inst['ddr']:
                 num_kern_with_ddr += 1
                 kernel_temp = kernel_inst
-        # print("extra: " + str(num_kern_with_ddr) + "SLR: " + mappings[region]['name'][-1])
         if num_kern_with_ddr == 1 or writeSLR0 is True or writeSLR1 is True:
             if num_kern_with_ddr == 1:
                 ec_file.write(' ' + "pr_i/ddrRegion_kern_" + str(kernel_temp['num']))
@@ -6292,15 +6288,11 @@ def userApplicationRegion(project_name,outDir,output_path, fpga, sim,is_gw,api_i
             tieOffControlInfrastructure(tcl_user_app)
     if tcl_user_app.fpga.has_ddr and not fpga['multi_slr']:
         userApplicationRegionDDR(tcl_user_app, outDir, output_path)
-        print("DDR written!!!")
     tcl_user_app.setInterfacesCLK("CLK",clk_200_int)
     tcl_user_app.setInterfacesCLK("CLK300", clk_300_int)
     if fpga['multi_slr']:
-        print("IMPORTANT YES")
         userApplicationRegionMultiSLR(tcl_user_app,fpga['slr_mappings'],outDir, fpga['main_slr'],fpga['reset_slr'],fpga['board'])
         userApplicationRegionDDRMultiSLR(tcl_user_app, fpga['slr_mappings'], outDir, output_path)
-    else:
-        print('IMPORTANT NO')
     if is_gw:
         userApplicationRegionGWShellChanges(tcl_user_app)
     tcl_user_app.close()

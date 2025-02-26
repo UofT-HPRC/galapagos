@@ -211,15 +211,12 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,ctrl_kerne
     dst_file = open(target_files,"w")
     ddr_occupancy = [False, False, False]
 
-    for regions in fpga['slr_mappings']:
-        for i in range(len(fpga['slr_mappings'][regions]['kernel'])):
-            if fpga['slr_mappings'][regions]['kernel'][i]['ddr']:
-                ddr_occupancy[int(regions[-1])] = True
-    index = ddr_occupancy.index(False)
-    print("In TOPLEVEL")
-    print(ddr_occupancy)
-
     if fpga['board'] in ('u200','u250','u280'):
+        for regions in fpga['slr_mappings']:
+            for i in range(len(fpga['slr_mappings'][regions]['kernel'])):
+                if fpga['slr_mappings'][regions]['kernel'][i]['ddr']:
+                    ddr_occupancy[int(regions[-1])] = True
+            index = ddr_occupancy.index(False)
         if fpga.has_ddr:
             copy_file(dst_file, source_dir + "/../verilog/shellTop_u2xx_ddr/shellTop_u2xx_ddr_pt1.v")
             if fpga['slr_mappings']['SLR0']['kernel']:
@@ -234,7 +231,6 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,ctrl_kerne
                         dst_file.write(",\n    SYSCLK" + str(index) + "_300_clk_n")
                         for i in range(len(ddr_fields)):
                             dst_file.write(",\n    c" + str(index) + "_ddr4_" + ddr_fields[i])
-                        print("!!!" + str(index))
                     elif i['ddr'] and int(i['ddr_size'][:-1]) == 48:
                         dst_file.write(",\n    SYSCLK1_300_clk_p")
                         dst_file.write(",\n    SYSCLK1_300_clk_n")
@@ -256,7 +252,6 @@ def createTopLevelVerilog(target_files, source_dir, kernel_properties,ctrl_kerne
                         dst_file.write(",\n    SYSCLK" + str(index) + "_300_clk_n")
                         for i in range(len(ddr_fields)):
                             dst_file.write(",\n    c" + str(index) + "_ddr4_" + ddr_fields[i])
-                        print("!!!" + str(index))
                     elif i['ddr'] and int(i['ddr_size'][:-1]) == 48:
                         dst_file.write(",\n    SYSCLK0_300_clk_p")
                         dst_file.write(",\n    SYSCLK0_300_clk_n")
@@ -470,8 +465,6 @@ def createMemoryPartitioner(target_files, source_dir, phy_addr_prefix, vir_addr_
     copy_file(dst_file, source_dir + "/../verilog/memPartitioner_pt1.v")
 
     prefix_len = phy_addr_prefix.bit_length()
-    # print(phy_addr_prefix)
-    # print(prefix_len)
     width = int(id_width) - 1
     dst_file.write("    input wire [" + str(width) + ":0] s0_axi_awid;\n")
     dst_file.write("    input wire [" + str(width) + ":0] s0_axi_arid;\n")
