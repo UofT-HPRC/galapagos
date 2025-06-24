@@ -1069,6 +1069,7 @@ def implement_control_section(array,multiple_array,gatewayFile,outDir):
         }
     )
     # Special case: if reliability is used, outbound path must connect KIP connection to RPN WAN RX
+    # Otherwise, tie it off
     if has_reliability:
         gatewayFile.makeConnection(
             'intf',
@@ -1081,6 +1082,59 @@ def implement_control_section(array,multiple_array,gatewayFile,outDir):
                 'name': hierarchy_name,
                 'type': 'intf',
                 'port_name': 'direct_out'
+            }
+        )
+    else:
+        gatewayFile.instBlock(
+            {
+                'name': 'xlconstant',
+                'inst':  hierarchy_name + '/direct_out_tieoff_tvalid',
+                'properties': [ 
+                                'CONFIG.CONST_WIDTH {1}',
+                                'CONFIG.CONST_VAL {0}'
+                            ]
+            }
+        )
+        gatewayFile.instBlock(
+            {
+                'name': 'axis_register_slice',
+                'inst':  hierarchy_name + '/direct_out_tieoff',
+                'clks': ['aclk'],
+                'resetns': ['aresetn'],
+                'resetns_port': 'rstn'
+            }
+        )
+        # Direct port expects TKEEP, TUSER and TLAST
+        properties = [
+            "CONFIG.HAS_TLAST {1}",
+            "CONFIG.HAS_TKEEP {1}",
+            "CONFIG.TUSER_WIDTH {64}"
+        ]
+        gatewayFile.setProperties(hierarchy_name + '/direct_out_tieoff',properties)
+        gatewayFile.makeConnection(
+            'intf',
+            {
+                'name': hierarchy_name,
+                'type':'intf',
+                'port_name': 'direct_out'
+            },
+            {
+                'name': hierarchy_name + '/direct_out_tieoff',
+                'type':'intf',
+                'port_name':'M_AXIS'
+            }
+        ) 
+        gatewayFile.makeConnection(
+            'net', 
+            {
+                'type': 'pin',
+                'name': hierarchy_name + '/direct_out_tieoff_tvalid',
+                'port_name': 'dout'
+            },
+            {
+                'type': 'pin',
+                'name': hierarchy_name + '/direct_out_tieoff',
+                'port_name': 'S_AXIS_tvalid'
             }
         )
     # Inbound Path
@@ -1114,7 +1168,7 @@ def implement_control_section(array,multiple_array,gatewayFile,outDir):
             },
         )
     else:
-        tcl_user_app.instBlock(
+        gatewayFile.instBlock(
             {
                 'name': 'xlconstant',
                 'inst':  hierarchy_name + '/KIP_in_tieoff_tready',
@@ -1124,7 +1178,7 @@ def implement_control_section(array,multiple_array,gatewayFile,outDir):
                             ]
             }
         )
-        tcl_user_app.instBlock(
+        gatewayFile.instBlock(
             {
                 'name': 'axis_register_slice',
                 'inst':  hierarchy_name + '/KIP_in_tieoff',
@@ -1133,7 +1187,7 @@ def implement_control_section(array,multiple_array,gatewayFile,outDir):
                 'resetns_port': 'rstn'
             }
         )
-        tcl_user_app.makeConnection(
+        gatewayFile.makeConnection(
             'intf',
             {
                 'name': hierarchy_name,
@@ -1146,7 +1200,7 @@ def implement_control_section(array,multiple_array,gatewayFile,outDir):
                 'port_name':'S_AXIS'
             }
         ) 
-        tcl_user_app.makeConnection(
+        gatewayFile.makeConnection(
             'net', 
             {
                 'type': 'pin',

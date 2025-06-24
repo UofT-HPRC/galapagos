@@ -299,6 +299,9 @@ def buildControlOutboundSwitch(tcl_user_app, switch_name, num_ctrl_instances):
         switch_name (str): Full name of the switch
         num_ctrl_instances (int): Number of inputs to the switch
     """
+    print("BUILDING CONTROL OUTBOUND SWITCH")
+    print("SWITCH NAME: ", switch_name)
+    print("NUM SUB INSTANCES: ", str(num_ctrl_instances))
     tcl_user_app.instBlock(
         {
             'name':'axis_switch',
@@ -2645,6 +2648,7 @@ def userApplicationRegionControlInst(tcl_user_app):
                 src_kernel_hierarchy = hierarchy_name
                 src_kernel_name = "ctrl_to_KIP_switch"
                 src_kernel_port_name = "M00_AXIS"
+                
                 tcl_user_app.makeConnection(
                     'intf',
                     {
@@ -2853,6 +2857,7 @@ def userApplicationRegionControlInst(tcl_user_app):
         )
     # Inbound Case 1: More than 1 control instance on this board
     if num_ctrl_instances > 1:
+        print("MAKING CONTROL FROM NB SWITCH HERE")
         tcl_user_app.instBlock(
             {
                 'name':'axis_switch',
@@ -2960,7 +2965,7 @@ def userApplicationRegionControlInst(tcl_user_app):
         if has_reliability == False:
             src_kernel_name = 'ctrl_from_nb_switch'
             src_port_name = 'M00_AXIS'
-            buildControlFixedPrioritySwitch(tcl_user_app, hierarchy_name + '/' + src_kernel_name, 2)
+            buildControlFixedPrioritySwitch(tcl_user_app, hierarchy_name + '/' + src_kernel_name, 3)
         # Case 2B: Only 1 control instance on this board and reliability is used: just a 1:1 connection required
         else:
             src_kernel_name = 'reliability_protocol_node/rpn_LAN_RX'
@@ -3107,7 +3112,7 @@ def userApplicationRegionControlInst(tcl_user_app):
                 src_kernel_name = hierarchy_name + '/ctrl_to_WAN_switch'
                 src_kernel_port_name = 'M00_AXIS'
             # WAN Path Case 3: No reliability, only 1 ANC instance. Connect directly
-            else: 
+            elif num_anc_instances == 1: 
                 src_kernel_id = instances_with_anc[0]
                 src_kernel_hierarchy = hierarchy_name + "/control_api_inst_%d" % (src_kernel_id)
                 src_kernel_name = src_kernel_hierarchy + "/anc"
@@ -3172,6 +3177,32 @@ def userApplicationRegionControlInst(tcl_user_app):
                 'port_name': 'from_kernels'
             }
         )
+    # If no reliability and WAN is enabled, connect any NAC instances to router
+    elif has_wan and num_nac_instances > 0:
+        # WAN case 1: multiple NAC instances, connect to switch
+        if num_nac_instances > 1:
+            src_kernel_hierarchy = hierarchy_name
+            src_kernel_name = 'ctrl_to_KIP_switch'
+            src_kernel_port_name = 'M00_AXIS'
+        else:
+            src_kernel_id = instances_with_nac[0]
+            src_kernel_hierarchy = hierarchy_name + "/control_api_inst_%d" % (src_kernel_id)
+            src_kernel_name = 'nac'
+            src_kernel_port_name = 'to_KIP'
+        tcl_user_app.makeConnection(
+            'intf',
+            {
+                'name': src_kernel_hierarchy + '/' + src_kernel_name,
+                'type': 'intf',
+                'port_name': src_kernel_port_name
+            },
+            {
+                'name': hierarchy_name + '/KIP_router_0',
+                'type': 'intf',
+                'port_name': 'from_kernels'
+            }
+        )
+    # No reliability and no NAC instances: tie off Router to 0
     else:
         tcl_user_app.instBlock(
             {
