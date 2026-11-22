@@ -1,2 +1,0 @@
-This directory houses the assembled and the precompiled cores for GULF Stream targetting the 
-u200 board

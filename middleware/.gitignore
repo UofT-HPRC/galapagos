@@ -1,8 +1,0 @@
-.Xil
-vivado_*
-usage_statistics*
-python/build*
-python/*bin
-python/__pycache__/
-*.o
-*.exe
